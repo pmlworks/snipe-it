@@ -34,6 +34,7 @@ class StorageHelper
             $fileinfo = pathinfo($file_with_path);
             $extension = strtolower($fileinfo['extension']);
             switch ($extension) {
+                case 'avif':
                 case 'jpg':
                 case 'png':
                 case 'gif':

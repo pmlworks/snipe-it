@@ -45,14 +45,24 @@
             margin-top: 20px;
             margin-bottom: 10px;
         }
+
+        @media print {
+            .signature-boxes {
+                page-break-after: always;
+            }
+        }
     </style>
 
 
 </head>
 <body>
 
+@php
+    $count = 0;
+@endphp
 {{-- If we are rendering multiple users we'll add the ability to show/hide EULAs for all of them at once via this button --}}
 @if (count($users) > 1)
+
     <div class="pull-right hidden-print">
         <span>{{ trans('general.show_or_hide_eulas') }}</span>
         <button class="btn btn-default" type="button" data-toggle="collapse" data-target=".eula-row" aria-expanded="false" aria-controls="eula-row" title="EULAs">
@@ -80,6 +90,9 @@
 @endif
 
 @foreach ($users as $show_user)
+    @php
+        $count++;
+    @endphp
     <div id="start_of_user_section"> {{-- used for page breaks when printing --}}</div>
     <h3>
         @if ($show_user->company)
@@ -399,7 +412,7 @@
         </div>
     @endif
 
-    <table style="margin-top: 80px;">
+    <table style="margin-top: 80px;" class="{{ count($users) > $count ? 'signature-boxes' : ''  }}">
         @if (!empty($eulas))
         <tr class="collapse eula-row">
             <td style="padding-right: 10px; vertical-align: top; font-weight: bold;">EULA</td>

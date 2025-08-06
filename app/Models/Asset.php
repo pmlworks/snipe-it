@@ -226,7 +226,11 @@ class Asset extends Depreciable
 
             foreach ($this->model->fieldset->fields as $field) {
 
-                if ($field->format == 'BOOLEAN') {
+                // this just casts booleans that may come through as strings to an actual boolean type
+                // adding !$field->field_encrypted because when the encrypted value comes through it
+                // screws things up for the encrypted validation rules (and the encrypted string
+                // is not a valid boolean type)
+                if ($field->format == 'BOOLEAN' && !$field->field_encrypted) {
                     $this->{$field->db_column} = filter_var($this->{$field->db_column}, FILTER_VALIDATE_BOOLEAN);
                 }
             }

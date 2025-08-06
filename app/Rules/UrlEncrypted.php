@@ -7,9 +7,10 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Concerns\ValidatesAttributes;
 
-class AlphaEncrypted implements ValidationRule
+class UrlEncrypted implements ValidationRule
 {
     use ValidatesAttributes;
+
     /**
      * Run the validation rule.
      *
@@ -20,8 +21,8 @@ class AlphaEncrypted implements ValidationRule
         try {
             $attributeName = trim(preg_replace('/_+|snipeit|\d+/', ' ', $attribute));
             $decrypted = Crypt::decrypt($value);
-            if (!$this->validateAlpha($attributeName, $decrypted, 'ascii') && !is_null($decrypted)) {
-                $fail(trans('validation.alpha', ['attribute' => $attributeName]));
+            if (!$this->validateUrl($attributeName, $decrypted, []) && !is_null($decrypted)) {
+                $fail(trans('validation.url', ['attribute' => $attributeName]));
             }
         } catch (\Exception $e) {
             report($e);
