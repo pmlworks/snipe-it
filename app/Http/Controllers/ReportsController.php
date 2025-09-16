@@ -1133,18 +1133,7 @@ class ReportsController extends Controller
             $query->withTrashed();
         }
 
-//        $assetsForReport = $query->get()
-//                ->map(function ($acceptance) {
-//                    return [
-//                        'assetItem' => $acceptance->checkoutable,
-//                        'acceptance' => $acceptance,
-//                    ];
-//            });
-//        dd($assetsForReport);
-//        $assetsForReport = $query->get()->map(function ($unaccepted) {})
         $itemsForReport = $query->get()->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
-
-
 
         return view('reports/unaccepted_assets', compact('itemsForReport','showDeleted' ));
     }
