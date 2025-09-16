@@ -2,250 +2,363 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Helper;
+use ArieTimmerman\Laravel\SCIMServer\Helper;
 use ArieTimmerman\Laravel\SCIMServer\SCIM\Schema;
-use ArieTimmerman\Laravel\SCIMServer\Attribute\AttributeMapping;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Attribute;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Collection;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Complex;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Constant;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Eloquent;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\JSONCollection;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Meta;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\MutableCollection;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\Schema as AttributeSchema;
+use Illuminate\Database\Eloquent\Model;
 
-
-class SnipeSCIMConfig extends \ArieTimmerman\Laravel\SCIMServer\SCIMConfig
+function a($name = null): Attribute
 {
+    return new Attribute($name);
+}
+
+function complex($name = null): Complex
+{
+    return new Complex($name);
+}
+
+function eloquent($name, $attribute = null): Attribute
+{
+    return new Eloquent($name, $attribute);
+}
+
+class MappedTable extends Attribute
+{
+    public function __construct(
+        private string $scim_attribute_name,
+        private string $relationship_name,
+        private string $relationship_class,
+        private string $relationship_field = 'name')
+    {
+        parent::__construct($this->scim_attribute_name);
+    }
+
+    protected function doRead(&$object, $attributes = [])
+    {
+        return $object->{$this->relationship_name}?->{$this->relationship_field};
+    }
+
+    public function add($value, Model &$object)
+    {
+        \Log::error("Structure of 'value' is going to be weird - " . print_r($value, true));
+        $object->{$this->relationship_name} = $value ? $relationship_class::firstOrCreate([$this->relationship_field => $value]) : null;
+    }
+
+    public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
+    {
+        $object->{$this->relationship_name} = $value ? $relationship_class::firstOrCreate([$this->relationship_field => $value]) : null;
+    }
+
+}
+
+
+class SnipeSCIMConfig
+{
+    public function __construct()
+    {
+    }
+
+    public function getConfigForResource($name)
+    {
+        $result = $this->getConfig();
+        return @$result[$name];
+    }
+
+    public function getGroupClass()
+    {
+        return Group::class;
+    }
+
+    const ENTERPRISE = 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User';
+    const GROKABILITY = 'urn:ietf:params:scim:schemas:extension:grokability:2.0:User';
+
     public function getUserConfig()
     {
-        // Much of this is copied verbatim from the library, then adjusted for our needs
-
-        /*
-          more snipe-it attributes I'd like to check out (to map to 'enterprise' maybe?):
-         - website
-         - notes?
-         - remote???
-         - location_id ?
-         - company_id to "organization?"
-        */
-
-
-        $user_prefix = 'urn:ietf:params:scim:schemas:core:2.0:User:';
-        $enterprise_prefix = 'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:';
-
         return [
 
             // Set to 'null' to make use of auth.providers.users.model (App\User::class)
-            'class' => SCIMUser::class,
-
-            'validations' => [
-                $user_prefix . 'userName' => 'required',
-                $user_prefix . 'displayName' => 'nullable|string',
-                $user_prefix . 'name.givenName' => 'required',
-                $user_prefix . 'name.familyName' => 'nullable|string',
-                $user_prefix . 'externalId' => 'nullable|string',
-                $user_prefix . 'emails' => 'nullable|array',
-                $user_prefix . 'emails.*.value' => 'nullable|email',
-                $user_prefix . 'active' => 'boolean',
-                $user_prefix . 'phoneNumbers' => 'nullable|array',
-                $user_prefix . 'phoneNumbers.*.value' => 'nullable|string',
-                $user_prefix . 'addresses' => 'nullable|array',
-                $user_prefix . 'addresses.*.streetAddress' => 'nullable|string',
-                $user_prefix . 'addresses.*.locality' => 'nullable|string',
-                $user_prefix . 'addresses.*.region' => 'nullable|string',
-                $user_prefix . 'addresses.*.postalCode' => 'nullable|string',
-                $user_prefix . 'addresses.*.country' => 'nullable|string',
-                $user_prefix . 'title' => 'nullable|string',
-                $user_prefix . 'preferredLanguage' => 'nullable|string',
-
-                // Enterprise validations:
-                $enterprise_prefix . 'employeeNumber' => 'nullable|string',
-                $enterprise_prefix . 'department' => 'nullable|string',
-                $enterprise_prefix . 'manager' => 'nullable',
-                $enterprise_prefix . 'manager.value' => 'nullable|string'
-            ],
-
+            'class' => Helper::getAuthUserClass(),
             'singular' => 'User',
-            'schema' => [Schema::SCHEMA_USER],
 
             //eager loading
             'withRelations' => [],
-            'map_unmapped' => false,
-            //            'unmapped_namespace' => 'urn:ietf:params:scim:schemas:laravel:unmapped',
             'description' => 'User Account',
 
-            // Map a SCIM attribute to an attribute of the object.
-            'mapping' => [
-
-                'id' => (new AttributeMapping())->setRead(
-                    function (&$object) {
+            'map' => complex()->withSubAttributes(
+                new class ('schemas', [
+                    "urn:ietf:params:scim:schemas:core:2.0:User",
+                    self::ENTERPRISE,
+                    self::GROKABILITY
+                ]) extends Constant {
+                    public function replace($value, &$object, $path = null)
+                    {
+                        // do nothing
+                        $this->dirty = true;
+                    }
+                },
+                (new class ('id', null) extends Constant { // TODO - this 'id' is in the same namespace for objects OR groups?
+                    protected function doRead(&$object, $attributes = [])
+                    {
                         return (string)$object->id;
                     }
-                )->disableWrite(),
 
-                'externalId' => AttributeMapping::eloquent('scim_externalid'), // FIXME - I have a PR that changes a lot of this.
-
-                'meta' => [
-                    'created' => AttributeMapping::eloquent("created_at")->disableWrite(),
-                    'lastModified' => AttributeMapping::eloquent("updated_at")->disableWrite(),
-
-                    'location' => (new AttributeMapping())->setRead(
-                        function ($object) {
-                            return route(
-                                'scim.resource',
-                                [
-                                    'resourceType' => 'Users',
-                                    'resourceObject' => $object->id
-                                ]
-                            );
+                    public function remove($value, &$object, $path = null)
+                    {
+                        // do nothing
+                    }
+                }
+                ),
+                new Meta('Users'),
+                (new AttributeSchema(Schema::SCHEMA_USER, true))->withSubAttributes(
+                    eloquent('userName', 'username')->ensure('required'),
+                    (new class ('active', 'activated') extends Eloquent {
+                        protected function doRead(&$object, $attributes = [])
+                        {
+                            return (bool)$object->activated; // need this extension to force boolean-ness
                         }
-                    )->disableWrite(),
-
-                    'resourceType' => AttributeMapping::constant("User")
-                ],
-
-                'schemas' => AttributeMapping::constant(
-                    [
-                        'urn:ietf:params:scim:schemas:core:2.0:User',
-                        'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User'
-                    ]
-                )->ignoreWrite(),
-
-                'urn:ietf:params:scim:schemas:core:2.0:User' => [
-
-                    'userName' => AttributeMapping::eloquent("username"),
-
-                    'name' => [
-                        'formatted' => (new AttributeMapping())->ignoreWrite()->setRead(
-                            function (&$object) {
-                                return $object->getFullNameAttribute();
-                            }
-                        ),
-                        'familyName' => AttributeMapping::eloquent("last_name"),
-                        'givenName' => AttributeMapping::eloquent("first_name"),
-                        'middleName' => null,
-                        'honorificPrefix' => null,
-                        'honorificSuffix' => null
-                    ],
-
-                    'displayName' => AttributeMapping::eloquent("display_name"),
-                    'nickName' => null,
-                    'profileUrl' => null,
-                    'title' => AttributeMapping::eloquent('jobtitle'),
-                    'userType' => null,
-                    'preferredLanguage' => AttributeMapping::eloquent('locale'), // Section 5.3.5 of [RFC7231]
-                    'locale' => null, // see RFC5646
-                    'timezone' => null, // see RFC6557
-                    'active' => (new AttributeMapping())->setAdd(
-                        function ($value, &$object) {
-                            $object->activated = $value;
-                        }
-                    )->setReplace(
-                        function ($value, &$object) {
-                            $object->activated = $value;
-                        }
-                    )->setRead(
-                        // this works as specified.
-                        function (&$object) {
-                            return (bool)$object->activated;
-                        }
+                    }),
+                    complex('name')->withSubAttributes(
+                        eloquent('givenName', 'first_name'),
+                        eloquent('familyName', 'last_name'),
                     ),
-                    'password' => AttributeMapping::eloquent('password')->disableRead(),
+                    eloquent('displayName', 'display_name'), //yes, this is *not* under 'name' - that's the spec
+                    //eloquent('password')->ensure('nullable')->setReturned('never'),
+                    eloquent('externalId', 'scim_externalid'),
 
-                    // Multi-Valued Attributes
-                    'emails' => [[
-                        "value" => AttributeMapping::eloquent("email"),
-                        "display" => null,
-                        "type" => AttributeMapping::constant("work")->ignoreWrite(),
-                        "primary" => AttributeMapping::constant(true)->ignoreWrite()
-                    ]],
+                    // Email chonk
+                    (new class ('emails') extends Complex {
+                        protected function doRead(&$object, $attributes = [])
+                        {
+                            return collect([$object->email])->map(function ($email) {
+                                return [
+                                    'value' => $email,
+                                    'type' => 'other',
+                                    'primary' => true
+                                ];
+                            })->toArray();
+                        }
 
-                    'phoneNumbers' => [[
-                        "value" => AttributeMapping::eloquent("phone"),
-                        "display" => null,
-                        "type" => AttributeMapping::constant("work")->ignoreWrite(),
-                        "primary" => AttributeMapping::constant(true)->ignoreWrite()
-                    ]],
+                        public function add($value, Model &$object)
+                        {
+                            $object->email = $value[0]['value'];
+                        }
 
-                    'ims' => [[
-                        "value" => null,
-                        "display" => null,
-                        "type" => null,
-                        "primary" => null
-                    ]], // Instant messaging addresses for the User
+                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
+                        {
+                            $object->email = $value[0]['value'];
+                        }
+                    })->withSubAttributes(
+                        eloquent('value', 'email')->ensure('required', 'email'),
+                        new Constant('type', 'other'),
+                        new Constant('primary', true)
+                    )->ensure('required', 'array')
+                        ->setMultiValued(true),
 
-                    'photos' => [[
-                        "value" => null,
-                        "display" => null,
-                        "type" => null,
-                        "primary" => null
-                    ]],
-
-                    'addresses' => [[
-                        'type' => AttributeMapping::constant("work")->ignoreWrite(),
-                        'formatted' => AttributeMapping::constant("n/a")->ignoreWrite(), // TODO - is this right? This doesn't look right.
-                        'streetAddress' => AttributeMapping::eloquent("address"),
-                        'locality' => AttributeMapping::eloquent("city"),
-                        'region' => AttributeMapping::eloquent("state"),
-                        'postalCode' => AttributeMapping::eloquent("zip"),
-                        'country' => AttributeMapping::eloquent("country"),
-                        'primary' => AttributeMapping::constant(true)->ignoreWrite() //this isn't in the example?
-                    ]],
-
-                    'groups' => [[
-                        'value' => null,
-                        '$ref' => null,
-                        'display' => null,
-                        'type' => null,
-                    ]],
-
-                    'entitlements' => null,
-                    'roles' => null,
-                    'x509Certificates' => null
-                ],
-
-                'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User' => [
-                    'employeeNumber' => AttributeMapping::eloquent('employee_num'),
-                    'department' => (new AttributeMapping())->setAdd( // FIXME parent?
-                        function ($value, &$object) {
-                            $department = Department::where("name", $value)->first();
-                            if ($department) {
-                                $object->department_id = $department->id;
+                    // phone chonk
+                    (new class ('phoneNumbers') extends Complex {
+                        protected function doRead(&$object, $attributes = [])
+                        {
+                            $phones = [];
+                            if ($object->phone) {
+                                $phones[] = [
+                                    'value' => $object->phone,
+                                    'type' => 'work'
+                                ];
                             }
-                        }
-                    )->setReplace(
-                        function ($value, &$object) {
-                            $department = Department::where("name", $value)->first();
-                            if ($department) {
-                                $object->department_id = $department->id;
+                            if ($object->mobile) {
+                                $phones[] = [
+                                    'value' => $object->mobile,
+                                    'type' => 'mobile'
+                                ];
                             }
+                            return $phones;
                         }
-                    )->setRead(
-                        function (&$object) {
-                            return $object->department ? $object->department->name : null;
+
+                        public function add($value, Model &$object)
+                        {
+                            throw new \Exception("Dunno about fones");
+                            $object->email = $value[0]['value'];
                         }
-                    ),
-                    'manager' => [
-                        // FIXME - manager writes are disabled. This kinda works but it leaks errors all over the place. Not cool.
-                        // '$ref' => (new AttributeMapping())->ignoreWrite()->ignoreRead(),
-                        // 'displayName' => (new AttributeMapping())->ignoreWrite()->ignoreRead(),
-                        // NOTE: you could probably do a 'plain' Eloquent mapping here, but we don't for future-proofing
-                        'value' => (new AttributeMapping())->setAdd(
-                            function ($value, &$object) {
-                                $manager = User::find($value);
-                                if ($manager) {
-                                    $object->manager_id = $manager->id;
+
+                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
+
+                        {
+                            throw new \Exception ("still dunno afbout fones");
+                            $object->email = $value[0]['value'];
+                        }
+                    }),/* ->withSubAttributes(
+                        eloquent('value', 'email')->ensure('required', 'email'),
+                        new Constant('type', 'other'),
+                        new Constant('primary', true)
+                    )->ensure('required', 'array')
+                        ->setMultiValued(true), */
+                    (new class ('addresses') extends Complex {
+                        protected function doRead(&$object, $attributes = [])
+                        {
+                            $addressmap = [
+                                'streetAddress' => 'address',
+                                'locality' => 'city',
+                                'region' => 'state',
+                                'postalCode' => 'zip',
+                                'country' => 'country'
+                            ];
+                            $address = [];
+                            foreach ($addressmap as $scim_field => $db_field) {
+                                if ($object->{$db_field}) {
+                                    $address[$scim_field] = $object->{$db_field};
                                 }
                             }
-                        )->setReplace(
-                            function ($value, &$object) {
-                                $manager = User::find($value);
-                                if ($manager) {
-                                    $object->manager_id = $manager->id;
-                                }
+                            if (count($address) > 0) {
+                                $address['type'] = 'work';
+                                $address['primary'] = true;
                             }
-                        )->setRead(
-                            function (&$object) {
-                                return $object->manager_id;
+                            return $address;
+                        }
+
+                        public function add($value, Model &$object)
+                        {
+                            throw new \Exception("Dunno about addresses to add");
+                            $object->email = $value[0]['value'];
+                        }
+
+                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
+
+                        {
+                            throw new \Exception ("still dunno afbout addresses to whatever");
+                            $object->email = $value[0]['value'];
+                        }
+                    }),/* ->withSubAttributes(
+                        eloquent('value', 'email')->ensure('required', 'email'),
+                        new Constant('type', 'other'),
+                        new Constant('primary', true)
+                    )->ensure('required', 'array')
+                        ->setMultiValued(true), */ eloquent('title', 'jobtitle'),
+                    eloquent('preferredLanguage', 'locale'),
+                    (new Collection('groups'))->withSubAttributes(
+                        eloquent('value', 'id'),
+                        (new class ('$ref') extends Eloquent {
+                            protected function doRead(&$object, $attributes = [])
+                            {
+                                return route(
+                                    'scim.resource',
+                                    [
+                                        'resourceType' => 'Group',
+                                        'resourceObject' => $object->id ?? "not-saved"
+                                    ]
+                                );
                             }
-                        ),
-                    ]
-                ]
-            ]
+                        }),
+                        eloquent('display', 'name')
+                    ),
+                    (new JSONCollection('roles'))->withSubAttributes( // TODO - what is this?
+                        eloquent('value')->ensure('required', 'min:3', 'alpha_dash:ascii'),
+                        eloquent('display')->ensure('nullable', 'min:3', 'alpha_dash:ascii'),
+                        eloquent('type')->ensure('nullable', 'min:3', 'alpha_dash:ascii'),
+                        eloquent('primary')->ensure('boolean')->default(false)
+                    )->ensure('nullable', 'array', 'max:20')
+                ),
+                (new AttributeSchema(self::ENTERPRISE, false))->withSubAttributes(
+                    eloquent('employeeNumber', 'employee_num')->ensure('nullable'),
+                    new MappedTable('department', 'department', Department::class, 'name'),
+                    //eloquent('manager', 'manager_id'), // FIXME - this is going to be more complicated and map to 'value'
+                    (new class('manager') extends Complex {
+                        protected function doRead(&$object, $attributes = [])
+                        {
+                            if (!$object->manager) {
+                                return null;
+                            }
+                            return [
+                                'value' => $object->manager->id, //TODO - ID's aren't unique like they're supposed to be :/
+                                '$ref' => route('scim.resource', ['resourceType' => 'User', 'resourceObject' => $object->manager->id]),
+                                'displayName' => $object->manager->display_name,
+                            ];
+                        }
+                    }) // ->withSubAttributes() ... -> ensure() ?
+                ),
+                (new AttributeSchema(self::GROKABILITY, false))->withSubAttributes(
+                    new MappedTable('location', 'location', Location::class, 'name'),
+                    new MappedTable('company', 'company', Company::class, 'name'),
+                )
+            ),
+        ];
+    }
+
+    public function getGroupConfig()
+    {
+        return [
+
+            'class' => $this->getGroupClass(),
+            'singular' => 'Group',
+
+            //eager loading
+            'withRelations' => [],
+            'description' => 'Group',
+
+            'map' => complex()->withSubAttributes(
+                new class ('schemas', [
+                    "urn:ietf:params:scim:schemas:core:2.0:Group",
+                ]) extends Constant {
+                    public function replace($value, &$object, $path = null)
+                    {
+                        // do nothing
+                        $this->dirty = true;
+                    }
+                },
+                (new class ('id', null) extends Constant {
+                    protected function doRead(&$object, $attributes = [])
+                    {
+                        return (string)$object->id;
+                    }
+
+                    public function remove($value, &$object, $path = null)
+                    {
+                        // do nothing
+                    }
+                }
+                ),
+                new Meta('Groups'),
+                (new AttributeSchema(Schema::SCHEMA_GROUP, true))->withSubAttributes(
+                    eloquent('displayName')->ensure('required', 'min:3', function ($attribute, $value, $fail) {
+                        // check if group does not exist or if it exists, it is the same group
+                        $group = $this->getGroupClass()::where('displayName', $value)->first();
+                        if ($group && (request()->route('resourceObject') == null || $group->id != request()->route('resourceObject')->id)) {
+                            $fail('The name has already been taken.');
+                        }
+                    }),
+                    (new MutableCollection('members'))->withSubAttributes(
+                        eloquent('value', 'id')->ensure('required'),
+                        (new class ('$ref') extends Eloquent {
+                            protected function doRead(&$object, $attributes = [])
+                            {
+                                return route(
+                                    'scim.resource',
+                                    [
+                                        'resourceType' => 'Users',
+                                        'resourceObject' => $object->id ?? "not-saved"
+                                    ]
+                                );
+                            }
+                        }),
+                        eloquent('display', 'name')
+                    )->ensure('nullable', 'array')
+                )
+            ),
+        ];
+    }
+
+    public function getConfig()
+    {
+        return [
+            'Users' => $this->getUserConfig(),
+            'Groups' => $this->getGroupConfig(),
         ];
     }
 }
