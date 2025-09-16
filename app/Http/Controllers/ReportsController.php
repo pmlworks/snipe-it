@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Helpers\Helper;
 use App\Mail\CheckoutAssetMail;
 use App\Models\Accessory;
+use App\Models\AccessoryCheckout;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
+use App\Models\Checkoutable;
+use App\Models\Component;
+use App\Models\LicenseSeat;
 use App\Models\Maintenance;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
@@ -1111,14 +1115,14 @@ class ReportsController extends Controller
         $showDeleted = $deleted == 'deleted';
 
         $query = CheckoutAcceptance::pending()
-            ->where('checkoutable_type', 'App\Models\Asset')
             ->with([
                 'checkoutable' => function (MorphTo $query) {
                     $query->morphWith([
-                        AssetModel::class => ['model'],
-                        Company::class => ['company'],
-                        Asset::class => ['assignedTo'],
-                    ])->with('model.category');
+                        Asset::class => ['model.category', 'assignedTo', 'company'],
+                        Accessory::class => ['category','checkouts', 'company'],
+                        LicenseSeat::class => ['user', 'license'],
+                        Component::class => ['assignedTo', 'company'],
+                    ]);
                 },
                 'assignedTo' => function($query){
                          $query->withTrashed();
@@ -1129,15 +1133,20 @@ class ReportsController extends Controller
             $query->withTrashed();
         }
 
-        $assetsForReport = $query->get()
-                ->map(function ($acceptance) {
-                    return [
-                        'assetItem' => $acceptance->checkoutable,
-                        'acceptance' => $acceptance,
-                    ];
-            });
+//        $assetsForReport = $query->get()
+//                ->map(function ($acceptance) {
+//                    return [
+//                        'assetItem' => $acceptance->checkoutable,
+//                        'acceptance' => $acceptance,
+//                    ];
+//            });
+//        dd($assetsForReport);
+//        $assetsForReport = $query->get()->map(function ($unaccepted) {})
+        $itemsForReport = $query->get()->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
 
-        return view('reports/unaccepted_assets', compact('assetsForReport','showDeleted' ));
+
+
+        return view('reports/unaccepted_assets', compact('itemsForReport','showDeleted' ));
     }
 
     /**
