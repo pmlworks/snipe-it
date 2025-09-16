@@ -126,9 +126,9 @@ class SnipeSCIMConfig
                         }
                     }),
                     complex('name')->withSubAttributes(
-                        eloquent('givenName', 'first_name'),
+                        eloquent('givenName', 'first_name')->ensure('required'),
                         eloquent('familyName', 'last_name'),
-                    ),
+                    )->ensure('required'),
                     eloquent('displayName', 'display_name'), //yes, this is *not* under 'name' - that's the spec
                     //eloquent('password')->ensure('nullable')->setReturned('never'),
                     eloquent('externalId', 'scim_externalid'),
@@ -140,7 +140,7 @@ class SnipeSCIMConfig
                             return collect([$object->email])->map(function ($email) {
                                 return [
                                     'value' => $email,
-                                    'type' => 'other',
+                                    'type' => 'work', //TODO - is this how we always have done it?
                                     'primary' => true
                                 ];
                             })->toArray();
@@ -156,10 +156,10 @@ class SnipeSCIMConfig
                             $object->email = $value[0]['value'];
                         }
                     })->withSubAttributes(
-                        eloquent('value', 'email')->ensure('required', 'email'),
-                        new Constant('type', 'other'),
-                        new Constant('primary', true)
-                    )->ensure('required', 'array')
+                        eloquent('value', 'email')->ensure('email'),
+                        new Constant('type', 'work'),
+                        new Constant('primary', true)->ensure('boolean')
+                    )->ensure('array')
                         ->setMultiValued(true),
 
                     // phone chonk
@@ -194,12 +194,14 @@ class SnipeSCIMConfig
                             throw new \Exception ("still dunno afbout fones");
                             $object->email = $value[0]['value'];
                         }
-                    }),/* ->withSubAttributes(
-                        eloquent('value', 'email')->ensure('required', 'email'),
+                    })->withSubAttributes(
+                        new Constant('value', 'email')->ensure('string'),
                         new Constant('type', 'other'),
-                        new Constant('primary', true)
-                    )->ensure('required', 'array')
-                        ->setMultiValued(true), */
+                        new Constant('primary', true)->ensure('boolean'),
+                    )->ensure('array')
+                        ->setMultiValued(true),
+
+                    // addresses chonk
                     (new class ('addresses') extends Complex {
                         protected function doRead(&$object, $attributes = [])
                         {
@@ -223,6 +225,7 @@ class SnipeSCIMConfig
                             return $address;
                         }
 
+                        /*** It's possible that the Eloquent mappings in the sub-attributes will handle this?
                         public function add($value, Model &$object)
                         {
                             throw new \Exception("Dunno about addresses to add");
@@ -235,12 +238,19 @@ class SnipeSCIMConfig
                             throw new \Exception ("still dunno afbout addresses to whatever");
                             $object->email = $value[0]['value'];
                         }
-                    }),/* ->withSubAttributes(
-                        eloquent('value', 'email')->ensure('required', 'email'),
+                         * *********/
+                    })->withSubAttributes(
+                        eloquent('streetAddress', 'address'),
+                        eloquent('locality', 'city'),
+                        eloquent('region', 'state'),
+                        eloquent('postalCode', 'zip'),
+                        eloquent('country', 'country'),
                         new Constant('type', 'other'),
-                        new Constant('primary', true)
-                    )->ensure('required', 'array')
-                        ->setMultiValued(true), */ eloquent('title', 'jobtitle'),
+                        new Constant('primary', true)->ensure('boolean')
+                    )->ensure('array')
+                        ->setMultiValued(true),
+
+                    eloquent('title', 'jobtitle'),
                     eloquent('preferredLanguage', 'locale'),
                     (new Collection('groups'))->withSubAttributes(
                         eloquent('value', 'id'),
