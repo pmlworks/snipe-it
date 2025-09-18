@@ -9,7 +9,6 @@ class Checkoutable
 {
     public function __construct(
         public int $acceptance_id,
-        public string $created_at,
         public string $company,
         public string $category,
         public string $model,
@@ -17,6 +16,7 @@ class Checkoutable
         public string $name,
         public string $type,
         public object $acceptance,
+        public object $assignee,
     ){}
 
 //    public static function fromCheckoutable(Asset|Accessory|etc..)
@@ -29,9 +29,11 @@ class Checkoutable
         $unaccepted_row = $unaccepted->checkoutable;
         $acceptance = $unaccepted;
 
+        $assignee = $acceptance->assignedTo;
         $company = optional($unaccepted_row->company)->name ?? '';
         $category = $model = $name = $tag = '';
         $type = $acceptance->checkoutable_item_type ?? '';
+
 
         if($unaccepted_row instanceof Asset){
             $category = optional($unaccepted_row->model?->category?->present())->nameUrl() ?? '';
@@ -43,24 +45,22 @@ class Checkoutable
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
             $name = optional($unaccepted_row->present())->nameUrl() ?? '';
-            $tag = '';
 
         }
         if($unaccepted_row instanceof LicenseSeat){
             $category = '';
             $model = '';
             $name = $unaccepted_row->license->name ?? '';
-            $tag = '';
         }
         if($unaccepted_row instanceof Component){
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
             $name = $unaccepted_row->present()->nameUrl() ?? '';
-            $tag = '';
         }
+        $created = $acceptance->created_at;
+
         return new self(
             acceptance_id: $acceptance->id,
-            created_at: Helper::getFormattedDateObject($acceptance->created_at, 'datetime', false),
             company: $company,
             category: $category,
             model: $model,
@@ -68,6 +68,7 @@ class Checkoutable
             name: $name,
             type: $type,
             acceptance: $acceptance,
+            assignee: $assignee,
         );
     }
 }

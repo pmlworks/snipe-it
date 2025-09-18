@@ -1127,7 +1127,8 @@ class ReportsController extends Controller
                 'assignedTo' => function($query){
                          $query->withTrashed();
                     }
-            ]);
+            ])->orderByDesc('checkout_acceptances.created_at');
+
 
         if ($showDeleted) {
             $query->withTrashed();

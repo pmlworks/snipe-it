@@ -48,7 +48,13 @@
                     }'>
             <thead>
               <tr role="row">
-                <th class="col-sm-1" data-searchable="false" data-field="created_at"  data-sortable="true">{{ trans('general.date') }}</th>
+                  <th class="col-sm-1"
+                      data-field="created_at"
+                      data-searchable="false"
+                      data-sortable="true"
+                      data-sorter="createdAtSorter">
+                      {{ trans('general.date') }}
+                  </th>
                   <th class="col-sm-1" data-sortable="true" >{{ trans('general.type') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/companies/table.title') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('general.category') }}</th>
@@ -63,8 +69,8 @@
               @if ($itemsForReport)
                   @foreach ($itemsForReport as $item)
                       <tr @if($item->acceptance->trashed()) style="text-decoration: line-through" @endif>
-                          {{-- Created date (already formatted) --}}
-                          <td data-order="{{ $item->acceptance->created_at->getTimestamp() }}">
+                          {{-- Created date --}}
+                          <td>
                               {{ Helper::getFormattedDateObject($item->acceptance->created_at, 'datetime', false) }}
                           </td>
                           {{-- Item Type --}}
@@ -85,13 +91,9 @@
                           <td>{{ $item->asset_tag }}</td>
 
                           {{-- Assigned To (with soft-delete strike if needed) --}}
-                          @php
-                              $assignee = $item->acceptance->assignedTo;
-                              $assigneeStruck = !$assignee || (method_exists($assignee, 'trashed') && $assignee->trashed());
-                          @endphp
-                          <td @if($assigneeStruck) style="text-decoration: line-through" @endif>
-                              {!! $assignee
-                                  ? optional($assignee->present())->nameUrl() ?? e($assignee->name)
+                          <td @if(!$item->assignee || (method_exists($item->assignee, 'trashed') && $item->assignee->trashed())) style="text-decoration: line-through" @endif>
+                              {!! $item->assignee
+                                  ? optional($item->assignee->present())->nameUrl() ?? e($item->assignee->name)
                                   : trans('admin/reports/general.deleted_user') !!}
                           </td>
 
@@ -102,7 +104,7 @@
                                       <form method="post" class="white-space: nowrap;" action="{{ route('reports/unaccepted_assets_sent_reminder') }}">
                                           @csrf
                                           <input type="hidden" name="acceptance_id" value="{{ $item->acceptance_id }}">
-                                          @if ($assignee && $assignee->email)
+                                          @if ($item->assignee && $item->assignee->email)
                                               <button class="btn btn-sm btn-warning" data-tooltip="true" data-title="{{ trans('admin/reports/general.send_reminder') }}">
                                                   <i class="fa fa-repeat" aria-hidden="true"></i>
                                               </button>
