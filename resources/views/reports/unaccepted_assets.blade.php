@@ -48,13 +48,7 @@
                     }'>
             <thead>
               <tr role="row">
-                  <th class="col-sm-1"
-                      data-field="created_at"
-                      data-searchable="false"
-                      data-sortable="true"
-                      data-sorter="createdAtSorter">
-                      {{ trans('general.date') }}
-                  </th>
+                  <th class="col-sm-1" data-field="created_at" data-searchable="false" data-sortable="true">{{ trans('general.date') }}</th>
                   <th class="col-sm-1" data-sortable="true" >{{ trans('general.type') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/companies/table.title') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('general.category') }}</th>
