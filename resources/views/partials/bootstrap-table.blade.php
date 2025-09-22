@@ -870,17 +870,6 @@
             return  value.formatted;
         }
     }
-    function createdAtSorter(a, b, rowA, rowB) {
-        const CREATED_AT_COL_INDEX = 0;
-        const ts = row => Number(row?._$el?.find('td').eq(CREATED_AT_COL_INDEX).attr('data-timestamp') || 0);
-        return ts(rowA) - ts(rowB);
-    }
-
-    function createdAtSorter(a, b, rowA, rowB) {
-        const ts = row =>
-            Number(row?._$el?.find('td').eq(CREATED_AT_COL_INDEX).attr('data-timestamp') || 0);
-        return ts(rowA) - ts(rowB);
-    }
 
     function iconFormatter(value) {
         if (value) {
