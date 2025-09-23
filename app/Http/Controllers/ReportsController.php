@@ -1124,6 +1124,7 @@ class ReportsController extends Controller
                         Accessory::class => ['category','checkouts', 'company'],
                         LicenseSeat::class => ['user', 'license'],
                         Component::class => ['assignedTo', 'company'],
+                        Consumable::class => ['company'],
                     ]);
                 },
                 'assignedTo' => function($query){
