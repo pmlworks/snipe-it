@@ -20,6 +20,7 @@ class Checkoutable
         public readonly string $category_plain,
         public readonly string $model_plain,
         public readonly string $name_plain,
+        public readonly string $company_plain,
     ){}
 
 //    public static function fromCheckoutable(Asset|Accessory|etc..)
@@ -33,7 +34,7 @@ class Checkoutable
         $acceptance = $unaccepted;
 
         $assignee = $acceptance->assignedTo;
-        $company = optional($unaccepted_row->company)->name ?? '';
+        $company = optional($unaccepted_row->company)->present()?->nameUrl() ?? '';
         $category = $model = $name = $tag = '';
         $type = $acceptance->checkoutable_item_type ?? '';
 
@@ -72,9 +73,11 @@ class Checkoutable
             type: $type,
             acceptance: $acceptance,
             assignee: $assignee,
+            //plain text for CSVs
             category_plain: optional($unaccepted_row->model?->category)->name ?? '',
             model_plain: optional($unaccepted_row->model)->name ?? '',
             name_plain: (string) ($unaccepted_row->name ?? ''),
+            company_plain: optional($unaccepted_row->company)->name ?? '',
         );
     }
 }

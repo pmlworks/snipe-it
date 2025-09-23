@@ -1219,25 +1219,13 @@ class ReportsController extends Controller
         /**
          * Get all assets with pending checkout acceptances
          */
-        if($showDeleted) {
+
             $acceptances = CheckoutAcceptance::pending()
                 ->with([
-                    'checkoutable' => function (MorphTo $acceptance) {
-                        $acceptance->morphWith([
-                            Asset::class => ['model.category', 'assignedTo', 'company'],
-                            Accessory::class => ['category','checkouts', 'company'],
-                            LicenseSeat::class => ['user', 'license'],
-                            Component::class => ['assignedTo', 'company'],
-                        ]);
-                    },
-                    'assignedTo' => function($acceptance){
+                    'checkoutable' => function (MorphTo $acceptance) use ($showDeleted) {
+                    if ($showDeleted) {
                         $acceptance->withTrashed();
                     }
-                ])->orderByDesc('checkout_acceptances.created_at');
-        } else {
-            $acceptances = CheckoutAcceptance::pending()
-                ->with([
-                    'checkoutable' => function (MorphTo $acceptance) {
                         $acceptance->morphWith([
                             Asset::class => ['model.category', 'assignedTo', 'company'],
                             Accessory::class => ['category','checkouts', 'company'],
@@ -1245,10 +1233,12 @@ class ReportsController extends Controller
                             Component::class => ['assignedTo', 'company'],
                         ]);
                     },
-                    'assignedTo' => function($acceptances){
-                    }
+                    'assignedTo',
                 ])->orderByDesc('checkout_acceptances.created_at');
-        }
+
+            if ($showDeleted) {
+                $acceptances->withTrashed();
+            }
 
         $itemsForReport = $acceptances->get()->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
 
@@ -1275,7 +1265,7 @@ class ReportsController extends Controller
                 $row    = [ ];
                 $row[]  = str_replace(',', '', $item->acceptance->created_at);
                 $row[]  = str_replace(',', '', $item->type);
-                $row[]  = str_replace(',', '', $item->company);
+                $row[]  = str_replace(',', '', $item->company_plain);
                 $row[]  = str_replace(',', '', $item->category_plain);
                 $row[]  = str_replace(',', '', $item->model_plain);
                 $row[]  = str_replace(',', '', $item->name_plain);

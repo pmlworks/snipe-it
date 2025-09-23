@@ -70,7 +70,7 @@
                           {{-- Item Type --}}
                           <td>{{ $item->type }}</td>
                           {{-- Company name --}}
-                          <td>{{ $item->company }}</td>
+                          <td>{!! $item->company !!}</td>
 
                           {{-- Category --}}
                           <td>{!! $item->category !!}</td>
