@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use ArieTimmerman\Laravel\SCIMServer\Helper;
+use ArieTimmerman\Laravel\SCIMServer\Parser\Path;
 use ArieTimmerman\Laravel\SCIMServer\SCIM\Schema;
 use ArieTimmerman\Laravel\SCIMServer\Attribute\Attribute;
 use ArieTimmerman\Laravel\SCIMServer\Attribute\Collection;
@@ -36,7 +37,8 @@ class MappedTable extends Attribute
         private string $scim_attribute_name,
         private string $relationship_name,
         private string $relationship_class,
-        private string $relationship_field = 'name')
+        private string $relationship_id_field,
+        private string $relationship_field)
     {
         parent::__construct($this->scim_attribute_name);
     }
@@ -49,12 +51,18 @@ class MappedTable extends Attribute
     public function add($value, Model &$object)
     {
         \Log::error("Structure of 'value' is going to be weird - " . print_r($value, true));
-        $object->{$this->relationship_name} = $value ? $relationship_class::firstOrCreate([$this->relationship_field => $value]) : null;
+        $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
     }
 
     public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
     {
-        $object->{$this->relationship_name} = $value ? $relationship_class::firstOrCreate([$this->relationship_field => $value]) : null;
+        $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
+    }
+
+    public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+    {
+        \Log::error("implementing custom patch for value: '$value' of attribute " . $this->scim_attribute_name);
+        $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
     }
 
 }
@@ -85,7 +93,7 @@ class SnipeSCIMConfig
         return [
 
             // Set to 'null' to make use of auth.providers.users.model (App\User::class)
-            'class' => Helper::getAuthUserClass(),
+            'class' => ScimUser::class,
             'singular' => 'User',
 
             //eager loading
@@ -128,7 +136,7 @@ class SnipeSCIMConfig
                     complex('name')->withSubAttributes(
                         eloquent('givenName', 'first_name')->ensure('required'),
                         eloquent('familyName', 'last_name'),
-                    )->ensure('required'),
+                    ), //     ->ensure('required'),  It *is* a bit weird, but I would've thought 'name' is required since 'givenName' is required? But apparently not?
                     eloquent('displayName', 'display_name'), //yes, this is *not* under 'name' - that's the spec
                     //eloquent('password')->ensure('nullable')->setReturned('never'),
                     eloquent('externalId', 'scim_externalid'),
@@ -184,6 +192,7 @@ class SnipeSCIMConfig
 
                         public function add($value, Model &$object)
                         {
+                            // FIXME - do the same thing here!!!!
                             throw new \Exception("Dunno about fones");
                             $object->email = $value[0]['value'];
                         }
@@ -191,8 +200,41 @@ class SnipeSCIMConfig
                         public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
 
                         {
-                            throw new \Exception ("still dunno afbout fones");
-                            $object->email = $value[0]['value'];
+                            \Log::error("Phones 'value' is: " . print_r($value, true));
+                            foreach ($value as $phone) {
+                                switch ($phone['type']) {
+                                    case 'work':
+                                        $object->phone = $phone['value'];
+                                        break;
+
+                                    case 'mobile':
+                                        $object->mobile = $phone['value'];
+                                        break;
+
+                                    default:
+                                        throw new \Exception("Unknown phone type '{$phone['type']}'");
+                                }
+                            }
+//                            $object->email = $value[0]['value'];
+                        }
+
+                        public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+                        {
+                            if ($path->getValuePathFilter() != null) {
+                                \Log::error("value object IS: " . print_r($value, true));
+                                if ((string)$path == 'phoneNumbers[type eq "mobile"].value') {
+                                    \Log::error("YAY!!!!! We are patching an mobile fone! We can do this!"); //FIXME
+                                    $object->mobile = $value; //I don't know why the value is the raw value, but it is?
+                                    return;
+                                }
+                                if ((string)$path == 'phoneNumbers[type eq "work"].value') {
+                                    \Log::error("Patching work number!");
+                                    $object->phone = $value; //similar, don't know why, but it is
+                                    return;
+                                }
+                                \Log::error("Uh-oh, maybe doing something weirder - path is: $path");
+                            }
+                            parent::patch($operation, $value, $object, $path, $removeIfNotSet);
                         }
                     })->withSubAttributes(
                         new Constant('value', 'email')->ensure('string'),
@@ -257,6 +299,7 @@ class SnipeSCIMConfig
                         (new class ('$ref') extends Eloquent {
                             protected function doRead(&$object, $attributes = [])
                             {
+                                \Log::error("Checking to see if our 'doRead' even gets a chance to get called?");
                                 return route(
                                     'scim.resource',
                                     [
@@ -277,8 +320,7 @@ class SnipeSCIMConfig
                 ),
                 (new AttributeSchema(self::ENTERPRISE, false))->withSubAttributes(
                     eloquent('employeeNumber', 'employee_num')->ensure('nullable'),
-                    new MappedTable('department', 'department', Department::class, 'name'),
-                    //eloquent('manager', 'manager_id'), // FIXME - this is going to be more complicated and map to 'value'
+                    new MappedTable('department', 'department', Department::class, 'department_id', 'name'),
                     (new class('manager') extends Complex {
                         protected function doRead(&$object, $attributes = [])
                         {
@@ -291,11 +333,39 @@ class SnipeSCIMConfig
                                 'displayName' => $object->manager->display_name,
                             ];
                         }
+
+                        public function add($value, Model &$object)
+                        {
+                            \Log::error("What type of value is value? " . gettype($value));
+                            if (is_scalar($value)) {
+                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?");
+                                $object->manager_id = $value;
+                            } else {
+                                //FIXME - do this properly
+                                \Log::error("Non-Microsoft - Trying to 'ADD' for maanger with value: " . print_r($value, true));
+                                throw new \Exception("dunno how to do this (add manager)");
+                            }
+                        }
+
+                        // TODO - we keep repeating ourselves between add/replace, we should maybe make our own class
+                        // to make this a nicer shorthand?
+                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
+                        {
+                            \Log::error("What type of value is value? " . gettype($value));
+                            if (is_scalar($value)) {
+                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?");
+                                $object->manager_id = $value;
+                            } else {
+                                //FIXME - actualy do this? (Try on one of the other platforms)
+                                \Log::error("Non-Microsoft - Trying to 'ADD' for maanger with value: " . print_r($value, true));
+                                throw new \Exception("dunno how to do this (add manager)");
+                            }
+                        }
                     }) // ->withSubAttributes() ... -> ensure() ?
                 ),
                 (new AttributeSchema(self::GROKABILITY, false))->withSubAttributes(
-                    new MappedTable('location', 'location', Location::class, 'name'),
-                    new MappedTable('company', 'company', Company::class, 'name'),
+                    new MappedTable('location', 'location', Location::class, 'location_id', 'name'),
+                    new MappedTable('company', 'company', Company::class, 'company_id', 'name'),
                 )
             ),
         ];
@@ -336,9 +406,9 @@ class SnipeSCIMConfig
                 ),
                 new Meta('Groups'),
                 (new AttributeSchema(Schema::SCHEMA_GROUP, true))->withSubAttributes(
-                    eloquent('displayName')->ensure('required', 'min:3', function ($attribute, $value, $fail) {
+                    eloquent('displayName', 'name')->ensure('required', 'min:3', function ($attribute, $value, $fail) {
                         // check if group does not exist or if it exists, it is the same group
-                        $group = $this->getGroupClass()::where('displayName', $value)->first();
+                        $group = $this->getGroupClass()::where('name', $value)->first();
                         if ($group && (request()->route('resourceObject') == null || $group->id != request()->route('resourceObject')->id)) {
                             $fail('The name has already been taken.');
                         }
