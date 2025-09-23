@@ -52,14 +52,22 @@ class Checkoutable
 
         }
         if($unaccepted_row instanceof LicenseSeat){
-            $category = '';
+            $category = optional($unaccepted_row->license->category?->present())->nameUrl() ?? '';
+            $company = optional($unaccepted_row->license->company?->present())?->nameUrl() ?? '';
             $model = '';
             $name = $unaccepted_row->license->name ?? '';
+        }
+        if($unaccepted_row instanceof Consumable){
+            $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
+            $model = $unaccepted_row->model_number ?? '';
+            $name = $unaccepted_row?->present()?->nameUrl() ?? '';
+
         }
         if($unaccepted_row instanceof Component){
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
-            $name = $unaccepted_row->present()->nameUrl() ?? '';
+            $name = $unaccepted_row?->present()?->nameUrl()  ?? '';
+
         }
         $created = $acceptance->created_at;
 
@@ -74,10 +82,10 @@ class Checkoutable
             acceptance: $acceptance,
             assignee: $assignee,
             //plain text for CSVs
-            category_plain: optional($unaccepted_row->model?->category)->name ?? '',
-            model_plain: optional($unaccepted_row->model)->name ?? '',
-            name_plain: (string) ($unaccepted_row->name ?? ''),
-            company_plain: optional($unaccepted_row->company)->name ?? '',
+            category_plain: ($unaccepted_row->model?->category?->name ?? $unaccepted_row->license->category?->name ?? $unaccepted_row->category?->name ?? ''),
+            model_plain: ($unaccepted_row->model?->name ?? $unaccepted_row->model_number ?? ''),
+            name_plain: ($unaccepted_row->name ?? $unaccepted_row->license?->name ?? ''),
+            company_plain: ($unaccepted_row->company)->name ?? $unaccepted_row->license->company?->name ?? '',
         );
     }
 }
