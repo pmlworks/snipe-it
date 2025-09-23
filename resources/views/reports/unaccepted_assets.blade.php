@@ -53,7 +53,7 @@
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/companies/table.title') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('general.category') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/hardware/form.model') }}</th>
-                <th class="col-sm-1" data-sortable="true" >{{ trans('admin/hardware/form.name') }}</th>
+                <th class="col-sm-1" data-sortable="true" >{{ trans('general.name') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/hardware/table.asset_tag') }}</th>
                 <th class="col-sm-1" data-sortable="true" >{{ trans('admin/hardware/table.checkoutto') }}</th>
                 <th class="col-md-1"><span class="line"></span>{{ trans('table.actions') }}</th>
@@ -92,8 +92,8 @@
                           </td>
 
                           {{-- Actions: send reminder / delete --}}
-                          <td class="white-space: nowrap;">
-                              <nobr>
+                          <td class="text-nowrap">
+
                                   @unless($item->acceptance->trashed())
                                       <form method="post" class="white-space: nowrap;" action="{{ route('reports/unaccepted_assets_sent_reminder') }}">
                                           @csrf
@@ -104,10 +104,10 @@
                                               </button>
                                           @else
                                               <span data-tooltip="true" data-title="{{ trans('admin/reports/general.cannot_send_reminder') }}">
-                                <a class="btn btn-sm btn-warning disabled" href="#">
-                                    <i class="fa fa-repeat" aria-hidden="true"></i>
-                                </a>
-                            </span>
+                                                  <a class="btn btn-sm btn-warning disabled" href="#">
+                                                        <i class="fa fa-repeat" aria-hidden="true"></i>
+                                                  </a>
+                                              </span>
                                           @endif
                                           <a href="{{ route('reports/unaccepted_assets_delete', ['acceptanceId' => $item->acceptance_id]) }}"
                                              class="btn btn-sm btn-danger delete-asset"
@@ -120,7 +120,6 @@
                                           </a>
                                       </form>
                                   @endunless
-                              </nobr>
                           </td>
                       </tr>
                   @endforeach

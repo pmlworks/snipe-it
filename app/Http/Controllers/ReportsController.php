@@ -12,6 +12,7 @@ use App\Models\AssetModel;
 use App\Models\Category;
 use App\Models\Checkoutable;
 use App\Models\Component;
+use App\Models\Consumable;
 use App\Models\LicenseSeat;
 use App\Models\Maintenance;
 use App\Models\CheckoutAcceptance;
@@ -22,6 +23,7 @@ use App\Models\License;
 use App\Models\ReportTemplate;
 use App\Models\Setting;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -1228,6 +1230,7 @@ class ReportsController extends Controller
                             Accessory::class => ['category','checkouts', 'company'],
                             LicenseSeat::class => ['user', 'license'],
                             Component::class => ['assignedTo', 'company'],
+                            Consumable::class => ['company'],
                         ]);
                     },
                     'assignedTo',
@@ -1247,7 +1250,7 @@ class ReportsController extends Controller
             trans('admin/companies/table.title'),
             trans('general.category'),
             trans('admin/hardware/form.model'),
-            trans('admin/hardware/form.name'),
+            trans('general.name'),
             trans('admin/hardware/table.asset_tag'),
             trans('admin/hardware/table.checkoutto'),
         ];
@@ -1262,10 +1265,10 @@ class ReportsController extends Controller
                 $row    = [ ];
                 $row[]  = str_replace(',', '', $item->acceptance->created_at);
                 $row[]  = str_replace(',', '', $item->type);
-                $row[]  = str_replace(',', '', $item->company_plain);
-                $row[]  = str_replace(',', '', $item->category_plain);
-                $row[]  = str_replace(',', '', $item->model_plain);
-                $row[]  = str_replace(',', '', $item->name_plain);
+                $row[]  = str_replace(',', '', $item->plain_text_company);
+                $row[]  = str_replace(',', '', $item->plain_text_category);
+                $row[]  = str_replace(',', '', $item->plain_text_model);
+                $row[]  = str_replace(',', '', $item->plain_text_name);
                 $row[]  = str_replace(',', '', $item->asset_tag);
                 $row[]  = str_replace(',', '', ($item->acceptance->assignedto) ? $item->acceptance->assignedto->display_name : trans('admin/reports/general.deleted_user'));
                 $rows[] = implode(',', $row);

@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use App\Helpers\Helper;
-
-
 class Checkoutable
 {
     public function __construct(
@@ -17,16 +14,11 @@ class Checkoutable
         public string $type,
         public object $acceptance,
         public object $assignee,
-        public readonly string $category_plain,
-        public readonly string $model_plain,
-        public readonly string $name_plain,
-        public readonly string $company_plain,
+        public readonly string $plain_text_category,
+        public readonly string $plain_text_model,
+        public readonly string $plain_text_name,
+        public readonly string $plain_text_company,
     ){}
-
-//    public static function fromCheckoutable(Asset|Accessory|etc..)
-//    {
-//
-//    }
 
     public static function fromAcceptance(CheckoutAcceptance $unaccepted): self
     {
@@ -55,7 +47,7 @@ class Checkoutable
             $category = optional($unaccepted_row->license->category?->present())->nameUrl() ?? '';
             $company = optional($unaccepted_row->license->company?->present())?->nameUrl() ?? '';
             $model = '';
-            $name = $unaccepted_row->license->name ?? '';
+            $name = $unaccepted_row->license->present()->nameUrl() ?? '';
         }
         if($unaccepted_row instanceof Consumable){
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
@@ -69,7 +61,6 @@ class Checkoutable
             $name = $unaccepted_row?->present()?->nameUrl()  ?? '';
 
         }
-        $created = $acceptance->created_at;
 
         return new self(
             acceptance_id: $acceptance->id,
@@ -82,10 +73,10 @@ class Checkoutable
             acceptance: $acceptance,
             assignee: $assignee,
             //plain text for CSVs
-            category_plain: ($unaccepted_row->model?->category?->name ?? $unaccepted_row->license->category?->name ?? $unaccepted_row->category?->name ?? ''),
-            model_plain: ($unaccepted_row->model?->name ?? $unaccepted_row->model_number ?? ''),
-            name_plain: ($unaccepted_row->name ?? $unaccepted_row->license?->name ?? ''),
-            company_plain: ($unaccepted_row->company)->name ?? $unaccepted_row->license->company?->name ?? '',
+            plain_text_category: ($unaccepted_row->model?->category?->name ?? $unaccepted_row->license->category?->name ?? $unaccepted_row->category?->name ?? ''),
+            plain_text_model: ($unaccepted_row->model?->name ?? $unaccepted_row->model_number ?? ''),
+            plain_text_name: ($unaccepted_row->name ?? $unaccepted_row->license?->name ?? ''),
+            plain_text_company: ($unaccepted_row->company)->name ?? $unaccepted_row->license->company?->name ?? '',
         );
     }
 }
