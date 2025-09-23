@@ -1222,10 +1222,7 @@ class ReportsController extends Controller
 
             $acceptances = CheckoutAcceptance::pending()
                 ->with([
-                    'checkoutable' => function (MorphTo $acceptance) use ($showDeleted) {
-                    if ($showDeleted) {
-                        $acceptance->withTrashed();
-                    }
+                    'checkoutable' => function (MorphTo $acceptance) {
                         $acceptance->morphWith([
                             Asset::class => ['model.category', 'assignedTo', 'company'],
                             Accessory::class => ['category','checkouts', 'company'],
