@@ -1220,22 +1220,44 @@ class ReportsController extends Controller
          * Get all assets with pending checkout acceptances
          */
         if($showDeleted) {
-            $acceptances = CheckoutAcceptance::pending()->where('checkoutable_type', 'App\Models\Asset')->withTrashed()->with(['assignedTo', 'checkoutable.assignedTo', 'checkoutable.model'])->get();
+            $acceptances = CheckoutAcceptance::pending()
+                ->with([
+                    'checkoutable' => function (MorphTo $acceptance) {
+                        $acceptance->morphWith([
+                            Asset::class => ['model.category', 'assignedTo', 'company'],
+                            Accessory::class => ['category','checkouts', 'company'],
+                            LicenseSeat::class => ['user', 'license'],
+                            Component::class => ['assignedTo', 'company'],
+                        ]);
+                    },
+                    'assignedTo' => function($acceptance){
+                        $acceptance->withTrashed();
+                    }
+                ])->orderByDesc('checkout_acceptances.created_at');
         } else {
-            $acceptances = CheckoutAcceptance::pending()->where('checkoutable_type', 'App\Models\Asset')->with(['assignedTo', 'checkoutable.assignedTo', 'checkoutable.model'])->get();
+            $acceptances = CheckoutAcceptance::pending()
+                ->with([
+                    'checkoutable' => function (MorphTo $acceptance) {
+                        $acceptance->morphWith([
+                            Asset::class => ['model.category', 'assignedTo', 'company'],
+                            Accessory::class => ['category','checkouts', 'company'],
+                            LicenseSeat::class => ['user', 'license'],
+                            Component::class => ['assignedTo', 'company'],
+                        ]);
+                    },
+                    'assignedTo' => function($acceptances){
+                    }
+                ])->orderByDesc('checkout_acceptances.created_at');
         }
 
-        $assetsForReport = $acceptances
-            ->filter(function($acceptance) {
-                return $acceptance->checkoutable_type == 'App\Models\Asset';
-            })
-            ->map(function($acceptance) {
-                return ['assetItem' => $acceptance->checkoutable, 'acceptance' => $acceptance];
-            });
+        $itemsForReport = $acceptances->get()->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
 
         $rows = [];
 
         $header = [
+            trans('general.date'),
+            trans('general.type'),
+            trans('admin/companies/table.title'),
             trans('general.category'),
             trans('admin/hardware/form.model'),
             trans('admin/hardware/form.name'),
@@ -1246,16 +1268,19 @@ class ReportsController extends Controller
         $header = array_map('trim', $header);
         $rows[] = implode(',', $header);
 
-        foreach ($assetsForReport as $item) {
+        foreach ($itemsForReport as $item) {
 
-            if ($item['assetItem'] != null){
+            if ($item != null){
             
                 $row    = [ ];
-                $row[]  = str_replace(',', '', e($item['assetItem']->model->category->name));
-                $row[]  = str_replace(',', '', e($item['assetItem']->model->name));
-                $row[]  = str_replace(',', '', e($item['assetItem']->name));
-                $row[]  = str_replace(',', '', e($item['assetItem']->asset_tag));
-                $row[]  = str_replace(',', '', e(($item['acceptance']->assignedTo) ? $item['acceptance']->assignedTo->display_name : trans('admin/reports/general.deleted_user')));
+                $row[]  = str_replace(',', '', $item->acceptance->created_at);
+                $row[]  = str_replace(',', '', $item->type);
+                $row[]  = str_replace(',', '', $item->company);
+                $row[]  = str_replace(',', '', $item->category_plain);
+                $row[]  = str_replace(',', '', $item->model_plain);
+                $row[]  = str_replace(',', '', $item->name_plain);
+                $row[]  = str_replace(',', '', $item->asset_tag);
+                $row[]  = str_replace(',', '', ($item->acceptance->assignedto) ? $item->acceptance->assignedto->display_name : trans('admin/reports/general.deleted_user'));
                 $rows[] = implode(',', $row);
             }
         }

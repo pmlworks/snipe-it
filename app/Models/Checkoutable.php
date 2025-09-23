@@ -17,6 +17,9 @@ class Checkoutable
         public string $type,
         public object $acceptance,
         public object $assignee,
+        public readonly string $category_plain,
+        public readonly string $model_plain,
+        public readonly string $name_plain,
     ){}
 
 //    public static function fromCheckoutable(Asset|Accessory|etc..)
@@ -69,6 +72,9 @@ class Checkoutable
             type: $type,
             acceptance: $acceptance,
             assignee: $assignee,
+            category_plain: optional($unaccepted_row->model?->category)->name ?? '',
+            model_plain: optional($unaccepted_row->model)->name ?? '',
+            name_plain: (string) ($unaccepted_row->name ?? ''),
         );
     }
 }
