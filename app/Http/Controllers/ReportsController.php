@@ -1189,10 +1189,10 @@ class ReportsController extends Controller
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.bad_data'));
         } else {
             if($item instanceof LicenseSeat){
-                $logItem_res = $item->license->checkouts()->where('created_at', '=', $acceptance->created_at)->get();
+                $logItem_res = $item->license->checkouts()->with('adminuser')->where('created_at', '=', $acceptance->created_at)->get();
             }
             else{
-                $logItem_res = $item->checkouts()->where('created_at', '=', $acceptance->created_at)->get();
+                $logItem_res = $item->checkouts()->with('adminuser')->where('created_at', '=', $acceptance->created_at)->get();
                 }
             if ($logItem_res->isEmpty()){
                 Log::debug('Acceptance date mismatch');
