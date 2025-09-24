@@ -37,11 +37,10 @@ class Checkoutable
             $name = optional($unaccepted_row->present())->nameUrl() ?? '';
             $tag = (string) ($unaccepted_row->asset_tag ?? '');
          }
-        elseif($unaccepted_row instanceof Accessory){
+        if($unaccepted_row instanceof Accessory){
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
             $name = optional($unaccepted_row->present())->nameUrl() ?? '';
-
         }
         if($unaccepted_row instanceof LicenseSeat){
             $category = optional($unaccepted_row->license->category?->present())->nameUrl() ?? '';
@@ -53,13 +52,11 @@ class Checkoutable
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
             $name = $unaccepted_row?->present()?->nameUrl() ?? '';
-
         }
         if($unaccepted_row instanceof Component){
             $category = optional($unaccepted_row->category?->present())->nameUrl() ?? '';
             $model = $unaccepted_row->model_number ?? '';
             $name = $unaccepted_row?->present()?->nameUrl()  ?? '';
-
         }
 
         return new self(
