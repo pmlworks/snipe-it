@@ -112,7 +112,7 @@ class AssetAcceptanceReminderTest extends TestCase
         foreach ($checkoutTypes as $modelClass => $mailable) {
 
             $item = $modelClass::factory()->create();
-            $acceptance = CheckoutAcceptance::factory()->pending()->create([
+            $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->pending()->create([
                 'checkoutable_id' => $item->id,
                 'checkoutable_type' => $modelClass,
                 'assigned_to_id' => $assignee->id,
