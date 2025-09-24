@@ -47,6 +47,8 @@
 {{-- Page content --}}
 @section('content')
 
+
+
 <div class="row">
   <div class="col-md-12">
     <div class="box">
@@ -66,6 +68,7 @@
                 data-show-footer="true"
                 data-sort-order="asc"
                 data-sort-name="name"
+                data-show-columns-search="true"
                 data-toolbar="#assetsBulkEditToolbar"
                 data-bulk-button-id="#bulkAssetEditButton"
                 data-bulk-form-id="#assetsBulkForm"

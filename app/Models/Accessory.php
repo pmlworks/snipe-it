@@ -357,6 +357,10 @@ class Accessory extends SnipeModel
 
         $accessory_checkout->limit(1)->delete();
     }
+    public function totalCostSum() {
+
+        return $this->purchase_cost !== null ? $this->qty * $this->purchase_cost : null;
+    }
 
     /**
      * -----------------------------------------------

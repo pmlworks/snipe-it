@@ -647,6 +647,30 @@ class BulkAssetsController extends Controller
 
             $assets = Asset::findOrFail($asset_ids);
 
+            // Prevent checking out assets that are already checked out
+            if ($assets->pluck('assigned_to')->unique()->filter()->isNotEmpty()) {
+                // re-add the asset ids so the assets select is re-populated
+                $request->session()->flashInput(['selected_assets' => $asset_ids]);
+
+                return redirect(route('hardware.bulkcheckout.show'))
+                    ->with('error', trans('general.error_assets_already_checked_out'));
+            }
+
+            // Prevent checking out assets across companies if FMCS enabled
+            if (Setting::getSettings()->full_multiple_companies_support && $target->company_id) {
+                $company_ids = $assets->pluck('company_id')->unique();
+
+                // if there is more than one unique company id or the singular company id does not match
+                // then the checkout is invalid
+                if ($company_ids->count() > 1 || $company_ids->first() != $target->company_id) {
+                    // re-add the asset ids so the assets select is re-populated
+                    $request->session()->flashInput(['selected_assets' => $asset_ids]);
+
+                    return redirect(route('hardware.bulkcheckout.show'))
+                        ->with('error', trans('general.error_user_company_multiple'));
+                }
+            }
+
             if (request('checkout_to_type') == 'asset') {
                 foreach ($asset_ids as $asset_id) {
                     if ($target->id == $asset_id) {

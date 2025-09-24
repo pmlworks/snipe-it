@@ -95,7 +95,7 @@ class Helper
         $Parsedown->setSafeMode(true);
 
         if ($str) {
-            return $Parsedown->text($str);
+            return $Parsedown->text(strip_tags($str));
         }
     }
 
@@ -105,7 +105,7 @@ class Helper
         $Parsedown->setSafeMode(true);
 
         if ($str) {
-            return $Parsedown->line($str);
+            return $Parsedown->line(strip_tags($str));
         }
     }
 

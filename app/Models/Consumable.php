@@ -312,7 +312,10 @@ class Consumable extends SnipeModel
 
         return $remaining;
     }
+    public function totalCostSum() {
 
+        return $this->purchase_cost !== null ? $this->qty * $this->purchase_cost : null;
+    }
     /**
      * Get the list of checkouts for this consumable
      *

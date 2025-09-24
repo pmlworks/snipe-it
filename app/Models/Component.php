@@ -300,7 +300,10 @@ class Component extends SnipeModel
         return $this->qty - $this->numCheckedOut();
     }
 
+    public function totalCostSum() {
 
+        return $this->purchase_cost !== null ? $this->qty * $this->purchase_cost : null;
+    }
     /**
      * -----------------------------------------------
      * BEGIN MUTATORS
