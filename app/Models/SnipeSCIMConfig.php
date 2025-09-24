@@ -67,6 +67,38 @@ class MappedTable extends Attribute
 
 }
 
+class UpdatableComplex extends Complex
+{
+
+    public function doWrite($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+    {
+        throw new \Exception("doWrite is not implemented yet for Operation: $operation on attribute " . $this->getFullKey());
+    }
+
+    public function add($value, Model &$object)
+    {
+        $this->doWrite("add", $value, $object);
+    }
+
+    public function replace($value, Model &$object, Path $path = null, $removeIfNotSet = false)
+    {
+        $this->doWrite("replace", $value, $object, $path, $removeIfNotSet);
+    }
+
+    public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+    {
+        //FIXME - what to do with $operation?!?!!?
+        // Also - we don't really have a good repeatable way to do this :/
+        // so we're probably going to end up just overriding this anyways :(
+        $this->doWrite("patch", $value, $object, $path, $removeIfNotSet);
+    }
+
+    public function remove($value, Model &$object, Path $path = null)
+    {
+        $this->doWrite("remove", null, $object, $path);
+    }
+}
+
 
 class SnipeSCIMConfig
 {
@@ -142,7 +174,7 @@ class SnipeSCIMConfig
                     eloquent('externalId', 'scim_externalid'),
 
                     // Email chonk
-                    (new class ('emails') extends Complex {
+                    (new class ('emails') extends UpdatableComplex {
                         protected function doRead(&$object, $attributes = [])
                         {
                             return collect([$object->email])->map(function ($email) {
@@ -154,14 +186,13 @@ class SnipeSCIMConfig
                             })->toArray();
                         }
 
-                        public function add($value, Model &$object)
+                        public function doWrite($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
-                            $object->email = $value[0]['value'];
-                        }
-
-                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
-                        {
-                            $object->email = $value[0]['value'];
+                            if ($value) {
+                                $object->email = $value[0]['value'];
+                            } else {
+                                $object->email = null;
+                            }
                         }
                     })->withSubAttributes(
                         eloquent('value', 'email')->ensure('email'),
@@ -190,15 +221,7 @@ class SnipeSCIMConfig
                             return $phones;
                         }
 
-                        public function add($value, Model &$object)
-                        {
-                            // FIXME - do the same thing here!!!!
-                            throw new \Exception("Dunno about fones");
-                            $object->email = $value[0]['value'];
-                        }
-
-                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
-
+                        public function doWrite($operation, $value, Model &$object, Path $path = null)
                         {
                             \Log::error("Phones 'value' is: " . print_r($value, true));
                             foreach ($value as $phone) {
@@ -215,7 +238,6 @@ class SnipeSCIMConfig
                                         throw new \Exception("Unknown phone type '{$phone['type']}'");
                                 }
                             }
-//                            $object->email = $value[0]['value'];
                         }
 
                         public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
@@ -245,17 +267,18 @@ class SnipeSCIMConfig
 
                     // addresses chonk
                     (new class ('addresses') extends Complex {
+                        static $addressmap = [
+                            'streetAddress' => 'address',
+                            'locality' => 'city',
+                            'region' => 'state',
+                            'postalCode' => 'zip',
+                            'country' => 'country'
+                        ];
+
                         protected function doRead(&$object, $attributes = [])
                         {
-                            $addressmap = [
-                                'streetAddress' => 'address',
-                                'locality' => 'city',
-                                'region' => 'state',
-                                'postalCode' => 'zip',
-                                'country' => 'country'
-                            ];
                             $address = [];
-                            foreach ($addressmap as $scim_field => $db_field) {
+                            foreach (self::$addressmap as $scim_field => $db_field) {
                                 if ($object->{$db_field}) {
                                     $address[$scim_field] = $object->{$db_field};
                                 }
@@ -267,20 +290,31 @@ class SnipeSCIMConfig
                             return $address;
                         }
 
-                        /*** It's possible that the Eloquent mappings in the sub-attributes will handle this?
-                        public function add($value, Model &$object)
+                        public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
-                            throw new \Exception("Dunno about addresses to add");
-                            $object->email = $value[0]['value'];
+                            if ($path->getValuePathFilter() != null) {
+                                \Log::error("path for update $path");
+                                // get the part of the $path that we actually care about - something like:
+                                // addresses[type eq "work"]
+                                $matches = null;
+                                if (!preg_match('/^.+\[type eq "([a-zA-Z]+)"](?:\.([a-zA-Z]+))?$/', (string)$path, $matches)) {
+                                    throw new \Exception("Unknown path type '$path'");
+                                }
+                                $type = $matches[1];
+                                if ($type != 'work') {
+                                    throw new \Exception("Unknown object type '$type'");
+                                }
+                                $attribute = array_key_exists(2, $matches) ? $matches[2] : null;
+                                if (array_key_exists($attribute, self::$addressmap)) {
+                                    $object->{self::$addressmap[$attribute]} = $value;
+                                    return;
+                                }
+
+
+                                throw new \Exception("path for update $path");
+                            }
                         }
 
-                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
-
-                        {
-                            throw new \Exception ("still dunno afbout addresses to whatever");
-                            $object->email = $value[0]['value'];
-                        }
-                         * *********/
                     })->withSubAttributes(
                         eloquent('streetAddress', 'address'),
                         eloquent('locality', 'city'),
