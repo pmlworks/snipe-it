@@ -27,16 +27,16 @@ class CheckoutAcceptanceFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (CheckoutAcceptance $acceptance) {
-            if ($acceptance->checkoutable instanceof Asset) {
-                $this->createdAssociatedActionLogEntry($acceptance);
-            }
-
-            if ($acceptance->checkoutable instanceof Asset && $acceptance->assignedTo instanceof User) {
-                $acceptance->checkoutable->update([
-                    'assigned_to' => $acceptance->assigned_to_id,
-                    'assigned_type' => get_class($acceptance->assignedTo),
-                ]);
-            }
+//            if ($acceptance->checkoutable instanceof Asset) {
+//                $this->createdAssociatedActionLogEntry($acceptance);
+//            }
+//
+//            if ($acceptance->checkoutable instanceof Asset && $acceptance->assignedTo instanceof User) {
+//                $acceptance->checkoutable->update([
+//                    'assigned_to' => $acceptance->assigned_to_id,
+//                    'assigned_type' => get_class($acceptance->assignedTo),
+//                ]);
+//            }
         });
     }
 
