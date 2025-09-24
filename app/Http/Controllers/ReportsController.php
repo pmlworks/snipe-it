@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
+use App\Mail\CheckoutAccessoryMail;
 use App\Mail\CheckoutAssetMail;
+use App\Mail\CheckoutComponentMail;
+use App\Mail\CheckoutConsumableMail;
+use App\Mail\CheckoutLicenseMail;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
 use App\Models\Actionlog;
@@ -27,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Mail;
 use \Illuminate\Contracts\View\View;
 use League\Csv\Reader;
@@ -1151,41 +1156,77 @@ class ReportsController extends Controller
     public function sentAssetAcceptanceReminder(Request $request) : RedirectResponse
     {
         $this->authorize('reports.view');
-
-        if (!$acceptance = CheckoutAcceptance::pending()->find($request->input('acceptance_id'))) {
+        $id = $request->input('acceptance_id');
+        $query = CheckoutAcceptance::query()
+            ->with([
+                'checkoutable' => function (MorphTo $query) {
+                    $query->morphWith([
+                        Asset::class       => ['model.category', 'assignedTo', 'company', 'checkouts'],
+                        Accessory::class   => ['category', 'company', 'checkouts'],
+                        LicenseSeat::class => ['user', 'license', 'checkouts'],
+                        Component::class   => ['assignedTo', 'company', 'checkouts'],
+                        Consumable::class  => ['company', 'checkouts'],
+                    ]);
+                },
+                'assignedTo' => fn ($q) => $q->withTrashed(),
+            ])
+            ->pending();
+        $acceptance = $query->find($id);
+        if (!$acceptance) {
             Log::debug('No pending acceptances');
             // Redirect to the unaccepted assets report page with error
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.bad_data'));
         }
+        $item      = $acceptance->checkoutable;
+        $assignee  = $acceptance->assignedTo ?? $item->assignedTo ?? null;
+        $email     = $assignee?->email;
+        $locale    = $assignee?->locale;
 
-        $assetItem = $acceptance->checkoutable;
-
-        Log::debug(print_r($assetItem, true));
+        Log::debug(print_r($acceptance, true));
 
         if (is_null($acceptance->created_at)){
             Log::debug('No acceptance created_at');
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.bad_data'));
         } else {
-            $logItem_res = $assetItem->checkouts()->where('created_at', '=', $acceptance->created_at)->get();
-
+            if($item instanceof LicenseSeat){
+                $logItem_res = $item->license->checkouts()->where('created_at', '=', $acceptance->created_at)->get();
+            }
+            else{
+                $logItem_res = $item->checkouts()->where('created_at', '=', $acceptance->created_at)->get();
+                }
             if ($logItem_res->isEmpty()){
                 Log::debug('Acceptance date mismatch');
                 return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.bad_data'));
             }
             $logItem = $logItem_res[0];
         }
-        $email = $assetItem->assignedTo?->email;
-        $locale = $assetItem->assignedTo?->locale;
 
         if (is_null($email) || $email === '') {
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.no_email'));
         }
-
-        Mail::to($email)->send((new CheckoutAssetMail($assetItem, $assetItem->assignedTo, $logItem->user, $acceptance, $logItem->note, firstTimeSending: false))->locale($locale));
+        $mailable = $this->getCheckoutMailType($acceptance, $logItem);
+        Mail::to($email)->send($mailable->locale($locale));
 
         return redirect()->route('reports/unaccepted_assets')->with('success', trans('admin/reports/general.reminder_sent'));
     }
+    private function getCheckoutMailType(CheckoutAcceptance $acceptance, $logItem) : Mailable
+    {
+        $lookup = [
+            Accessory::class => CheckoutAccessoryMail::class,
+            Asset::class => CheckoutAssetMail::class,
+            LicenseSeat::class => CheckoutLicenseMail::class,
+            Consumable::class => CheckoutConsumableMail::class,
+            Component::class => CheckoutComponentMail::class,
+        ];
+        $mailable= $lookup[get_class($acceptance->checkoutable)];
 
+        return new $mailable($acceptance->checkoutable,
+            $acceptance->checkedOutTo ?? $acceptance->assignedTo,
+            $logItem->adminuser,
+            $acceptance,
+            $acceptance->note);
+
+    }
     /**
      * sentAssetAcceptanceReminder
      *
