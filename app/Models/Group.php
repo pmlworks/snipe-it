@@ -59,6 +59,12 @@ class Group extends SnipeModel
         return $this->belongsToMany(\App\Models\User::class, 'users_groups');
     }
 
+    /* this is just a shim for SCIM to work */
+    public function members()
+    {
+        return $this->users();
+    }
+
     /**
      * Get the user that created the group
      *

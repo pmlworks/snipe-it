@@ -438,6 +438,7 @@ class SnipeSCIMConfig
                     }
                 }
                 ),
+                eloquent('externalId', 'scim_externalid'),
                 new Meta('Groups'),
                 (new AttributeSchema(Schema::SCHEMA_GROUP, true))->withSubAttributes(
                     eloquent('displayName', 'name')->ensure('required', 'min:3', function ($attribute, $value, $fail) {
