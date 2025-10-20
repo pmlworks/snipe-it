@@ -110,6 +110,7 @@
                                 data-checker-group="{{ str_slug($area) }}"
                                 aria-label="{{ $area }}"
                                 name="permission[{{ str_slug($area) }}]"
+                                @checked(array_key_exists(str_slug($area), $groupPermissions) && $groupPermissions[str_slug($area)] == '1')
                                 type="radio"
                                 value="1"
                         >
@@ -199,22 +200,40 @@
 
         $(document).ready(function(){
 
+            if ($("input[name='permission[superuser]']").is(':checked')) {
+                alert('superuser is checked on page load');
+                $(".nonsuperuser").fadeOut();
+                $(".nonsuperuser").attr('display','none');
+            }
+
             $(".superuser").change(function() {
                 if ($(this).val() == '1') {
                     $(".nonsuperuser").fadeOut();
+                    $(".nonsuperuser").attr('display','none');
+                    $(".nonadmin").fadeOut();
+                    $(".nonadmin").attr('display','none');
                 } else if ($(this).val() == '0') {
                     $(".nonsuperuser").fadeIn();
+                    $(".nonsuperuser").attr('display','block');
                 }
             });
+
+            if ($("input[name='permission[admin]']").is(':checked')) {
+                alert('admin is checked on page load');
+                $(".nonadmin").fadeOut();
+                $(".nonadmin").attr('display','none');
+            }
+
 
             $(".admin").change(function() {
                 if ($(this).val() == '1') {
                     $(".nonadmin").fadeOut();
+                    $(".nonadmin").attr('display','none');
                 } else if ($(this).val() == '0') {
                     $(".nonadmin").fadeIn();
+                    $(".nonadmin").attr('display','block');
                 }
             });
-
 
 
             // Check/Uncheck all radio buttons in the group
