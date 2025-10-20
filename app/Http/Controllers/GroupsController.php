@@ -88,7 +88,10 @@ class GroupsController extends Controller
             $groupPermissions = [];
         }
         $selected_array = Helper::selectedPermissionsArray($permissions, $groupPermissions);
-        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'));
+        $associated_users = $group->users()->get();
+
+        //dd($associated_users->toArray());
+        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))->with('associated_users', $associated_users);
     }
 
     /**
@@ -105,8 +108,11 @@ class GroupsController extends Controller
         $group->permissions = json_encode($request->input('permission'));
         $group->notes = $request->input('notes');
 
+        \Log::error(print_r($request->input('associated_users'), true));
+
         if (! config('app.lock_passwords')) {
             if ($group->save()) {
+                $group->users()->sync($request->input('associated_users'));
                 return redirect()->route('groups.index')->with('success', trans('admin/groups/message.success.update'));
             }
 

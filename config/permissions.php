@@ -9,11 +9,11 @@
 
 return [
 
-    'Global' => [
+    'Superuser' => [
         [
             'permission' => 'superuser',
             'label'      => 'Super User',
-            'note'       => 'Determines whether the user has full access to all aspects of the admin. This setting overrides any more specific permissions throughout the system. ',
+            'note'       => 'Determines whether the user has full access to all aspects of the admin. This setting overrides ALL more specific and restrictive permissions throughout the system. ',
             'display'    => true,
         ],
     ],
@@ -22,7 +22,7 @@ return [
         [
             'permission' => 'admin',
             'label'      => '',
-            'note'       => 'Determines whether the user has access to most aspects of the admin. ',
+            'note'       => 'Determines whether the user has access to most aspects of the system EXCEPT the Admin Settings. These users will be able to manage users, locations, categories, etc, but ARE constrained by Full Multiple Company Support if it is enabled.',
             'display'    => true,
         ],
     ],
