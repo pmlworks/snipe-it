@@ -29,38 +29,7 @@
       color: #555555;
       cursor:text;
     }
-    table.permissions {
-      display:flex;
-      flex-direction: column;
-    }
 
-    .permissions.table > thead, .permissions.table > tbody {
-      margin: 15px;
-      margin-top: 0px;
-    }
-
-    .permissions.table > tbody {
-        border: 1px solid;
-    }
-
-    .header-row {
-      border-bottom: 1px solid #ccc;
-    }
-
-    .permissions-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .table > tbody > tr > td.permissions-item {
-      padding: 1px;
-      padding-left: 8px;
-    }
-
-    .header-name {
-      cursor: pointer;
-    }
 
 </style>
 
@@ -663,27 +632,24 @@
 
           @can('admin')
           <div class="tab-pane" id="permissions">
-            <div class="col-md-12">
-              @if (!Auth::user()->isSuperUser())
-                <p class="alert alert-warning">{{ trans('admin/users/general.superadmin_permission_warning') }}</p>
-              @endif
+                  @if (!Auth::user()->isSuperUser())
+                    <p class="alert alert-warning">{{ trans('admin/users/general.superadmin_permission_warning') }}</p>
+                  @endif
 
-              @if (!Auth::user()->hasAccess('admin'))
-                <p class="alert alert-warning">{{ trans('admin/users/general.admin_permission_warning') }}</p>
-              @endif
-            </div>
+                  @if (!Auth::user()->hasAccess('admin'))
+                    <p class="alert alert-warning">{{ trans('admin/users/general.admin_permission_warning') }}</p>
+                  @endif
 
-            <table class="table table-striped permissions">
-              <thead>
-                <tr class="permissions-row">
-                  <th class="col-md-5">{{ trans('admin/groups/titles.permission') }}</th>
-                  <th class="col-md-1">{{ trans('admin/groups/titles.grant') }}</th>
-                  <th class="col-md-1">{{ trans('admin/groups/titles.deny') }}</th>
-                  <th class="col-md-1">{{ trans('admin/users/table.inherit') }}</th>
-                </tr>
-              </thead>
-                @include('partials.forms.edit.permissions-base')
-            </table>
+                  <p class="alert alert-info">
+                      {{ trans('permissions.use_groups') }}
+                  </p>
+
+                  <div class="col-md-12">
+                    @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                  </div>
+
+
+
           </div><!-- /.tab-pane -->
           @endcan
         </div><!-- /.tab-content -->
@@ -814,6 +780,56 @@ $(document).ready(function() {
 
         });
     });
+
+    if ($("#superuser_allow").is(':checked')) {
+        // alert('superuser is checked on page load');
+
+        // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
+        $(".nonsuperuser").hide();
+        $(".nonsuperuser").attr('display','none');
+    }
+
+
+    $(".superuser").change(function() {
+        if ($(this).val() == '1') {
+            $(".nonsuperuser").fadeOut();
+            $(".nonsuperuser").attr('display','none');
+            $(".nonadmin").fadeOut();
+            $(".nonadmin").attr('display','none');
+        } else if ($(this).val() == '0') {
+            $(".nonsuperuser").fadeIn();
+            $(".nonsuperuser").attr('display','block');
+        }
+    });
+
+
+
+    if ($("#admin_allow").is(':checked')) {
+        // alert('admin is checked on page load');
+
+        // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
+        $(".nonadmin").hide();
+        $(".nonadmin").attr('display','none');
+    }
+
+    $(".admin").change(function() {
+        if ($(this).val() == '1') {
+            $(".nonadmin").fadeOut();
+            $(".nonadmin").attr('display','none');
+        } else if ($(this).val() == '0') {
+            $(".nonadmin").fadeIn();
+            $(".nonadmin").attr('display','block');
+        }
+    });
+
+
+    // Check/Uncheck all radio buttons in the group
+    $('.header-row input:radio').change(function() {
+        value = $(this).attr('value');
+        area = $(this).data('checker-group');
+        $('.radiochecker-'+area+'[value='+value+']').prop('checked', true);
+    });
+
 
 
 });

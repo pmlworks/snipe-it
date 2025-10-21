@@ -449,11 +449,6 @@ return [
 
     'User (Self) Accounts' => [
         [
-            // This isn't really a permission, but we include it for now
-            'permission' => 'self.view',
-            'display'    => false,
-        ],
-        [
             'permission' => 'self.two_factor',
             'display'    => true,
         ],

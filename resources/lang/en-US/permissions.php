@@ -413,4 +413,12 @@ return array(
         'name' => 'Create Depreciation Records',
     ],
 
+    'grant_all' => 'Grant all permissions for :area',
+    'deny_all' => 'Deny all permissions for :area',
+    'inherit_all' => 'Inherit all permissions for :area from permission groups',
+    'grant' => 'Grant Permission for :area',
+    'deny' => 'Deny Permission for :area',
+    'inherit' => 'Inherit Permission for :area from permission groups',
+    'use_groups' => 'We strongly suggest using Permission Groups instead of assigning individual permissions for easier management.'
+
 );
