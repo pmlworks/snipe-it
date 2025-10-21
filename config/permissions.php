@@ -629,7 +629,14 @@ return [
 
 
 
-    'Self' => [
+    'User (Self) Accounts' => [
+        [
+            // This isn't really a permission, but we include it for now
+            'permission' => 'self.view',
+            'label'      => '',
+            'note'       => '',
+            'display'    => false,
+        ],
         [
             'permission' => 'self.two_factor',
             'label'      => 'Two-Factor Authentication',
@@ -640,7 +647,7 @@ return [
         [
             'permission' => 'self.api',
             'label'      => 'Create API Keys',
-            'note'       => 'The user create personal API keys to utilize the REST API.',
+            'note'       => 'The user create personal API keys to utilize the REST API. The API keys will have the same permissions as the user account.',
             'display'    => true,
         ],
 

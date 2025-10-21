@@ -65,6 +65,7 @@ class GroupsController extends Controller
         $group->notes = $request->input('notes');
 
         if ($group->save()) {
+            $group->users()->sync($request->input('associated_users'));
             return redirect()->route('groups.index')->with('success', trans('admin/groups/message.success.create'));
         }
 
@@ -108,7 +109,6 @@ class GroupsController extends Controller
         $group->permissions = json_encode($request->input('permission'));
         $group->notes = $request->input('notes');
 
-        \Log::error(print_r($request->input('associated_users'), true));
 
         if (! config('app.lock_passwords')) {
             if ($group->save()) {
