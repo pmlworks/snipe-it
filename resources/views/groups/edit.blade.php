@@ -135,11 +135,11 @@
             <div class="callout callout-legend col-md-12">
                 <div class="col-md-10">
                     <h4>
-                        {{ $area }}
+                        {{ trans('permissions.'.str_slug($area).'.name') }}
                     </h4>
 
-                    @if ($localPermission['note']!='')
-                        <p>{{ $localPermission['note'] }}</p>
+                    @if (\Lang::has('permissions.'.str_slug($area).'.note'))
+                        <p>{{ trans('permissions.'.str_slug($area).'.note') }}</p>
                     @endif
 
 
@@ -196,7 +196,10 @@
                     <div class="{{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
                     <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 9px;">
                         <div class="col-md-10">
-                            <strong>{{ $this_permission['label'] }}</strong>{{ ($this_permission['note'] ? ' - '.$this_permission['note'] : '') }}
+                            <strong>{{ trans('permissions.'.str_slug($this_permission['permission']).'.name') }}</strong>
+                            @if (\Lang::has('permissions.'.str_slug($this_permission['permission']).'.note'))
+                                <p>{{ trans('permissions.'.str_slug($this_permission['permission']).'.note') }}</p>
+                            @endif
                         </div>
 
                         <div class="form-group col-md-2 text-right">
