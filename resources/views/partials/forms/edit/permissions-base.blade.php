@@ -30,32 +30,30 @@
   .radio-slider-inputs label {
     color: #9a9999;
     border-radius: 4px;
+    border: 1px transparent solid;
   }
 
   .radio-slider-inputs .allow:checked + label {
     background-color: green;
     color: white;
     border-radius: 4px;
+    border: 1px transparent solid;
   }
 
   .radio-slider-inputs .inherit:checked + label {
-    background-color: #f6f4f4;
-    border: 1px #d6d6d6 solid;
+    background-color: #f6f5f5;
     color: #9a9999;
     border-radius: 4px;
+    border: 1px #d6d6d6 solid;
   }
 
   .radio-slider-inputs .deny:checked + label {
     background-color: #a94442;
     color: white;
     border-radius: 4px;
+    border: 1px transparent solid;
   }
 
-  .radio-slider-inputs .allow:checked + label {
-    background-color: green;
-    color: white;
-    border-radius: 4px;
-  }
 </style>
 
 
