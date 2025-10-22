@@ -145,10 +145,12 @@
 
                   </div>
 
-                  <div class="col-md-2">
+                  <div class="col-md-1 pull-left">
 
                     @if (Gate::allows('editableOnDemo') && (Gate::allows('canEditAuthFields', $user)) && ($user->ldap_import!='1'))
-                      <a href="#" class="left" id="genPassword">{{ trans('general.generate') }}</a>
+                      <a href="#" class="text-left btn btn-default btn-sm" id="genPassword" data-tooltip="true" title="{{ trans('admin/users/general.generate_password') }}">
+                          <i class="fa-solid fa-wand-magic-sparkles"></i>
+                      </a>
                     @endif
                   </div>
                 </div>
