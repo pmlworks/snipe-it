@@ -17,6 +17,7 @@ class ExpiringAlertsNotificationTest extends TestCase
      public function testExpiringAssetsEmailNotification()
      {
          Mail::fake();
+         $this->markIncompleteIfSqlite();
 
          $this->settings->enableAlertEmail('admin@example.com');
          $this->settings->setAlertInterval(30);
