@@ -780,7 +780,7 @@ $(document).ready(function() {
             $(".nonsuperuser").attr('display','none');
             $(".nonadmin").fadeOut();
             $(".nonadmin").attr('display','none');
-        } else if ($(this).val() == '0') {
+        } else if ($(this).val() != '1') {
             $(".nonsuperuser").fadeIn();
             $(".nonsuperuser").attr('display','block');
         }
@@ -800,7 +800,7 @@ $(document).ready(function() {
         if ($(this).val() == '1') {
             $(".nonadmin").fadeOut();
             $(".nonadmin").attr('display','none');
-        } else if ($(this).val() == '0') {
+        } else if ($(this).val() != '1') {
             $(".nonadmin").fadeIn();
             $(".nonadmin").attr('display','block');
         }
