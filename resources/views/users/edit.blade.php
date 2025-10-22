@@ -697,28 +697,9 @@ $(document).ready(function() {
 
         @endif
     });
-
-
-	// Check/Uncheck all radio buttons in the group
-    $('tr.header-row input:radio').change(function() {
-        value = $(this).attr('value');
-        area = $(this).data('checker-group');
-        $('.radiochecker-'+area+'[value='+value+']').prop('checked', true);
-    });
-
-    $('.header-name').click(function() {
-        $(this).parent().nextUntil('tr.header-row').slideToggle(500);
-    });
-
+    
     $('.tooltip-base').tooltip({container: 'body'})
-    $(".superuser").change(function() {
-        var perms = $(this).val();
-        if (perms =='1') {
-            $("#nonadmin").hide();
-        } else {
-            $("#nonadmin").show();
-        }
-    });
+
 
     $('#genPassword').pGenerator({
         'bind': 'click',
@@ -740,6 +721,7 @@ $(document).ready(function() {
         var optional_user_info_open = $('#optional_user_info_icon').hasClass('fa-caret-down');
         document.cookie = "optional_user_info_open="+optional_user_info_open+'; path=/';
     });
+
 
     var all_cookies = document.cookie.split(';')
     for(var i in all_cookies) {
