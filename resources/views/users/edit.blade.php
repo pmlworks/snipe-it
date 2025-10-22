@@ -707,7 +707,7 @@ $(document).ready(function() {
         'bind': 'click',
         'passwordElement': '#password',
         'displayElement': '#generated-password',
-        'passwordLength': {{ ($settings->pwd_secure_min + 5) }},
+        'passwordLength': {{ ($settings->pwd_secure_min + 9) }},
         'uppercase': true,
         'lowercase': true,
         'numbers':   true,

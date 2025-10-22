@@ -109,9 +109,9 @@
                       data-checker-group="{{ str_slug($area) }}"
                       aria-label="{{ str_slug($area) }}"
                       name="permission[{{ str_slug($area) }}]"
-                      @checked(array_key_exists(str_slug($area), $groupPermissions) && $groupPermissions[str_slug($area)] == '-1')
+                      @checked(array_key_exists(str_slug($area), $groupPermissions) && $groupPermissions[str_slug($area)] == '0')
                       type="radio"
-                      value="-1"
+                      value="0"
                       {{-- Disable the superuser and admin allow if the user is not a superuser --}}
                       @if (((str_slug($area) == 'admin') && (!auth()->user()->hasAccess('admin'))) || ((str_slug($area) == 'superuser') && (!auth()->user()->isSuperUser())))
                         disabled
@@ -132,9 +132,9 @@
                     data-checker-group="{{ str_slug($area) }}"
                     aria-label="{{ str_slug($area) }}"
                     name="permission[{{ str_slug($area) }}]"
-                    @checked(array_key_exists(str_slug($area), $groupPermissions) && $groupPermissions[str_slug($area)] == '0')
+                    @checked(array_key_exists(str_slug($area), $groupPermissions) && $groupPermissions[str_slug($area)] == '-1')
                     type="radio"
-                    value="0"
+                    value="-1"
                     {{-- Disable the superuser and admin allow if the user is not a superuser --}}
                     @if (((str_slug($area) == 'admin') && (!auth()->user()->hasAccess('admin'))) || ((str_slug($area) == 'superuser') && (!auth()->user()->isSuperUser())))
                       disabled
@@ -190,11 +190,11 @@
                   <input
                           class="form-control inherit radiochecker-{{ str_slug($area) }}"
                           aria-label="permission[{{ $this_permission['permission'] }}]"
-                          @checked(array_key_exists($this_permission['permission'], $groupPermissions) && $groupPermissions[$this_permission['permission']] == '-1')
+                          @checked(array_key_exists($this_permission['permission'], $groupPermissions) && $groupPermissions[$this_permission['permission']] == '0')
                           name="permission[{{ $this_permission['permission'] }}]"
                           type="radio"
                           id="{{ str_slug($this_permission['permission']) }}_inherit"
-                          value="-1"
+                          value="0"
                   >
                   <label for="{{ str_slug($this_permission['permission']) }}_inherit" class="inherit">
                     <i class="fa-solid fa-layer-group"></i>
@@ -206,10 +206,10 @@
                   <input
                           class="form-control deny radiochecker-{{ str_slug($area) }}"
                           aria-label="permission[{{ $this_permission['permission'] }}]"
-                          @checked(array_key_exists($this_permission['permission'], $groupPermissions) && $groupPermissions[$this_permission['permission']] == '0')
+                          @checked(array_key_exists($this_permission['permission'], $groupPermissions) && $groupPermissions[$this_permission['permission']] == '-1')
                           name="permission[{{ $this_permission['permission'] }}]"
                           type="radio"
-                          value="0"
+                          value="-1"
                           id="{{ str_slug($this_permission['permission']) }}_deny"
                   >
                   <label for="{{ str_slug($this_permission['permission']) }}_deny">
