@@ -765,54 +765,6 @@ $(document).ready(function() {
         });
     });
 
-    if ($("#superuser_allow").is(':checked')) {
-        // alert('superuser is checked on page load');
-
-        // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
-        $(".nonsuperuser").hide();
-        $(".nonsuperuser").attr('display','none');
-    }
-
-
-    $(".superuser").change(function() {
-        if ($(this).val() == '1') {
-            $(".nonsuperuser").fadeOut();
-            $(".nonsuperuser").attr('display','none');
-            $(".nonadmin").fadeOut();
-            $(".nonadmin").attr('display','none');
-        } else if ($(this).val() != '1') {
-            $(".nonsuperuser").fadeIn();
-            $(".nonsuperuser").attr('display','block');
-        }
-    });
-
-
-
-    if ($("#admin_allow").is(':checked')) {
-        // alert('admin is checked on page load');
-
-        // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
-        $(".nonadmin").hide();
-        $(".nonadmin").attr('display','none');
-    }
-
-    $(".admin").change(function() {
-        if ($(this).val() == '1') {
-            $(".nonadmin").fadeOut();
-            $(".nonadmin").attr('display','none');
-        } else if ($(this).val() != '1') {
-            $(".nonadmin").fadeIn();
-            $(".nonadmin").attr('display','block');
-        }
-    });
-
-
-    // Check/Uncheck all radio buttons in the group
-    $('.header-row input:radio').change(function() {
-        value = $(this).attr('value');
-        area = $(this).data('checker-group');
-        $('.radiochecker-'+area+'[value='+value+']').prop('checked', true);
-    });
 
 
 
