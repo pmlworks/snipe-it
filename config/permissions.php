@@ -23,7 +23,7 @@ return [
         ],
     ],
 
-    'CSV Import' => [
+    'Import' => [
         [
             'permission' => 'import',
             'display'    => true,

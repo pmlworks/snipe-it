@@ -24,7 +24,7 @@ return array(
         'note'       => 'Determines whether the user has access to most aspects of the system EXCEPT the System Admin Settings. These users will be able to manage users, locations, categories, etc, but ARE constrained by Full Multiple Company Support if it is enabled.',
     ],
 
-    'csv-import' => [
+    'import' => [
         'name' => 'CSV Import',
         'note'       => 'This will allow users to import even if access to users, assets, etc is denied elsewhere.',
     ],

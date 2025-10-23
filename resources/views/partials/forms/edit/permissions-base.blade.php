@@ -41,7 +41,7 @@
   }
 
   .radio-slider-inputs .inherit:checked + label {
-    background-color: #f6f5f5;
+    background-color: rgba(255, 204, 51, 0.11);
     color: #9a9999;
     border-radius: 4px;
     border: 1px #d6d6d6 solid;
@@ -103,7 +103,7 @@
 
 
           @if ($use_inherit)
-            <div class="radio-slider-inputs"data-tooltip="true" title="{{ (count($area_permission) > 1) ? trans('permissions.inherit_all', ['area' => $area])  : trans('permissions.inherit', ['area' => $area]) }}">
+            <div class="radio-slider-inputs" data-tooltip="true" title="{{ (count($area_permission) > 1) ? trans('permissions.inherit_all', ['area' => $area])  : trans('permissions.inherit', ['area' => $area]) }}">
               <input
                       class="form-control  {{ str_slug($area) }} inherit"
                       data-checker-group="{{ str_slug($area) }}"
@@ -160,7 +160,7 @@
             $section_translation = trans('permissions.'.str_slug($this_permission['permission']).'.name');
         @endphp
         <div class="{{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
-          <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 9px;">
+          <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 13px;">
             <div class="col-md-10">
               <strong>{{ $section_translation }}</strong>
               @if (\Lang::has('permissions.'.str_slug($this_permission['permission']).'.note'))
