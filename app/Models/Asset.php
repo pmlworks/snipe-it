@@ -937,28 +937,37 @@ class Asset extends Depreciable
      */
     public static function getExpiringWarrantyOrEol($days = 30)
     {
-        
-        return self::where('archived', '=', '0')
+        $now = now();
+        $end = now()->addDays($days);
+        $expired_assets = self::query()
+            ->where('archived', '=', '0')
             ->NotArchived()
             ->whereNull('deleted_at')
-            ->where(function ($query) use ($days) {
-                // Check for manual asset EOL first
-                $query->where(function ($query) use ($days) {
-                    $query->whereNotNull('asset_eol_date')
-                        ->whereBetween('asset_eol_date', [Carbon::now(), Carbon::now()->addDays($days)]);
-                // Otherwise use the warranty months + purchase date + threshold
-                })->orWhere(function ($query) use ($days) {
-                    $query->whereNotNull('purchase_date')
-                        ->whereNotNull('warranty_months')
-                        ->whereRaw(
-                            'DATE_ADD(purchase_date, INTERVAL warranty_months MONTH) BETWEEN ? AND ?',
-                            [now(), now()->addDays($days)]
-                        );
-                });
-            })
-            ->orderBy('asset_eol_date', 'ASC')
-            ->orderBy('purchase_date', 'ASC')
+            ->whereNotNull('asset_eol_date')
+            ->whereBetween('asset_eol_date', [$now, $end])
             ->get();
+
+//        return self::where('archived', '=', '0')
+//            ->NotArchived()
+//            ->whereNull('deleted_at')
+//            ->where(function ($query) use ($days) {
+//                // Check for manual asset EOL first
+//                $query->where(function ($query) use ($days) {
+//                    $query->whereNotNull('asset_eol_date')
+//                        ->whereBetween('asset_eol_date', [Carbon::now(), Carbon::now()->addDays($days)]);
+//                // Otherwise use the warranty months + purchase date + threshold
+//                })->orWhere(function ($query) use ($days) {
+//                    $query->whereNotNull('purchase_date')
+//                        ->whereNotNull('warranty_months')
+//                        ->whereRaw(
+//                            'DATE_ADD(purchase_date, INTERVAL warranty_months MONTH) BETWEEN ? AND ?',
+//                            [now(), now()->addDays($days)]
+//                        );
+//                });
+//            })
+//            ->orderBy('asset_eol_date', 'ASC')
+//            ->orderBy('purchase_date', 'ASC')
+//            ->get();
     }
 
 
