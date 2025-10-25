@@ -52790,48 +52790,6 @@ function htmlEntities(str) {
 })(jQuery);
 
 /**
- * This handles the show/hide of superuser and admin specific permissions
- * on the group edit and user edit pages
- */
-if ($("#superuser_allow").is(':checked')) {
-  // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
-  $(".nonsuperuser").hide();
-  $(".nonsuperuser").attr('display', 'none');
-}
-$(".superuser").change(function () {
-  if ($(this).val() == '1') {
-    $(".nonsuperuser").fadeOut();
-    $(".nonsuperuser").attr('display', 'none');
-    $(".nonadmin").fadeOut();
-    $(".nonadmin").attr('display', 'none');
-  } else if ($(this).val() != '1') {
-    $(".nonsuperuser").fadeIn();
-    $(".nonsuperuser").attr('display', 'block');
-  }
-});
-if ($("#admin_allow").is(':checked')) {
-  // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
-  $(".nonadmin").hide();
-  $(".nonadmin").attr('display', 'none');
-}
-$(".admin").change(function () {
-  if ($(this).val() == '1') {
-    $(".nonadmin").fadeOut();
-    $(".nonadmin").attr('display', 'none');
-  } else if ($(this).val() != '1') {
-    $(".nonadmin").fadeIn();
-    $(".nonadmin").attr('display', 'block');
-  }
-});
-
-// Check/Uncheck all radio buttons in the permissions group
-$('.header-row input:radio').change(function () {
-  value = $(this).attr('value');
-  area = $(this).data('checker-group');
-  $('.radiochecker-' + area + '[value=' + value + ']').prop('checked', true);
-});
-
-/**
  * Universal Livewire Select2 integration
  *
  * How to use:
@@ -52862,7 +52820,14 @@ document.addEventListener('livewire:init', function () {
   });
 });
 
-// toggle everything
+// Check/Uncheck all radio buttons in the permissions group
+$('.header-row input:radio').change(function () {
+  value = $(this).attr('value');
+  area = $(this).data('checker-group');
+  $('.radiochecker-' + area + '[value=' + value + ']').prop('checked', true);
+});
+
+// Generic toggleable callouts with remember state
 $(".remember-toggle").on("click", function () {
   var toggleable_callout_id = $(this).attr('id');
   var toggle_content_class = 'toggle-content-' + $(this).attr('id');
@@ -52893,6 +52858,49 @@ for (var i in all_cookies) {
     }
   }
 }
+
+/**
+ * This handles the show/hide of superuser and admin specific permissions
+ * on the group edit and user edit pages
+ */
+if ($("#superuser_allow").is(':checked')) {
+  // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
+  $(".nonsuperuser").hide();
+  $(".nonsuperuser").attr('display', 'none');
+}
+$(".superuser").change(function () {
+  if ($(this).val() == '1') {
+    $(".nonsuperuser").fadeOut();
+    $(".nonsuperuser").attr('display', 'none');
+    $(".nonadmin").fadeOut();
+    $(".nonadmin").attr('display', 'none');
+  } else if ($(this).val() != '1') {
+    $(".nonsuperuser").fadeIn();
+    $(".nonsuperuser").attr('display', 'block');
+
+    // If the superuser button has been set to deny, we need to
+    // check that the admin button isn't set to allow, before we show non-admin stuff
+    if ($("#admin_allow").is(':checked')) {
+      // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
+      $(".nonadmin").hide();
+      $(".nonadmin").attr('display', 'none');
+    }
+  }
+});
+if ($("#admin_allow").is(':checked')) {
+  // Hide here instead of fadeout on pageload to prevent what looks like Flash Of Unstyled Content (FOUC)
+  $(".nonadmin").hide();
+  $(".nonadmin").attr('display', 'none');
+}
+$(".admin").change(function () {
+  if ($(this).val() == '1') {
+    $(".nonadmin").fadeOut();
+    $(".nonadmin").attr('display', 'none');
+  } else if ($(this).val() != '1') {
+    $(".nonadmin").fadeIn();
+    $(".nonadmin").attr('display', 'block');
+  }
+});
 
 /***/ }),
 
