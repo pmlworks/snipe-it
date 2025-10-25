@@ -691,7 +691,7 @@ for (var i in all_cookies) {
 
     // We have to do more here since we don't know the name of the selector
     if (trimmed_cookie.startsWith('toggle_state_')) {
-
+        console.log(trimmed_cookie + ' matches toggle_state_');
         var toggle_selector_name = elems[0].replace(' toggle_state_','');
         if (elems[1] == 'true') {
             console.log('Selector name for cookie click trigger: '+toggle_selector_name);
