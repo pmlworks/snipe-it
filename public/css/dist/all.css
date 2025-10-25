@@ -22848,6 +22848,7 @@ input[name="columnsSearch"] {
   border-radius: 0px;
 }
 .callout.callout-legend h4 {
+  color: #333;
   font-size: 16px;
   font-weight: bold;
   margin-top: 5px;
@@ -22859,6 +22860,7 @@ input[name="columnsSearch"] {
   cursor: pointer;
 }
 p.callout-subtext {
+  color: #333;
   margin-top: 5px;
 }
 p.callout-subtext a:hover,
@@ -24496,6 +24498,7 @@ input[name="columnsSearch"] {
   border-radius: 0px;
 }
 .callout.callout-legend h4 {
+  color: #333;
   font-size: 16px;
   font-weight: bold;
   margin-top: 5px;
@@ -24507,6 +24510,7 @@ input[name="columnsSearch"] {
   cursor: pointer;
 }
 p.callout-subtext {
+  color: #333;
   margin-top: 5px;
 }
 p.callout-subtext a:hover,
