@@ -721,16 +721,16 @@ $(document).ready(function() {
     // toggle everything
     $(".remember-toggle").on("click",function(){
         var toggleable_callout_id = $(this).attr('id');
-        var toggle_content_id = 'toggle-content-'+$(this).attr('id');
+        var toggle_content_class = 'toggle-content-'+$(this).attr('id');
         var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
         var toggle_cookie_name='toggle_state_'+toggleable_callout_id;
 
         console.log('Callout ID: ' + toggleable_callout_id);
-        console.log('Content ID: '+toggle_content_id);
+        console.log('Content ID: '+toggle_content_class);
         console.log('Arrow ID: '+toggle_arrow);
         console.log('Cookie Name: '+toggle_cookie_name);
 
-        $('.'+toggle_content_id).fadeToggle(100);
+        $('.'+toggle_content_class).fadeToggle(100);
         $(toggle_arrow).toggleClass('fa-caret-right fa-caret-down');
         var toggle_open = $(toggle_arrow).hasClass('fa-caret-down');
         console.log('Cookie will set open state to: '+toggle_open);
@@ -766,8 +766,8 @@ $(document).ready(function() {
             // alert('toggle cookies exist!');
             // alert(elems);
             var toggle_selector_name = elems[0].replace(' toggle_state_','');
-            console.log('Browser Cookie Name:'+elems[0]);
-             if (elems[1] != 'true') {
+            // console.log('Browser Cookie Name:'+elems[0]);
+             if (elems[1] == 'true') {
                 console.log('Selector name for cookie click trigger: '+toggle_selector_name);
                 $('#'+toggle_selector_name+'.remember-toggle').trigger('click')
             }

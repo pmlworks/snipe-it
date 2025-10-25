@@ -662,3 +662,41 @@ document.addEventListener('livewire:init', () => {
         });
     });
 });
+
+
+// toggle everything
+$(".remember-toggle").on("click",function(){
+    var toggleable_callout_id = $(this).attr('id');
+    var toggle_content_class = 'toggle-content-'+$(this).attr('id');
+    var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
+    var toggle_cookie_name='toggle_state_'+toggleable_callout_id;
+
+    console.log('Callout ID: ' + toggleable_callout_id);
+    console.log('Content ID: '+toggle_content_class);
+    console.log('Arrow ID: '+toggle_arrow);
+    console.log('Cookie Name: '+toggle_cookie_name);
+
+    $('.'+toggle_content_class).fadeToggle(100);
+    $(toggle_arrow).toggleClass('fa-caret-right fa-caret-down');
+    var toggle_open = $(toggle_arrow).hasClass('fa-caret-down');
+    console.log('Cookie will set open state to: '+toggle_open);
+    document.cookie=toggle_cookie_name+"="+toggle_open+';path=/';
+});
+
+var all_cookies = document.cookie.split(';')
+for (var i in all_cookies) {
+    var trimmed_cookie = all_cookies[i].trim(' ')
+    elems = all_cookies[i].split('=', 2);
+
+
+    // We have to do more here since we don't know the name of the selector
+    if (trimmed_cookie.startsWith('toggle_state_')) {
+
+        var toggle_selector_name = elems[0].replace(' toggle_state_','');
+        if (elems[1] == 'true') {
+            console.log('Selector name for cookie click trigger: '+toggle_selector_name);
+            $('#'+toggle_selector_name+'.remember-toggle').trigger('click')
+        }
+    }
+
+}

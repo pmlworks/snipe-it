@@ -1211,6 +1211,9 @@ Radio toggle styles for permission settings and check/uncheck all
   border-radius: 4px;
   border: 1px transparent solid;
 }
+.remember-toggle {
+  cursor: pointer;
+}
 
 
 /*# sourceMappingURL=overrides.css.map*/

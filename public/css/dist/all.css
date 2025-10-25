@@ -22923,6 +22923,9 @@ Radio toggle styles for permission settings and check/uncheck all
   border-radius: 4px;
   border: 1px transparent solid;
 }
+.remember-toggle {
+  cursor: pointer;
+}
 
 
 /*# sourceMappingURL=app.css.map*/
@@ -24620,6 +24623,9 @@ Radio toggle styles for permission settings and check/uncheck all
   color: white;
   border-radius: 4px;
   border: 1px transparent solid;
+}
+.remember-toggle {
+  cursor: pointer;
 }
 
 
