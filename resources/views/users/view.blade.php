@@ -426,17 +426,19 @@
                         <div class="col-md-9">
                           @if ($user->groups->count() > 0)
                             @foreach ($user->groups as $group)
-
                               @can('superadmin')
                                   <a href="{{ route('groups.show', $group->id) }}" class="label label-default">{{ $group->name }}</a>
                               @else
                               {{ $group->name }}
                               @endcan
-
                             @endforeach
                           @else
                               --
                           @endif
+
+                              @if ($user->hasIndividualPermissions())
+                                  <span class="text-warning"><x-icon type="warning" />This user has at least one individual permission set.</span>
+                              @endif
                         </div>
                       </div>
 

@@ -224,6 +224,24 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         return false;
     }
 
+    public function hasIndividualPermissions() {
+
+        if (is_object($this->permissions)) {
+            $permissions = json_decode(json_encode($this->permissions), true);
+        }
+
+        if (is_string($this->permissions)) {
+            $permissions = json_decode($this->permissions, true);
+        }
+
+        foreach ($permissions as $permission) {
+            if ($permission != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Internally check the user permission for the given section
      *
