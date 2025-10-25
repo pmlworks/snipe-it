@@ -717,6 +717,23 @@ $(document).ready(function() {
         }
     });
 
+
+    // toggle everything
+    $(".remember-toggle").on("click",function(){
+        var toggleable_callout_id = $(this).attr('id');
+        var toggle_content_id = 'toggle-content-'+$(this).attr('id');
+        var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
+        var toggle_cookie_name = 'toggle_state_' + toggleable_callout_id;
+
+        $('.'+toggle_content_id).fadeToggle(100);
+        $(toggle_arrow).toggleClass('fa-caret-right fa-caret-down');
+        var toggle_open = $(toggle_arrow).hasClass('fa-caret-down');
+        alert(toggle_open);
+        document.cookie = toggle_cookie_name+"="+toggle_open+'; path=/';
+    });
+
+
+
     $("#optional_user_info").on("click",function(){
         $('#optional_user_details').fadeToggle(100);
         $('#optional_user_info_icon').toggleClass('fa-caret-right fa-caret-down');
@@ -725,15 +742,30 @@ $(document).ready(function() {
     });
 
 
+
     var all_cookies = document.cookie.split(';')
-    for(var i in all_cookies) {
+    for (var i in all_cookies) {
         var trimmed_cookie = all_cookies[i].trim(' ')
+        elems = all_cookies[i].split('=', 2);
+
         if (trimmed_cookie.startsWith('optional_user_info_open=')) {
-            elems = all_cookies[i].split('=', 2)
+
             if (elems[1] == 'true') {
                 $('#optional_user_info').trigger('click')
             }
         }
+
+        // We have to do more here since we don't know the name of the selector
+        if (trimmed_cookie.startsWith('toggle_state_')) {
+            // alert('toggle cookies exist!');
+            // alert(elems);
+            var toggle_selector_name = elems[0].replace('toggle_state_','');
+             if (elems[1] == 'false') {
+               // alert(toggle_selector_name);
+                $('.' + toggle_selector_name).trigger('click')
+            }
+        }
+
     }
 
     $("#two_factor_reset").click(function(){

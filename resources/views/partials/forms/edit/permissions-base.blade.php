@@ -4,12 +4,17 @@
   @php
     $localPermission = $area_permission[0];
   @endphp
-  <div class="form-group{{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
+  <div id="{{ str_slug($localPermission['permission'])}}" class="form-group remember-toggle {{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
     <div class="callout callout-legend col-md-12">
       <div class="col-md-10">
-        <h4>
-          {{ trans('permissions.'.str_slug($area).'.name') }}
-        </h4>
+        <a id="toggled_remember-toggle-{{ str_slug($localPermission['permission'])}}">
+          <h4>
+            @if (count($area_permission) > 1)
+              <x-icon type="caret-down" id="toggle-arrow-{{ str_slug($localPermission['permission'])}}" />
+            @endif
+            {{ trans('permissions.'.str_slug($area).'.name') }}
+          </h4>
+        </a>
 
         @if (\Lang::has('permissions.'.str_slug($area).'.note'))
           <p>{{ trans('permissions.'.str_slug($area).'.note') }}</p>
@@ -100,7 +105,7 @@
         @php
             $section_translation = trans('permissions.'.str_slug($this_permission['permission']).'.name');
         @endphp
-        <div class="{{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
+        <div class="toggle-content-{{ str_slug($localPermission['permission']) }} {{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
           <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 13px;">
             <div class="col-md-10">
               <strong>{{ $section_translation }}</strong>
