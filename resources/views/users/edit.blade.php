@@ -723,13 +723,18 @@ $(document).ready(function() {
         var toggleable_callout_id = $(this).attr('id');
         var toggle_content_id = 'toggle-content-'+$(this).attr('id');
         var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
-        var toggle_cookie_name = 'toggle_state_' + toggleable_callout_id;
+        var toggle_cookie_name='toggle_state_'+toggleable_callout_id;
+
+        console.log('Callout ID: ' + toggleable_callout_id);
+        console.log('Content ID: '+toggle_content_id);
+        console.log('Arrow ID: '+toggle_arrow);
+        console.log('Cookie Name: '+toggle_cookie_name);
 
         $('.'+toggle_content_id).fadeToggle(100);
         $(toggle_arrow).toggleClass('fa-caret-right fa-caret-down');
         var toggle_open = $(toggle_arrow).hasClass('fa-caret-down');
-        alert(toggle_open);
-        document.cookie = toggle_cookie_name+"="+toggle_open+'; path=/';
+        console.log('Cookie will set open state to: '+toggle_open);
+        document.cookie=toggle_cookie_name+"="+toggle_open+';path=/';
     });
 
 
@@ -747,6 +752,7 @@ $(document).ready(function() {
     for (var i in all_cookies) {
         var trimmed_cookie = all_cookies[i].trim(' ')
         elems = all_cookies[i].split('=', 2);
+        console.log(elems);
 
         if (trimmed_cookie.startsWith('optional_user_info_open=')) {
 
@@ -759,10 +765,11 @@ $(document).ready(function() {
         if (trimmed_cookie.startsWith('toggle_state_')) {
             // alert('toggle cookies exist!');
             // alert(elems);
-            var toggle_selector_name = elems[0].replace('toggle_state_','');
-             if (elems[1] == 'false') {
-               // alert(toggle_selector_name);
-                $('.' + toggle_selector_name).trigger('click')
+            var toggle_selector_name = elems[0].replace(' toggle_state_','');
+            console.log('Browser Cookie Name:'+elems[0]);
+             if (elems[1] != 'true') {
+                console.log('Selector name for cookie click trigger: '+toggle_selector_name);
+                $('#'+toggle_selector_name+'.remember-toggle').trigger('click')
             }
         }
 

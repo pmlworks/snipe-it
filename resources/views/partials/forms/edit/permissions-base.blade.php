@@ -4,13 +4,13 @@
   @php
     $localPermission = $area_permission[0];
   @endphp
-  <div id="{{ str_slug($localPermission['permission'])}}" class="form-group remember-toggle {{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
+  <div id="{{ str_slug($localPermission['permission'])}}" class="form-group {{ (count($area_permission) > 2) ? ' remember-toggle': '' }}{{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
     <div class="callout callout-legend col-md-12">
       <div class="col-md-10">
-        <a id="toggled_remember-toggle-{{ str_slug($localPermission['permission'])}}">
+        <a>
           <h4>
-            @if (count($area_permission) > 1)
-              <x-icon type="caret-down" id="toggle-arrow-{{ str_slug($localPermission['permission'])}}" />
+            @if (count($area_permission) > 2)
+              <x-icon type="caret-down" class="fa-fw" id="toggle-arrow-{{ str_slug($localPermission['permission'])}}" />
             @endif
             {{ trans('permissions.'.str_slug($area).'.name') }}
           </h4>
@@ -98,14 +98,14 @@
 
     </div>
   </div>
-  @if (count($area_permission) > 1)
+  @if (count($area_permission) > 2)
 
     @foreach ($area_permission as $index => $this_permission)
       @if ($this_permission['display'])
         @php
             $section_translation = trans('permissions.'.str_slug($this_permission['permission']).'.name');
         @endphp
-        <div class="toggle-content-{{ str_slug($localPermission['permission']) }} {{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
+        <div id="{{ str_slug($this_permission['permission']) }}" class="toggle-content-{{ str_slug($localPermission['permission']) }} {{ ($localPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($localPermission['permission']!='superuser') && ($localPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
           <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 13px;">
             <div class="col-md-10">
               <strong>{{ $section_translation }}</strong>
