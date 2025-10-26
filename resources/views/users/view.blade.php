@@ -437,7 +437,7 @@
                           @endif
 
                               @if ($user->hasIndividualPermissions())
-                                  <span class="text-warning"><x-icon type="warning" />This user has at least one individual permission set.</span>
+                                  <span class="text-warning"><x-icon type="warning" /> {{ trans('admin/users/general.individual_override') }}</span>
                               @endif
                         </div>
                       </div>
