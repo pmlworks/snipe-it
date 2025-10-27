@@ -3,7 +3,13 @@
 
   <!-- handle superadmin and reports, and anything else with only one option -->
   @php
+    // Ugh, this sucks, but we need to special case reports to map to reports.view
     $sectionPermission = $main_section_permission[0];
+    if ((str_slug($main_section)) == 'reports') {
+        $section_name = 'reports.view';
+    } else {
+        $section_name =  str_slug($main_section);
+    }
   @endphp
   <div class="form-group {{ ($sectionPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($sectionPermission['permission']!='superuser') && ($sectionPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
 
@@ -36,8 +42,8 @@
                         class="form-control {{ str_slug($main_section) }} allow"
                         data-checker-group="{{ str_slug($main_section) }}"
                         aria-label="{{ str_slug($main_section) }}"
-                        name="permission[{{ str_slug($main_section) }}]"
-                        @checked(array_key_exists(str_slug($main_section), $groupPermissions) && $groupPermissions[str_slug($main_section)] == '1')
+                        name="permission[{{ $section_name }}]"
+                        @checked(array_key_exists($section_name, $groupPermissions) && $groupPermissions[$section_name] == '1')
                         type="radio"
                         value="1"
                         {{-- Disable the superuser and admin allow if the user is not a superuser --}}
@@ -61,7 +67,7 @@
                           data-checker-group="{{ str_slug($main_section) }}"
                           aria-label="{{ str_slug($main_section) }}"
                           name="permission[{{ str_slug($main_section) }}]"
-                          @checked(array_key_exists(str_slug($main_section), $groupPermissions) && $groupPermissions[str_slug($main_section)] == '0')
+                          @checked((array_key_exists(str_slug($main_section), $groupPermissions) && $groupPermissions[str_slug($main_section)] == '0') || (!array_key_exists(str_slug($main_section), $groupPermissions)))
                           type="radio"
                           value="0"
                           {{-- Disable the superuser and admin allow if the user is not a superuser --}}
