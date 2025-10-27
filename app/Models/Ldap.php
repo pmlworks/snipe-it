@@ -220,7 +220,7 @@ class Ldap extends Model
         Log::debug('Filter query: '.$filterQuery);
 
         // only try this if we have an Admin username set; otherwise use the 'legacy' method
-        if ($settings->ldap_uname) {
+        if (($settings->ldap_uname) && ($baseDn)) {
             // in the fallowing call, we pick a slow-failure of 0 because we might need to fall through to 'legacy'
             $fast_bind = self::findAndBindMultiOU($baseDn, $filterQuery, $password, 0);
             if ($fast_bind) {
