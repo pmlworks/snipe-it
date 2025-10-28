@@ -618,6 +618,7 @@ return [
     'from' => 'From',
     'by' => 'By',
     'by_user' => 'By',
+    'ldap_sync_location' => 'Sync All Users to This Location (Optional)',
     'version' => 'Version',
     'build' => 'build',
     'use_cloned_image' => 'Clone image from original',
