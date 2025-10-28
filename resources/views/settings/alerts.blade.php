@@ -183,7 +183,7 @@
                                     <label for="audit_warning_days">{{ trans('admin/settings/general.audit_warning_days') }}</label>
                                 </div>
                                 <div class="input-group col-xs-10 col-sm-6 col-md-4 col-lg-3 col-xl-3">
-                                    <input class="form-control" placeholder="14" maxlength="3" name="audit_warning_days" type="number" id="audit_warning_days" value="{{ old('audit_warning_days', $setting->audit_warning_days) }}">
+                                    <input class="form-control" placeholder="14" maxlength="3" min="0" name="audit_warning_days" type="number" id="audit_warning_days" value="{{ old('audit_warning_days', $setting->audit_warning_days) }}">
                                     <span class="input-group-addon">{{ trans('general.days') }}</span>
                                 </div>
                                 <div class="col-md-8 col-md-offset-3">
