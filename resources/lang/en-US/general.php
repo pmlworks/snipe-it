@@ -391,6 +391,7 @@ return [
     'reminder_checked_out_items' => 'This is a reminder of the items currently checked out to you. If you feel this list is inaccurate (something is missing, or something appears here that you believe you never received), please email :reply_to_name at :reply_to_address.',
     'changed'               => 'Changed',
     'to'                    => 'To',
+    'to_user'               => 'To',
     'report_fields_info'    => '<p>Select the fields you would like to include in your custom report, and click Generate. The file (custom-asset-report-YYYY-mm-dd.csv) will download automatically, and you can open it in Excel.</p>
             <p>If you would like to export only certain assets, use the options below to fine-tune your results.</p>',
     'range'                 => 'Range',
@@ -616,6 +617,7 @@ return [
     'user_managed_passwords_allow' => 'Allow users to manage their own passwords',
     'from' => 'From',
     'by' => 'By',
+    'by_user' => 'By',
     'version' => 'Version',
     'build' => 'build',
     'use_cloned_image' => 'Clone image from original',
