@@ -49,8 +49,10 @@ class SendUpcomingAuditReport extends Command
 
         $assets_query = Asset::whereNull('deleted_at')->dueOrOverdueForAudit($settings)->orderBy('assets.next_audit_date', 'asc')->with('supplier');
         $asset_count = $assets_query->count();
-        $this->info(number_format($asset_count) . ' assets must be audited in on or before ' . $interval_date);
-
+        $this->info(number_format($asset_count) . ' assets must be audited on or before ' . $interval_date);
+        if (!$this->option('with-output')) {
+            $this->info('Run this command with the --with-output option to see the full list in the console.');
+        }
 
 
         if ($asset_count > 0) {
