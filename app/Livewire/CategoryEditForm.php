@@ -12,35 +12,15 @@ class CategoryEditForm extends Component
 
     public $eulaText;
 
-    public $originalSendCheckInEmailValue;
-
     public bool $requireAcceptance;
 
     public bool $sendCheckInEmail;
 
     public bool $useDefaultEula;
 
-    public function mount()
-    {
-        $this->originalSendCheckInEmailValue = $this->sendCheckInEmail;
-
-        if ($this->eulaText || $this->useDefaultEula) {
-            $this->sendCheckInEmail = 1;
-        }
-    }
-
     public function render()
     {
         return view('livewire.category-edit-form');
-    }
-
-    public function updated($property, $value)
-    {
-        if (! in_array($property, ['eulaText', 'useDefaultEula'])) {
-            return;
-        }
-
-        $this->sendCheckInEmail = $this->eulaText || $this->useDefaultEula ? 1 : $this->originalSendCheckInEmailValue;
     }
 
     public function getShouldDisplayEmailMessageProperty(): bool
