@@ -25,7 +25,7 @@ class CategoryEditForm extends Component
     }
 
     #[Computed]
-    public function shouldDisplayEmailMessage(): bool
+    public function emailWillBeSendDueToEula(): bool
     {
         return $this->eulaText || $this->useDefaultEula;
     }

@@ -93,7 +93,7 @@
                 />
                 {{ trans('admin/categories/general.checkin_email') }}
             </label>
-            @if ($this->shouldDisplayEmailMessage)
+            @if ($this->emailWillBeSendDueToEula)
                 <div class="callout callout-info">
                     <i class="far fa-envelope"></i>
                     <span>{{ $this->emailMessage }}</span>
