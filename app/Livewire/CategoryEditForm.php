@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class CategoryEditForm extends Component
@@ -23,12 +24,14 @@ class CategoryEditForm extends Component
         return view('livewire.category-edit-form');
     }
 
-    public function getShouldDisplayEmailMessageProperty(): bool
+    #[Computed]
+    public function shouldDisplayEmailMessage(): bool
     {
         return $this->eulaText || $this->useDefaultEula;
     }
 
-    public function getEmailMessageProperty(): string
+    #[Computed]
+    public function emailMessage(): string
     {
         if ($this->useDefaultEula) {
             return trans('admin/categories/general.email_will_be_sent_due_to_global_eula');
@@ -37,7 +40,8 @@ class CategoryEditForm extends Component
         return trans('admin/categories/general.email_will_be_sent_due_to_category_eula');
     }
 
-    public function getEulaTextDisabledProperty()
+    #[Computed]
+    public function eulaTextDisabled()
     {
         return (bool)$this->useDefaultEula;
     }
