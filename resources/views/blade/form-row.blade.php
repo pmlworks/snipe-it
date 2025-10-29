@@ -6,30 +6,40 @@
     'info_tooltip_text' => null,
     'help_text' => null,
     'label' => null,
+    'input_div_class' => 'col-md-8',
+    'errors_class' => $errors->has('support_url') ? ' has-error' : '',
+    'input_icon' => null,
+    'input_group_addon' => null,
+    'rows' => null,
+    'placeholder' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'form-group']) }}>
+<div {{ $attributes->merge(['class' => 'form-group'. $errors_class]) }}>
 
+    <!-- form label -->
     @if (isset($label))
-        <x-form-label
-                :for="$name"
-                :style="$label_style ?? null"
-                class="{{ $label_class ?? null }}"
-        >
-            {{ $label }}
-        </x-form-label>
+        <x-form-label  :for="$name" class="{{ $label_class ?? 'col-md-3' }}">{{ $label }}</x-form-label>
     @endif
+
 
     @php
         $blade_type = in_array($type, ['text', 'email', 'url', 'tel', 'number', 'password']) ? 'text' : $type;
     @endphp
-        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6 col-xl-6">
+
+        <div class="{{ $input_div_class }}">
             <x-dynamic-component
+                    :$name
+                    :$type
                     :aria-label="$name"
                     :component="'input.'.$blade_type"
                     :id="$name"
                     :required="Helper::checkIfRequired($item, $name)"
                     :value="old($name, $item->{$name})"
+                    :input_icon="$input_icon"
+                    :input_group_addon="$input_group_addon"
+                    :rows="$rows"
+                    :placeholder="$placeholder"
+
             />
         </div>
 
@@ -44,22 +54,23 @@
 
 
     @error($name)
-    <!-- Form Error -->
-    <div {{ $attributes->merge(['class' => $error_offset_class]) }}>
-                <span class="alert-msg" role="alert">
-                    <i class="fas fa-times" aria-hidden="true"></i>
-                    {{ $message }}
-                </span>
+    <div class="col-md-8 col-md-offset-3">
+        <span class="alert-msg" aria-hidden="true">
+            <x-icon type="x" />
+            {{ $message }}
+        </span>
     </div>
     @enderror
 
     @if ($help_text)
         <!-- Help Text -->
-        <div {{ $attributes->merge(['class' => $error_offset_class]) }}>
+        <div class="col-md-8 col-md-offset-3">
             <p class="help-block">
                 {!! $help_text !!}
             </p>
         </div>
     @endif
+
+
 
 </div>
