@@ -91,7 +91,7 @@
                     wire:model.live="sendCheckInEmail"
                     aria-label="checkin_email"
                 />
-                {{ trans('admin/categories/general.checkin_email') }}
+                {{ trans('admin/categories/general.email_to_user_upon_checkin_and_checkout') }}
             </label>
             @if ($this->emailWillBeSendDueToEula)
                 <div class="callout callout-info">
