@@ -90,7 +90,6 @@
                     value="1"
                     wire:model.live="sendCheckInEmail"
                     aria-label="checkin_email"
-                    @disabled($this->sendCheckInEmailDisabled)
                 />
                 {{ trans('admin/categories/general.checkin_email') }}
             </label>
@@ -99,9 +98,6 @@
                     <i class="far fa-envelope"></i>
                     <span>{{ $this->emailMessage }}</span>
                 </div>
-            @endif
-            @if ($this->sendCheckInEmailDisabled)
-                <input type="hidden" name="checkin_email" wire:model.live="sendCheckInEmail" />
             @endif
         </div>
     </div>

@@ -61,9 +61,4 @@ class CategoryEditForm extends Component
     {
         return (bool)$this->useDefaultEula;
     }
-
-    public function getSendCheckInEmailDisabledProperty()
-    {
-        return $this->eulaText || $this->useDefaultEula;
-    }
 }
