@@ -3,7 +3,7 @@
 return array(
     'asset_categories' 					=> 'Asset Categories',
     'category_name'  					=> 'Category Name',
-    'email_to_user_upon_checkin' => 'Send email to user on checkin.',
+    'email_to_user_upon_checkin' => 'Send email to user upon checkin.',
     'email_to_user_upon_checkin_and_checkout' => 'Send email to user upon checkin/checkout.',
     'email_to_initiator'                => 'Send email to you when user accepts or declines checkout.',
     'checkin_email_notification'        => 'This user will be sent an email on checkin/checkout.',
