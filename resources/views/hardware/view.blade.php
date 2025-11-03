@@ -511,7 +511,14 @@
                                                 <strong>{{ trans('admin/hardware/form.name') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                {{ $asset->name }}
+                                                <span class="js-copy-assetname">{{ $asset->name }}</span>
+
+                                                <i class="fa-regular fa-clipboard js-copy-link hidden-print" data-clipboard-target=".js-copy-assetname" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
+                                                    <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
+                                                </i>
+
+
+
                                             </div>
                                         </div>
                                     @endif
