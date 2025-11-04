@@ -142,7 +142,7 @@ class DepartmentsController extends Controller
         $department = $request->handleImages($department);
 
         if ($department->save()) {
-            return response()->json(Helper::formatStandardApiResponse('success', $department, trans('admin/departments/message.update.success')));
+            return response()->json(Helper::formatStandardApiResponse('success', (new DepartmentsTransformer)->transformDepartment($department), trans('admin/departments/message.update.success')));
         }
 
         return response()->json(Helper::formatStandardApiResponse('error', null, $department->getErrors()));
