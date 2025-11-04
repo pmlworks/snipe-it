@@ -52,7 +52,7 @@ class UpdateAssetRequest extends ImageUploadRequest
 
         // if the purchase cost is passed in as a string **and** the digit_separator is ',' (as is common in the EU)
         // then we tweak the purchase_cost rule to make it a string
-        if (Setting::getSettings()->digit_separator === '1.234,56' && is_string($this->input('purchase_cost'))) {
+        if ($setting->digit_separator === '1.234,56' && is_string($this->input('purchase_cost'))) {
             $rules['purchase_cost'] = ['nullable', 'string'];
         }
 
