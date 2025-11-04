@@ -34,7 +34,7 @@ class UpdateAssetRequest extends ImageUploadRequest
             parent::rules(),
             (new Asset)->getRules(),
             // This overwrites the rulesets that are set at the model level (via Watson) but are not necessarily required at the request level when doing a PATCH update.
-            // Confusingly, this skips the unique_undeleted validator at the model level (and therefor the UniqueUndeletedTrait), so we have to re-add those
+            // Confusingly, this skips the unique_undeleted validator at the model level (and therefore the UniqueUndeletedTrait), so we have to re-add those
             // rules here without the requiredness, since those values will already exist if you're updating an existing asset.
             [
                 'model_id'  => ['integer', 'exists:models,id,deleted_at,NULL', 'not_array'],
