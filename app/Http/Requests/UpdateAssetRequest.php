@@ -33,7 +33,9 @@ class UpdateAssetRequest extends ImageUploadRequest
         $rules = array_merge(
             parent::rules(),
             (new Asset)->getRules(),
-            // this is to overwrite rulesets that include required, and rewrite unique_undeleted
+            // This overwrites the rulesets that are set at the model level (via Watson) but are not necessarily required at the request level when doing a PATCH update.
+            // Confusingly, this skips the unique_undeleted validator at the model level (and therefor the UniqueUndeletedTrait), so we have to re-add those
+            // rules here without the requiredness, since those values will already exist if you're updating an existing asset.
             [
                 'model_id'  => ['integer', 'exists:models,id,deleted_at,NULL', 'not_array'],
                 'status_id' => ['integer', 'exists:status_labels,id'],
@@ -42,7 +44,7 @@ class UpdateAssetRequest extends ImageUploadRequest
                     Rule::unique('assets', 'asset_tag')->ignore($this->asset)->withoutTrashed(),
                 ],
                 'serial' => [
-                    'nullable', 'string', 'max:255', 'not_array',
+                    'string', 'max:255', 'not_array',
                     $setting->unique_serial=='1' ? Rule::unique('assets', 'serial')->ignore($this->asset)->withoutTrashed() : 'nullable',
                 ],
             ],
