@@ -625,6 +625,7 @@ $('.header-row input:radio').change(function() {
 
 // Generic toggleable callouts with remember state
 $(".remember-toggle").on("click",function(){
+
     var toggleable_callout_id = $(this).attr('id');
     var toggle_content_class = 'toggle-content-'+$(this).attr('id');
     var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
@@ -714,3 +715,87 @@ $(".admin").change(function() {
     }
 });
 
+// Handle the select/deselect of the select boxes with the button from right to left
+
+$(function () {
+
+    function moveItems(origin, dest) {
+        $(origin).find(':selected').appendTo(dest);
+        $(dest).attr('selected', true);
+        $(dest).sort_select_box();
+       // $('#user_id_box').val($('#selected-select').val());
+    }
+
+    function moveAllItems(origin, dest) {
+        $(origin).children("option:visible").appendTo(dest);
+        $(dest).attr('selected', true);
+        $(dest).sort_select_box();
+       //  $('#user_id_box').val($('#selected-select').val());
+    }
+
+    $('.left').on('click', function () {
+        var container = $(this).closest('.addremove-multiselect');
+        moveItems($(container).find('select.multiselect.selected'), $(container).find('select.multiselect.available'));
+    });
+
+    $('.right').on('click', function () {
+        var container = $(this).closest('.addremove-multiselect');
+        moveItems($(container).find('select.multiselect.available'), $(container).find('select.multiselect.selected'));
+
+    });
+
+    $('.leftall').on('click', function () {
+        var container = $(this).closest('.addremove-multiselect');
+        moveAllItems($(container).find('select.multiselect.selected'), $(container).find('select.multiselect.available'));
+        // $('#user_id_box').val($('#selected-select').val());
+    });
+
+    $('.rightall').on('click', function () {
+        var container = $(this).closest('.addremove-multiselect');
+        moveAllItems($(container).find('select.multiselect.available'), $(container).find('select.multiselect.selected'));
+       // $('#user_id_box').val($('#selected-select').val());
+    });
+
+    $('select.multiselect.selected').on('dblclick keyup',function(e){
+        if(e.which == 13 || e.type == 'dblclick') {
+            var container = $(this).closest('.addremove-multiselect');
+            moveItems($(container).find('select.multiselect.selected'), $(container).find('select.multiselect.available'));
+           // $('#user_id_box').val($('#selected-select').val());
+        }
+    });
+
+    $('select.multiselect.available').on('dblclick keyup',function(e){
+        if(e.which == 13 || e.type == 'dblclick') {
+            var container = $(this).closest('.addremove-multiselect');
+            moveItems($(container).find('select.multiselect.available'), $(container).find('select.multiselect.selected'));
+            $('#user_id_box').val($('#selected-select').val());
+        }
+    });
+
+
+});
+
+$.fn.sort_select_box = function(){
+    // Get options from select box
+    var selected_options = $(this).children('option');
+    // sort alphabetically
+    selected_options.sort(function(a,b) {
+        if (a.text > b.text) return 1;
+        else if (a.text < b.text) return -1;
+        else return 0
+    })
+    //replace with sorted my_options;
+    $(this).empty().append(selected_options);
+
+    var selected_in_box =  $('#selected-select').children("option:selected").val();
+    var not_selected_in_box =  $('#selected-select option').not(':selected').val();
+
+    $('#user_id_box').empty().append(selected_in_box).append(not_selected_in_box);
+
+    $('#user_count_selected_box').html($('#selected-select option').length);
+    $('#user_count_unselected_box').html($('#available-select option').length);
+
+
+    // clearing any selections
+    $("#"+this.attr('id')+" option").attr('selected', true);
+}

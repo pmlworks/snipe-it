@@ -41,40 +41,65 @@
 </div>
 
 
-<div class="form-group{{ $errors->has('associated_users') ? ' has-error' : '' }}">
+<div class="callout callout-legend col-md-12">
+    <h4>{{ trans('general.users') }}</h4>
+</div>
 
-    <label for="associated_users[]" class="col-md-3 control-label">
-        {{ trans('general.users') }}
-    </label>
+<!-- this is a temp fix for the select2 not working inside modals -->
 
-    <div class="col-md-7">
-        <select class="js-data-ajax"
-                data-endpoint="users"
-                data-placeholder="{{ trans('general.select_user') }}"
-                name="associated_users[]"
-                style="width: 100%"
-                id="associated_users[]"
-                aria-label="associated_users[]"  multiple>
 
-                <option value=""  role="option">{{ trans('general.select_user') }}</option>
-                @if(isset($associated_users))
-                    @foreach($associated_users as $associated_user)
-                        <option value="{{ $associated_user->id }}" selected="selected" role="option" aria-selected="true"
-                                role="option">
-                            {{ $associated_user->present()->fullName }} ({{ $associated_user->username }})
-                        </option>
-                    @endforeach
-                @endif
-        </select>
+    <div class="form-group">
+        <div class="col-md-12">
+
+        <!-- This hidden input will store the selected user IDs as a comma-separated string to avoid max_input_vars and max_multipart_body_parts php.ini issues -->
+        <input type="text" name="users_to_add" id="user_id_box" class="form-control" value="{{ implode(",", $associated_users->pluck('id')->toArray()) }}"/>
+
+
+
+
+        <div class="row addremove-multiselect">
+                <div class="col-lg-5 col-sm-5 col-xs-12">
+                    <h4>Available</h4>
+                    <select id="available-select" class="multiselect available form-control" size="8" multiple="multiple">
+                        @foreach($unselected_users as $unselected_user)
+                            <option value="{{ $unselected_user->id }}" role="option">
+                                ID: {{ $unselected_user->id }}
+                                {{ $unselected_user->present()->fullName }} ({{ $unselected_user->username }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="help-block"><span id="user_count_unselected_box">{{ count($unselected_users) }}</span> users </p>
+                </div>
+
+                <div class="multiselect-controls col-lg-2 col-sm-2 col-xs-12">
+                    <br><br>
+                    <button type="button" id="rightall" class="rightall btn btn-block">Add All <i class="fa-solid fa-angles-right"></i></button>
+                    <button type="button" id="right" class="right btn btn-block">Add <i class="fa-solid fa-angle-right"></i></button>
+                    <button type="button" id="left" class="left btn btn-block"><i class="fa-solid fa-angle-left"></i> Remove</button>
+                    <button type="button" id="leftall" class="leftall btn btn-block"><i class="fa-solid fa-angles-left"></i> Remove All</button>
+                </div>
+
+                <div class="col-lg-5 col-sm-5 col-xs-12">
+                    <h4>In Group</h4>
+                    <select id="selected-select" class="multiselect selected form-control" size="8" multiple="multiple">
+                        @foreach($associated_users as $associated_user)
+                            <option value="{{ $associated_user->id }}" aria-selected="true" selected="selected" role="option">
+                                ID: {{ $associated_user->id }}
+                                {{ $associated_user->present()->fullName }} ({{ $associated_user->username }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="help-block"><span id="user_count_selected_box">{{ count($associated_users) }}</span> in this group</p>
+
+                </div>
+
+        </div>
     </div>
-
-    {!! $errors->first('associated_users', '<div class="col-md-8 col-md-offset-3"><span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span></div>') !!}
-
 </div>
 
 
 <div class="col-md-12">
     @include ('partials.forms.edit.permissions-base', ['use_inherit' => false])
 </div>
-
 @stop
+

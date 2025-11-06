@@ -85,14 +85,19 @@ class GroupsController extends Controller
         $permissions = config('permissions');
         $groupPermissions = $group->decodePermissions();
 
+        // dd(config('permissions'));
+
         if ((!is_array($groupPermissions)) || (!$groupPermissions)) {
             $groupPermissions = [];
         }
         $selected_array = Helper::selectedPermissionsArray($permissions, $groupPermissions);
         $associated_users = $group->users()->get();
 
-        //dd($associated_users->toArray());
-        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))->with('associated_users', $associated_users);
+        // Get the unselected users
+        $users = \App\Models\User::get();
+        $unselected_users = $users->diffKeys($associated_users);
+
+        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))->with('associated_users', $associated_users)->with('unselected_users', $unselected_users);
     }
 
     /**
@@ -106,13 +111,23 @@ class GroupsController extends Controller
     public function update(Request $request, Group $group) : RedirectResponse
     {
         $group->name = $request->input('name');
-        $group->permissions = json_encode($request->input('permission'));
+        \Log::error(print_r($_POST, true));
+
+
+        if ($request->filled('permission')) {
+            $group->permissions = json_encode($request->array('permission'));
+        } else {
+            $group->permissions = null;
+        }
+
         $group->notes = $request->input('notes');
 
 
         if (! config('app.lock_passwords')) {
             if ($group->save()) {
-                $group->users()->sync($request->input('associated_users'));
+
+                $associated_users = explode(',',$request->input('users_to_add'));
+                $group->users()->sync($associated_users);
                 return redirect()->route('groups.index')->with('success', trans('admin/groups/message.success.update'));
             }
 
