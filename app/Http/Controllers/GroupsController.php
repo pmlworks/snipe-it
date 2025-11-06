@@ -43,7 +43,7 @@ class GroupsController extends Controller
         $permissions = config('permissions');
         $groupPermissions = Helper::selectedPermissionsArray($permissions, $permissions);
         $selectedPermissions = $request->old('permissions', $groupPermissions);
-        $users = \App\Models\User::get();
+        $users = \App\Models\User::orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get();
         // Show the page
         return view('groups/edit', compact('permissions', 'selectedPermissions', 'groupPermissions'))
             ->with('group', $group)
@@ -103,10 +103,10 @@ class GroupsController extends Controller
             $groupPermissions = [];
         }
         $selected_array = Helper::selectedPermissionsArray($permissions, $groupPermissions);
-        $associated_users = $group->users()->get();
+        $associated_users = $group->users()->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get();
 
         // Get the unselected users
-        $unselected_users = \App\Models\User::whereNotIn('id', $associated_users->pluck('id')->toArray())->orderBy('first_name', 'asc')->get();
+        $unselected_users = \App\Models\User::whereNotIn('id', $associated_users->pluck('id')->toArray())->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get();
 
         return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))->with('associated_users', $associated_users)->with('unselected_users', $unselected_users);
     }
