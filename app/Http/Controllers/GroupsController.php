@@ -85,8 +85,6 @@ class GroupsController extends Controller
         $permissions = config('permissions');
         $groupPermissions = $group->decodePermissions();
 
-        // dd(config('permissions'));
-
         if ((!is_array($groupPermissions)) || (!$groupPermissions)) {
             $groupPermissions = [];
         }
@@ -111,8 +109,6 @@ class GroupsController extends Controller
     public function update(Request $request, Group $group) : RedirectResponse
     {
         $group->name = $request->input('name');
-        \Log::error(print_r($_POST, true));
-
 
         if ($request->filled('permission')) {
             $group->permissions = json_encode($request->array('permission'));

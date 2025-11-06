@@ -3,7 +3,6 @@
     'updateText' => trans('admin/groups/titles.update'),
     'item' => $group,
     'formAction' => ($group !== null && $group->id !== null) ? route('groups.update', ['group' => $group->id]) : route('groups.store'),
-    'container_classes' => 'col-lg-6 col-lg-offset-3 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0',
     'topSubmit' => 'true',
 ])
 @section('content')
@@ -41,9 +40,10 @@
 </div>
 
 
-<div class="callout callout-legend col-md-12">
-    <h4>{{ trans('general.users') }}</h4>
-</div>
+<fieldset>
+    <x-form-legend help_text="{{ trans('general.add_users_to_group_help') }}">
+        {{ trans('general.add_users_to_group') }}
+    </x-form-legend>
 
 <!-- this is a temp fix for the select2 not working inside modals -->
 
@@ -52,51 +52,52 @@
         <div class="col-md-12">
 
         <!-- This hidden input will store the selected user IDs as a comma-separated string to avoid max_input_vars and max_multipart_body_parts php.ini issues -->
-        <input type="text" name="users_to_add" id="user_id_box" class="form-control" value="{{ implode(",", $associated_users->pluck('id')->toArray()) }}"/>
+        <input type="hidden" name="users_to_add" id="hidden_ids_box" class="form-control" value="{{ implode(",", $associated_users->pluck('id')->toArray()) }}"/>
 
-
-
-
-        <div class="row addremove-multiselect">
+        <div class="addremove-multiselect">
                 <div class="col-lg-5 col-sm-5 col-xs-12">
-                    <h4>Available</h4>
+                    <h4>{{ trans('general.available_users') }}</h4>
                     <select id="available-select" class="multiselect available form-control" size="8" multiple="multiple">
                         @foreach($unselected_users as $unselected_user)
                             <option value="{{ $unselected_user->id }}" role="option">
-                                ID: {{ $unselected_user->id }}
                                 {{ $unselected_user->present()->fullName }} ({{ $unselected_user->username }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="help-block"><span id="user_count_unselected_box">{{ count($unselected_users) }}</span> users </p>
+                    <p class="help-block text-right">
+                        <x-icon type="users" />
+                        <span id="count_unselected_box">{{ count($unselected_users) }}</span>
+                    </p>
                 </div>
 
                 <div class="multiselect-controls col-lg-2 col-sm-2 col-xs-12">
                     <br><br>
-                    <button type="button" id="rightall" class="rightall btn btn-block">Add All <i class="fa-solid fa-angles-right"></i></button>
-                    <button type="button" id="right" class="right btn btn-block">Add <i class="fa-solid fa-angle-right"></i></button>
-                    <button type="button" id="left" class="left btn btn-block"><i class="fa-solid fa-angle-left"></i> Remove</button>
-                    <button type="button" id="leftall" class="leftall btn btn-block"><i class="fa-solid fa-angles-left"></i> Remove All</button>
+                    <button type="button" id="rightall" class="rightall btn btn-sm btn-block btn-default" data-tooltip="true" title="{{ trans('general.add_all_users_to_group') }}"><i class="fa-solid fa-angles-right"></i></button>
+                    <button type="button" id="right" class="right btn btn-sm btn-block btn-default" data-tooltip="true" title="{{ trans('general.add_selected_users_to_group') }}"><i class="fa-solid fa-angle-right"></i></button>
+                    <button type="button" id="left" class="left btn btn-block  btn-sm btn-default" data-tooltip="true" title="{{ trans('general.remove_selected_users_from_group') }}"><i class="fa-solid fa-angle-left"></i></button>
+                    <button type="button" id="leftall" class="leftall btn  btn-sm btn-block btn-default" data-tooltip="true" title="{{ trans('general.remove_all_users_from_group') }}"><i class="fa-solid fa-angles-left"></i></button>
                 </div>
 
                 <div class="col-lg-5 col-sm-5 col-xs-12">
-                    <h4>In Group</h4>
+                    <h4>{{ trans('general.users_to_add_to_group') }}</h4>
                     <select id="selected-select" class="multiselect selected form-control" size="8" multiple="multiple">
                         @foreach($associated_users as $associated_user)
                             <option value="{{ $associated_user->id }}" aria-selected="true" selected="selected" role="option">
-                                ID: {{ $associated_user->id }}
                                 {{ $associated_user->present()->fullName }} ({{ $associated_user->username }})
                             </option>
                         @endforeach
                     </select>
-                    <p class="help-block"><span id="user_count_selected_box">{{ count($associated_users) }}</span> in this group</p>
+                    <p class="help-block text-right">
+                        <x-icon type="users" />
+                        <span id="count_selected_box"> {{ count($associated_users) }}</span>
+                    </p>
 
                 </div>
 
         </div>
     </div>
 </div>
-
+</fieldset>
 
 <div class="col-md-12">
     @include ('partials.forms.edit.permissions-base', ['use_inherit' => false])

@@ -52833,27 +52833,20 @@ $(".remember-toggle").on("click", function () {
   var toggle_content_class = 'toggle-content-' + $(this).attr('id');
   var toggle_arrow = '#toggle-arrow-' + toggleable_callout_id;
   var toggle_cookie_name = 'toggle_state_' + toggleable_callout_id;
-  console.log('Callout ID: ' + toggleable_callout_id);
-  console.log('Content ID: ' + toggle_content_class);
-  console.log('Arrow ID: ' + toggle_arrow);
-  console.log('Cookie Name: ' + toggle_cookie_name);
   $('.' + toggle_content_class).fadeToggle(100);
   $(toggle_arrow).toggleClass('fa-caret-right fa-caret-down');
   var toggle_open = $(toggle_arrow).hasClass('fa-caret-down');
-  console.log('Cookie will set open state to: ' + toggle_open);
   document.cookie = toggle_cookie_name + "=" + toggle_open + ';path=/';
 });
 var all_cookies = document.cookie.split(';');
 for (var i in all_cookies) {
   var trimmed_cookie = all_cookies[i].trim(' ');
-  elems = all_cookies[i].split('=', 2);
+  elems = trimmed_cookie.split('=', 2);
 
   // We have to do more here since we don't know the name of the selector
   if (trimmed_cookie.startsWith('toggle_state_')) {
-    console.log(trimmed_cookie + ' matches toggle_state_');
-    var toggle_selector_name = elems[0].replace(' toggle_state_', '');
-    if (elems[1] == 'true') {
-      console.log('Selector name for cookie click trigger: ' + toggle_selector_name);
+    var toggle_selector_name = elems[0].replace('toggle_state_', '');
+    if (elems[1] != "true") {
       $('#' + toggle_selector_name + '.remember-toggle').trigger('click');
     }
   }
@@ -52909,13 +52902,11 @@ $(function () {
     $(origin).find(':selected').appendTo(dest);
     $(dest).attr('selected', true);
     $(dest).sort_select_box();
-    // $('#user_id_box').val($('#selected-select').val());
   }
   function moveAllItems(origin, dest) {
     $(origin).children("option:visible").appendTo(dest);
     $(dest).attr('selected', true);
     $(dest).sort_select_box();
-    //  $('#user_id_box').val($('#selected-select').val());
   }
   $('.left').on('click', function () {
     var container = $(this).closest('.addremove-multiselect');
@@ -52928,25 +52919,22 @@ $(function () {
   $('.leftall').on('click', function () {
     var container = $(this).closest('.addremove-multiselect');
     moveAllItems($(container).find('select.multiselect.selected'), $(container).find('select.multiselect.available'));
-    // $('#user_id_box').val($('#selected-select').val());
   });
   $('.rightall').on('click', function () {
     var container = $(this).closest('.addremove-multiselect');
     moveAllItems($(container).find('select.multiselect.available'), $(container).find('select.multiselect.selected'));
-    // $('#user_id_box').val($('#selected-select').val());
   });
   $('select.multiselect.selected').on('dblclick keyup', function (e) {
     if (e.which == 13 || e.type == 'dblclick') {
       var container = $(this).closest('.addremove-multiselect');
       moveItems($(container).find('select.multiselect.selected'), $(container).find('select.multiselect.available'));
-      // $('#user_id_box').val($('#selected-select').val());
     }
   });
   $('select.multiselect.available').on('dblclick keyup', function (e) {
     if (e.which == 13 || e.type == 'dblclick') {
       var container = $(this).closest('.addremove-multiselect');
       moveItems($(container).find('select.multiselect.available'), $(container).find('select.multiselect.selected'));
-      $('#user_id_box').val($('#selected-select').val());
+      $('#hidden_ids_box').val($('#selected-select').val());
     }
   });
 });
@@ -52959,11 +52947,12 @@ $.fn.sort_select_box = function () {
   });
   //replace with sorted my_options;
   $(this).empty().append(selected_options);
-  var selected_in_box = $('#selected-select').children("option:selected").val();
-  var not_selected_in_box = $('#selected-select option').not(':selected').val();
-  $('#user_id_box').empty().append(selected_in_box).append(not_selected_in_box);
-  $('#user_count_selected_box').html($('#selected-select option').length);
-  $('#user_count_unselected_box').html($('#available-select option').length);
+  var selected_in_box = $('#selected-select option').toArray().map(function (item) {
+    return item.value;
+  }).join();
+  $('#hidden_ids_box').empty().val(selected_in_box);
+  $('#count_selected_box').html($('#selected-select option').length);
+  $('#count_unselected_box').html($('#available-select option').length);
 
   // clearing any selections
   $("#" + this.attr('id') + " option").attr('selected', true);
