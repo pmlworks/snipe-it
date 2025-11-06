@@ -76,8 +76,8 @@ class GroupsController extends Controller
 
         if ($group->save()) {
 
-            if ($request->filled('users_to_add')) {
-                $associated_users = explode(',',$request->input('users_to_add'));
+            if ($request->filled('users_to_sync')) {
+                $associated_users = explode(',',$request->input('users_to_sync'));
                 $group->users()->sync($associated_users);
             }
             return redirect()->route('groups.index')->with('success', trans('admin/groups/message.success.create'));
@@ -135,8 +135,8 @@ class GroupsController extends Controller
         if (! config('app.lock_passwords')) {
             if ($group->save()) {
 
-                if ($request->filled('users_to_add')) {
-                    $associated_users = explode(',',$request->input('users_to_add'));
+                if ($request->filled('users_to_sync')) {
+                    $associated_users = explode(',',$request->input('users_to_sync'));
                     $group->users()->sync($associated_users);
                 }
 
