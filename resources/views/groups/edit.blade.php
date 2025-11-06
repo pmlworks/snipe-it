@@ -52,7 +52,7 @@
         <div class="col-md-12">
 
         <!-- This hidden input will store the selected user IDs as a comma-separated string to avoid max_input_vars and max_multipart_body_parts php.ini issues -->
-        <input type="hidden" name="users_to_add" id="hidden_ids_box" class="form-control" value="{{ implode(",", $associated_users->pluck('id')->toArray()) }}"/>
+        <input type="hidden" name="users_to_add" id="hidden_ids_box" class="form-control" value="{{ ($associated_users && is_array($associated_users)) ? implode(",", $associated_users->pluck('id')->toArray()) :  '' }}"/>
 
         <div class="addremove-multiselect">
                 <div class="col-lg-5 col-sm-5 col-xs-12">
