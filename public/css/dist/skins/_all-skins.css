@@ -378,6 +378,9 @@ a.btn-danger:visited {
   background-color: #000000;
   color: #fff;
 }
+.btn-info {
+  border-color: #fff;
+}
 /**
 The dropdown is white, so use a darker color
  */
@@ -1180,6 +1183,9 @@ a.label.label-default:hover {
 .btn:hover.btn-white:hover {
   background-color: #173648;
   color: #fff;
+}
+.btn-info {
+  border-color: #fff;
 }
 /**
 The dropdown is white, so use a darker color
@@ -2171,6 +2177,9 @@ a:visited {
   background-color: #000d07;
   color: #FFF;
 }
+.btn-info {
+  border-color: #fff;
+}
 /**
 The dropdown is white, so use a darker color
  */
@@ -2695,6 +2704,9 @@ a:visited {
 .btn:hover.btn-white:hover {
   background-color: #663800;
   color: #fff;
+}
+.btn-info {
+  border-color: #fff;
 }
 /**
 The dropdown is white, so use a darker color
@@ -3426,6 +3438,9 @@ a.btn-danger:visited {
 .btn:hover.btn-white:hover {
   background-color: #272546;
   color: #fff;
+}
+.btn-info {
+  border-color: #fff;
 }
 /**
 The dropdown is white, so use a darker color
@@ -4174,6 +4189,9 @@ a.btn-danger:visited {
 .btn:hover.btn-white:hover {
   background-color: #6b1c12;
   color: #fff;
+}
+.btn-info {
+  border-color: #fff;
 }
 /**
 The dropdown is white, so use a darker color
@@ -5112,6 +5130,9 @@ a:visited {
 .btn:hover.btn-white:hover {
   background-color: var(--hover-link);
   color: #545454;
+}
+.btn-info {
+  border-color: #fff;
 }
 a.actions {
   color: #fff !important;
