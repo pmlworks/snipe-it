@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use App\Enums\ActionType;
 
 /**
  * Model for the Actionlog (the table that keeps a historical log of
@@ -335,9 +336,12 @@ class Actionlog extends SnipeModel
      * @since  [v3.0]
      * @return bool
      */
-    public function logaction($actiontype)
+    public function logaction(string|ActionType $actiontype)
     {
-        $this->action_type = $actiontype;
+        if (is_string($actiontype)) {
+            $actiontype = ActionType::from($actiontype);
+        }
+        $this->action_type = $actiontype->value;
         $this->remote_ip =  request()->ip();
         $this->user_agent = request()->header('User-Agent');
         $this->action_source = $this->determineActionSource();
