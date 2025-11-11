@@ -26,7 +26,7 @@ class Checkoutable
         $acceptance = $unaccepted;
 
         $assignee = $acceptance->assignedTo;
-        $company = optional($unaccepted_row->company)->present()?->nameUrl() ?? '';
+        $company = $unaccepted_row->company ? optional($unaccepted_row->company)->present()->nameUrl() : '';
         $category = $model = $name = $tag = '';
         $type = $acceptance->checkoutable_item_type ?? '';
 

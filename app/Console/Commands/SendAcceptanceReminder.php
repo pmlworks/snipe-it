@@ -31,7 +31,7 @@ class SendAcceptanceReminder extends Command
      *
      * @var string
      */
-    protected $description = 'This will resend users with unaccepted assets a reminder to accept or decline them.';
+    protected $description = 'This will resend users with unaccepted items a reminder to accept or decline them.';
 
     /**
      * Create a new command instance.
