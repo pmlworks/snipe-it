@@ -1127,10 +1127,10 @@ class ReportsController extends Controller
         $this->authorize('reports.view');
         $showDeleted = $deleted == 'deleted';
 
-        $query = CheckoutAcceptance::pending()
+        $query = CheckoutAcceptance::Pending()
             ->with([
                 'checkoutable' => function (MorphTo $query) {
-                    $query->morphWith([
+                    $query->withTrashed()->morphWith([
                         Asset::class => ['model.category', 'assignedTo', 'company'],
                         Accessory::class => ['category','checkouts', 'company'],
                         LicenseSeat::class => ['user', 'license'],
