@@ -115,7 +115,7 @@ class Asset extends Depreciable
         'location_id'       => ['nullable', 'exists:locations,id', 'fmcs_location'],
         'rtd_location_id'   => ['nullable', 'exists:locations,id', 'fmcs_location'],
         'purchase_date'     => ['nullable', 'date', 'date_format:Y-m-d'],
-        'serial'            => ['nullable', 'string', 'unique_undeleted:assets,serial'],
+        'serial' => ['nullable', 'string', 'unique_undeleted:assets,serial'], // FIXME - doesn't this require unique serials *ALWAYS*?!?
         'purchase_cost'     => ['nullable', 'numeric', 'gte:0', 'max:99999999999999999.99'],
         'supplier_id'       => ['nullable', 'exists:suppliers,id'],
         'asset_eol_date'    => ['nullable', 'date'],

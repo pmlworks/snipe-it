@@ -51,9 +51,9 @@
         <select class="js-data-ajax"
                 data-endpoint="users"
                 data-placeholder="{{ trans('general.select_user') }}"
-                name="associated_users[]"
+                {{--                name="associated_users[]"--}}
                 style="width: 100%"
-                id="associated_users[]"
+                id="associated_users"
                 aria-label="associated_users[]"  multiple>
 
                 <option value=""  role="option">{{ trans('general.select_user') }}</option>
@@ -67,6 +67,7 @@
                 @endif
         </select>
     </div>
+    <input type="hidden" id='calculated_users' name="associated_users" value=""/>
 
     {!! $errors->first('associated_users', '<div class="col-md-8 col-md-offset-3"><span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span></div>') !!}
 
@@ -78,3 +79,16 @@
 </div>
 
 @stop
+@section('moar_scripts')
+    <script>
+        //window.alert('hjoi')
+        $('#create-form').on('submit', function (e) {
+            users = $('#associated_users').val();
+            console.warn("User count is: ");
+            console.dir(users);
+            console.warn(users.join("|"))
+            $('#calculated_users').val(users.join('|'));
+            return false;
+        })
+    </script>
+@endsection

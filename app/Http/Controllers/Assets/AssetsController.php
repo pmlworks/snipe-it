@@ -6,6 +6,7 @@ use App\Events\CheckoutableCheckedIn;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Requests\StoreMultipleAssetRequest;
 use App\Http\Requests\UpdateAssetRequest;
 use App\Models\Actionlog;
 use App\Http\Requests\UploadFileRequest;
@@ -98,7 +99,7 @@ class AssetsController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v1.0]
      */
-    public function store(ImageUploadRequest $request) : RedirectResponse
+    public function store(StoreMultipleAssetRequest $request): RedirectResponse
     {
         $this->authorize(Asset::class);
 
@@ -211,6 +212,7 @@ class AssetsController extends Controller
                 }
             }
 
+            \Log::error("About to check validity and, possibly, save...");
             // Validate the asset before saving
             if ($asset->isValid() && $asset->save()) {
                 $target = null;
