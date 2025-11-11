@@ -1180,7 +1180,7 @@ class ReportsController extends Controller
         $acceptance = $query->find($id);
         if (!$acceptance) {
             Log::debug('No pending acceptances');
-            // Redirect to the unaccepted assets report page with error
+            // Redirect to the unaccepted items report page with error
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.bad_data'));
         }
         $item      = $acceptance->checkoutable;
