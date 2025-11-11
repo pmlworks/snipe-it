@@ -1166,7 +1166,7 @@ class ReportsController extends Controller
         $query = CheckoutAcceptance::query()
             ->with([
                 'checkoutable' => function (MorphTo $query) {
-                    $query->morphWith([
+                    $query->withTrashed()->morphWith([
                         Asset::class       => ['model.category', 'assignedTo', 'company', 'checkouts'],
                         Accessory::class   => ['category', 'company', 'checkouts'],
                         LicenseSeat::class => ['user', 'license', 'checkouts'],
@@ -1273,7 +1273,7 @@ class ReportsController extends Controller
             $acceptances = CheckoutAcceptance::pending()
                 ->with([
                     'checkoutable' => function (MorphTo $acceptance) {
-                        $acceptance->morphWith([
+                        $acceptance->withTrashed()->morphWith([
                             Asset::class => ['model.category', 'assignedTo', 'company'],
                             Accessory::class => ['category','checkouts', 'company'],
                             LicenseSeat::class => ['user', 'license'],
