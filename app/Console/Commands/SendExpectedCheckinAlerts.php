@@ -10,6 +10,7 @@ use App\Notifications\ExpectedCheckinNotification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
+use App\Helpers\Helper;
 
 class SendExpectedCheckinAlerts extends Command
 {
@@ -43,7 +44,7 @@ class SendExpectedCheckinAlerts extends Command
     public function handle()
     {
         $settings = Setting::getSettings();
-        $interval = $settings->audit_warning_days ?? 0;
+        $interval = $settings->due_checkin_days ?? 0;
         $today = Carbon::now();
         $interval_date = $today->copy()->addDays($interval);
         $count = 0;
@@ -54,7 +55,7 @@ class SendExpectedCheckinAlerts extends Command
 
         $assets = Asset::whereNull('deleted_at')->DueOrOverdueForCheckin($settings)->orderBy('assets.expected_checkin', 'desc')->get();
 
-        $this->info($assets->count().' assets must be checked on or before '.$interval_date);
+        $this->info($assets->count().' assets must be checked on or before '.Helper::getFormattedDateObject($interval_date, 'date', false));
 
 
         foreach ($assets as $asset) {
