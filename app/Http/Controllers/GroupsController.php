@@ -48,7 +48,9 @@ class GroupsController extends Controller
         return view('groups/edit', compact('permissions', 'selectedPermissions', 'groupPermissions'))
             ->with('group', $group)
             ->with('associated_users', [])
-            ->with('unselected_users', $users);
+            ->with('unselected_users', $users)
+            ->with('all_users_count', $users->count())
+            ;
     }
 
     /**
@@ -108,7 +110,13 @@ class GroupsController extends Controller
         // Get the unselected users
         $unselected_users = \App\Models\User::whereNotIn('id', $associated_users->pluck('id')->toArray())->orderBy('first_name', 'asc')->orderBy('last_name', 'asc')->get();
 
-        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))->with('associated_users', $associated_users)->with('unselected_users', $unselected_users);
+        // We need the total to see whether or not we should show the user selection box :(
+        $all_users_count = $associated_users->count() + $unselected_users->count();
+
+        return view('groups.edit', compact('group', 'permissions', 'selected_array', 'groupPermissions'))
+            ->with('associated_users', $associated_users)
+            ->with('unselected_users', $unselected_users)
+            ->with('all_users_count', $all_users_count);
     }
 
     /**
