@@ -156,7 +156,6 @@ class ViewAssetsController extends Controller
     public function getRequestableIndex() : View
     {
         $assets = Asset::with('model', 'defaultLoc', 'location', 'assignedTo', 'requests')->Hardware()->RequestableAssets();
-            $onlyUnassignedDeployable = Setting::getSettings()->request_unassigned_deployable;
         $models = AssetModel::with([
             'category',
             'requests',
