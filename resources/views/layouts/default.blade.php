@@ -1145,7 +1145,7 @@ dir="{{ Helper::determineLanguageDirection() }}">
                 today: "{{ trans('datepicker.today') }}",
                 clear: "{{ trans('datepicker.clear') }}",
                 format: "yyyy-mm-dd",
-                weekStart: 0
+                weekStart: {{ $snipeSettings->week_start ?? 0 }},
             };
 
             var clipboard = new ClipboardJS('.js-copy-link');
