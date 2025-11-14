@@ -53,6 +53,7 @@ class Department extends SnipeModel
         'location_id',
         'company_id',
         'manager_id',
+        'tag_color',
         'notes',
     ];
 

@@ -188,7 +188,7 @@
                   <strong>{{ trans('general.category')}}</strong>
               </div>
               <div class="col-md-9">
-                  <a href="{{ route('categories.show', $accessory->category->id) }}">{{ $accessory->category->name }} </a>
+                  {!!  $accessory->category->present()->formattedNameLink !!}
               </div>
           </div>
       @endif

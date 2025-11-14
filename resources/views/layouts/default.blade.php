@@ -1086,6 +1086,10 @@ dir="{{ Helper::determineLanguageDirection() }}">
 
         <script nonce="{{ csrf_token() }}">
 
+            //color picker with addon
+            $("#color").colorpicker();
+
+
             $.fn.datepicker.dates['{{ app()->getLocale() }}'] = {
                 days: [
                     "{{ trans('datepicker.days.sunday') }}",

@@ -156,6 +156,14 @@ class SupplierPresenter extends Presenter
                 'visible' => false,
                 'formatter'    => 'phoneFormatter',
             ], [
+                'field' => 'tag_color',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.tag_color'),
+                'visible' => false,
+                'formatter' => 'colorTagFormatter',
+            ],[
                 'field' => 'notes',
                 'searchable' => true,
                 'sortable' => true,

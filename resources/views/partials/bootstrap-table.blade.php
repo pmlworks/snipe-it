@@ -972,15 +972,40 @@
 
                 // Add some overrides for any funny urls we have
                 var dest = destination;
+                var tag_color;
                 var polymorphicItemFormatterDest = '';
+
+
+
                 if (destination == 'fieldsets') {
                     var polymorphicItemFormatterDest = 'fields/';
-                } 
+                }
 
-                return '<nobr><a href="{{ config('app.url') }}/' + polymorphicItemFormatterDest + dest + '/' + value.id + '">' + value.name + '</a></span>';
+                // Handle the preceding icon if a tag_color is given in the API response
+                if ((value.tag_color) && (value.tag_color!='')) {
+                    var tag_icon = '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i>';
+                } else {
+                    var tag_icon = '';
+                }
+
+                return '<nobr>'+ tag_icon + ' <a href="{{ config('app.url') }}/' + polymorphicItemFormatterDest + dest + '/' + value.id + '">' + value.name + '</a></span>';
             }
         };
     }
+
+    function colorSqFormatter(value, row) {
+        if (value) {
+            return '<span class="label" style="background-color: ' + value + ';">&nbsp;</span> ' + value;
+        }
+    }
+
+    function colorTagFormatter(value, row) {
+        if (value) {
+            return '<i class="fa-solid fa-square" style="color: ' + value + ';" aria-hidden="true"></i> ' + value;
+        }
+    }
+
+
 
 
     function licenseKeyFormatter(value, row) {
@@ -1414,7 +1439,14 @@
 
     function deployedLocationFormatter(row, value) {
         if ((row) && (row!=undefined)) {
-            return '<a href="{{ config('app.url') }}/locations/' + row.id + '">' + row.name + '</a>';
+            // Handle the preceding icon if a tag_color is given in the API response
+            if ((row.tag_color) && (row.tag_color!='')) {
+                var tag_icon = '<i class="fa-solid fa-square" style="color: ' + row.tag_color + ';" aria-hidden="true"></i> ';
+            } else {
+                var tag_icon = '';
+            }
+
+            return '<nobr>' + tag_icon +'<a href="{{ config('app.url') }}/locations/' + row.id + '">' + row.name + '</a></nobr>';
         } else if (value.rtd_location) {
             return '<a href="{{ config('app.url') }}/locations/' + value.rtd_location.id + '">' + value.rtd_location.name + '</a>';
         }

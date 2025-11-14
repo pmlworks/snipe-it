@@ -44,6 +44,7 @@ class DepartmentsTransformer
                     'name' => e($department->location->name),
                 ] : null,
                 'users_count' => (int) ($department->users_count),
+                'tag_color' => $department->tag_color ? e($department->tag_color) : null,
                 'notes' => Helper::parseEscapedMarkedownInline($department->notes),
                 'created_at' => Helper::getFormattedDateObject($department->created_at, 'datetime'),
                 'updated_at' => Helper::getFormattedDateObject($department->updated_at, 'datetime'),

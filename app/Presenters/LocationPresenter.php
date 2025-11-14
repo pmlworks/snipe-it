@@ -227,7 +227,15 @@ class LocationPresenter extends Presenter
                 'title' =>  trans('admin/users/table.manager'),
                 'visible' => false,
                 'formatter' => 'usersLinkObjFormatter',
-            ],  [
+            ], [
+                'field' => 'tag_color',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.tag_color'),
+                'visible' => false,
+                'formatter' => 'colorTagFormatter',
+            ], [
                 'field' => 'notes',
                 'searchable' => true,
                 'sortable' => true,
