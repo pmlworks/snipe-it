@@ -405,13 +405,7 @@
                                {{ trans('general.company') }}
                            </div>
                            <div class="col-md-9">
-                               @can('view', 'App\Models\Company')
-                                   <a href="{{ route('companies.show', $user->company->id) }}">
-                                       {{ $user->company->name }}
-                                   </a>
-                               @else
-                                   {{ $user->company->name }}
-                               @endcan
+                               {!!  $user->company->present()->formattedNameLink !!}
                            </div>
 
                        </div>
@@ -572,7 +566,7 @@
                         {{ trans('admin/users/table.location') }}
                       </div>
                       <div class="col-md-9">
-                        {{ link_to_route('locations.show', $user->userloc->name, [$user->userloc->id]) }}
+                          {!!  $user->userloc->present()->formattedNameLink !!}
                       </div>
                     </div>
                     @endif
@@ -596,7 +590,7 @@
                         </div>
                         <div class="col-md-9">
                           <a href="{{ route('departments.show', $user->department) }}">
-                            {{ $user->department->name }}
+                              {!!  $user->department->present()->formattedNameLink !!}
                           </a>
                         </div>
                       </div>
