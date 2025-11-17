@@ -571,16 +571,6 @@
                     </div>
                     @endif
 
-                    <!-- last login -->
-                    <div class="row">
-                      <div class="col-md-3">
-                        {{ trans('general.last_login') }}
-                      </div>
-                      <div class="col-md-9">
-                        {{ \App\Helpers\Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}
-                      </div>
-                    </div>
-
 
                     @if ($user->department)
                       <!-- empty -->
@@ -608,6 +598,17 @@
                       @endif
                     @endif
 
+
+                   <!-- last login -->
+                   <div class="row">
+                       <div class="col-md-3">
+                           {{ trans('general.last_login') }}
+                       </div>
+                       <div class="col-md-9">
+                           {{ \App\Helpers\Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}
+                       </div>
+                   </div>
+                   
                     @if ($user->created_at)
                     <!-- created at -->
                     <div class="row">
