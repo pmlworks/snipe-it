@@ -40,7 +40,7 @@ class DepartmentsController extends Controller
                 'departments.image',
                 'departments.tag_color',
                 'departments.notes'
-            ])->with('users')->with('location')->with('manager')->with('company')->withCount('users as users_count');
+            ])->with('location')->with('manager')->with('company')->withCount('users as users_count');
 
         if ($request->filled('search')) {
             $departments = $departments->TextSearch($request->input('search'));
