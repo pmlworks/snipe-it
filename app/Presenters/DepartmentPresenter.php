@@ -49,6 +49,22 @@ class DepartmentPresenter extends Presenter
                 'visible' => true,
                 'formatter' => 'imageFormatter',
             ], [
+                'field' => 'manager',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/departments/table.manager'),
+                'visible' => true,
+                'formatter' => 'usersLinkObjFormatter',
+            ],[
+                'field' => 'location',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.location'),
+                'visible' => true,
+                'formatter' => 'locationsLinkObjFormatter',
+            ], [
                 'field' => 'users_count',
                 'searchable' => false,
                 'sortable' => true,
@@ -95,7 +111,7 @@ class DepartmentPresenter extends Presenter
                 'switchable' => false,
                 'title' => trans('table.actions'),
                 'visible' => true,
-                'formatter' => 'locationsActionsFormatter',
+                'formatter' => 'departmentsActionsFormatter',
             ],
         ];
 
