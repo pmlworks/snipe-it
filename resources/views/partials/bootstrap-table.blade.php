@@ -904,8 +904,15 @@
     // This only works for model index pages because it uses the row's model ID
     function genericRowLinkFormatter(destination) {
         return function (value,row) {
+
+            if ((row) && (row.tag_color) && (row.tag_color!='') && (row.tag_color!=undefined)) {
+                var tag_icon = '<i class="fa-solid fa-square" style="color: ' + row.tag_color + ';" aria-hidden="true"></i> ';
+            } else {
+                var tag_icon = '';
+            }
+
             if (value) {
-                return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '">' + value + '</a>';
+                return tag_icon + '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '">' + value + '</a>';
             }
         };
     }
