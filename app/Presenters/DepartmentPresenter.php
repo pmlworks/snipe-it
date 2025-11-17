@@ -121,7 +121,7 @@ class DepartmentPresenter extends Presenter
 
     public function formattedNameLink() {
 
-        if (auth()->user()->can('department.view', $this)) {
+        if (auth()->user()->can('view', ['\App\Models\Department', $this])) {
             return ($this->tag_color ? "<i class='fa-solid fa-fw fa-square' style='color: ".e($this->tag_color)."' aria-hidden='true'></i>" : '').'<a href="'.route('departments.show', e($this->id)).'">'.e($this->name).'</a>';
         }
 
