@@ -57,6 +57,7 @@ class UsersTransformer
                 'department' => ($user->department) ? [
                     'id' => (int) $user->department->id,
                     'name'=> e($user->department->name),
+                    'tag_color' => ($user->department->tag_color) ? e($user->department->tag_color) : null,
                 ] : null,
                 'department_manager' => ($user->department?->manager) ? [
                     'id' => (int) $user->department->manager->id,

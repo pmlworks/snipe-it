@@ -264,6 +264,7 @@ class ManufacturersController extends Controller
             'id',
             'name',
             'image',
+            'tag_color',
         ]);
 
         if ($request->filled('search')) {

@@ -197,6 +197,7 @@ class CompaniesController extends Controller
             'companies.name',
             'companies.email',
             'companies.image',
+            'companies.tag_color',
         ]);
 
 

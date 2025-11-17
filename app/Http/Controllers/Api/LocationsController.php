@@ -409,6 +409,7 @@ class LocationsController extends Controller
             'locations.name',
             'locations.parent_id',
             'locations.image',
+            'locations.tag_color',
         ]);
 
         // Only scope locations if the setting is enabled
