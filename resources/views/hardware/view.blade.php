@@ -587,7 +587,7 @@
                                                 <ul class="list-unstyled">
 
                                                     <li>
-                                                        {!!  $asset->manufacturer->present()->formattedNameLink !!}
+                                                        <x-copy-to-clipboard copy_what="manufacturer">{!!  $asset->model->manufacturer->present()->formattedNameLink !!}</x-copy-to-clipboard>
                                                     </li>
 
                                                     @if (($asset->model) && ($asset->model->manufacturer) &&  ($asset->model->manufacturer->url!=''))
