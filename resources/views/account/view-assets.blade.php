@@ -219,7 +219,7 @@
                         {{ trans('general.company') }}
                       </div>
                       <div class="col-md-9">
-                        {{ $user->company->name }}
+                          {!!  $user->company->present()->formattedNameLink !!}
                       </div>
 
                     </div>
@@ -383,7 +383,7 @@
                         {{ trans('general.department') }}
                       </div>
                       <div class="col-md-9">
-                          {{ $user->department->name }}
+                          {!!  $user->department->present()->formattedNameLink !!}
                       </div>
                     </div>
                   @endif
@@ -504,7 +504,7 @@
                         </td>
                         <td>
                           @if (($asset->model) && ($asset->model->category))
-                          {{ $asset->model->category->name }}
+                         {!! $asset->model->category->present()->formattedNameLink  !!}
                           @endif
                         </td>
                         <td>
@@ -519,7 +519,7 @@
                           <label class="label label-default">{{ trans('general.deployed') }}</label>
                         </td>
                         <td>
-                            {{ $asset->model->name }}
+                            {!!  ($asset->model) ? $asset->model->present()->formattedNameLink : trans('general.deleted') !!}
                         </td>
                         <td>
                           {{ $asset->model->model_number }}
@@ -531,7 +531,7 @@
                           {{ ($asset->defaultLoc) ? $asset->defaultLoc->name : '' }}
                         </td>
                         <td>
-                          {{ ($asset->location) ? $asset->location->name : '' }}
+                            {!!  ($asset->defaultLoc) ? $asset->defaultLoc->present()->formattedNameLink : trans('general.deleted') !!}
                         </td>
                         <td>
                           {{ ($asset->expected_checkin) ? $asset->expected_checkin_formatted_date : '' }}
@@ -568,6 +568,8 @@
                     </tbody>
                   </table>
           </div><!-- /asset -->
+
+
           <div class="tab-pane" id="licenses">
 
               <table
@@ -595,7 +597,6 @@
                   <th class="col-md-2">{{ trans('admin/licenses/form.to_name') }}</th>
                   <th class="col-md-2">{{ trans('admin/licenses/form.to_email') }}</th>
                   <th class="col-md-2">{{ trans('general.category') }}</th>
-
                 </tr>
                 </thead>
                 <tbody>
@@ -607,7 +608,6 @@
                     <td>
                       @can('viewKeys', $license)
                         <code class="single-line"><span class="js-copy-link" data-clipboard-target=".js-copy-key-{{ $license->id }}" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}"><span class="js-copy-key-{{ $license->id }}">{{ $license->serial }}</span></span></code>
-
                       @else
                         ------------
                       @endcan
@@ -619,12 +619,15 @@
                         ------------
                       @endcan
                     </td>
-                    @can('viewKeys', $license)
-                    <td>{{$license->license_email}}</td>
-                    @else
-                      ------------
-                    @endcan
-                    <td>{{ ($license->category) ? $license->category->name : trans('general.deleted') }}</td>
+                      <td>
+                      @can('viewKeys', $license)
+                         {{$license->license_email}}
+                      @else
+                          ------------
+                     @endcan
+                     </td>
+
+                    <td>{!!  ($license->category) ? $license->category->present()->formattedNameLink : trans('general.deleted') !!}</td>
                   </tr>
                 @endforeach
                 </tbody>

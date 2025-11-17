@@ -1155,13 +1155,11 @@ dir="{{ Helper::determineLanguageDirection() }}">
             var clipboard = new ClipboardJS('.js-copy-link');
 
             clipboard.on('success', function(e) {
-                // Get the clicked element
+                e.text = e.text.replace(/^\s/, '').trim();
                 var clickedElement = $(e.trigger);
-                // Get the target element selector from data attribute
-                var targetSelector = clickedElement.data('data-clipboard-target');
-                // Show the alert that the content was copied
                 clickedElement.tooltip('hide').attr('data-original-title', '{{ trans('general.copied') }}').tooltip('show');
             });
+
 
             // Reference: https://jqueryvalidation.org/validate/
             var validator = $('#create-form').validate({
