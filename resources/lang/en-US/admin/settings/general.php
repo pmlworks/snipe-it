@@ -79,6 +79,7 @@ return [
     'generate_backup'			=> 'Generate Backup',
     'google_workspaces'         => 'Google Workspaces',
     'header_color'              => 'Header Color',
+    'header_color_help'         => 'Scroll up to the top of the screen to preview the header color.',
     'info'                      => 'These settings let you customize certain aspects of your installation.',
     'label_logo_size'           => 'Square logos look best - will be displayed in the top right of each asset label. ',
     'laravel'                   => 'Laravel Version',
