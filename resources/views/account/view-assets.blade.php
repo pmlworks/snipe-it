@@ -324,7 +324,7 @@
                         {{ trans('admin/users/table.email') }}
                       </div>
                       <div class="col-md-9">
-                        <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>
+                        <a href="mailto:{{ $user->email }}"><x-icon type="email" /> {{ $user->email }}</a>
                       </div>
                     </div>
                   @endif
@@ -336,7 +336,7 @@
                         {{ trans('general.website') }}
                       </div>
                       <div class="col-md-9">
-                        <a href="{{ $user->website }}" target="_blank">{{ $user->website }}</a>
+                        <a href="{{ $user->website }}" target="_blank"><x-icon type="external-link" /> {{ $user->website }}</a>
                       </div>
                     </div>
                   @endif
@@ -348,7 +348,7 @@
                         {{ trans('admin/users/table.phone') }}
                       </div>
                       <div class="col-md-9">
-                        <a href="tel:{{ $user->phone }}">{{ $user->phone }}</a>
+                        <a href="tel:{{ $user->phone }}"><x-icon type="phone" /> {{ $user->phone }}</a>
                       </div>
                     </div>
                   @endif
@@ -360,7 +360,7 @@
                         {{ trans('admin/users/table.location') }}
                       </div>
                       <div class="col-md-9">
-                        {{ link_to_route('locations.show', $user->userloc->name, [$user->userloc->id]) }}
+                          {!!  $user->userloc->present()->formattedNameLink !!}
                       </div>
                     </div>
                   @endif
@@ -528,10 +528,11 @@
                           {{ $asset->serial }}
                         </td>
                         <td>
-                          {{ ($asset->defaultLoc) ? $asset->defaultLoc->name : '' }}
+                            {!!  ($asset->defaultLoc) ? $asset->defaultLoc->present()->formattedNameLink : '' !!}
+
                         </td>
                         <td>
-                            {!!  ($asset->defaultLoc) ? $asset->defaultLoc->present()->formattedNameLink : trans('general.deleted') !!}
+                            {!!  ($asset->location) ? $asset->location->present()->formattedNameLink : '' !!}
                         </td>
                         <td>
                           {{ ($asset->expected_checkin) ? $asset->expected_checkin_formatted_date : '' }}

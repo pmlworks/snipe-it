@@ -378,7 +378,7 @@ class LocationPresenter extends Presenter
 
     public function formattedNameLink() {
 
-        if (auth()->user()->can('location.view', $this)) {
+        if (auth()->user()->can('locations.view', $this)) {
             return ($this->tag_color ? "<i class='fa-solid fa-fw fa-square' style='color: ".e($this->tag_color)."' aria-hidden='true'></i>" : '').'<a href="'.route('locations.show', e($this->id)).'">'.e($this->name).'</a>';
         }
 
