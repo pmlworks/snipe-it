@@ -56,7 +56,6 @@ class BreadcrumbsServiceProvider extends ServiceProvider
                 Breadcrumbs::for('hardware.index', fn (Trail $trail) =>
                 $trail->parent('home', route('home'))
                     ->push(trans('general.assets'), route('hardware.index'))
-                    ->push(trans('general.list_all'), route('hardware.index'))
                 );
             }
 
