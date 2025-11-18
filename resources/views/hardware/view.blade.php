@@ -437,9 +437,7 @@
                                                 <strong>{{ trans('admin/hardware/form.tag') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                <x-copy-to-clipboard copy_what="assettag">
-                                                    {{ $asset->asset_tag  }}
-                                                </x-copy-to-clipboard>
+                                                <x-copy-to-clipboard copy_what="assettag">{{ $asset->asset_tag  }}</x-copy-to-clipboard>
                                             </div>
                                         </div>
                                     @endif
@@ -724,7 +722,6 @@
                                                         {{-- Hidden span used as copy target --}}
                                                         {{-- It's tempting to break out the HTML into separate lines for this, but it results in extra spaces being added onto the end of the copied value --}}
                                                         @if (($field->field_encrypted=='1') && (Gate::allows('assets.view.encrypted_custom_fields')))
-
                                                             <span class="js-copy-{{ $field->id }} visually-hidden hidden-print" style="font-size: 0px;">{{ ($field->isFieldDecryptable($asset->{$field->db_column_name()}) ? Helper::gracefulDecrypt($field, $asset->{$field->db_column_name()}) : $asset->{$field->db_column_name()}) }}</span>
                                                         @elseif (($field->field_encrypted=='1') && (Gate::denies('assets.view.encrypted_custom_fields')))
                                                             <span class="js-copy-{{ $field->id }} visually-hidden hidden-print" style="font-size: 0px;">{{ strtoupper(trans('admin/custom_fields/general.encrypted')) }}</span>
