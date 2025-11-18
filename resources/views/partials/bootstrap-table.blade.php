@@ -999,7 +999,7 @@
             }
         };
     }
-    
+
 
     function colorTagFormatter(value, row) {
         if (value) {
