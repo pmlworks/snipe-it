@@ -33,6 +33,10 @@ class AuditNotification extends Notification
         //
         $this->settings = Setting::getSettings();
         $this->params = $params;
+        $item =  $params['item'];
+        if (!$item || !is_object($item)) {
+            throw new \InvalidArgumentException('Notification requires a valid item.');
+        }
     }
 
     /**
@@ -93,12 +97,12 @@ class AuditNotification extends Notification
             return MicrosoftTeamsMessage::create()
                 ->to($setting->webhook_endpoint)
                 ->type('success')
-                ->title(class_basename(get_class($params['item'])) .' '.trans('general.audited'))
+                ->title(class_basename($item).' '.trans('general.audited'))
                 ->addStartGroupToSection('activityText')
                 ->fact(trans('mail.asset'), $item)
                 ->fact(trans('general.administrator'), $admin_user->present()->viewUrl() . '|' . $admin_user->display_name);
         }
-            $message = class_basename(get_class($params['item'])) . ' Audited By '.$admin_user->display_name;
+            $message = class_basename(get_class($params['item'])) . trans('general.audited_by').' '.$admin_user->display_name;
             $details = [
                 trans('mail.asset') => htmlspecialchars_decode($item->display_name),
                 trans('mail.notes') => $note ?: '',

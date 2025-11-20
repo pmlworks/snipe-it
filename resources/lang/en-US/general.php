@@ -39,6 +39,7 @@ return [
     'accept_items'          => 'Accept Items',
     'audit'				    => 'Audit',
     'audited'				=> 'Audited',
+    'audited_by'		    => 'Audited By',
     'audits'				=> 'Audits',
     'audit_report'			=> 'Audit Log',
     'assets'				=> 'Assets',
