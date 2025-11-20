@@ -84,6 +84,11 @@ class AuditNotification extends Notification
         $location = $params['location'] ?? '';
         $setting = Setting::getSettings();
 
+        //if somehow a notification triggers without an item, bail out.
+        if(!$item || !is_object($item)){
+            return null;
+        }
+
         if(!Str::contains($setting->webhook_endpoint, 'workflows')) {
             return MicrosoftTeamsMessage::create()
                 ->to($setting->webhook_endpoint)
