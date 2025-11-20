@@ -1,7 +1,7 @@
 @component('mail::message')
 # {{ trans('mail.hello') }},
 
-{{ $intro_text }}.
+{{ $intro_text }}
 
 @component('mail::table')
 |        |          |

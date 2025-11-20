@@ -47,7 +47,7 @@ class FirstAdminNotification extends Notification
     public function toMail()
     {
         return (new MailMessage)
-            ->subject(trans('mail.welcome', ['name' => $this->_data['first_name'].' '.$this->_data['last_name']]))
+            ->subject('👋 '.trans('mail.welcome', ['name' => $this->_data['first_name'].' '.$this->_data['last_name']]))
             ->markdown('notifications.FirstAdmin', $this->_data)
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(

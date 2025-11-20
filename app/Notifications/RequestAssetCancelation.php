@@ -126,7 +126,7 @@ class RequestAssetCancelation extends Notification
                 'expected_checkin'  => $this->expected_checkin,
                 'intro_text'        => trans('mail.a_user_canceled'),
             ])
-            ->subject(trans('general.request_canceled'))
+            ->subject('⚠️ '.trans('general.request_canceled'))
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(
                     'X-System-Sender', 'Snipe-IT'

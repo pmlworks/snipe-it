@@ -54,7 +54,7 @@ class ExpiringLicenseNotification extends Notification
                 'licenses'  => $this->licenses,
                 'threshold'  => $this->threshold,
             ])
-            ->subject(trans('mail.Expiring_Licenses_Report'))
+            ->subject('⏰'.trans('mail.Expiring_Licenses_Report'))
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(
                     'X-System-Sender', 'Snipe-IT'

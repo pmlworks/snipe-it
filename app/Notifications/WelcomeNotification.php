@@ -45,7 +45,7 @@ class WelcomeNotification extends Notification
     {
 
         return (new MailMessage())
-            ->subject(trans('mail.welcome', ['name' => $this->user->first_name.' '.$this->user->last_name]))
+            ->subject('👋 '.trans('mail.welcome', ['name' => $this->user->first_name.' '.$this->user->last_name]))
             ->markdown('notifications.Welcome', $this->user->toArray())
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(

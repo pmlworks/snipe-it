@@ -76,9 +76,9 @@ class AcceptanceItemAcceptedNotification extends Notification
                 'assigned_to'   => $this->assigned_to,
                 'company_name'  => $this->company_name,
                 'qty' => $this->qty,
-                'intro_text'    => trans('mail.acceptance_accepted_greeting'),
+                'intro_text'    => trans('mail.acceptance_accepted_greeting',  ['user' => $this->assigned_to, 'item' => $this->item_name]),
             ])
-            ->subject('✅ '.trans('mail.acceptance_accepted'))
+            ->subject('✅ '.trans('mail.acceptance_accepted', ['user' => $this->assigned_to, 'item' => $this->item_name]))
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(
                     'X-System-Sender', 'Snipe-IT'

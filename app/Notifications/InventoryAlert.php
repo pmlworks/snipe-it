@@ -53,7 +53,7 @@ class InventoryAlert extends Notification
                 'threshold'  => $this->threshold,
             ]
         )
-            ->subject(trans('mail.Low_Inventory_Report'))
+            ->subject('⚠️ '.trans('mail.Low_Inventory_Report'))
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(
                     'X-System-Sender', 'Snipe-IT'
