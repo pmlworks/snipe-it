@@ -36,6 +36,7 @@ class NotificationTests extends TestCase
         $webhook_options = [
             'enableSlackWebhook',
             'enableMicrosoftTeamsWebhook',
+            'enableGoogleChatWebhook'
         ];
 
         Notification::fake();
