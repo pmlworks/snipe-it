@@ -40,7 +40,7 @@ class NotificationTests extends TestCase
         ];
 
         Notification::fake();
-
+        //tests every webhook option
         foreach($webhook_options as $option) {
 
             $this->settings->{$option}();
