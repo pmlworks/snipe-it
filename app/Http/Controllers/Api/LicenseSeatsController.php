@@ -80,7 +80,7 @@ class LicenseSeatsController extends Controller
 
         $this->authorize('view', License::class);
 
-        if ($licenseSeat = LicenseSeat::where('id',$seatId)->where('license_id', $licenseId)->first()) {
+        if ($licenseSeat = LicenseSeat::where('license_id', $licenseId)->find($seatId)) {
             return (new LicenseSeatsTransformer)->transformLicenseSeat($licenseSeat);
         }
 
