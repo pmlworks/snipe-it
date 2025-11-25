@@ -112,7 +112,7 @@ class L4736_A extends L4736
         $fieldSize   = self::FIELD_SIZE   * $scale;
         $fieldMargin = self::FIELD_MARGIN * $scale;
 
-        foreach ($record->get('fields') as $field) {
+        foreach ($fields as $field) {
             static::writeText(
                 $pdf, $field['label'],
                 $currentX, $currentY,
