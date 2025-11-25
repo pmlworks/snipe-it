@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\DeleteUserRequest;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\FilterRequest;
 
 class UsersController extends Controller
 {
@@ -42,7 +43,7 @@ class UsersController extends Controller
      *
      * @return array
      */
-    public function index(Request $request) : array
+    public function index(FilterRequest $request) : array
     {
         $this->authorize('view', User::class);
 
@@ -162,6 +163,11 @@ class UsersController extends Controller
 
         if ($request->filled('filter')) {
             $filter = json_decode($request->input('filter'), true);
+
+            if (is_null($filter)) {
+                $filter = [];
+            }
+
             $filter = array_filter($filter, function ($key) use ($allowed_columns) {
                 return in_array($key, $allowed_columns);
             }, ARRAY_FILTER_USE_KEY);
