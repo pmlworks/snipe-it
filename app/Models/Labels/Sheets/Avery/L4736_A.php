@@ -98,10 +98,10 @@ class L4736_A extends L4736
         $fields = $record->get('fields');
         $fieldCount = count($fields);
 
-        $perFeldHeight = (self::LABEL_SIZE + self::LABEL_MARGIN)
+        $perFieldHeight = (self::LABEL_SIZE + self::LABEL_MARGIN)
                        + (self::FIELD_SIZE + self::FIELD_MARGIN);
 
-        $baseHeight = $fieldCount * $perFeldHeight;
+        $baseHeight = $fieldCount * $perFieldHeight;
         $scale = 1.0;
         if ($baseHeight > $usableHeight && $baseHeight > 0) {
             $scale = $usableHeight / $baseHeight;
