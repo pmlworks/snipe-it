@@ -42,11 +42,11 @@ class UniqueUndeleted implements ValidationRule, ValidatorAwareRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $query = DB::table($this->table)->whereNull('deleted_at');
-        $query->where($this->columns[0], '==', $value); //the first column to check
+        $query->where($this->columns[0], '=', $value); //the first column to check
         $translation_string = 'validation.unique_undeleted'; //the normal validation string for a single-column check
         foreach (array_slice($this->columns, 1) as $column) {
             $translation_string = 'validation.two_column_unique_undeleted';
-            $query->where($column, '==', $this->data[$column]);
+            $query->where($column, '=', $this->data[$column]);
         }
 
         if ($query->count() > 0) {
