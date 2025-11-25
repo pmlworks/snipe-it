@@ -60,14 +60,17 @@ class L6009_A extends L6009
             $usableWidth -= $barcodeSize + self::BARCODE_MARGIN;
         }
         $fields = $record->get('fields');
+        // Below rescales the size of the field box to fit, it feels like it could/should be abstracted one class above
+        // to be usable on other labels but im unsure of how to implement that, since it uses a lot of private
+        // constants.
 
-        //Figure out how tall the label fields wants to be
+        // Figure out how tall the label fields wants to be
         $fieldCount = count($fields);
         $perFieldHeight = (self::LABEL_SIZE + self::LABEL_MARGIN)
                         + (self::FIELD_SIZE + self::FIELD_MARGIN);
 
         $baseHeight = $fieldCount * $perFieldHeight;
-        //If it doesn't fit in the available height, scale everything down
+        // If it doesn't fit in the available height, scale everything down
         $scale = 1.0;
         if ($baseHeight > $usableHeight && $baseHeight > 0) {
             $scale = $usableHeight / $baseHeight;
