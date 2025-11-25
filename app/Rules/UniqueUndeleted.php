@@ -25,12 +25,11 @@ class UniqueUndeleted implements ValidationRule, ValidatorAwareRule
 
     public function setValidator(Validator $validator): static
     {
-//        \Log::error("Validator has been SET and it is: ".print_r(get_object_vars($validator), true));
         $this->validator = $validator;
         $this->data = $validator->getData();
         //TODO - can we somehow grab the ID of the route-model-bound object, and omit its ID?
         // to do that, we'd have to know _which_ parameter in the validator is actually the R-M-B'ed
-        // parameter
+        // parameter. Or maybe we just change the function signature to let you specify it.
 
         return $this;
     }
@@ -42,19 +41,16 @@ class UniqueUndeleted implements ValidationRule, ValidatorAwareRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        \Log::error("Going to validate via RULE for attribute: $attribute which has value: " . print_r($value, true));
-        // $this->validator->{$something} should maybe get the object?
-        // but, so far, we're only using this on creating a 'new thing' so there's just a simple check needed, I guess?
         $query = DB::table($this->table)->whereNull('deleted_at');
-        $query->where($this->columns[0], '!=', $value); //the first column to check
+        $query->where($this->columns[0], '==', $value); //the first column to check
         $translation_string = 'validation.unique_undeleted'; //the normal validation string for a single-column check
         foreach (array_slice($this->columns, 1) as $column) {
             $translation_string = 'validation.two_column_unique_undeleted';
-            $query->where($column, '!=', $this->data[$column]);
+            $query->where($column, '==', $this->data[$column]);
         }
-//        \Log::error("Here is what you get if you ask for the ID directly: " . $this->validator->id);
+
         if ($query->count() > 0) {
-            $fail()->translate($translation_string);
+            $fail($translation_string)->translate();
         }
     }
 }

@@ -13,7 +13,6 @@ trait UniqueUndeletedTrait
      */
     protected function prepareUniqueUndeletedRule($parameters, $field)
     {
-        \Log::error("Preparing unique undeleted rule for $field");
         // Only perform a replacement if the model has been persisted.
         if ($this->exists) {
             return 'unique_undeleted:'.$this->table.','.$this->getKey();

@@ -76,9 +76,6 @@
         @foreach(array_keys($old_tags) as $i)
             {{-- This is mostly stolen from the HTML that we add via javascript on the 'add_field_button' handler in the embedded JS below --}}
             {{--                @include ('partials.forms.edit.serial', ['fieldname'=> 'serials['.$loop->iteration.']', 'old_val_name' => 'serials.'.$loop->iteration, 'translated_serial' => trans('admin/hardware/form.serial')])--}}
-            @php
-                \Log::error("I is: $i");
-            @endphp
             <span class="fields_wrapper">
                 <div class="form-group {{  $errors->has('asset_tags.'.$i) ? ' has-error' : '' }}"><label for="asset_tag"
                                                                                                          class="col-md-3 control-label">{{ trans('admin/hardware/form.tag') }} {{ $i }}</label>
@@ -93,18 +90,6 @@
                     </div>
                 </div>
                 @include ('partials.forms.edit.serial', ['fieldname'=> 'serials['.$i.']', 'old_val_name' => 'serials.'.$i, 'translated_serial' => trans('admin/hardware/form.serial')])
-                {{-- <div class="form-group {{ $errors->has('serials.'.$i) ? ' has-error': '' }}"><label for="serial"
-                                                                                                    class="col-md-3 control-label">{{ trans('admin/hardware/form.serial') }} {{ $i }}</label>
-                    <div class="col-md-7 col-sm-12">
-                        <input type="text" class="form-control" name="serials[{{ $i }}]"
-                               value="{{ old('serials.'.$i) }}">
-                        @error('serials.'.$i )
-                            <span class="alert-msg" aria-hidden="true">
-                                <i class="fas fa-times" aria-hidden="true"></i> {{ $message }}
-                            </span>
-                        @enderror
-                    </div>
-                </div> --}}
             </span>
         @endforeach
     </div>

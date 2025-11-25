@@ -11,7 +11,7 @@ use App\Models\AssetModel;
 use App\Rules\UniqueUndeleted;
 use Illuminate\Support\Str;
 
-class StoreMultipleAssetRequest extends ImageUploadRequest //should I extend from StoreAssetRequest? FIXME OR TODO OR THINKME
+class CreateMultipleAssetRequest extends ImageUploadRequest //should I extend from StoreAssetRequest? FIXME OR TODO OR THINKME
 {
     use MayContainCustomFields;
 
@@ -20,7 +20,7 @@ class StoreMultipleAssetRequest extends ImageUploadRequest //should I extend fro
      */
     public function authorize(): bool
     {
-        return true; //FIXME - should I do the auth check here?
+        return true; //TODO - should I do the auth check here?
     }
 
     /**
@@ -59,8 +59,6 @@ class StoreMultipleAssetRequest extends ImageUploadRequest //should I extend fro
         } else {
             $serial_rules[] = 'nullable';
         }
-        \Log::error("Serial Rules are: " . print_r($serial_rules, true));
-        \Log::error("Asset Tag Rules are: " . print_r($asset_tag_rules, true));
 
         return array_merge($modelRules, [
             'serials.*' => $serial_rules,
