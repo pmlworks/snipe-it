@@ -26,6 +26,7 @@
     <meta name="language" content="{{ Helper::mapBackToLegacyLocale(app()->getLocale()) }}">
     <meta name="language-direction" content="{{ Helper::determineLanguageDirection() }}">
     <meta name="baseUrl" content="{{ config('app.url') }}/">
+    <meta name="theme-color" content="{{ $snipeSettings->header_color }}">
 
     <script nonce="{{ csrf_token() }}">
         window.Laravel = {csrfToken: '{{ csrf_token() }}'};
@@ -42,13 +43,16 @@
 
         :root {
             --main-theme-color: {{ $snipeSettings->header_color }};
-            --sidenav-text-hover-color: #ecf0f5;
+            --sidenav-text-nohover-color: #b8c7ce;
+            --sidenav-text-hover-color: #fff;
         }
 
         [data-theme="light"] {
             --box-bg: #ffffff;
-            --box-header-bottom-border: 1px solid #f4f4f4;
-            --box-header-top-border: #f4f4f4;
+            --box-header-bottom-border-color: #f4f4f4;
+            --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
+            --box-header-top-border-color: #d2d6de;
+            --box-header-top-border: 3px solid var(--box-header-top-border-color);
             --color-bg: #ecf0f5;
             --color-fg: #000000;
             --header-color: #000000;
@@ -58,15 +62,16 @@
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
             --text-blue: #d6d6d6;
-            --text-help: #d6d6d6;
             --text-error: #a94442;
+            --text-help: #d6d6d6;
         }
 
         [data-theme="dark"] {
             --box-bg: #3d4144;
-            --box-header-bg: #f4f4f4;
-            --box-header-top-border: #605e5e;
-            --box-header-bottom-border: 1px solid #605e5e;
+            --box-header-bottom-border-color: #605e5e;
+            --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
+            --box-header-top-border-color: #605e5e;
+            --box-header-top-border: 3px solid var(--box-header-top-border-color);
             --color-bg: #222222;
             --color-fg: #ffffff;
             --header-color: #ffffff;
@@ -76,9 +81,10 @@
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
             --text-blue: #d6d6d6;
-            --text-help: #a6a4a4;
             --text-error: #f17f7b;
+            --text-help: #a6a4a4;
         }
+
 
         .content-wrapper {
             background-color: var(--color-bg);
@@ -119,10 +125,13 @@
             cursor: pointer;
         }
 
-        body, h1, h2, h3, h4, p {
+        h1, h2, h3, h4, p {
             color: var(--color-fg);
         }
 
+        body {
+            color: var(--color-bg);
+        }
 
         .footer-links a:link,
         .text-blue {
@@ -150,12 +159,23 @@
         }
 
         .modal-content,
-        .popover-content,
-        .popover-title,
-        .popover-body
+        .popover.help-popover,
+        .popover.help-popover .popover-content,
+        .popover.help-popover .popover-body,
+        .popover.help-popover .popover-title,
+        .popover.help-popover .popover-header
         {
             background-color: var(--box-header-top-border);
             color: var(--color-fg) !important;
+
+        }
+
+        .popover.right .arrow:after
+        {
+            border-right-color: var(--box-header-top-border);
+        }
+        .popover.right .arrow {
+            border-right-color: var(--box-header-top-border);
         }
 
         .box {
@@ -163,16 +183,21 @@
         }
 
         .box.box-default {
-            border-top-color: var(--box-header-top-border);
+            border-top:  var(--box-header-top-border);
         }
 
         .box-header.with-border {
             border-bottom: var(--box-header-bottom-border);
         }
 
+        .box-footer
+        {
+            border-top: var(--box-header-bottom-border);
+        }
+
 
         .nav-tabs-custom > .nav-tabs {
-            border-bottom-color: var(--box-header-top-border);
+            border-bottom: var(--box-header-top-border);
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
             margin-bottom: 0;
@@ -209,18 +234,20 @@
         }
 
 
-        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-            border-top: var(--table-border-row);
-        }
-
-
-
-
-
-
         /**
         table rows
          */
+
+        .table > thead > tr > th,
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th,
+        .table > thead > tr > td,
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td
+        {
+            border-top: var(--table-border-row);
+        }
+
 
         .table-striped > tbody > tr:nth-of-type(even),
         .row-new-striped > .row:nth-of-type(even) {
@@ -254,7 +281,7 @@
         .label-default
         {
             background-color: var(--main-theme-color);
-            color: var(--nav-primary-font-color);
+            color: var(--nav-primary-font-color) !important;
         }
 
 
@@ -322,30 +349,6 @@
         }
 
 
-
-        .main-sidebar {
-            color: #ffffff !important;
-            background-color: #1e282c;
-        }
-
-
-        .sidebar-menu > li > a:link,
-        .sidebar-menu > li > a:hover,
-        .sidebar-menu > li > a:visited,
-        .treeview-menu>li> a
-        {
-            color: var(--sidenav-text-hover-color) !important;
-            border-left-color: var(--main-theme-color);
-        }
-
-        .sidebar-menu > li:hover > a,
-        .sidebar-menu > li.active > a
-        {
-            color: #ffffff !important;
-            border-left-color: var(--main-theme-color);
-            padding-left: 12px;
-        }
-
         .btn-primary {
             background-color: var(--main-theme-color);
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
@@ -357,13 +360,50 @@
             color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
         }
 
+        .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
+        .navbar-nav > .messages-menu > .dropdown-menu > li.header,
+        .navbar-nav > .tasks-menu > .dropdown-menu > li.header,
+        .navbar-nav > .notifications-menu > .dropdown-menu > li .menu,
+        .navbar-nav > .messages-menu > .dropdown-menu > li .menu, .navbar-nav > .tasks-menu > .dropdown-menu > li .menu,
+        .navbar-nav > .messages-menu > .dropdown-menu > li .menu, .navbar-nav > .tasks-menu > .dropdown-menu > li .menu a:hover,
+        .navbar-nav > .messages-menu > .dropdown-menu > li .menu, .navbar-nav > .tasks-menu > .dropdown-menu > li:hover,
+        .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:hover > a,
+        .task_menu
+        {
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
+            margin-bottom: 0px;
+        }
 
+        .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
+            border-bottom: 1px solid hsl(from var(--main-theme-color) h s calc(l - 10));
+        }
 
 
 
         /**
         Active and hover for top tier sidenav items
          */
+
+        .main-sidebar {
+            background-color: #1e282c;
+        }
+
+        .sidebar-menu>li.active > a,
+        .sidebar-menu>li:hover>a,
+        .treeview-menu>li> a
+        {
+            color: var(--sidenav-text-hover-color) !important;
+            border-left-color: var(--main-theme-color);
+        }
+
+        .sidebar-menu > li:hover > a,
+        .sidebar-menu > li.active > a
+        {
+            border-left-color: var(--main-theme-color);
+            padding-left: 12px;
+        }
+
 
         .sidebar-menu > li:hover {
             background-color: #2c3b41;
@@ -374,40 +414,51 @@
             background-color: #1e282c;
         }
 
-        .sidebar-menu>li.active>a, .sidebar-menu>li:hover>a {
+
+        .sidebar-menu > li > a:link,
+        .sidebar-menu > li > a:visited,
+        .treeview-menu>li> a
+        {
+            color: var(--sidenav-text-nohover-color) !important;
+        }
+
+        .sidebar-menu>li.active > a,
+        .sidebar-menu>li:hover > a
+        {
             background-color: #1e282c;
             border-left-color: var(--main-theme-color);
             border-left-style: solid;
             border-left-width: 3px;
-            color: #fff;
+            color: var(--sidenav-text-hover-color) !important;
         }
 
-        /**
-        Submenus in sidenav
-         */
-        .treeview-menu > li >a {
-            color: #8aa4af !important;
-        }
 
         .treeview-menu>li {
             background-color: #2c3b41;
-            color: #8aa4af !important;
+            color: var(--sidenav-text-nohover-color) !important;
         }
 
         .treeview-menu>li>a:hover,
-        .treeview-menu>li.active
+        .treeview-menu>li.active > a
         {
-            background-color: #1e282c;
-            color: #fff !important;
+            color: var(--sidenav-text-hover-color) !important;
         }
 
         .breadcrumb-item a {
             color: hsl(from var(--main-theme-color) h s calc(l - 5));
         }
 
-        thead, tbody {
-            border-top-color: var(--box-header-top-border);
-            border-bottom-color: var(--box-header-top-border)
+        thead,
+        tbody,
+        .table > thead > tr > th,
+        .table > tbody > tr > th,
+        .table > tfoot > tr > th,
+        .table > thead > tr > td,
+        .table > tbody > tr > td,
+        .table > tfoot > tr > td,
+        .sticky-header {
+            border-top-color: var(--box-header-bottom-border-color) !important;
+            border-bottom-color: var(--box-header-bottom-border-color) !important;
         }
 
         .help-block {
@@ -673,7 +724,8 @@
                                                                              style="width: {{ $alert_items[$i]['percent'] }}%"
                                                                              role="progressbar"
                                                                              aria-valuenow="{{ $alert_items[$i]['percent'] }}"
-                                                                             aria-valuemin="0" aria-valuemax="100">
+                                                                             aria-valuemin="0"
+                                                                             aria-valuemax="100">
                                                                             <span class="sr-only">
                                                                                 {{ $alert_items[$i]['percent'] }}%
                                                                             </span>

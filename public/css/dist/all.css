@@ -22076,8 +22076,6 @@ body {
     word-spacing: 1px;
     letter-spacing: 0.2px;
     font: 15px "Times New Roman", Times, serif;
-    background: white;
-    color: black;
     width: 100%;
     float: none;
   }
@@ -22817,13 +22815,6 @@ caption.tableCaption {
   padding-bottom: 12px;
   margin-left: -47px;
   margin-top: 2px;
-}
-.popover.help-popover,
-.popover.help-popover .popover-content,
-.popover.help-popover .popover-body,
-.popover.help-popover .popover-title,
-.popover.help-popover .popover-header {
-  color: #000;
 }
 .visually-hidden {
   width: 1px;
@@ -23782,8 +23773,6 @@ body {
     word-spacing: 1px;
     letter-spacing: 0.2px;
     font: 15px "Times New Roman", Times, serif;
-    background: white;
-    color: black;
     width: 100%;
     float: none;
   }
@@ -24523,13 +24512,6 @@ caption.tableCaption {
   padding-bottom: 12px;
   margin-left: -47px;
   margin-top: 2px;
-}
-.popover.help-popover,
-.popover.help-popover .popover-content,
-.popover.help-popover .popover-body,
-.popover.help-popover .popover-title,
-.popover.help-popover .popover-header {
-  color: #000;
 }
 .visually-hidden {
   width: 1px;
