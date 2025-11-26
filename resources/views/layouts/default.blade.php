@@ -39,6 +39,12 @@
 
 
     <style>
+
+        :root {
+            --main-theme-color: {{ $snipeSettings->header_color }};
+            --sidenav-text-hover-color: #ecf0f5;
+        }
+
         [data-theme="light"] {
             --box-bg: #ffffff;
             --box-header-bottom-border: 1px solid #f4f4f4;
@@ -87,19 +93,19 @@
         }
 
         .pagination > li > a:hover {
-            background-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
             border-color: var(--table-stripe-bg);
         }
 
         .pagination > .active > a
          {
-            background-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
             border-color: var(--table-stripe-bg);
         }
 
         .pagination > .active > a:hover
         {
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: var(--table-stripe-bg);
         }
 
@@ -132,7 +138,7 @@
         a:hover,
         a:focus
         {
-            color: hsl(from {{ $snipeSettings->header_color }} h s calc(l + 25)) !important;
+            color: hsl(from var(--main-theme-color) h s calc(l + 25)) !important;
         }
 
         label,
@@ -143,8 +149,13 @@
             color: var(--color-fg);
         }
 
-        .modal-content {
-            background-color: var(--color-bg);
+        .modal-content,
+        .popover-content,
+        .popover-title,
+        .popover-body
+        {
+            background-color: var(--box-header-top-border);
+            color: var(--color-fg) !important;
         }
 
         .box {
@@ -164,7 +175,7 @@
             border-bottom-color: var(--box-header-top-border);
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
-            margin-bottom: 0px;
+            margin-bottom: 0;
             padding-bottom: 2px;
         }
 
@@ -188,7 +199,7 @@
 
         .nav-tabs-custom > .nav-tabs > li.active
         {
-            border-top-color: {{ $snipeSettings->header_color }} !important;
+            border-top-color: var(--main-theme-color) !important;
             background-color: var(--box-header-top-border) !important;
             border-bottom-color: var(--box-bg) !important;
             border-left: 1px solid var(--box-header-top-border) ;
@@ -198,18 +209,12 @@
         }
 
 
-
-
         .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
             border-top: var(--table-border-row);
         }
 
 
-        .callout.callout-legend a,
-        .callout.callout-legend a:hover
-        {
-            color: var(--color-bg) !important;
-        }
+
 
 
 
@@ -237,10 +242,9 @@
          */
 
 
-        .main-header,
         .dropdown-menu {
-            background-color: rgba(0,0,0,.15);
-            border-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
+            border-color: var(--main-theme-color);
         }
 
 
@@ -249,7 +253,7 @@
         .navbar-nav,
         .label-default
         {
-            background-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
             color: var(--nav-primary-font-color);
         }
 
@@ -263,7 +267,7 @@
         .navbar-nav > li > a:link,
         .navbar-nav > li > a:visited
         {
-            background-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
             /*background-color: rgba(0,0,0,.15);*/
             color: var(--nav-primary-font-color) !important;
         }
@@ -293,11 +297,11 @@
         .btn-primary.active.focus,
         .open > .dropdown-toggle.btn-primary.focus
         {
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: var(--table-stripe-bg);
         }
         {
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             /*background-color: rgba(0,0,0,.15);*/
             color: var(--nav-primary-font-color) !important;
         }
@@ -321,69 +325,84 @@
 
         .main-sidebar {
             color: #ffffff !important;
-            background-color: #2c3b41;
+            background-color: #1e282c;
         }
-
 
 
         .sidebar-menu > li > a:link,
         .sidebar-menu > li > a:hover,
-        .sidebar-menu > li > a:visited
+        .sidebar-menu > li > a:visited,
+        .treeview-menu>li> a
         {
-            color: #ffffff !important;
-            border-left-color: {{ $snipeSettings->header_color }};
+            color: var(--sidenav-text-hover-color) !important;
+            border-left-color: var(--main-theme-color);
         }
 
         .sidebar-menu > li:hover > a,
         .sidebar-menu > li.active > a
         {
             color: #ffffff !important;
-            border-left-color: {{ $snipeSettings->header_color }};
+            border-left-color: var(--main-theme-color);
             padding-left: 12px;
         }
 
         .btn-primary {
-            background-color: {{ $snipeSettings->header_color }};
-            border-color: {{ $snipeSettings->header_color }};
+            background-color: var(--main-theme-color);
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
         }
 
         .btn-primary:hover, .btn-primary:active, .btn-primary.hover {
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
-            border-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 10));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
+            color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
         }
 
 
-        .sidebar-menu > li:hover, .sidebar-menu > li {
+
+
+
+        /**
+        Active and hover for top tier sidenav items
+         */
+
+        .sidebar-menu > li:hover {
             background-color: #2c3b41;
         }
 
         .sidebar-menu>li>.treeview-menu
         {
-            background-color: #2c3b41;
-        }
-
-        /**
-        Sidebar hovers and side-highlight
-         */
-        .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
-            color: #fff;
             background-color: #1e282c;
-            border-left-color: {{ $snipeSettings->header_color }};
         }
 
         .sidebar-menu>li.active>a, .sidebar-menu>li:hover>a {
-            border-left-color: {{ $snipeSettings->header_color }};
+            background-color: #1e282c;
+            border-left-color: var(--main-theme-color);
             border-left-style: solid;
             border-left-width: 3px;
             color: #fff;
         }
 
-        .treeview-menu>li>a {
-            color: #a0b7c1;
+        /**
+        Submenus in sidenav
+         */
+        .treeview-menu > li >a {
+            color: #8aa4af !important;
         }
 
-        .treeview-menu>li>a:hover {
-            color: #ffffff;
+        .treeview-menu>li {
+            background-color: #2c3b41;
+            color: #8aa4af !important;
+        }
+
+        .treeview-menu>li>a:hover,
+        .treeview-menu>li.active
+        {
+            background-color: #1e282c;
+            color: #fff !important;
+        }
+
+        .breadcrumb-item a {
+            color: hsl(from var(--main-theme-color) h s calc(l - 5));
         }
 
         thead, tbody {
@@ -397,6 +416,15 @@
 
         .alert-msg {
             color: var(--text-error);
+        }
+
+
+        .text-dark-gray a:link,
+        .text-dark-gray a:hover,
+        .text-dark-gray a:visited,
+        .text-dark-gray a:focus
+        {
+            color: hsl(from var(--main-theme-color) h s calc(l - 5));
         }
 
 
