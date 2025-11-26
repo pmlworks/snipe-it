@@ -354,11 +354,24 @@
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
         }
 
-        .btn-primary:hover, .btn-primary:active, .btn-primary.hover {
+
+        .btn:link,
+        .btn:hover,
+        .btn:visited,
+        .btn:focus
+        {
+            color: white !important;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:active,
+        .btn-primary.hover {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
             color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
         }
+
+
 
         .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
         .navbar-nav > .messages-menu > .dropdown-menu > li.header,
