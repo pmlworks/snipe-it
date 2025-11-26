@@ -113,7 +113,7 @@
             cursor: pointer;
         }
 
-        body, h1, h2, h3, h4 {
+        body, h1, h2, h3, h4, p {
             color: var(--color-fg);
         }
 
@@ -135,7 +135,9 @@
             color: hsl(from {{ $snipeSettings->header_color }} h s calc(l + 25)) !important;
         }
 
-        label {
+        label,
+        .icon-med
+        {
             color: var(--color-fg);
         }
 
@@ -163,7 +165,7 @@
             border-top: var(--table-border-row);
         }
 
-        .icon-med,
+
         .callout.callout-legend a,
         .callout.callout-legend a:hover
         {
