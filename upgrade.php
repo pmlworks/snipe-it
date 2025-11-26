@@ -79,7 +79,7 @@ echo "This script will attempt to: \n\n";
 echo "- validate some very basic .env file settings \n";
 echo "- check your PHP version and extension requirements \n";
 echo "- check directory permissions \n";
-echo "- change your 'git remote' to the new Snipe-IT GitHub URL \n"
+echo "- change your 'git remote' to the new Snipe-IT GitHub URL \n";
 echo "- do a git pull to bring you to the latest version \n";
 echo "- run composer install to get your vendors up to date \n";
 echo "- run a backup \n";
