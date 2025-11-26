@@ -136,7 +136,9 @@
         }
 
         label,
-        .icon-med
+        .icon-med,
+        .nav-tabs-custom > .nav-tabs > li > a,
+        .nav-tabs-custom > .nav-tabs > li.active > a:link
         {
             color: var(--color-fg);
         }
@@ -157,9 +159,46 @@
             border-bottom: var(--box-header-bottom-border);
         }
 
-        .box, .box-footer {
-            background-color: var(--box-bg) !important;
+
+        .nav-tabs-custom > .nav-tabs {
+            border-bottom-color: var(--box-header-top-border);
+            border-top-right-radius: 3px;
+            border-top-left-radius: 3px;
+            margin-bottom: 0px;
+            padding-bottom: 2px;
         }
+
+
+        .box,
+        .box-footer,
+        .tab-content,
+        .nav-tabs-custom,
+        .nav-tabs-custom > .nav-tabs > li,
+        .nav-tabs-custom > .nav-tabs > li:first-of-type,
+        .nav-tabs-custom > .nav-tabs > li.active > a:link,
+        .nav-tabs-custom > .nav-tabs > li.active > a:visited,
+        .nav-tabs-custom > .nav-tabs > li.active > a:hover
+        {
+            color: var(--color-fg);
+            background-color: var(--box-bg) !important;
+            border-left: 1px solid transparent;
+            border-right: 1px solid  transparent;
+
+        }
+
+        .nav-tabs-custom > .nav-tabs > li.active
+        {
+            border-top-color: {{ $snipeSettings->header_color }} !important;
+            background-color: var(--box-header-top-border) !important;
+            border-bottom-color: var(--box-bg) !important;
+            border-left: 1px solid var(--box-header-top-border) ;
+            border-right: 1px solid  var(--box-header-top-border) ;
+            border-top-right-radius: 3px;
+            border-top-left-radius: 3px;
+        }
+
+
+
 
         .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
             border-top: var(--table-border-row);
@@ -178,11 +217,13 @@
         table rows
          */
 
-        .table-striped > tbody > tr:nth-of-type(even) {
+        .table-striped > tbody > tr:nth-of-type(even),
+        .row-new-striped > .row:nth-of-type(even) {
             background-color: var(--table-stripe-bg);
         }
 
-        .table-striped > tbody > tr:nth-of-type(odd) {
+        .table-striped > tbody > tr:nth-of-type(odd),
+        .row-new-striped > .row:nth-of-type(odd){
             background-color: var(--table-stripe-bg-alt);
         }
 
