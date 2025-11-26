@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-dir="{{ Helper::determineLanguageDirection() }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ Helper::determineLanguageDirection() }}" data-theme="light">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -34,36 +33,239 @@ dir="{{ Helper::determineLanguageDirection() }}">
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
-    @if (($snipeSettings) && ($snipeSettings->allow_user_skin==1) && Auth::check() && Auth::user()->present()->skin != '')
-        <link rel="stylesheet" href="{{ url(mix('css/dist/skins/skin-'.Auth::user()->present()->skin.'.min.css')) }}">
-    @else
-        <link rel="stylesheet"
-              href="{{ url(mix('css/dist/skins/skin-'.($snipeSettings->skin!='' ? $snipeSettings->skin : 'blue').'.css')) }}">
-    @endif
+
     {{-- page level css --}}
     @stack('css')
 
 
+    <style>
+        [data-theme="light"] {
+            --box-bg: #ffffff;
+            --box-header-bottom-border: 1px solid #f4f4f4;
+            --color-bg: #ecf0f5;
+            --nav-primary-font-color: #ffffff;
+            --color-fg: #000000;
+            --header-color: #000000;
+            --link-color: {{ $snipeSettings->header_color }};
+            --table-border-row-top: 1px solid #434243;
+            --table-stripe-bg: #ffffff;
+            --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
+            --text-blue: #d6d6d6;
+        }
 
-    @if (($snipeSettings) && ($snipeSettings->header_color!=''))
-        <style nonce="{{ csrf_token() }}">
-            .main-header .navbar, .main-header .logo {
-                background-color: {{ $snipeSettings->header_color }};
-                background: -webkit-linear-gradient(top,  {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
-                background: linear-gradient(to bottom, {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);
-                border-color: {{ $snipeSettings->header_color }};
-            }
+        [data-theme="dark"] {
+            --box-bg: rgb(61, 65, 68);
+            --box-header-bg: #f4f4f4;
+            --box-header-border: #f4f4f4;
+            --nav-primary-font-color: #ffffff;
+            --box-header-bottom-border: 1px solid #f4f4f4;
+            --color-bg: rgb(34, 34, 34);
+            --color-fg: #ffffff;
+            --header-color: #ffffff;
+            --link-color: #ffffff;
+            --table-border-row: 1px solid #656464;
+            --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
+            --table-stripe-bg: #595757;
+            --text-blue: #d6d6d6;
+        }
 
-            .skin-{{ $snipeSettings->skin!='' ? $snipeSettings->skin : 'blue' }} .sidebar-menu > li:hover > a, .skin-{{ $snipeSettings->skin!='' ? $snipeSettings->skin : 'blue' }} .sidebar-menu > li.active > a {
-                border-left-color: {{ $snipeSettings->header_color }};
-            }
+        .content-wrapper {
+            background-color: var(--color-bg);
+        }
 
-            .btn-primary {
-                background-color: {{ $snipeSettings->header_color }};
-                border-color: {{ $snipeSettings->header_color }};
-            }
-        </style>
-    @endif
+        .btn-anchor {
+            outline: none !important;
+            padding: 0;
+            border: 0;
+            padding-left: 20px;
+            vertical-align: baseline;
+            cursor: pointer;
+        }
+
+        body, h1, h2, h3, h4 {
+            color: var(--color-fg);
+        }
+
+
+        .text-blue {
+            color: var(--text-blue) !important;
+        }
+
+        a:link, a:hover, a:visited {
+            color: var(--link-color);
+        }
+
+        .box-header  {
+            border: var(--box-header-border);
+        }
+
+        .box, .box-footer {
+            background-color: var(--box-bg) !important;
+        }
+
+        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            border-top: var(--table-border-row);
+        }
+
+        .icon-med {
+            color: var(--color-fg);
+        }
+
+
+        /**
+        table rows
+         */
+
+        .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: var(--table-stripe-bg);
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: var(--table-stripe-bg-alt);
+        }
+
+
+        .small-box h3, .small-box p {
+            color: white;
+        }
+
+        /**
+        main header nav
+         */
+
+
+        .main-header,
+        .dropdown-menu {
+            background-color: rgba(0,0,0,.15);
+            border-color: {{ $snipeSettings->header_color }};
+        }
+
+
+        .dropdown-menu > li,
+        .navbar,
+        .navbar-nav
+        {
+            background-color: {{ $snipeSettings->header_color }};
+            color: var(--nav-primary-font-color);
+        }
+
+
+        .dropdown-menu > li > a:link,
+        .dropdown-menu > li > a:visited,
+        .dropdown-menu > .active > a:link,
+        .dropdown-menu > .active > a:visited,
+        .navbar-nav .open > a:link,
+        .navbar-nav .open > a:visited,
+        .navbar-nav > li > a:link,
+        .navbar-nav > li > a:visited
+        {
+            background-color: {{ $snipeSettings->header_color }};
+            /*background-color: rgba(0,0,0,.15);*/
+            color: var(--nav-primary-font-color) !important;
+        }
+
+        .dropdown-menu > li > a:hover,
+        .dropdown-menu > li > a:focus,
+        .dropdown-menu > li:hover,
+        .dropdown-menu > li:focus,
+        .dropdown-menu > .active > a:link,
+        .dropdown-menu > .active > a:visited,
+        .dropdown-menu > .active > a:hover,
+        .dropdown-menu > .active > a:focus,
+        .navbar-nav .open > a:hover,
+        .navbar-nav .open > a:focus,
+        .navbar-nav > li > a:hover,
+        .navbar-nav > li > a:focus,
+        .navbar-nav .open  li.active > a:focus,
+        .navbar-nav .open  li.active > a:hover
+        {
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            /*background-color: rgba(0,0,0,.15);*/
+            color: var(--nav-primary-font-color) !important;
+        }
+
+
+        .dropdown-menu,
+        .dropdown-menu > li
+        {
+            {{--background-color: {{ $snipeSettings->header_color }};--}}
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            border-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 10));
+            color: var(--nav-primary-font-color);
+        }
+
+        .main-header .navbar .nav>.active>a {
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            color: var(--nav-primary-font-color);
+        }
+
+
+        {{--.dropdown-menu > li > a, .main-header .navbar, .main-header .logo, .nav .open > a, .nav .open > a:hover, .nav .open > a:focus, .nav .open > a:hover, .nav .open > a:hover  {--}}
+        {{--    background: linear-gradient(to bottom, {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);--}}
+        {{--    border-color: {{ $snipeSettings->header_color }};--}}
+        {{--    color: var(--nav-hover-font-color);--}}
+        {{--}--}}
+
+        .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
+            border-left-color: {{ $snipeSettings->header_color }};
+        }
+
+        .main-sidebar {
+            /*background-color: #222d32;*/
+            background-color: #2c3b41;
+        }
+
+        .btn-primary {
+            background-color: {{ $snipeSettings->header_color }};
+            border-color: {{ $snipeSettings->header_color }};
+        }
+
+
+        .sidebar-menu > li:hover, .sidebar-menu > li {
+            background-color: #2c3b41;
+        }
+
+        .sidebar-menu>li>.treeview-menu
+        {
+            background-color: #2c3b41;
+        }
+
+        /**
+        Sidebar hovers and side-highlight
+         */
+        .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
+            color: #fff;
+            background-color: #1e282c;
+            border-left-color: {{ $snipeSettings->header_color }};
+        }
+
+        .sidebar-menu>li.active>a, .sidebar-menu>li:hover>a {
+            border-left-color: {{ $snipeSettings->header_color }};
+            border-left-style: solid;
+            border-left-width: 3px;
+            color: #fff;
+        }
+
+        .treeview-menu>li>a {
+            color: #a0b7c1;
+        }
+
+        .treeview-menu>li>a:hover {
+            color: #ffffff;
+        }
+        /*.treeview-menu > li > a {*/
+        /*    color: var(--color-fg);*/
+        /*    background-color: #1e282c;*/
+        /*}*/
+
+        /*.treeview-menu {*/
+        /*    color: #fff;*/
+        /*    background-color: #1e282c;*/
+        /*}*/
+
+
+
+    </style>
 
     {{-- Custom CSS --}}
     @if (($snipeSettings) && ($snipeSettings->custom_css))
@@ -88,12 +290,7 @@ dir="{{ Helper::determineLanguageDirection() }}">
 
 </head>
 
-@if (($snipeSettings) && ($snipeSettings->allow_user_skin==1) && Auth::check() && Auth::user()->present()->skin != '')
-    <body class="sidebar-mini skin-{{ $snipeSettings->skin!='' ? Auth::user()->present()->skin : 'blue' }} {{ (session('menu_state')!='open') ? 'sidebar-mini sidebar-collapse' : ''  }}">
-    @else
-        <body class="sidebar-mini skin-{{ $snipeSettings->skin!='' ? $snipeSettings->skin : 'blue' }} {{ (session('menu_state')!='open') ? 'sidebar-mini sidebar-collapse' : ''  }}">
-        @endif
-
+    <body class="sidebar-mini{{ (session('menu_state')!='open') ? ' sidebar-mini sidebar-collapse' : ''  }}">
 
         <a class="skip-main" href="#main">{{ trans('general.skip_to_main_content') }}</a>
         <div class="wrapper">
@@ -101,7 +298,6 @@ dir="{{ Helper::determineLanguageDirection() }}">
             <header class="main-header">
 
                 <!-- Logo -->
-
 
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top" role="navigation">
@@ -206,7 +402,7 @@ dir="{{ Helper::determineLanguageDirection() }}">
                             @endcan
 
                             @can('admin')
-                                <li class="dropdown" aria-hidden="true">
+                                <li class="dropdown user-menu" aria-hidden="true">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" tabindex="-1">
                                         {{ trans('general.create') }}
                                         <strong class="caret"></strong>
@@ -407,9 +603,13 @@ dir="{{ Helper::determineLanguageDirection() }}">
                                                 </a>
                                             </li>
                                         @endcan
+                                        <li>
+                                            <a type="button" data-theme-toggle aria-label="Light mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
+                                                Dark Mode
+                                            </a>
+                                        </li>
                                         <li class="divider" style="margin-top: -1px; margin-bottom: -1px"></li>
                                         <li>
-
                                             <a href="{{ route('logout.get') }}"
                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 <x-icon type="logout" class="fa-fw" />
@@ -1089,6 +1289,84 @@ dir="{{ Helper::determineLanguageDirection() }}">
             //color picker with addon
             $("#color").colorpicker();
 
+
+
+            function myFunction() {
+                var element = document.body;
+                element.classList.toggle("dark-mode");
+            }
+
+            /**
+             * Utility function to calculate the current theme setting.
+             * Look for a local storage value.
+             * Fall back to system setting.
+             * Fall back to light mode.
+             */
+            function calculateSettingAsThemeString({ localStorageTheme, systemSettingDark }) {
+                if (localStorageTheme !== null) {
+                    return localStorageTheme;
+                }
+
+                if (systemSettingDark.matches) {
+                    return "dark";
+                }
+
+                return "light";
+            }
+
+            /**
+             * Utility function to update the button text and aria-label.
+             */
+            function updateButton({ buttonEl, isDark }) {
+                const newCta = isDark ? '<i class="fa-regular fa-sun fa-fw"></i> Light mode' : '<i class="fa-solid fa-moon fa-fw"></i>  Dark theme';
+                // use an aria-label if you are omitting text on the button
+                // and using a sun/moon icon, for example
+                buttonEl.setAttribute("aria-label", newCta);
+                buttonEl.innerHTML = newCta;
+            }
+
+            /**
+             * Utility function to update the theme setting on the html tag
+             */
+            function updateThemeOnHtmlEl({ theme }) {
+                document.querySelector("html").setAttribute("data-theme", theme);
+            }
+
+
+            /**
+             * On page load:
+             */
+
+            /**
+             * 1. Grab what we need from the DOM and system settings on page load
+             */
+            const button = document.querySelector("[data-theme-toggle]");
+            const localStorageTheme = localStorage.getItem("theme");
+            const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+            /**
+             * 2. Work out the current site settings
+             */
+            let currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark });
+
+            /**
+             * 3. Update the theme setting and button text accoridng to current settings
+             */
+            updateButton({ buttonEl: button, isDark: currentThemeSetting === "dark" });
+            updateThemeOnHtmlEl({ theme: currentThemeSetting });
+
+            /**
+             * 4. Add an event listener to toggle the theme
+             */
+            button.addEventListener("click", (event) => {
+                const newTheme = currentThemeSetting === "dark" ? "light" : "dark";
+
+                localStorage.setItem("theme", newTheme);
+                updateButton({ buttonEl: button, isDark: newTheme === "dark" });
+                updateThemeOnHtmlEl({ theme: newTheme });
+
+                currentThemeSetting = newTheme;
+            });
 
             $.fn.datepicker.dates['{{ app()->getLocale() }}'] = {
                 days: [
