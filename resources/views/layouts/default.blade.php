@@ -42,36 +42,67 @@
         [data-theme="light"] {
             --box-bg: #ffffff;
             --box-header-bottom-border: 1px solid #f4f4f4;
+            --box-header-top-border: #f4f4f4;
             --color-bg: #ecf0f5;
-            --nav-primary-font-color: #ffffff;
             --color-fg: #000000;
             --header-color: #000000;
             --link-color: {{ $snipeSettings->header_color }};
+            --nav-primary-font-color: #ffffff;
             --table-border-row-top: 1px solid #434243;
-            --table-stripe-bg: #ffffff;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
+            --table-stripe-bg: #ffffff;
             --text-blue: #d6d6d6;
+            --text-help: #d6d6d6;
+            --text-error: #a94442;
         }
 
         [data-theme="dark"] {
-            --box-bg: rgb(61, 65, 68);
+            --box-bg: #3d4144;
             --box-header-bg: #f4f4f4;
-            --box-header-border: #f4f4f4;
-            --nav-primary-font-color: #ffffff;
-            --box-header-bottom-border: 1px solid #f4f4f4;
-            --color-bg: rgb(34, 34, 34);
+            --box-header-top-border: #605e5e;
+            --box-header-bottom-border: 1px solid #605e5e;
+            --color-bg: #222222;
             --color-fg: #ffffff;
             --header-color: #ffffff;
             --link-color: #ffffff;
+            --nav-primary-font-color: #ffffff;
             --table-border-row: 1px solid #656464;
-            --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
-            --table-stripe-bg: #595757;
+            --table-stripe-bg-alt: #323131;
+            --table-stripe-bg: #494747;
             --text-blue: #d6d6d6;
+            --text-help: #a6a4a4;
+            --text-error: #f17f7b;
         }
 
         .content-wrapper {
             background-color: var(--color-bg);
         }
+
+        .pagination > li > a,
+        .page-next a,
+        .pagination>.disabled > a
+        {
+            background-color: var(--color-bg);
+            border-color: var(--table-stripe-bg);
+        }
+
+        .pagination > li > a:hover {
+            background-color: {{ $snipeSettings->header_color }};
+            border-color: var(--table-stripe-bg);
+        }
+
+        .pagination > .active > a
+         {
+            background-color: {{ $snipeSettings->header_color }};
+            border-color: var(--table-stripe-bg);
+        }
+
+        .pagination > .active > a:hover
+        {
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            border-color: var(--table-stripe-bg);
+        }
+
 
         .btn-anchor {
             outline: none !important;
@@ -87,16 +118,41 @@
         }
 
 
+        .footer-links a:link,
         .text-blue {
             color: var(--text-blue) !important;
         }
 
-        a:link, a:hover, a:visited {
+        a:link,
+        a:visited
+        {
             color: var(--link-color);
         }
 
-        .box-header  {
-            border: var(--box-header-border);
+        a:hover,
+        a:focus
+        {
+            color: hsl(from {{ $snipeSettings->header_color }} h s calc(l + 25)) !important;
+        }
+
+        label {
+            color: var(--color-fg);
+        }
+
+        .modal-content {
+            background-color: var(--color-bg);
+        }
+
+        .box {
+            border-top: 3px solid;
+        }
+
+        .box.box-default {
+            border-top-color: var(--box-header-top-border);
+        }
+
+        .box-header.with-border {
+            border-bottom: var(--box-header-bottom-border);
         }
 
         .box, .box-footer {
@@ -107,9 +163,13 @@
             border-top: var(--table-border-row);
         }
 
-        .icon-med {
-            color: var(--color-fg);
+        .icon-med,
+        .callout.callout-legend a,
+        .callout.callout-legend a:hover
+        {
+            color: var(--color-bg) !important;
         }
+
 
 
         /**
@@ -143,7 +203,8 @@
 
         .dropdown-menu > li,
         .navbar,
-        .navbar-nav
+        .navbar-nav,
+        .label-default
         {
             background-color: {{ $snipeSettings->header_color }};
             color: var(--nav-primary-font-color);
@@ -177,7 +238,21 @@
         .navbar-nav > li > a:hover,
         .navbar-nav > li > a:focus,
         .navbar-nav .open  li.active > a:focus,
-        .navbar-nav .open  li.active > a:hover
+        .navbar-nav .open  li.active > a:hover,
+        .pagination > .active > a:hover,
+        .btn-primary:active:hover,
+        .btn-primary.active:hover,
+        .open > .dropdown-toggle.btn-primary:hover,
+        .btn-primary:active:focus,
+        .btn-primary.active:focus,
+        .open > .dropdown-toggle.btn-primary:focus,
+        .btn-primary:active.focus,
+        .btn-primary.active.focus,
+        .open > .dropdown-toggle.btn-primary.focus
+        {
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            border-color: var(--table-stripe-bg);
+        }
         {
             background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
             /*background-color: rgba(0,0,0,.15);*/
@@ -200,24 +275,38 @@
         }
 
 
-        {{--.dropdown-menu > li > a, .main-header .navbar, .main-header .logo, .nav .open > a, .nav .open > a:hover, .nav .open > a:focus, .nav .open > a:hover, .nav .open > a:hover  {--}}
-        {{--    background: linear-gradient(to bottom, {{ $snipeSettings->header_color }} 0%,{{ $snipeSettings->header_color }} 100%);--}}
-        {{--    border-color: {{ $snipeSettings->header_color }};--}}
-        {{--    color: var(--nav-hover-font-color);--}}
-        {{--}--}}
 
-        .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a {
+        .main-sidebar {
+            color: #ffffff !important;
+            background-color: #2c3b41;
+        }
+
+
+
+        .sidebar-menu > li > a:link,
+        .sidebar-menu > li > a:hover,
+        .sidebar-menu > li > a:visited
+        {
+            color: #ffffff !important;
             border-left-color: {{ $snipeSettings->header_color }};
         }
 
-        .main-sidebar {
-            /*background-color: #222d32;*/
-            background-color: #2c3b41;
+        .sidebar-menu > li:hover > a,
+        .sidebar-menu > li.active > a
+        {
+            color: #ffffff !important;
+            border-left-color: {{ $snipeSettings->header_color }};
+            padding-left: 12px;
         }
 
         .btn-primary {
             background-color: {{ $snipeSettings->header_color }};
             border-color: {{ $snipeSettings->header_color }};
+        }
+
+        .btn-primary:hover, .btn-primary:active, .btn-primary.hover {
+            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            border-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 10));
         }
 
 
@@ -253,15 +342,19 @@
         .treeview-menu>li>a:hover {
             color: #ffffff;
         }
-        /*.treeview-menu > li > a {*/
-        /*    color: var(--color-fg);*/
-        /*    background-color: #1e282c;*/
-        /*}*/
 
-        /*.treeview-menu {*/
-        /*    color: #fff;*/
-        /*    background-color: #1e282c;*/
-        /*}*/
+        thead, tbody {
+            border-top-color: var(--box-header-top-border);
+            border-bottom-color: var(--box-header-top-border)
+        }
+
+        .help-block {
+            color: var(--text-help);
+        }
+
+        .alert-msg {
+            color: var(--text-error);
+        }
 
 
 
@@ -1174,7 +1267,7 @@
             <footer class="main-footer hidden-print" style="display:grid;flex-direction:column;">
 
                 <div class="1hidden-xs pull-left">
-                    <div class="pull-left">
+                    <div class="pull-left footer-links">
                          {!! trans('general.footer_credit') !!}
                     </div>
                     <div class="pull-right">
@@ -1186,7 +1279,7 @@
                     @endif
 
                     @if (isset($user) && ($user->isSuperUser()) && (app()->environment('local')))
-                       <a href="{{ url('telescope') }}" class="btn btn-default btn-xs" rel="noopener">Open Telescope</a>
+                       <a href="{{ url('telescope') }}" class="label label-default" rel="noopener">Open Telescope</a>
                     @endif
 
 
@@ -1194,16 +1287,16 @@
 
                     @if ($snipeSettings->support_footer!='off')
                         @if (($snipeSettings->support_footer=='on') || (($snipeSettings->support_footer=='admin') && (Auth::user()->isSuperUser()=='1')))
-                            <a target="_blank" class="btn btn-default btn-xs"
+                            <a target="_blank" class="label label-default"
                                href="https://snipe-it.readme.io/docs/overview"
                                rel="noopener">{{ trans('general.user_manual') }}</a>
-                            <a target="_blank" class="btn btn-default btn-xs" href="https://snipeitapp.com/support/"
+                            <a target="_blank" class="label label-default" href="https://snipeitapp.com/support/"
                                rel="noopener">{{ trans('general.bug_report') }}</a>
                         @endif
                     @endif
 
                     @if ($snipeSettings->privacy_policy_link!='')
-                        <a target="_blank" class="btn btn-default btn-xs" rel="noopener"
+                        <a target="_blank" class="label label-default" rel="noopener"
                            href="{{  $snipeSettings->privacy_policy_link }}"
                            target="_new">{{ trans('admin/settings/general.privacy_policy') }}</a>
                     @endif
@@ -1289,12 +1382,6 @@
             //color picker with addon
             $("#color").colorpicker();
 
-
-
-            function myFunction() {
-                var element = document.body;
-                element.classList.toggle("dark-mode");
-            }
 
             /**
              * Utility function to calculate the current theme setting.

@@ -213,7 +213,7 @@
 <!-- recent activity -->
 <div class="row">
   <div class="col-md-8">
-    <div class="box">
+    <div class="box box-default">
       <div class="box-header with-border">
         <h2 class="box-title">{{ trans('general.recent_activity') }}</h2>
         <div class="box-tools pull-right">
