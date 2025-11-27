@@ -36,7 +36,7 @@
     {{csrf_field()}}
 
     <div class="row">
-        <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+        <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
 
 
             <div class="panel box box-default">
@@ -72,6 +72,21 @@
                                 </div>
                             </div>
 
+                            <!-- Header color -->
+                            <div class="form-group {{ $errors->has('header_color') ? 'error' : '' }}">
+                                <label for="header_color" class="col-md-3 control-label">{{ trans('admin/settings/general.header_color') }}</label>
+                                <div class="col-md-9">
+                                    <div id="header-color" class="input-group colorpicker-component row col-md-5">
+                                        <input type="text" class="form-control" placeholder="#FF0000" aria-label="header_color" name="header_color" id="header_color" value="{{ old('header_color', ($setting->header_color ?? '#3c8dbc')) }}" />
+                                        <span class="input-group-addon"><i></i></span>
+                                    </div>
+                                    <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
+
+
+                                    {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                </div>
+                            </div>
+
                             @php
                                 $optionTypes = trans('admin/settings/general.logo_option_types');
                             @endphp
@@ -98,12 +113,15 @@
                                 </div>
                             </div>
 
+
+
                             <!-- Logo -->
                         @include('partials/forms/edit/uploadLogo', [
                             "logoVariable" => "logo",
                             "logoId" => "uploadLogo",
                             "logoLabel" => trans('admin/settings/general.logo_labels.logo'),
                             "logoClearVariable" => "clear_logo",
+                            "previewClass" => "header-preview",
                             "helpBlock" => trans('general.logo_size') . trans('general.image_filetypes_help', ['size' => Helper::file_upload_max_size_readable()]),
                         ])
 
@@ -223,33 +241,8 @@
 
                         <fieldset name="color-preferences">
                             <x-form-legend>
-                                {{ trans('admin/settings/general.legends.colors') }}
+                                {{ trans('admin/settings/general.custom_css') }}
                             </x-form-legend>
-
-                            <!-- Header color -->
-                            <div class="form-group {{ $errors->has('header_color') ? 'error' : '' }}">
-                                    <label for="header_color" class="col-md-3 control-label">{{ trans('admin/settings/general.header_color') }}</label>
-                                <div class="col-md-9">
-                                    <div id="header-color" class="input-group colorpicker-component row col-md-5">
-                                        <input type="text" class="form-control" placeholder="#FF0000" aria-label="header_color" name="header_color" id="header_color" value="{{ old('header_color', ($setting->header_color ?? '#3c8dbc')) }}" />
-                                        <span class="input-group-addon"><i></i></span>
-                                    </div>
-                                    <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
-
-
-                                    {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                </div>
-                            </div>
-
-                            <!-- Skin -->
-                            <div class="form-group {{ $errors->has('skin') ? 'error' : '' }}">
-                                <label for="skin" class="col-md-3 control-label">{{ trans('general.skin') }}</label>
-                                <div class="col-md-9">
-                                    <x-input.skin name="skin" :selected="old('skin', $setting->skin)" />
-                                    {!! $errors->first('skin', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
-                                </div>
-                            </div>
-
                             <!-- Custom css -->
                             <div class="form-group {{ $errors->has('custom_css') ? 'error' : '' }}">
 
@@ -276,17 +269,6 @@
                                         {!! $errors->first('custom_css', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                     @endif
                                     <p class="help-block">{!! trans('admin/settings/general.custom_css_help') !!}</p>
-                                </div>
-                            </div>
-
-                            <!-- Allow User Skin -->
-                            <div class="form-group">
-                                <div class="col-md-9 col-md-offset-3">
-                                    <label class="form-control">
-                                        <input type="checkbox" name="allow_user_skin" value="1" @checked(old('allow_user_skin', $setting->allow_user_skin))/>
-                                        {{ trans('admin/settings/general.allow_user_skin') }}
-                                    </label>
-                                    <p class="help-block">{{ trans('admin/settings/general.allow_user_skin_help_text') }}</p>
                                 </div>
                             </div>
 
@@ -426,10 +408,25 @@
 
 
     <script nonce="{{ csrf_token() }}">
+
+        // This takes the color from the color picker to show a live preview
         $(function() {
             $('#header-color').colorpicker().on('changeColor', function(e) {
-                $('.main-header .navbar')[0].style.backgroundColor = e.color
-                    .toString('rgba');
+                $('.main-header .navbar')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.header-preview')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.left-navblock')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-custom-menu > .navbar-nav')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-custom-menu > .navbar-nav > li > .navbar-form')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[0].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[1].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[2].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[3].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[4].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[5].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[6].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[7].style.backgroundColor = e.color.toString('rgba');
+                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[8].style.backgroundColor = e.color.toString('rgba');
+
             });
         });
 
