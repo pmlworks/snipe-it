@@ -237,6 +237,7 @@
         .nav-tabs-custom > .nav-tabs > li.active > a:visited,
         .nav-tabs-custom > .nav-tabs > li.active > a:hover
         {
+
             color: var(--color-fg);
             background-color: var(--box-bg) !important;
             border-left: 1px solid transparent;
@@ -333,7 +334,8 @@
         {
             background-color: var(--main-theme-color);
             /*background-color: rgba(0,0,0,.15);*/
-            color: var(--nav-primary-font-color) !important;
+            /*color: var(--nav-primary-font-color) !important;*/
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
         .dropdown-menu > li > a:hover,
