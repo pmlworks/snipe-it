@@ -43,8 +43,9 @@
 
         :root {
             --main-theme-color: {{ $snipeSettings->header_color }};
-            --sidenav-text-nohover-color: #b8c7ce;
             --sidenav-text-hover-color: #fff;
+            --sidenav-text-nohover-color: #b8c7ce;
+            --search-highlight: #e9d15b;
         }
 
         [data-theme="light"] {
@@ -58,12 +59,17 @@
             --header-color: #000000;
             --link-color: {{ $snipeSettings->header_color }};
             --nav-primary-font-color: #ffffff;
+            --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
             --text-blue: #d6d6d6;
-            --text-error: #a94442;
-            --text-help: #d6d6d6;
+            --text-danger: #a94442;
+            --text-help: #605e5e;
+            --text-info: #31708f;
+            --text-success: #039516;
+            --text-warning: #da9113;
+
         }
 
         [data-theme="dark"] {
@@ -77,15 +83,22 @@
             --header-color: #ffffff;
             --link-color: #ffffff;
             --nav-primary-font-color: #ffffff;
+            --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row: 1px solid #656464;
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
             --text-blue: #d6d6d6;
-            --text-error: #f17f7b;
+            --text-danger: #dd4b39;
             --text-help: #a6a4a4;
+            --text-info: #2baae6;
+            --text-success: #4ced61;
+            --text-warning: #f3a51f;
         }
 
 
+        .search-highlight {
+            background-color: var(--search-highlight);
+        }
         .content-wrapper {
             background-color: var(--color-bg);
         }
@@ -165,7 +178,7 @@
         .popover.help-popover .popover-title,
         .popover.help-popover .popover-header
         {
-            background-color: var(--box-header-top-border);
+            background-color: var(--box-bg) !important;
             color: var(--color-fg) !important;
 
         }
@@ -174,6 +187,7 @@
         {
             border-right-color: var(--box-header-top-border);
         }
+
         .popover.right .arrow {
             border-right-color: var(--box-header-top-border);
         }
@@ -197,10 +211,9 @@
 
 
         .nav-tabs-custom > .nav-tabs {
-            border-bottom: var(--box-header-top-border);
+            border-bottom: var(--tab-bottom-border);
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
-            margin-bottom: -1px;
             padding-bottom: 0;
 
         }
@@ -231,7 +244,7 @@
         {
             border-top-color: var(--main-theme-color) !important;
             background-color: var(--box-header-top-border-color) !important;
-            border-bottom: 1px solid  var(--box-bg) !important;
+            border-bottom: 2px solid  var(--box-bg) !important;
             border-right: 1px solid  var(--box-header-top-border-color) ;
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
@@ -241,6 +254,13 @@
             border-left: 0;
         }
 
+
+        /**
+        This fixes the weird spacing in the nav tabs if there is a badge count on the tab
+         */
+        .badge {
+            font-size: 11px;
+        }
 
         /**
         table rows
@@ -382,8 +402,6 @@
 
 
 
-
-
         .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
         .navbar-nav > .messages-menu > .dropdown-menu > li.header,
         .navbar-nav > .tasks-menu > .dropdown-menu > li.header,
@@ -396,7 +414,7 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
-            margin-bottom: 0px;
+            margin-bottom: 0;
         }
 
         .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
@@ -491,7 +509,7 @@
         }
 
         .alert-msg {
-            color: var(--text-error);
+            color: var(--text-danger);
         }
 
 
@@ -503,12 +521,41 @@
             color: hsl(from var(--main-theme-color) h s calc(l - 5));
         }
 
+        .text-warning {
+            color: var(--text-warning);
+        }
+
+        .text-info {
+            color: var(--text-info);
+        }
+
+        .text-primary {
+            color: var(--main-theme-color);
+        }
+
+        .text-danger {
+            color: var(--text-danger);
+        }
+
+        .text-success {
+            color: var(--text-success);
+        }
+
         .dropdown-menu > .divider {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 10));
             margin-top: 0;
             margin-bottom: 0;
             padding-top: 1px;
 
+        }
+
+        input[type="radio"]::before {
+            box-shadow: inset 1em 1em var(--main-theme-color) !important;
+        }
+
+
+        input[type="checkbox"]::before {
+            box-shadow: inset 1em 1em var(--main-theme-color) !important;
         }
 
 
