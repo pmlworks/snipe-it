@@ -58,7 +58,7 @@
             --header-color: #000000;
             --link-color: {{ $snipeSettings->header_color }};
             --nav-primary-font-color: #ffffff;
-            --table-border-row-top: 1px solid #434243;
+            --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
             --text-blue: #d6d6d6;
@@ -200,10 +200,15 @@
             border-bottom: var(--box-header-top-border);
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
-            margin-bottom: 0;
-            padding-bottom: 2px;
+            margin-bottom: -1px;
+            padding-bottom: 0;
+
         }
 
+        .nav-tabs > li > a {
+            margin-right: 0;
+            border: 0;
+        }
 
         .box,
         .box-footer,
@@ -225,12 +230,15 @@
         .nav-tabs-custom > .nav-tabs > li.active
         {
             border-top-color: var(--main-theme-color) !important;
-            background-color: var(--box-header-top-border) !important;
-            border-bottom-color: var(--box-bg) !important;
-            border-left: 1px solid var(--box-header-top-border) ;
-            border-right: 1px solid  var(--box-header-top-border) ;
+            background-color: var(--box-header-top-border-color) !important;
+            border-bottom: 1px solid  var(--box-bg) !important;
+            border-right: 1px solid  var(--box-header-top-border-color) ;
             border-top-right-radius: 3px;
             border-top-left-radius: 3px;
+        }
+
+        .nav-tabs-custom > .nav-tabs > li:first-of-type {
+            border-left: 0;
         }
 
 
@@ -250,13 +258,18 @@
 
 
         .table-striped > tbody > tr:nth-of-type(even),
-        .row-new-striped > .row:nth-of-type(even) {
-            background-color: var(--table-stripe-bg);
+        .row-new-striped > .row:nth-of-type(even),
+        .row-new-striped > .div:nth-of-type(odd) {
+            background-color: var(--table-stripe-bg) !important;
+            border-top: var(--table-border-row-top) !important;
         }
 
         .table-striped > tbody > tr:nth-of-type(odd),
-        .row-new-striped > .row:nth-of-type(odd){
-            background-color: var(--table-stripe-bg-alt);
+        .row-new-striped > .row:nth-of-type(even),
+        .row-new-striped > .div:nth-of-type(odd)
+        {
+            background-color: var(--table-stripe-bg-alt) !important;
+            border-top: var(--table-border-row-top) !important;
         }
 
 
@@ -348,13 +361,6 @@
             color: var(--nav-primary-font-color);
         }
 
-
-        .btn-primary {
-            background-color: var(--main-theme-color);
-            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-        }
-
-
         .btn:link,
         .btn:hover,
         .btn:visited,
@@ -363,13 +369,18 @@
             color: white !important;
         }
 
+
+        .btn-primary,
         .btn-primary:hover,
         .btn-primary:active,
         .btn-primary.hover {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
+            color: white;
+
         }
+
+
 
 
 
@@ -468,11 +479,12 @@
         .table > tfoot > tr > th,
         .table > thead > tr > td,
         .table > tbody > tr > td,
-        .table > tfoot > tr > td,
-        .sticky-header {
+        .table > tfoot > tr > td
+        {
             border-top-color: var(--box-header-bottom-border-color) !important;
             border-bottom-color: var(--box-header-bottom-border-color) !important;
         }
+
 
         .help-block {
             color: var(--text-help);
@@ -489,6 +501,14 @@
         .text-dark-gray a:focus
         {
             color: hsl(from var(--main-theme-color) h s calc(l - 5));
+        }
+
+        .dropdown-menu > .divider {
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 10));
+            margin-top: 0;
+            margin-bottom: 0;
+            padding-top: 1px;
+
         }
 
 
@@ -823,6 +843,11 @@
                                         </li>
                                         @endif
 
+                                        <li>
+                                            <a type="button" data-theme-toggle aria-label="Light mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
+                                                {{ trans('general.dark_mode') }}
+                                            </a>
+                                        </li>
 
                                         @can('self.api')
                                             <li>
@@ -832,12 +857,7 @@
                                                 </a>
                                             </li>
                                         @endcan
-                                        <li>
-                                            <a type="button" data-theme-toggle aria-label="Light mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
-                                                Dark Mode
-                                            </a>
-                                        </li>
-                                        <li class="divider" style="margin-top: -1px; margin-bottom: -1px"></li>
+                                        <li class="divider"></li>
                                         <li>
                                             <a href="{{ route('logout.get') }}"
                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -1541,7 +1561,7 @@
              * Utility function to update the button text and aria-label.
              */
             function updateButton({ buttonEl, isDark }) {
-                const newCta = isDark ? '<i class="fa-regular fa-sun fa-fw"></i> Light mode' : '<i class="fa-solid fa-moon fa-fw"></i>  Dark theme';
+                const newCta = isDark ? '<i class="fa-regular fa-sun fa-fw"></i>  {{ trans('general.light_mode') }}' : '<i class="fa-solid fa-moon fa-fw"></i>   {{ trans('general.dark_mode') }}';
                 // use an aria-label if you are omitting text on the button
                 // and using a sun/moon icon, for example
                 buttonEl.setAttribute("aria-label", newCta);
