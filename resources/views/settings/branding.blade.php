@@ -45,16 +45,16 @@
                         <x-icon type="branding"/>
                          {{ trans('admin/settings/general.brand') }}
                     </h2>
+
+                        <button type="submit" class="btn btn-primary pull-right">
+                            <x-icon type="checkmark" /> {{ trans('general.save') }}
+                        </button>
+
                 </div>
                 <div class="box-body">
 
-
                     <div class="col-md-12">
 
-                        <fieldset name="logo-preferences">
-                            <x-form-legend>
-                                {{ trans('admin/settings/general.legends.logos') }}
-                            </x-form-legend>
 
                             <!-- Site name -->
                             <div class="form-group{{ $errors->has('site_name') ? ' error' : '' }}">
@@ -82,10 +82,14 @@
                                     </div>
                                     <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
 
-
                                     {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 </div>
                             </div>
+
+                        <fieldset name="logo-preferences">
+                            <x-form-legend>
+                                {{ trans('admin/settings/general.legends.logos') }}
+                            </x-form-legend>
 
                             @php
                                 $optionTypes = trans('admin/settings/general.logo_option_types');

@@ -54,6 +54,8 @@
             --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
             --box-header-top-border-color: #d2d6de;
             --box-header-top-border: 3px solid var(--box-header-top-border-color);
+            --callout-bg-color: var(--box-header-bottom-border-color);
+            --callout-left-border: var(--box-header-top-border-color);
             --color-bg: #ecf0f5;
             --color-fg: #000000;
             --header-color: #000000;
@@ -78,6 +80,8 @@
             --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
             --box-header-top-border-color: #605e5e;
             --box-header-top-border: 3px solid var(--box-header-top-border-color);
+            --callout-bg-color: var(--box-header-top-border-color);
+            --callout-left-border: #323131;
             --color-bg: #222222;
             --color-fg: #ffffff;
             --header-color: #ffffff;
@@ -558,6 +562,19 @@
             box-shadow: inset 1em 1em var(--main-theme-color) !important;
         }
 
+        .callout.callout-legend {
+            background-color: var(--callout-bg-color);
+            border-left: 5px solid var(--callout-left-border);
+
+        }
+
+        .callout.callout-legend h4 {
+            color: var(--color-fg);
+        }
+
+        legend {
+            border-bottom: 1px solid var(--callout-left-border);
+        }
 
 
     </style>
