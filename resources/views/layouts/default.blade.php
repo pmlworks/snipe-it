@@ -46,6 +46,7 @@
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
             --search-highlight: #e9d15b;
+
         }
 
         [data-theme="light"] {
@@ -60,7 +61,8 @@
             --color-bg: #ecf0f5;
             --color-fg: #000000;
             --header-color: #000000;
-            --link-color: {{ $snipeSettings->header_color }};
+            --link-color: hsl(from var(--main-theme-color) h s calc(l - 10));
+            --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row-top: 1px solid #ecf0f5;
@@ -73,6 +75,9 @@
             --text-legend-help: var(--text-help);
             --text-success: #039516;
             --text-warning: #da9113;
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 5));
+            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l - 5));
+            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l - 15));
 
         }
 
@@ -88,7 +93,8 @@
             --color-bg: #222222;
             --color-fg: #ffffff;
             --header-color: #ffffff;
-            --link-color: #ffffff;
+            --link-color: hsl(from var(--main-theme-color) h s calc(l + 20));
+            --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
             --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row: 1px solid #656464;
@@ -101,8 +107,23 @@
             --text-legend-help: #d6d6d6;
             --text-success: #4ced61;
             --text-warning: #f3a51f;
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
+            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
+            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
         }
 
+
+        .btn-theme {
+            background-color: var(--btn-theme-base);
+            color: contrast-color(var(--btn-theme-base)) !important;
+            border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
+        }
+
+        .btn-theme:hover {
+            background-color: var(--btn-theme-hover);
+            color: contrast-color(var(--btn-theme-hover)) !important;
+            border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
+        }
 
         .dropdown-wrapper,
         .input-group-addon,
@@ -248,18 +269,7 @@
             color: var(--text-blue) !important;
         }
 
-        a,
-        a:link,
-        a:visited
-        {
-            color: var(--link-color);
-        }
 
-        a:hover,
-        a:focus
-        {
-            color: hsl(from var(--main-theme-color) h s calc(l + 25)) !important;
-        }
 
         label,
         .icon-med,
@@ -414,7 +424,7 @@
         .label-default
         {
             background-color: var(--main-theme-color);
-            color: var(--nav-primary-font-color) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
 
@@ -433,39 +443,46 @@
             color: contrast-color(var(--main-theme-color)) !important;
         }
 
-        .dropdown-menu > li > a:hover,
-        .dropdown-menu > li > a:focus,
-        .dropdown-menu > li:hover,
-        .dropdown-menu > li:focus,
+
+        .btn-tableButton.active.focus,
+        .btn-tableButton.active:focus,
+        .btn-tableButton.active:hover,
+        .btn-tableButton:active.focus,
+        .btn-tableButton:active:focus,
+        .btn-tableButton:active:hover,
+        .dropdown-menu > .active > a:focus,
+        .dropdown-menu > .active > a:hover,
         .dropdown-menu > .active > a:link,
         .dropdown-menu > .active > a:visited,
-        .dropdown-menu > .active > a:hover,
-        .dropdown-menu > .active > a:focus,
-        .navbar-nav .open > a:hover,
-        .navbar-nav .open > a:focus,
-        .navbar-nav > li > a:hover,
-        .navbar-nav > li > a:focus,
+        .dropdown-menu > li > a:focus,
+        .dropdown-menu > li > a:hover,
+        .dropdown-menu > li:focus,
+        .dropdown-menu > li:hover,
         .navbar-nav .open  li.active > a:focus,
         .navbar-nav .open  li.active > a:hover,
-        .pagination > .active > a:hover,
-        .btn-primary:active:hover,
-        .btn-primary.active:hover,
-        .open > .dropdown-toggle.btn-primary:hover,
-        .btn-primary:active:focus,
-        .btn-primary.active:focus,
-        .open > .dropdown-toggle.btn-primary:focus,
-        .btn-primary:active.focus,
-        .btn-primary.active.focus,
-        .open > .dropdown-toggle.btn-primary.focus
+        .navbar-nav .open > a:focus,
+        .navbar-nav .open > a:hover,
+        .navbar-nav > li > a:focus,
+        .navbar-nav > li > a:hover,
+        .open > .dropdown-toggle.btn-tableButton.focus,
+        .open > .dropdown-toggle.btn-tableButton:focus,
+        .open > .dropdown-toggle.btn-tableButton:hover,
+        .pagination > .active > a:hover
         {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            background-color: var(--main-theme-hover);
             border-color: var(--table-stripe-bg);
-        }
-        {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            /*background-color: rgba(0,0,0,.15);*/
             color: contrast-color(var(--main-theme-color)) !important;
-            /*color: var(--nav-primary-font-color) !important;*/
+        }
+
+        .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label
+        {
+            color: contrast-color(var(--main-theme-color)) !important;
+        }
+
+        .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label:hover
+        {
+            background-color: var(--main-theme-hover) !important;
+            color: contrast-color(var(--main-theme-hover)) !important;
         }
 
 
@@ -482,55 +499,6 @@
             background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
             color: contrast-color(var(--main-theme-color)) !important;
         }
-
-        .btn:link,
-        .btn:hover,
-        .btn:visited,
-        .btn:focus
-        {
-            color: contrast-color(var(--main-theme-color)) !important;
-        }
-
-
-        .btn-primary,
-        .btn-primary:hover,
-        .btn-primary:active,
-        .btn-primary:active:hover,
-        .btn-primary:active:focus,
-        .btn-primary a,
-        .btn-primary a:link,
-        .btn-primary a:hover,
-        label.btn-primary:hover
-        {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: contrast-color(var(--main-theme-color)) !important;
-
-        }
-
-
-        .btn-default,
-        .btn-default:hover,
-        .btn-default:active,
-        .btn-default:active:hover,
-        .btn-default:active:focus,
-        label.btn-default:hover
-        {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: contrast-color(var(--main-theme-color)) !important;
-
-        }
-
-        .btn-default.active,
-        .btn-default.active:hover,
-        .btn-default.active:focus
-        {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 10));
-            border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: contrast-color(var(--main-theme-color)) !important;
-        }
-
 
 
         .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
@@ -617,9 +585,6 @@
             color: var(--sidenav-text-hover-color) !important;
         }
 
-        .breadcrumb-item a {
-            color: hsl(from var(--main-theme-color) h s calc(l - 5));
-        }
 
         thead,
         tbody,
@@ -842,7 +807,7 @@
                                                 <input type="hidden" name="topsearch" value="true" id="search">
                                             </div>
                                             <div class="col-xs-1">
-                                                <button type="submit" id="topSearchButton" class="btn btn-primary pull-right">
+                                                <button type="submit" id="topSearchButton" class="btn btn-theme pull-right">
                                                     <x-icon type="search" />
                                                     <span class="sr-only">{{ trans('general.search') }}</span>
                                                 </button>
