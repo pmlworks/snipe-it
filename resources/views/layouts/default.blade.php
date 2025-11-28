@@ -166,7 +166,7 @@
         select,
         textarea
         {
-            background-color: var(--table-stripe-bg-alt) !important;
+            background-color: var(--table-stripe-bg) !important;
             color: var(--color-fg) !important;
 
         }
