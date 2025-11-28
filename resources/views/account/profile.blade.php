@@ -58,19 +58,6 @@
           </div>
         </div>
 
-        @if ($snipeSettings->allow_user_skin=='1')
-        <!-- Skin -->
-        <div class="form-group {{ $errors->has('skin') ? 'error' : '' }}">
-          <label for="skin" class="col-md-3 control-label">
-            {{ trans('general.skin') }}
-          </label>
-          <div class="col-md-8">
-            <x-input.skin name="skin" :selected="old('skin', $user->skin)" :include-blank-option="true"/>
-            {!! $errors->first('skin', '<span class="alert-msg">:message</span>') !!}
-          </div>
-        </div>
-        @endif
-
         <!-- Phone -->
         <div class="form-group {{ $errors->has('phone') ? 'has-error' : '' }}">
           <label class="col-md-3 control-label" for="phone">{{ trans('admin/users/table.phone') }}</label>
