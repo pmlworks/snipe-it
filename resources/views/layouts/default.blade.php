@@ -112,28 +112,31 @@
         .select2,
         .select2-choice,
         .select2-container,
-        .select2-container--above,
-        .select2-container--below,
-        .select2-container--default,
-        .select2-container--focus,
-        .select2-hidden-accessible,
         .select2-results__option,
         .select2-search input,
         .select2-search--dropdown,
         .select2-search__field,
         .select2-selection .select2-selection--single,
         .select2-selection,
-        .select2-selection,
         .select2-selection--single,
-        .select2-selection--single,
+        .select2-selection__rendered,
+        input[type="date"],
+        input[type="number"],
         input[type="text"],
+        option:active,
+        option[active],
         option[selected],
+        select option,
         select,
-        select::selection,
         textarea
         {
             background-color: var(--table-stripe-bg-alt) !important;
             color: var(--color-fg) !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple,
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
         }
 
         .select2-results__option[aria-selected=true] /** this handles the selected option */
@@ -142,10 +145,22 @@
             color: var(--color-fg) !important;
         }
 
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus
+        {
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
+        }
+
         /**
         Highlight the select2 on hover
          */
         .select2-results__option--highlighted[aria-selected=false] {
+            background-color: hsl(from var(--main-theme-color) h s calc(l + 20)) !important;
+            color: var(--color-fg) !important;
+        }
+
+        .select2-results__option--highlighted[aria-selected=true] {
             background-color: hsl(from var(--main-theme-color) h s calc(l + 20)) !important;
             color: var(--color-fg) !important;
         }
@@ -161,6 +176,11 @@
             color: white !important;
         }
 
+        .select2-container--default {
+            border-color: var(--box-header-bottom-border-color);
+        }
+
+
         .select2-container--default .select2-selection--multiple .select2-selection__choice
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
@@ -171,6 +191,7 @@
         .select2-selection__choice {
             border-radius: 0px !important;
         }
+
 
 
         .search-highlight {
@@ -483,7 +504,7 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: white;
+            color: var(--color-fg) !important;
 
         }
 
@@ -678,7 +699,7 @@
         .callout-legend h4 a,
         .callout-legend h4 a:hover
         {
-            color: var(--color-fg);
+            color: var(--color-fg) !important;
         }
 
 
