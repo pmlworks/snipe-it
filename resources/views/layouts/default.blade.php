@@ -26,7 +26,7 @@
     <meta name="language" content="{{ Helper::mapBackToLegacyLocale(app()->getLocale()) }}">
     <meta name="language-direction" content="{{ Helper::determineLanguageDirection() }}">
     <meta name="baseUrl" content="{{ config('app.url') }}/">
-    <meta name="theme-color" content="{{ $snipeSettings->header_color }}">
+    <meta name="theme-color" content="{{ $snipeSettings->header_color ?? '#5fa4cc' }}">
 
     <script nonce="{{ csrf_token() }}">
         window.Laravel = {csrfToken: '{{ csrf_token() }}'};
@@ -42,7 +42,7 @@
     <style>
 
         :root {
-            --main-theme-color: {{ $snipeSettings->header_color }};
+            --main-theme-color: {{ $snipeSettings->header_color ?? '#5fa4cc' }};
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
             --search-highlight: #e9d15b;
@@ -110,6 +110,20 @@
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
             --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
+        }
+
+
+        a,
+        a:link,
+        a:visited
+        {
+            color: var(--link-color);
+        }
+
+        a:hover,
+        a:focus
+        {
+            color: hsl(from var(--link-hover) h s calc(l + 25)) !important;
         }
 
 
@@ -489,14 +503,13 @@
         .dropdown-menu,
         .dropdown-menu > li
         {
-            {{--background-color: {{ $snipeSettings->header_color }};--}}
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
-            border-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 10));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 10));
             color: contrast-color(var(--main-theme-color)) !important;
         }
 
         .main-header .navbar .nav>.active>a {
-            background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             color: contrast-color(var(--main-theme-color)) !important;
         }
 

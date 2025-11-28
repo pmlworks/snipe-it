@@ -79,7 +79,7 @@ return [
     'generate_backup'			=> 'Generate Backup',
     'google_workspaces'         => 'Google Workspaces',
     'header_color'              => 'Primary Theme Color',
-    'header_color_help'         => 'Selecting a new color here will let you preview the color with your logo selection (if you have a site logo uploaded) in the header, however it will not be saved until you click the Save button.',
+    'header_color_help'         => 'Selecting a new color here will let you preview the color with your logo selection (if you have a site logo uploaded) in the header, however it will not be saved until you click the Save button. Keep in mind that very dark or very light headers might make links and other themed items unreadable in dark vs light mode.',
     'info'                      => 'These settings let you customize certain aspects of your installation.',
     'label_logo_size'           => 'Square logos look best - will be displayed in the top right of each asset label. ',
     'laravel'                   => 'Laravel Version',
