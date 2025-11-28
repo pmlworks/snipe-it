@@ -76,15 +76,32 @@
                             <div class="form-group {{ $errors->has('header_color') ? 'error' : '' }}">
                                 <label for="header_color" class="col-md-3 control-label">{{ trans('admin/settings/general.header_color') }}</label>
                                 <div class="col-md-9">
-                                    <div id="header-color" class="input-group colorpicker-component row col-md-5">
-                                        <input type="text" class="form-control" placeholder="#FF0000" aria-label="header_color" name="header_color" id="header_color" value="{{ old('header_color', ($setting->header_color ?? '#3c8dbc')) }}" />
-                                        <span class="input-group-addon"><i></i></span>
-                                    </div>
+                                    <x-input.colorpicker :item="$setting" div_id="header-color" id="header_color" :value="old('link_light_color', ($setting->header_color ?? '#3c8dbc'))" name="header_color" />
                                     <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
 
                                     {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 </div>
                             </div>
+
+                        <!-- Light Link color -->
+                        <div class="form-group {{ $errors->has('link_light_color') ? 'error' : '' }}">
+                            <label for="link_light_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_light_color') }}</label>
+                            <div class="col-md-9">
+                                <x-input.colorpicker :item="$setting" id="link_light_color" :value="old('link_light_color', ($setting->link_light_color ?? '#296282'))" name="link_light_color" />
+                                {!! $errors->first('link_light_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                <p class="help-block">{{ trans('admin/settings/general.link_light_color_help') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Dark Link color -->
+                        <div class="form-group {{ $errors->has('link_dark_color') ? 'error' : '' }}">
+                            <label for="link_dark_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_dark_color') }}</label>
+                            <div class="col-md-9">
+                                <x-input.colorpicker :item="$setting" id="link_dark_color" :value="old('link_dark_color', ($setting->link_dark_color ?? '#5fa4cc'))" name="link_dark_color" />
+                                {!! $errors->first('link_dark_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                <p class="help-block">{{ trans('admin/settings/general.link_dark_color_help') }}</p>
+                            </div>
+                        </div>
 
                         <fieldset name="logo-preferences">
                             <x-form-legend>

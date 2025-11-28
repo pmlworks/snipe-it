@@ -61,7 +61,7 @@
             --color-bg: #ecf0f5;
             --color-fg: #000000;
             --header-color: #000000;
-            --link-color: hsl(from var(--main-theme-color) h s calc(l - 10));
+            --link-color: {{ $snipeSettings->link_light_color ?? '#5fa4cc' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
@@ -93,7 +93,7 @@
             --color-bg: #222222;
             --color-fg: #ffffff;
             --header-color: #ffffff;
-            --link-color: hsl(from var(--main-theme-color) h s calc(l + 20));
+            --link-color: {{ $snipeSettings->link_dark_color ?? '#5fa4cc' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
             --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
@@ -123,7 +123,7 @@
         a:hover,
         a:focus
         {
-            color: hsl(from var(--link-hover) h s calc(l + 25)) !important;
+            color: var(--link-hover) !important;
         }
 
 
@@ -135,7 +135,7 @@
 
         .btn-theme:hover {
             background-color: var(--btn-theme-hover);
-            color: contrast-color(var(--btn-theme-hover)) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
         }
 
@@ -461,9 +461,6 @@
         .btn-tableButton.active.focus,
         .btn-tableButton.active:focus,
         .btn-tableButton.active:hover,
-        .btn-tableButton:active.focus,
-        .btn-tableButton:active:focus,
-        .btn-tableButton:active:hover,
         .dropdown-menu > .active > a:focus,
         .dropdown-menu > .active > a:hover,
         .dropdown-menu > .active > a:link,
@@ -1717,7 +1714,7 @@
         <script nonce="{{ csrf_token() }}">
 
             //color picker with addon
-            $("#color").colorpicker();
+            $(".color").colorpicker();
 
 
             /**
