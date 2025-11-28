@@ -21710,7 +21710,7 @@ img.navbar-brand-img,
 .left-navblock {
   max-width: 500px;
 }
-.skin-red .skin-purple .skin-blue .skin-black .skin-orange .skin-yellow .skin-green .skin-red-dark .skin-purple-dark .skin-blue-dark .skin-black-dark .skin-orange-dark .skin-yellow-dark .skin-green-dark .skin-contrast .main-header .logo {
+.main-header .logo {
   background-color: inherit;
 }
 .main-header .logo {
@@ -22033,7 +22033,7 @@ a.link-danger:hover {
   padding: 0px;
   /* adjust based on your layout */
 }
-.skin-red .skin-purple .skin-blue .skin-black .skin-orange .skin-yellow .skin-green .skin-red-dark .skin-purple-dark .skin-blue-dark .skin-black-dark .skin-orange-dark .skin-yellow-dark .skin-green-dark .skin-contrast .main-header .navbar .dropdown-menu li a {
+.main-header .navbar .dropdown-menu li a {
   color: #333;
 }
 a.logo.no-hover a:hover {
@@ -23395,7 +23395,7 @@ Radio toggle styles for permission settings and check/uncheck all
 .select2-container--classic.select2-container--open .select2-dropdown {
   border-color: #5897fb; }
 
-.skin-red .skin-purple .skin-blue .skin-black .skin-orange .skin-yellow .skin-green .skin-red-dark .skin-purple-dark .skin-blue-dark .skin-black-dark .skin-orange-dark .skin-yellow-dark .skin-green-dark .skin-contrast .main-header .logo {
+.main-header .logo {
   background-color: inherit;
 }
 .main-header .logo {
@@ -23718,7 +23718,7 @@ a.link-danger:hover {
   padding: 0px;
   /* adjust based on your layout */
 }
-.skin-red .skin-purple .skin-blue .skin-black .skin-orange .skin-yellow .skin-green .skin-red-dark .skin-purple-dark .skin-blue-dark .skin-black-dark .skin-orange-dark .skin-yellow-dark .skin-green-dark .skin-contrast .main-header .navbar .dropdown-menu li a {
+.main-header .navbar .dropdown-menu li a {
   color: #333;
 }
 a.logo.no-hover a:hover {
