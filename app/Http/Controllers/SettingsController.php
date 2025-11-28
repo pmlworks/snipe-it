@@ -400,10 +400,11 @@ class SettingsController extends Controller
 
         $setting->brand = $request->input('brand', '1');
         $setting->header_color = $request->input('header_color');
+        $setting->link_light_color = $request->input('link_light_color', '#296282');
+        $setting->link_dark_color = $request->input('link_dark_color', '#296282');
         $setting->support_footer = $request->input('support_footer');
         $setting->version_footer = $request->input('version_footer');
         $setting->footer_text = $request->input('footer_text');
-        $setting->skin = $request->input('skin');
         $setting->allow_user_skin = $request->input('allow_user_skin', '0');
         $setting->show_url_in_emails = $request->input('show_url_in_emails', '0');
         $setting->logo_print_assets = $request->input('logo_print_assets', '0');
