@@ -25,49 +25,50 @@ return new class extends Migration
         $link_dark_color = '#36aff5';
         $link_light_color = '#3c8dbc';
 
-        switch ($setting->skin) {
-            case 'green':
-                $link_dark_color = '#00a65a';
-                $link_light_color = '#00a65a';
-            case 'green-dark':
-                $link_dark_color = '#00a65a';
-                $link_light_color = '#00a65a';
-            case 'red':
-                $link_dark_color = '#dd4b39';
-                $link_light_color = '#dd4b39';
-            case 'red-dark':
-                $link_dark_color = '#dd4b39';
-                $link_light_color = '#dd4b39';
-            case 'orange':
-                $link_dark_color = '#FF851B';
-                $link_light_color = '#FF851B';
-            case 'orange-dark':
-                $link_dark_color = '#FF8C00';
-                $link_light_color = '#FF8C00';
-            case 'black':
-                $link_dark_color = '#111';
-                $link_light_color = '#111';
-            case 'black-dark':
-                $link_dark_color = '#111';
-                $link_light_color = '#111';
-            case 'purple':
-                $link_dark_color = '#605ca8';
-                $link_light_color = '#605ca8';
-            case 'purple-dark':
-                $link_dark_color = '#605ca8';
-                $link_light_color = '#605ca8';
-            case 'yellow':
-                $link_dark_color = '#f39c12';
-                $link_light_color = '#f39c12';
-            case 'yellow-dark':
-                $link_dark_color = '#f39c12';
-                $link_light_color = '#f39c12';
-            case 'contrast':
-                $link_dark_color = '#86cbf2';
-                $link_light_color = '#084d73';
-        }
-
         if ($setting) {
+            switch ($setting->skin) {
+                case 'green':
+                    $link_dark_color = '#00a65a';
+                    $link_light_color = '#00a65a';
+                case 'green-dark':
+                    $link_dark_color = '#00a65a';
+                    $link_light_color = '#00a65a';
+                case 'red':
+                    $link_dark_color = '#dd4b39';
+                    $link_light_color = '#dd4b39';
+                case 'red-dark':
+                    $link_dark_color = '#dd4b39';
+                    $link_light_color = '#dd4b39';
+                case 'orange':
+                    $link_dark_color = '#FF851B';
+                    $link_light_color = '#FF851B';
+                case 'orange-dark':
+                    $link_dark_color = '#FF8C00';
+                    $link_light_color = '#FF8C00';
+                case 'black':
+                    $link_dark_color = '#111';
+                    $link_light_color = '#111';
+                case 'black-dark':
+                    $link_dark_color = '#111';
+                    $link_light_color = '#111';
+                case 'purple':
+                    $link_dark_color = '#605ca8';
+                    $link_light_color = '#605ca8';
+                case 'purple-dark':
+                    $link_dark_color = '#605ca8';
+                    $link_light_color = '#605ca8';
+                case 'yellow':
+                    $link_dark_color = '#f39c12';
+                    $link_light_color = '#f39c12';
+                case 'yellow-dark':
+                    $link_dark_color = '#f39c12';
+                    $link_light_color = '#f39c12';
+                case 'contrast':
+                    $link_dark_color = '#86cbf2';
+                    $link_light_color = '#084d73';
+            }
+
+
             DB::table('settings')->update(['link_light_color' => $link_light_color, 'link_dark_color' => $link_dark_color]);
         }
 
