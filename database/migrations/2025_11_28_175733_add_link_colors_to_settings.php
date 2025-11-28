@@ -67,7 +67,10 @@ return new class extends Migration
                 $link_light_color = '#084d73';
         }
 
-        DB::table('settings')->update(['link_light_color' => $link_light_color, 'link_dark_color' => $link_dark_color]);
+        if ($setting) {
+            DB::table('settings')->update(['link_light_color' => $link_light_color, 'link_dark_color' => $link_dark_color]);
+        }
+
 
 
 
