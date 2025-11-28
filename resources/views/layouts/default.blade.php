@@ -123,6 +123,7 @@
         input[type="date"],
         input[type="number"],
         input[type="text"],
+        input[type="url"],
         option:active,
         option[active],
         option[selected],
@@ -132,6 +133,7 @@
         {
             background-color: var(--table-stripe-bg-alt) !important;
             color: var(--color-fg) !important;
+
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple,
@@ -145,12 +147,6 @@
             color: var(--color-fg) !important;
         }
 
-        input[type="text"]:focus,
-        input[type="date"]:focus,
-        input[type="number"]:focus
-        {
-            border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
-        }
 
         /**
         Highlight the select2 on hover
@@ -161,7 +157,7 @@
         }
 
         .select2-results__option--highlighted[aria-selected=true] {
-            background-color: hsl(from var(--main-theme-color) h s calc(l + 20)) !important;
+            /*background-color: hsl(from var(--main-theme-color) h s calc(l + 20)) !important;*/
             color: var(--color-fg) !important;
         }
 
@@ -176,9 +172,6 @@
             color: white !important;
         }
 
-        .select2-container--default {
-            border-color: var(--box-header-bottom-border-color);
-        }
 
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice
@@ -188,10 +181,15 @@
             overflow-y: auto;
         }
 
-        .select2-selection__choice {
-            border-radius: 0px !important;
-        }
 
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        textarea:focus
+        {
+            border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
+        }
 
 
         .search-highlight {
@@ -279,17 +277,18 @@
         .popover.help-popover .popover-header
         {
             background-color: var(--box-bg) !important;
-            color: var(--color-fg) !important;
+            /*color: var(--color-fg) !important;*/
+            color: contrast-color(var(--box-bg)) !important;
 
         }
 
         .popover.right .arrow:after
         {
-            border-right-color: var(--box-header-top-border);
+            border-right-color: var(--box-bg) !important;
         }
 
         .popover.right .arrow {
-            border-right-color: var(--box-header-top-border);
+            border-right-color: var(--box-bg) !important;
         }
 
         .box {
@@ -465,7 +464,8 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             /*background-color: rgba(0,0,0,.15);*/
-            color: var(--nav-primary-font-color) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
+            /*color: var(--nav-primary-font-color) !important;*/
         }
 
 
@@ -475,12 +475,12 @@
             {{--background-color: {{ $snipeSettings->header_color }};--}}
             background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
             border-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 10));
-            color: var(--nav-primary-font-color);
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
         .main-header .navbar .nav>.active>a {
             background-color: hsl(from {{ $snipeSettings->header_color }} h s calc(l - 5));
-            color: var(--nav-primary-font-color);
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
         .btn:link,
@@ -488,7 +488,7 @@
         .btn:visited,
         .btn:focus
         {
-            color: white !important;
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
 
@@ -504,20 +504,21 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: var(--color-fg) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
 
         }
+
 
         .btn-default,
         .btn-default:hover,
         .btn-default:active,
         .btn-default:active:hover,
         .btn-default:active:focus,
-        label.btn-default:hover,
-        .btn-default.hover {
+        label.btn-default:hover
+        {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: var(--color-fg) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
 
         }
 
@@ -527,7 +528,7 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 10));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 15));
-            color: var(--color-fg) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
         }
 
 
@@ -543,7 +544,7 @@
         .task_menu
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            color: hsl(from var(--main-theme-color) h s calc(l + 55)) !important;
+            color: contrast-color(var(--main-theme-color)) !important;
             margin-bottom: 0;
         }
 
@@ -682,12 +683,12 @@
         }
 
         input[type="radio"]::before {
-            box-shadow: inset 1em 1em var(--main-theme-color) !important;
+            box-shadow: inset 1em 1em hsl(from var(--main-theme-color) h s calc(l - 20)) !important;
         }
 
 
         input[type="checkbox"]::before {
-            box-shadow: inset 1em 1em var(--main-theme-color) !important;
+            box-shadow: inset 1em 1em hsl(from var(--main-theme-color) h s calc(l - 20)) !important;
         }
 
         .callout.callout-legend {
