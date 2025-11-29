@@ -23,7 +23,7 @@ return new class extends Migration
 
 
         $link_dark_color = '#36aff5';
-        $link_light_color = '#3c8dbc';
+        $link_light_color = '#296282';
 
         if ($setting) {
             switch ($setting->skin) {

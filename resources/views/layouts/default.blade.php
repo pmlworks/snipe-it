@@ -61,7 +61,7 @@
             --color-bg: #ecf0f5;
             --color-fg: #000000;
             --header-color: #000000;
-            --link-color: {{ $snipeSettings->link_light_color ?? '#5fa4cc' }};
+            --link-color: {{ $snipeSettings->link_light_color ?? '#296282' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
@@ -75,7 +75,7 @@
             --text-legend-help: var(--text-help);
             --text-success: #039516;
             --text-warning: #da9113;
-            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 5));
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l + 5));
             --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l - 5));
             --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l - 15));
 
@@ -137,6 +137,10 @@
             background-color: var(--btn-theme-hover);
             color: contrast-color(var(--main-theme-color)) !important;
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
+        }
+
+        .btn-danger {
+            color: white !important;
         }
 
         .dropdown-wrapper,
@@ -238,26 +242,21 @@
         .page-next a,
         .pagination>.disabled > a
         {
-            background-color: var(--color-bg);
             border-color: var(--table-stripe-bg);
-        }
-
-        .pagination > li > a:hover {
             background-color: var(--main-theme-color);
-            border-color: var(--table-stripe-bg);
+            color: contrast-color(var(--main-theme-hover)) !important;
         }
 
-        .pagination > .active > a
-         {
-            background-color: var(--main-theme-color);
-            border-color: var(--table-stripe-bg);
-        }
-
-        .pagination > .active > a:hover
+        .pagination > li > .active > a:hover,
+        .pagination > li >  .active > a
         {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            border-color: var(--table-stripe-bg);
+            color: contrast-color(var(--main-theme-hover)) !important;
+            background-color: var(--main-theme-hover);
+
+
         }
+
+
 
 
         .btn-anchor {
