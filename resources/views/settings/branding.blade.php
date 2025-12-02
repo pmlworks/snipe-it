@@ -76,18 +76,27 @@
                             <div class="form-group {{ $errors->has('header_color') ? 'error' : '' }}">
                                 <label for="header_color" class="col-md-3 control-label">{{ trans('admin/settings/general.header_color') }}</label>
                                 <div class="col-md-9">
-                                    <x-input.colorpicker :item="$setting" div_id="header-color" id="header_color" :value="old('link_light_color', ($setting->header_color ?? '#3c8dbc'))" name="header_color" />
+                                    <x-input.colorpicker :item="$setting" placeholder="#3c8dbc" div_id="header-color" id="header_color" :value="old('header_color', ($setting->header_color ?? '#3c8dbc'))" name="header_color" />
                                     <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
-
                                     {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 </div>
                             </div>
+
+                        <!-- Nav Link color -->
+                        <div class="form-group {{ $errors->has('nav_link_color') ? 'error' : '' }}">
+                            <label for="nav_link_color" class="col-md-3 control-label">{{ trans('admin/settings/general.nav_link_color') }}</label>
+                            <div class="col-md-9">
+                                <x-input.colorpicker :item="$setting" placeholder="#ffffff" div_id="nav-link-color" id="nav-link-color" :value="old('nav_link_color', ($setting->nav_link_color ?? '#ffffff'))" name="nav_link_color" />
+                                {!! $errors->first('nav_link_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                <p class="help-block">{{ trans('admin/settings/general.nav_link_color_help') }}</p>
+                            </div>
+                        </div>
 
                         <!-- Light Link color -->
                         <div class="form-group {{ $errors->has('link_light_color') ? 'error' : '' }}">
                             <label for="link_light_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_light_color') }}</label>
                             <div class="col-md-9">
-                                <x-input.colorpicker :item="$setting" id="link_light_color" :value="old('link_light_color', ($setting->link_light_color ?? '#296282'))" name="link_light_color" />
+                                <x-input.colorpicker :item="$setting" id="link_light_color" placeholder="#296282" :value="old('link_light_color', ($setting->link_light_color ?? '#296282'))" name="link_light_color" />
                                 {!! $errors->first('link_light_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.link_light_color_help') }}</p>
                             </div>
@@ -97,7 +106,7 @@
                         <div class="form-group {{ $errors->has('link_dark_color') ? 'error' : '' }}">
                             <label for="link_dark_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_dark_color') }}</label>
                             <div class="col-md-9">
-                                <x-input.colorpicker :item="$setting" id="link_dark_color" :value="old('link_dark_color', ($setting->link_dark_color ?? '#5fa4cc'))" name="link_dark_color" />
+                                <x-input.colorpicker :item="$setting" id="link_dark_color" placeholder="5fa4cc" :value="old('link_dark_color', ($setting->link_dark_color ?? '#5fa4cc'))" name="link_dark_color" />
                                 {!! $errors->first('link_dark_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.link_dark_color_help') }}</p>
                             </div>
@@ -426,36 +435,30 @@
 @section('moar_scripts')
     <!-- bootstrap color picker -->
 
-
-
     <script nonce="{{ csrf_token() }}">
 
         // This takes the color from the color picker to show a live preview
         $(function() {
             $('#header-color').colorpicker().on('changeColor', function(e) {
-                $('.main-header .navbar')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.header-preview')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.left-navblock')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-custom-menu > .navbar-nav')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-custom-menu > .navbar-nav > li > .navbar-form')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[0].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[1].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[2].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[3].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[4].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[5].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[6].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[7].style.backgroundColor = e.color.toString('rgba');
-                $('.navbar-nav > li > a:link, .navbar-nav > li > a:visited')[8].style.backgroundColor = e.color.toString('rgba');
+                var color = e.color.toString('rgba');
+                $('.main-header .navbar, .header-preview, .left-navblock, .navbar-custom-menu > .navbar-nav, .navbar-custom-menu > .navbar-nav > li > .navbar-form, .navbar-nav > li > a:link, .navbar-nav > li > a').css('background-color', color);
+                $('.btn-theme').css('background-color', color);
+            });
+
+            $('#nav-link-color').colorpicker().on('changeColor', function(e) {
+                var color = e.color.toString('rgba');
+                var header_color = $('#header_color').val();
+                console.log(header_color);
+
+                // $('.navbar-nav > li > a').css('background-color', header_color);
+                $('.navbar-nav > li > a:link').attr('style','color: '+ color +' !important').css('background-color', header_color);
+                $('.btn-theme').attr('style','color: '+ color +' !important').css('background-color', header_color);
+
+
+
 
             });
         });
 
-        // toggle the disabled state of asset id prefix
-        $('#auto_increment_assets').on('ifChecked', function(){
-            $('#auto_increment_prefix').prop('disabled', false).focus();
-        }).on('ifUnchecked', function(){
-            $('#auto_increment_prefix').prop('disabled', true);
-        });
     </script>
 @stop

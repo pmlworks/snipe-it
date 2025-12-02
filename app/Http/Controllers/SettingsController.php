@@ -402,6 +402,7 @@ class SettingsController extends Controller
         $setting->header_color = $request->input('header_color');
         $setting->link_light_color = $request->input('link_light_color', '#296282');
         $setting->link_dark_color = $request->input('link_dark_color', '#296282');
+        $setting->nav_link_color = $request->input('nav_link_color', '#FFFFFF');
         $setting->support_footer = $request->input('support_footer');
         $setting->version_footer = $request->input('version_footer');
         $setting->footer_text = $request->input('footer_text');

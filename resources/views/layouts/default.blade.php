@@ -42,10 +42,22 @@
     <style>
 
         :root {
+            color-scheme: light dark;
             --main-theme-color: {{ $snipeSettings->header_color ?? '#5fa4cc' }};
+            --btn-theme-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l + 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --btn-theme-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --btn-theme-hover: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
             --search-highlight: #e9d15b;
+            --color-fg: light-dark(#000000, #ffffff);
+            --text-danger: light-dark(#a94442,#dd4b39);
+            --text-success: light-dark(#039516,#4ced61);
+            --text-warning: light-dark(#da9113,#f3a51f);
+            --text-info: light-dark(#31708f,#2baae6);
+            --text-help: light-dark(#605e5e,#a6a4a4);
+            --nav-primary-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
 
         }
 
@@ -59,25 +71,21 @@
             --callout-bg-color: var(--box-header-bottom-border-color);
             --callout-left-border: var(--box-header-top-border-color);
             --color-bg: #ecf0f5;
-            --color-fg: #000000;
             --header-color: #000000;
-            --link-color: {{ $snipeSettings->link_light_color ?? '#296282' }};
+            --link-color: {{ $link_light_color ?? '#296282' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
-            --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
             --text-blue: var(--text-legend-help);
-            --text-danger: #a94442;
-            --text-help: #605e5e;
-            --text-info: #31708f;
             --text-legend-help: var(--text-help);
-            --text-success: #039516;
             --text-warning: #da9113;
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l + 5));
             --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l - 5));
-            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l - 15));
+            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
+            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
+            --btn-theme-hover-text-color:  hsl(from var(--btn-theme-hover) h s calc(l - 20));
 
         }
 
@@ -91,25 +99,20 @@
             --callout-bg-color: var(--box-header-top-border-color);
             --callout-left-border: #323131;
             --color-bg: #222222;
-            --color-fg: #ffffff;
             --header-color: #ffffff;
-            --link-color: {{ $snipeSettings->link_dark_color ?? '#5fa4cc' }};
+            --link-color: {{ $link_dark_color ?? '#5fa4cc' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
-            --nav-primary-font-color: #ffffff;
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row: 1px solid #656464;
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
             --text-blue: var(--text-legend-help);
-            --text-danger: #dd4b39;
-            --text-help: #a6a4a4;
-            --text-info: #2baae6;
             --text-legend-help: #d6d6d6;
-            --text-success: #4ced61;
-            --text-warning: #f3a51f;
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
             --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
+            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
+            --btn-theme-hover-text-color:  hsl(from var(--btn-theme-hover) h s calc(l + 20));
         }
 
 
@@ -126,16 +129,21 @@
             color: var(--link-hover) !important;
         }
 
+        h2 small {
+            color: var(--color-fg) !important;
+        }
 
         .btn-theme {
             background-color: var(--btn-theme-base);
-            color: contrast-color(var(--btn-theme-base)) !important;
+            /*color: var(--btn-theme-hover-text-color) !important;*/
+            color: var(--nav-primary-text-color) !important;
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
         }
 
         .btn-theme:hover {
             background-color: var(--btn-theme-hover);
-            color: contrast-color(var(--main-theme-color)) !important;
+            /*color: var(--btn-theme-hover-text-color) !important;*/
+            color: var(--nav-primary-text-color) !important;
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
         }
 
@@ -237,25 +245,6 @@
         .content-wrapper {
             background-color: var(--color-bg);
         }
-
-        .pagination > li > a,
-        .page-next a,
-        .pagination>.disabled > a
-        {
-            border-color: var(--table-stripe-bg);
-            background-color: var(--main-theme-color);
-            color: contrast-color(var(--main-theme-hover)) !important;
-        }
-
-        .pagination > li > .active > a:hover,
-        .pagination > li >  .active > a
-        {
-            color: contrast-color(var(--main-theme-hover)) !important;
-            background-color: var(--main-theme-hover);
-
-
-        }
-
 
 
 
@@ -437,7 +426,7 @@
         .label-default
         {
             background-color: var(--main-theme-color);
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
 
@@ -452,8 +441,9 @@
         {
             background-color: var(--main-theme-color);
             /*background-color: rgba(0,0,0,.15);*/
-            /*color: var(--nav-primary-font-color) !important;*/
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
+            /*color: var(--nav-primary-text-color) !important;*/
+
         }
 
 
@@ -474,25 +464,41 @@
         .navbar-nav .open > a:hover,
         .navbar-nav > li > a:focus,
         .navbar-nav > li > a:hover,
-        .open > .dropdown-toggle.btn-tableButton.focus,
         .open > .dropdown-toggle.btn-tableButton:focus,
         .open > .dropdown-toggle.btn-tableButton:hover,
-        .pagination > .active > a:hover
+        .page-next a,
+        .pagination > .active > a:hover,
+        .page-item.active,
+        .pagination > li > .active > a,
+        .pagination > li > .active > a:hover,
+        .pagination > li > a:hover
         {
-            background-color: var(--main-theme-hover);
-            border-color: var(--table-stripe-bg);
-            color: contrast-color(var(--main-theme-color)) !important;
+            background-color: var(--main-theme-hover) !important;
+
+            border-color: var(--btn-theme-hover) !important;
+            /*color: var(--btn-theme-hover-text-color) !important;*/
+            color: var(--nav-primary-text-color) !important;
         }
+
+        .pagination > li > a
+        {
+            background-color: var(--main-theme-color) !important;
+            border-color: var(--btn-theme-hover) !important;
+            /*color: var(--btn-theme-text-color) !important;*/
+            color: var(--nav-primary-text-color) !important;
+        }
+
+
 
         .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label
         {
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
         .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label:hover
         {
             background-color: var(--main-theme-hover) !important;
-            color: contrast-color(var(--main-theme-hover)) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
 
@@ -501,12 +507,12 @@
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
             border-color: hsl(from var(--main-theme-color) h s calc(l - 10));
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
         .main-header .navbar .nav>.active>a {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
 
@@ -521,7 +527,7 @@
         .task_menu
         {
             background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
-            color: contrast-color(var(--main-theme-color)) !important;
+            color: var(--nav-primary-text-color) !important;
             margin-bottom: 0;
         }
 
