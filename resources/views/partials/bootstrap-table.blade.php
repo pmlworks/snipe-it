@@ -226,7 +226,7 @@
             },
             attributes: {
                 title: '{{ trans('general.create') }}',
-                class: 'btn-sm btn-info',
+                class: 'btn-warning',
                 @if ($snipeSettings->shortcuts_enabled == 1)
                 accesskey: 'n'
                 @endif
