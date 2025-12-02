@@ -81,11 +81,11 @@
             --text-blue: var(--text-legend-help);
             --text-legend-help: var(--text-help);
             --text-warning: #da9113;
-            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l + 5));
-            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l - 5));
-            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
+            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
+            --btn-theme-hover: var(--main-theme-hover);
             --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
-            --btn-theme-hover-text-color:  hsl(from var(--btn-theme-hover) h s calc(l - 20));
+            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
 
         }
 
@@ -110,9 +110,9 @@
             --text-legend-help: #d6d6d6;
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
-            --btn-theme-hover: hsl(from var(--btn-theme-base) h s calc(l + 15));
+            --btn-theme-hover: var(--main-theme-hover);
             --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
-            --btn-theme-hover-text-color:  hsl(from var(--btn-theme-hover) h s calc(l + 20));
+            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
         }
 
 
@@ -474,9 +474,7 @@
         .pagination > li > a:hover
         {
             background-color: var(--main-theme-hover) !important;
-
             border-color: var(--btn-theme-hover) !important;
-            /*color: var(--btn-theme-hover-text-color) !important;*/
             color: var(--nav-primary-text-color) !important;
         }
 
@@ -484,7 +482,6 @@
         {
             background-color: var(--main-theme-color) !important;
             border-color: var(--btn-theme-hover) !important;
-            /*color: var(--btn-theme-text-color) !important;*/
             color: var(--nav-primary-text-color) !important;
         }
 
@@ -511,7 +508,7 @@
         }
 
         .main-header .navbar .nav>.active>a {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
             color: var(--nav-primary-text-color) !important;
         }
 
@@ -526,7 +523,7 @@
         .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:hover > a,
         .task_menu
         {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 5));
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
             color: var(--nav-primary-text-color) !important;
             margin-bottom: 0;
         }
