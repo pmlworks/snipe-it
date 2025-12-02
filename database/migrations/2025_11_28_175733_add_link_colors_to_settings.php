@@ -28,7 +28,7 @@ return new class extends Migration
 
 
         // Set Snipe-IT defaults
-        $link_dark_color = '#36aff5';
+        $link_dark_color = '#89c9ed';
         $link_light_color = '#296282';
         $nav_color = '#ffffff';
         $header_color = '#3c8dbc';
