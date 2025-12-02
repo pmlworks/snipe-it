@@ -68,12 +68,17 @@
             --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
             --box-header-top-border-color: #d2d6de;
             --box-header-top-border: 3px solid var(--box-header-top-border-color);
+            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
+            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
+            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
+            --btn-theme-hover: var(--main-theme-hover);
             --callout-bg-color: var(--box-header-bottom-border-color);
             --callout-left-border: var(--box-header-top-border-color);
             --color-bg: #ecf0f5;
             --header-color: #000000;
             --link-color: {{ $link_light_color ?? '#296282' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
@@ -81,11 +86,6 @@
             --text-blue: var(--text-legend-help);
             --text-legend-help: var(--text-help);
             --text-warning: #da9113;
-            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
-            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
-            --btn-theme-hover: var(--main-theme-hover);
-            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
-            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
 
         }
 
@@ -96,23 +96,23 @@
             --box-header-bottom-border: 1px solid var(--box-header-bottom-border-color);
             --box-header-top-border-color: #605e5e;
             --box-header-top-border: 3px solid var(--box-header-top-border-color);
+            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
+            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
+            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
+            --btn-theme-hover: var(--main-theme-hover);
             --callout-bg-color: var(--box-header-top-border-color);
             --callout-left-border: #323131;
             --color-bg: #222222;
             --header-color: #ffffff;
             --link-color: {{ $link_dark_color ?? '#5fa4cc' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
+            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
             --table-border-row: 1px solid #656464;
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
             --text-blue: var(--text-legend-help);
             --text-legend-help: #d6d6d6;
-            --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
-            --btn-theme-base: hsl(from var(--main-theme-color) h s calc(l + 5));
-            --btn-theme-hover: var(--main-theme-hover);
-            --btn-theme-border:  hsl(from var(--btn-theme-base) h s calc(l + 20));
-            --btn-theme-hover-text-color:  var(--nav-primary-text-color);
         }
 
 
@@ -487,6 +487,7 @@
 
 
 
+
         .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label
         {
             color: var(--nav-primary-text-color) !important;
@@ -692,6 +693,11 @@
             border-bottom: 1px solid var(--callout-left-border);
         }
 
+        th,
+        .fix-sticky table thead {
+            background-color: var(--box-bg);
+            color: var(--color-fg) !important;
+        }
 
     </style>
 
