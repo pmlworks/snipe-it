@@ -239,9 +239,11 @@
         }
 
 
-        .search-highlight {
+        input[type="search"].search-highlight {
             background-color: var(--search-highlight);
+            border: 1px solid hsl(from var(--search-highlight) h s calc(l - 20)) !important;
         }
+
         .content-wrapper {
             background-color: var(--color-bg);
         }
