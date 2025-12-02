@@ -247,12 +247,13 @@
 
         btnShowAdmins: {
             text: '{{ trans('general.show_admins') }}',
-            icon: 'fa-solid fa-crown{{ (request()->input('admins') == "true") ? ' text-danger' : '' }}',
+            icon: 'fa-solid fa-crown',
             event () {
                 window.location.href = '{{ (request()->input('admins') == "true") ? route('users.index') : route('users.index', ['admins' => 'true']) }}';
             },
             attributes: {
                 title: '{{ trans('general.show_admins') }}',
+                class: '{{ (request()->input('admins') == "true") ? ' btn-danger' : '' }}'
             }
         },
 

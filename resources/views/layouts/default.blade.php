@@ -149,6 +149,12 @@
 
         .btn-danger {
             color: white !important;
+            background-color: var(--text-danger) !important;
+        }
+
+        .btn-warning {
+            color: white !important;
+            background-color: var(--text-warning) !important;
         }
 
         .dropdown-wrapper,
