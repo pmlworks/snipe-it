@@ -477,6 +477,7 @@
         .page-next a,
         .pagination > .active > a:hover,
         .page-item.active,
+        .pagination > .active > a,
         .pagination > li > .active > a,
         .pagination > li > .active > a:hover,
         .pagination > li > a:hover
