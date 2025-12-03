@@ -50,7 +50,7 @@
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
             --search-highlight: #e9d15b;
-            --color-fg: light-dark(#000000, #ffffff);
+            --color-fg: light-dark(#373636, #ffffff);
             --text-danger: light-dark(#a94442,#dd4b39);
             --text-success: light-dark(#039516,#4ced61);
             --text-warning: light-dark(#da9113,#f3a51f);
@@ -58,6 +58,7 @@
             --text-help: light-dark(#605e5e,#a6a4a4);
             --nav-primary-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+
 
         }
 
@@ -86,6 +87,8 @@
             --text-blue: var(--text-legend-help);
             --text-legend-help: var(--text-help);
             --text-warning: #da9113;
+            --input-group-bg: hsl(from var(--box-bg) h s calc(l - 5));
+            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l - 50));
 
         }
 
@@ -113,6 +116,9 @@
             --table-stripe-bg: #494747;
             --text-blue: var(--text-legend-help);
             --text-legend-help: #d6d6d6;
+            --input-group-bg: hsl(from var(--box-bg) h s calc(l + 10));
+            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l + 50));
+
         }
 
 
@@ -158,7 +164,7 @@
         }
 
         .dropdown-wrapper,
-        .input-group-addon,
+
         .js-data-ajax,
         .option,
         .select2 .select2-container .select2-container--default,
@@ -187,6 +193,11 @@
             background-color: var(--table-stripe-bg) !important;
             color: var(--color-fg) !important;
 
+        }
+
+        .input-group-addon {
+            background-color: var(--input-group-bg) !important;
+            color: var(--input-group-fg) !important;
         }
 
         .select2-container--default.select2-container--focus .select2-selection--multiple,
@@ -289,6 +300,28 @@
             color: var(--color-fg);
         }
 
+        .datepicker.dropdown-menu th, .datepicker.datepicker-inline th,
+        .datepicker.dropdown-menu td,
+        .datepicker.datepicker-inline td
+
+        {
+            color: var(--color-fg);
+            border-color: var(--color-fg);
+            background-color: var(--box-bg) !important;
+        }
+
+        .datepicker.dropdown-menu th:hover,
+        .datepicker.datepicker-inline th:hover,
+        .datepicker.dropdown-menu td:hover,
+        .datepicker.datepicker-inline td:hover,
+        .datepicker table tr td span:hover,
+        .datepicker table tr td span.focused
+        {
+            background-color: var(--main-theme-color) !important;
+            color: var(--nav-primary-text-color) !important;
+        }
+
+        .datepicker.dropdown-menu,
         .modal-content,
         .popover.help-popover,
         .popover.help-popover .popover-content,
@@ -299,8 +332,8 @@
             background-color: var(--box-bg) !important;
             /*color: var(--color-fg) !important;*/
             color: contrast-color(var(--box-bg)) !important;
-
         }
+
 
         .popover.right .arrow:after
         {
