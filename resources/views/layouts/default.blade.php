@@ -183,6 +183,7 @@
         input[type="number"],
         input[type="text"],
         input[type="url"],
+        input[type="email"],
         option:active,
         option[active],
         option[selected],
@@ -249,6 +250,7 @@
         input[type="text"]:focus,
         input[type="url"]:focus,
         input[type="date"]:focus,
+        input[type="email"]:focus,
         input[type="number"]:focus,
         textarea:focus
         {
