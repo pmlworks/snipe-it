@@ -784,7 +784,7 @@ class Helper
 
         foreach ($consumables as $consumable) {
             $avail = $consumable->numRemaining();
-            if ($avail <= ($consumable->min_amt) - $alert_threshold) {
+            if ($avail <= ($consumable->min_amt) + $alert_threshold) {
                 if ($consumable->qty > 0) {
                     $percent = number_format((($avail / $consumable->qty) * 100), 0);
                 } else {
