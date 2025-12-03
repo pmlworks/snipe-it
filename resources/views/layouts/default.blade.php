@@ -609,11 +609,13 @@
         .table > tfoot > tr > th,
         .table > thead > tr > td,
         .table > tbody > tr > td,
-        .table > tfoot > tr > td
+        .table > tfoot > tr > td,
+
         {
             border-top-color: var(--box-header-bottom-border-color) !important;
             border-bottom-color: var(--box-header-bottom-border-color) !important;
         }
+
 
 
         .help-block {
@@ -748,6 +750,16 @@
             color: white !important;
             background-color: var(--sidenav-hover-color-bg) !important;
             /*color: var(--sidenav-text-hover-color) !important;*/
+        }
+
+        .sidebar-toggle.btn,
+        .sidebar-toggle.btn:hover
+        {
+            color: white !important;
+        }
+
+        .chart-responsive {
+            color: var(--color-fg) !important;
         }
 
     </style>
