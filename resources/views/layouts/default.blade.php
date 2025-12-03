@@ -49,6 +49,7 @@
             --btn-theme-hover: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
+            --sidenav-hover-color-bg: #4c4b4b;
             --search-highlight: #e9d15b;
             --color-fg: light-dark(#373636, #ffffff);
             --text-danger: light-dark(#a94442,#dd4b39);
@@ -305,39 +306,7 @@
             color: var(--color-fg);
         }
 
-        .datepicker.dropdown-menu th, .datepicker.datepicker-inline th,
-        .datepicker.dropdown-menu td,
-        .datepicker.datepicker-inline td
 
-        {
-            color: var(--color-fg);
-            border-color: var(--color-fg);
-            background-color: var(--box-bg) !important;
-        }
-
-        .datepicker.dropdown-menu th:hover,
-        .datepicker.datepicker-inline th:hover,
-        .datepicker.dropdown-menu td:hover,
-        .datepicker.datepicker-inline td:hover,
-        .datepicker table tr td span:hover,
-        .datepicker table tr td span.focused
-        {
-            background-color: var(--main-theme-color) !important;
-            color: var(--nav-primary-text-color) !important;
-        }
-
-        .datepicker.dropdown-menu,
-        .modal-content,
-        .popover.help-popover,
-        .popover.help-popover .popover-content,
-        .popover.help-popover .popover-body,
-        .popover.help-popover .popover-title,
-        .popover.help-popover .popover-header
-        {
-            background-color: var(--box-bg) !important;
-            /*color: var(--color-fg) !important;*/
-            color: contrast-color(var(--box-bg)) !important;
-        }
 
 
         .popover.right .arrow:after
@@ -633,19 +602,6 @@
             color: var(--sidenav-text-hover-color) !important;
         }
 
-
-        .treeview-menu>li {
-            background-color: #2c3b41;
-            color: var(--sidenav-text-nohover-color) !important;
-        }
-
-        .treeview-menu>li>a:hover,
-        .treeview-menu>li.active > a
-        {
-            color: var(--sidenav-text-hover-color) !important;
-        }
-
-
         thead,
         tbody,
         .table > thead > tr > th,
@@ -744,6 +700,54 @@
         .fix-sticky table thead {
             background-color: var(--box-bg);
             color: var(--color-fg) !important;
+        }
+
+        .datepicker.dropdown-menu th, .datepicker.datepicker-inline th,
+        .datepicker.dropdown-menu td,
+        .datepicker.datepicker-inline td
+
+        {
+            color: var(--color-fg);
+            border-color: var(--color-fg);
+            background-color: var(--box-bg) !important;
+        }
+
+        .datepicker.dropdown-menu th:hover,
+        .datepicker.datepicker-inline th:hover,
+        .datepicker.dropdown-menu td:hover,
+        .datepicker.datepicker-inline td:hover,
+        .datepicker table tr td span:hover,
+        .datepicker table tr td span.focused
+        {
+            background-color: var(--main-theme-color) !important;
+            color: var(--nav-primary-text-color) !important;
+        }
+
+        .datepicker.dropdown-menu,
+        .modal-content,
+        .popover.help-popover,
+        .popover.help-popover .popover-content,
+        .popover.help-popover .popover-body,
+        .popover.help-popover .popover-title,
+        .popover.help-popover .popover-header
+        {
+            background-color: var(--box-bg) !important;
+            /*color: var(--color-fg) !important;*/
+            color: contrast-color(var(--box-bg)) !important;
+        }
+
+        .treeview-menu > li {
+            background-color: #2c3b41;
+            color: var(--sidenav-text-nohover-color) !important;
+        }
+
+        .treeview-menu > li >a:hover,
+        .treeview-menu > li:hover,
+        .treeview-menu > li.active > a
+        {
+            color: white !important;
+            background-color: var(--sidenav-hover-color-bg) !important;
+            /*color: var(--sidenav-text-hover-color) !important;*/
         }
 
     </style>
