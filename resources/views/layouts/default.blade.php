@@ -153,18 +153,8 @@
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
         }
 
-        .btn-danger {
-            color: white !important;
-            background-color: var(--text-danger) !important;
-        }
-
-        .btn-warning {
-            color: white !important;
-            background-color: var(--text-warning) !important;
-        }
 
         .dropdown-wrapper,
-
         .js-data-ajax,
         .option,
         .select2 .select2-container .select2-container--default,
@@ -281,6 +271,19 @@
         h1, h2, h3, h4, p {
             color: var(--color-fg);
         }
+
+        .btn-danger,
+        .btn-danger:hover,
+        .btn-warning,
+        .btn-warning:hover,
+        .modal-danger,
+        .modal-danger h2,
+        .modal-header h2,
+        .modal-warning h2
+        {
+            color: white !important;
+        }
+
 
         body {
             color: var(--color-bg);
