@@ -592,8 +592,8 @@
             color: var(--sidenav-text-nohover-color) !important;
         }
 
-        .sidebar-menu>li.active > a,
-        .sidebar-menu>li:hover > a
+        .sidebar-menu > li.active > a,
+        .sidebar-menu > li:hover > a
         {
             background-color: #1e282c;
             border-left-color: var(--main-theme-color);
@@ -625,7 +625,11 @@
         .alert-msg,
         .has-error
         {
-            color: var(--text-danger);
+            color: var(--text-danger) !important;
+        }
+
+        .alert a {
+            color: white !important;
         }
 
 
