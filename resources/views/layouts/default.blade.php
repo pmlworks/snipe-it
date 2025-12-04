@@ -122,6 +122,13 @@
 
         }
 
+        .label2_fields,
+        .l2fd-main,
+        .l2fd-listitem
+        {
+            background-color: var(--box-bg) !important;
+            color: var(--color-fg) !important;
+        }
 
         a,
         a:link,
@@ -260,8 +267,6 @@
             background-color: var(--color-bg);
         }
 
-
-
         .btn-anchor {
             outline: none !important;
             padding: 0;
@@ -298,7 +303,8 @@
             color: #3d4144 !important;
         }
 
-        body {
+        body
+        {
             background-color: var(--color-bg);
             color: var(--color-fg);
         }
@@ -318,9 +324,6 @@
         {
             color: var(--color-fg);
         }
-
-
-
 
         .popover.right .arrow:after
         {
@@ -515,8 +518,6 @@
         }
 
 
-
-
         .bootstrap-table .fixed-table-toolbar li.dropdown-item-marker label
         {
             color: var(--nav-primary-text-color) !important;
@@ -561,7 +562,6 @@
         .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a, .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
             border-bottom: 1px solid hsl(from var(--main-theme-color) h s calc(l - 10));
         }
-
 
 
         /**
