@@ -96,6 +96,9 @@ class LocationImporter extends ItemImporter
             $location->update($this->sanitizeItemForUpdating($location));
         } else {
             Log::debug('Creating location');
+            if ($this->findCsvMatch($row, 'company')) {
+                $this->item['company_id'] = $this->createOrFetchCompany(trim($this->findCsvMatch($row, 'company')));
+            }
             $location->fill($this->sanitizeItemForStoring($location));
         }
 
