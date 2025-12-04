@@ -135,14 +135,13 @@
                 <div class="col-md-12 text-center">
                   <img src="{{ $user->present()->gravatar() }}"  class=" img-thumbnail hidden-print" style="margin-bottom: 20px;" alt="{{ $user->display_name }}" alt="User avatar">
                 </div>
-                @can('self.profile')
                   <div class="col-md-12">
                     <a href="{{ route('profile') }}" style="width: 100%;" class="btn btn-sm btn-warning btn-social btn-block hidden-print">
                       <x-icon type="edit" />
                       {{ trans('general.editprofile') }}
                     </a>
                   </div>
-                @endcan
+               
 
                   @can('self.profile')
                   @if (Auth::user()->ldap_import!='1')
