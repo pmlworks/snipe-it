@@ -347,6 +347,7 @@ class Importer extends Component
 
         $this->locations_fields = [
             'id' => trans('general.id'),
+            'company' => trans('general.company'),
             'name' => trans('general.name'),
             'address' => trans('general.address'),
             'address2' => trans('general.importer.address2'),
