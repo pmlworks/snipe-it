@@ -144,7 +144,8 @@
                   </div>
                 @endcan
 
-                @if ($user->ldap_import!='1')
+                  @can('self.profile')
+                  @if (Auth::user()->ldap_import!='1')
                 <div class="col-md-12" style="padding-top: 5px;">
                   <a href="{{ route('account.password.index') }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print" rel="noopener">
                     <x-icon type="password" class="fa-fw" />
@@ -152,6 +153,7 @@
                   </a>
                 </div>
                 @endif
+                  @endcan
 
                 @can('self.api')
                 <div class="col-md-12" style="padding-top: 5px;">

@@ -175,6 +175,7 @@
         input[type="text"],
         input[type="url"],
         input[type="email"],
+        input[type="password"],
         option:active,
         option[active],
         option[selected],
@@ -243,6 +244,7 @@
         input[type="date"]:focus,
         input[type="email"]:focus,
         input[type="number"]:focus,
+        input[type="password"]:focus,
         textarea:focus
         {
             border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
@@ -275,8 +277,13 @@
 
         .btn-danger,
         .btn-danger:hover,
+        .btn-danger:focus,
         .btn-warning,
         .btn-warning:hover,
+        .btn-warning:focus,
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus,
         .modal-danger,
         .modal-danger h2,
         .modal-header h2,
@@ -285,9 +292,15 @@
             color: white !important;
         }
 
+        .btn-default,
+        .btn-default:hover
+        {
+            color: #3d4144 !important;
+        }
 
         body {
-            color: var(--color-bg);
+            background-color: var(--color-bg);
+            color: var(--color-fg);
         }
 
 
@@ -1057,11 +1070,14 @@
                                     </a>
                                     <ul class="dropdown-menu">
                                         <!-- User image -->
+                                        @can('self.profile')
                                         <li {!! (request()->is('account/profile') ? ' class="active"' : '') !!}>
                                             <a href="{{ route('view-assets') }}">
                                                 <x-icon type="checkmark" class="fa-fw" />
                                                 {{ trans('general.viewassets') }}
-                                            </a></li>
+                                            </a>
+                                        </li>
+
 
                                         @can('viewRequestable', \App\Models\Asset::class)
                                             <li {!! (request()->is('account/requested') ? ' class="active"' : '') !!}>
@@ -1075,18 +1091,18 @@
                                             <a href="{{ route('account.accept') }}">
                                                 <x-icon type="checkmark" class="fa-fw" />
                                                 {{ trans('general.accept_assets_menu') }}
-                                            </a></li>
+                                            </a>
+                                        </li>
 
-
-                                        @can('self.profile')
+                                        @endcan
                                         <li>
                                             <a href="{{ route('profile') }}">
                                                 <x-icon type="user" class="fa-fw" />
                                                 {{ trans('general.editprofile') }}
                                             </a>
                                         </li>
-                                        @endcan
 
+                                        @can('self.profile')
                                         @if (Auth::user()->ldap_import!='1')
                                         <li>
                                             <a href="{{ route('account.password.index') }}">
@@ -1095,9 +1111,10 @@
                                             </a>
                                         </li>
                                         @endif
+                                        @endcan
 
                                         <li>
-                                            <a type="button" data-theme-toggle aria-label="Light mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
+                                            <a type="button" data-theme-toggle aria-label="Dark mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
                                                 {{ trans('general.dark_mode') }}
                                             </a>
                                         </li>
@@ -1815,7 +1832,7 @@
              */
             function updateButton({ buttonEl, isDark }) {
                 const newCta = isDark ? '<i class="fa-regular fa-sun fa-fw"></i>  {{ trans('general.light_mode') }}' : '<i class="fa-solid fa-moon fa-fw"></i>   {{ trans('general.dark_mode') }}';
-                // use an aria-label if you are omitting text on the button
+                // use an aria-label if omitting text on the button
                 // and using a sun/moon icon, for example
                 buttonEl.setAttribute("aria-label", newCta);
                 buttonEl.innerHTML = newCta;
@@ -1836,9 +1853,11 @@
             /**
              * 1. Grab what we need from the DOM and system settings on page load
              */
+
             const button = document.querySelector("[data-theme-toggle]");
             const localStorageTheme = localStorage.getItem("theme");
             const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
+            const clearButton = document.querySelector("[data-theme-toggle-clear]");
 
             /**
              * 2. Work out the current site settings
@@ -1846,7 +1865,7 @@
             let currentThemeSetting = calculateSettingAsThemeString({ localStorageTheme, systemSettingDark });
 
             /**
-             * 3. Update the theme setting and button text accoridng to current settings
+             * 3. Update the theme setting and button text according to current settings
              */
             updateButton({ buttonEl: button, isDark: currentThemeSetting === "dark" });
             updateThemeOnHtmlEl({ theme: currentThemeSetting });
@@ -1863,6 +1882,15 @@
 
                 currentThemeSetting = newTheme;
             });
+
+            /**
+             * 5. Add an event listener to toggle the reset
+             */
+            clearButton.addEventListener("click", (event) => {
+                localStorage.removeItem("theme");
+            });
+
+
 
             $.fn.datepicker.dates['{{ app()->getLocale() }}'] = {
                 days: [
