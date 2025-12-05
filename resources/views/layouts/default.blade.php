@@ -59,7 +59,9 @@
             --text-help: light-dark(#605e5e,#a6a4a4);
             --nav-primary-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
-
+            --main-footer-bg-color: light-dark(#ffffff,#3d4144);
+            --main-footer-top-border-color: light-dark(#d2d6de,#605e5e);
+            --main-footer-text-color: light-dark(##605e5e, #d2d6de);
 
         }
 
@@ -126,6 +128,12 @@
         {
             background-color: var(--box-bg) !important;
             color: var(--color-fg) !important;
+        }
+
+        footer.main-footer {
+            color: var(--main-footer-text-color) !important;
+            background-color: var(--main-footer-bg-color) !important;
+            border-top: 1px solid var(--main-footer-top-border-color) !important;
         }
 
         a,
@@ -305,12 +313,6 @@
         {
             background-color: var(--color-bg);
             color: var(--color-fg);
-        }
-
-
-        .footer-links a:link
-        {
-            color: var(--text-blue) !important;
         }
 
 
@@ -1690,7 +1692,7 @@
             </div><!-- /.content-wrapper -->
             <footer class="main-footer hidden-print" style="display:grid;flex-direction:column;">
 
-                <div class="1hidden-xs pull-left">
+                <div class="hidden-xs pull-left">
                     <div class="pull-left footer-links">
                          {!! trans('general.footer_credit') !!}
                     </div>
