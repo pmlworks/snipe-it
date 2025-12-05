@@ -61,7 +61,7 @@
             --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --main-footer-bg-color: light-dark(#ffffff,#3d4144);
             --main-footer-top-border-color: light-dark(#d2d6de,#605e5e);
-            --main-footer-text-color: light-dark(##605e5e, #d2d6de);
+            --main-footer-text-color: light-dark(#605e5e, #d2d6de);
 
         }
 
@@ -147,6 +147,11 @@
         a:focus
         {
             color: var(--link-hover) !important;
+        }
+
+
+        .footer-links a {
+            color: light-dark(hsl(from var(--link-color) h s calc(l + 10)),hsl(from var(--link-color) h s calc(l - 32))) !important;
         }
 
         h2 small {
@@ -1695,11 +1700,25 @@
                 <div class="hidden-xs pull-left">
                     <div class="pull-left footer-links">
                          {!! trans('general.footer_credit') !!}
+
+                        <a target="_blank" href="https://bsky.app/profile/snipeitapp.com" rel="noopener" data-tooltip="true" data-title="Join us on Bluesky">
+                            <i class="fa-brands fa-square-bluesky"></i>
+                        </a>
+                        <a target="_blank" href="https://hachyderm.io/@grokability" rel="noopener" data-tooltip="true" data-title="Join us on Github">
+                            <i class="fa-brands fa-square-github"></i>
+                        </a>
+                        <a target="_blank" href="https://hachyderm.io/@grokability" rel="noopener" data-tooltip="true" data-title="Join us on Mastodon">
+                            <i class="fa-brands fa-mastodon"></i>
+                        </a>
+                        <a target="_blank" href="https://discord.gg/yZFtShAcKk" rel="noopener" data-tooltip="true" data-title="Join us on Discord">
+                            <i class="fa-brands fa-discord"></i>
+                        </a>
+
                     </div>
                     <div class="pull-right">
                     @if ($snipeSettings->version_footer!='off')
                         @if (($snipeSettings->version_footer=='on') || (($snipeSettings->version_footer=='admin') && (Auth::user()->isSuperUser()=='1')))
-                            &nbsp; <strong>{{ trans('general.version') }}</strong> {{ config('version.app_version') }} -
+                            &nbsp; {{ trans('general.version') }} {{ config('version.app_version') }} -
                             {{ trans('general.build') }} {{ config('version.build_version') }} ({{ config('version.branch') }})
                         @endif
                     @endif
