@@ -146,7 +146,7 @@
                   @can('self.profile')
                   @if (Auth::user()->ldap_import!='1')
                 <div class="col-md-12" style="padding-top: 5px;">
-                  <a href="{{ route('account.password.index') }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print" rel="noopener">
+                  <a href="{{ route('account.password.index') }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social btn-block hidden-print" rel="noopener">
                     <x-icon type="password" class="fa-fw" />
                     {{ trans('general.changepassword') }}
                   </a>
@@ -156,7 +156,7 @@
 
                 @can('self.api')
                 <div class="col-md-12" style="padding-top: 5px;">
-                  <a href="{{ route('user.api') }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print" rel="noopener">
+                  <a href="{{ route('user.api') }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social btn-block hidden-print" rel="noopener">
                     <x-icon type="api-key" class="fa-fw" />
                     {{ trans('general.manage_api_keys') }}
                   </a>
@@ -165,7 +165,7 @@
 
 
                   <div class="col-md-12" style="padding-top: 5px;">
-                    <a href="{{ route('profile.print') }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print" target="_blank" rel="noopener">
+                    <a href="{{ route('profile.print') }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social btn-block hidden-print" target="_blank" rel="noopener">
                       <x-icon type="print" class="fa-fw" />
                       {{ trans('admin/users/general.print_assigned') }}
                     </a>
@@ -176,13 +176,13 @@
                     @if (!empty($user->email))
                       <form action="{{ route('profile.email_assets') }}" method="POST">
                         {{ csrf_field() }}
-                        <button style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print" rel="noopener">
+                        <button style="width: 100%;" class="btn btn-sm btn-theme btn-social btn-block hidden-print" rel="noopener">
                           <x-icon type="email" class="fa-fw" />
                           {{ trans('admin/users/general.email_assigned') }}
                         </button>
                       </form>
                     @else
-                      <button style="width: 100%;" class="btn btn-sm btn-primary btn-social btn-block hidden-print disabled" rel="noopener" disabled title="{{ trans('admin/users/message.user_has_no_email') }}">
+                      <button style="width: 100%;" class="btn btn-sm btn-theme btn-social btn-block hidden-print disabled" rel="noopener" disabled title="{{ trans('admin/users/message.user_has_no_email') }}">
                         <x-icon type="email" class="fa-fw" />
                         {{ trans('admin/users/general.email_assigned') }}
                       </button>
@@ -692,7 +692,7 @@
                     @endcan
                     <td class="hidden-print">
                       @can('checkin', $accessory)
-                        <a href="{{ route('accessories.checkin.show', array('accessoryID'=> $accessory->pivot->id, 'backto'=>'user')) }}" class="btn btn-primary btn-sm hidden-print">{{ trans('general.checkin') }}</a>
+                        <a href="{{ route('accessories.checkin.show', array('accessoryID'=> $accessory->pivot->id, 'backto'=>'user')) }}" class="btn btn-theme btn-sm hidden-print">{{ trans('general.checkin') }}</a>
                       @endcan
                     </td>
                   </tr>
