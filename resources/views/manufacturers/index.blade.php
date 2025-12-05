@@ -22,7 +22,7 @@
             <div class="callout callout-info">
               <p>
                   {{ trans('general.seeding.manufacturers.prompt') }}
-                <button class="btn btn-sm btn-primary hidden-print" rel="noopener">
+                <button class="btn btn-sm btn-theme hidden-print" rel="noopener">
                   {{ trans('general.seeding.manufacturers.button') }}
                 </button>
               </p>

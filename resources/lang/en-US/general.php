@@ -648,6 +648,7 @@ return [
     'set_password' => 'Set a Password',
     'upload_deleted'        => 'Upload Deleted',
     'child_locations' => 'Child Locations',
+    'append' => 'Append',
 
 // Add form placeholders here
     'placeholders' => [
