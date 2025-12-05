@@ -535,17 +535,10 @@ class UsersController extends Controller
                 return response()->json(Helper::formatStandardApiResponse('error', null, 'Permission denied. You cannot update user information via API on the demo.'));
             }
 
-            $user->fill($request->all());
+            // Pull out sensitive fields that require extra permission
+            $user->fill($request->except(['password', 'username', 'email', 'activated', 'permissions', 'activation_code', 'remember_token', 'two_factor_secret', 'two_factor_enrolled', 'two_factor_optin']));
 
-            if ($request->filled('company_id')) {
-                $user->company_id = Company::getIdForCurrentUser($request->input('company_id'));
-            }
 
-            if ($user->id == $request->input('manager_id')) {
-                return response()->json(Helper::formatStandardApiResponse('error', null, 'You cannot be your own manager'));
-            }
-
-            // check for permissions related fields and pull them out if the current user cannot edit them
             if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
 
                 if ($request->filled('password')) {
@@ -556,9 +549,6 @@ class UsersController extends Controller
                     $user->username = $request->input('username');
                 }
 
-                if ($request->filled('display_name')) {
-                    $user->display_name = $request->input('display_name');
-                }
 
                 if ($request->filled('email')) {
                     $user->email = $request->input('email');
@@ -569,6 +559,19 @@ class UsersController extends Controller
                 }
 
             }
+
+            if ($request->filled('display_name')) {
+                $user->display_name = $request->input('display_name');
+            }
+
+            if ($request->filled('company_id')) {
+                $user->company_id = Company::getIdForCurrentUser($request->input('company_id'));
+            }
+
+            if ($user->id == $request->input('manager_id')) {
+                return response()->json(Helper::formatStandardApiResponse('error', null, 'You cannot be your own manager'));
+            }
+
 
             // We need to use has()  instead of filled()
             // here because we need to overwrite permissions
@@ -584,11 +587,13 @@ class UsersController extends Controller
                 $user->permissions = $permissions_array;
             }
 
-            if($request->has('location_id')) {
+            if ($request->has('location_id')) {
                 // Update the location of any assets checked out to this user
                 Asset::where('assigned_type', User::class)
                     ->where('assigned_to', $user->id)->update(['location_id' => $request->input('location_id', null)]);
             }
+
+
             app('App\Http\Requests\ImageUploadRequest')->handleImages($user, 600, 'avatar', 'avatars', 'avatar');
 
             if ($user->save()) {
