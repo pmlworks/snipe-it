@@ -85,7 +85,6 @@
             --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
-            --text-blue: var(--text-legend-help);
             --text-legend-help: var(--text-help);
             --text-warning: #da9113;
             --input-group-bg: hsl(from var(--box-bg) h s calc(l - 5));
@@ -115,7 +114,6 @@
             --table-border-row: 1px solid #656464;
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
-            --text-blue: var(--text-legend-help);
             --text-legend-help: #d6d6d6;
             --input-group-bg: hsl(from var(--box-bg) h s calc(l + 10));
             --input-group-fg: hsl(from var(--input-group-bg) h s calc(l + 50));
@@ -310,8 +308,8 @@
         }
 
 
-        .footer-links a:link,
-        .text-blue {
+        .footer-links a:link
+        {
             color: var(--text-blue) !important;
         }
 
