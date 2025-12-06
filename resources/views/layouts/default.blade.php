@@ -318,9 +318,9 @@
         .btn-selected a,
         .btn-selected:hover,
         .btn-selected:focus {
-            background-color: var(--table-stripe-bg) !important;
-            border-color: var(--table-stripe-bg) !important;
-            color: light-dark(hsl(from var(--color-fg) h s calc(l - 10)),hsl(from var(--color-fg) h s calc(l - 10))) !important;
+            color: light-dark(hsl(from var(--main-theme-color) h s calc(l + 30)), hsl(from var(--main-theme-color) h s calc(l + 30))) !important;
+            background-color: light-dark(hsl(from var(--main-theme-color) h s calc(l - 20)), hsl(from var(--main-theme-color) h s calc(l - 20))) !important;
+            border-color: light-dark(hsl(from var(--main-theme-color) h s calc(l - 25)), hsl(from var(--main-theme-color) h s calc(l - 25))) !important;
 
         }
 
