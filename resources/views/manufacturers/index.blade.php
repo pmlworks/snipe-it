@@ -57,7 +57,7 @@
               {{-- end stuff for bulk dropdown --}}
               data-buttons="manufacturerButtons"
               class="table table-striped snipe-table"
-              data-url="{{route('api.manufacturers.index', ['deleted' => (request('deleted')=='true') ? 'true' : 'false' ]) }}"
+              data-url="{{route('api.manufacturers.index', ['status' => e(request()->input('status')) ]) }}"
               data-export-options='{
                 "fileName": "export-manufacturers-{{ date('Y-m-d') }}",
                 "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]

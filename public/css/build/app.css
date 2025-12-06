@@ -347,10 +347,6 @@ img.navbar-brand-img,
 .input-daterange {
   border-radius: 0px;
 }
-.btn.bg-maroon,
-.btn.bg-purple {
-  min-width: 90px;
-}
 [hidden] {
   display: none !important;
 }
@@ -878,8 +874,8 @@ img.navbar-brand-img,
 .input-daterange input:last-child {
   border-radius: 0px !important;
 }
-.btn.bg-maroon,
-.btn.bg-purple {
+.btn-checkin,
+.btn-checkout {
   min-width: 90px;
 }
 [hidden] {

@@ -304,8 +304,24 @@
         .modal-danger h2,
         .modal-header h2,
         .modal-warning h2
+        .bg-maroon,
+        .bg-maroon:hover,
+        .bg-maroon:focus,
+        .bg-purple,
+        .bg-purple:hover,
+        .bg-purple:focus
         {
             color: white !important;
+        }
+
+        .btn-selected,
+        .btn-selected a,
+        .btn-selected:hover,
+        .btn-selected:focus {
+            background-color: var(--table-stripe-bg) !important;
+            border-color: var(--table-stripe-bg) !important;
+            color: light-dark(hsl(from var(--color-fg) h s calc(l - 10)),hsl(from var(--color-fg) h s calc(l - 10))) !important;
+
         }
 
         .btn-default,

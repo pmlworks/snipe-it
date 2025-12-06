@@ -502,8 +502,8 @@ img.navbar-brand-img,
 .input-daterange input:last-child {
   border-radius: 0px !important;
 }
-.btn.bg-maroon,
-.btn.bg-purple {
+.btn-checkin,
+.btn-checkout {
   min-width: 90px;
 }
 [hidden] {
