@@ -257,6 +257,15 @@
         // This takes the color from the color picker to show a live preview
         $(function() {
 
+            /**
+             * 5. Add an event listener to toggle the reset
+             */
+            clearButton.addEventListener("click", (event) => {
+                localStorage.removeItem("theme");
+            });
+
+
+
             $('#nav-link-color').colorpicker().on('changeColor', function(e) {
                 var color = e.color.toString('rgba');
                 // $('.navbar-nav > li > a').css('background-color', header_color);
