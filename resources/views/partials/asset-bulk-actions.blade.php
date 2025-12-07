@@ -24,7 +24,7 @@
         @else
 
             @can('update', \App\Models\Asset::class)
-                <option value="edit">{{ trans('button.edit') }}</option>
+                <option value="edit">{{ trans('general.bulk_edit') }}</option>
                 <option value="maintenance">{{ trans('button.add_maintenance') }}</option>
             @endcan
 
@@ -35,7 +35,7 @@
             @endif
 
             @can('delete', \App\Models\Asset::class)
-                <option value="delete">{{ trans('button.delete') }}</option>
+                <option value="delete">{{ trans('general.bulk_delete') }}</option>
             @endcan
 
             <option value="labels" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=l" : ''}}>{{ trans_choice('button.generate_labels', 2) }}</option>
