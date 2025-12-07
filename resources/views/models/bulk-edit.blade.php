@@ -29,7 +29,7 @@
 
                                 <tr>
                                         <td>
-                                            <i class="fa {!!  (($model->assets_count > 0 ) ? 'fa-warning text-warning' : 'fa-check success') !!}"></i>
+                                            <i class="fa {!!  (($model->assets_count > 0 ) ? 'fa-warning text-warning fa-fw' : 'fa-check fa-fw text-success') !!}"></i>
                                             {{ $model->display_name }}
 
                                                 @if ($model->model_number)
