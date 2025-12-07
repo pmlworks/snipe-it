@@ -2,15 +2,10 @@
 
 {{-- Page title --}}
 @section('title')
-    Bulk Edit
+    {{ trans('general.bluk_edit') }}
     @parent
 @stop
 
-
-@section('header_right')
-    <a href="{{ URL::previous() }}" class="btn btn-sm btn-theme pull-right">
-        {{ trans('general.back') }}</a>
-@stop
 
 {{-- Page content --}}
 @section('content')
