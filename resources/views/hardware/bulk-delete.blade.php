@@ -2,7 +2,7 @@
 
 {{-- Page title --}}
 @section('title')
-{{ trans('admin/hardware/form.bulk_delete') }}
+{{ trans('general.bulk_delete') }}
 @parent
 @stop
 
