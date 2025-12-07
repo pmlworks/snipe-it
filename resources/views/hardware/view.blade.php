@@ -290,7 +290,7 @@
                                 <div class="col-md-12 hidden-print" style="padding-top: 5px;">
                                     <form
                                         method="POST"
-                                        action="{{ route('hardware/bulkedit') }}"
+                                        action="{{ route('hardware.bulkdelete.store') }}"
                                         accept-charset="UTF-8"
                                         class="form-inline"
                                         target="_blank"

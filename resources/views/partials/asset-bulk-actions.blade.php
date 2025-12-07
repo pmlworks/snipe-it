@@ -1,7 +1,7 @@
 <div id="{{ (isset($id_divname)) ? $id_divname : 'assetsBulkEditToolbar' }}" style="min-width:400px">
     <form
     method="POST"
-    action="{{ route('hardware/bulkedit') }}"
+    action="{{ route('hardware.bulkedit.show') }}"
     accept-charset="UTF-8"
     class="form-inline"
     id="{{ (isset($id_formname)) ? $id_formname : 'assetsBulkForm' }}"
