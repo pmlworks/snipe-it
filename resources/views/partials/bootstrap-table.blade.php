@@ -1041,7 +1041,7 @@
 
 
     function hardwareAuditFormatter(value, row) {
-        return '<a href="{{ config('app.url') }}/hardware/' + row.id + '/audit" class="actions btn btn-sm btn-theme" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
+        return '<a href="{{ config('app.url') }}/hardware/' + row.id + '/audit" class="actions btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
     }
 
 
@@ -1074,7 +1074,7 @@
             }
 
             if ((row.available_actions) && (row.available_actions.audit === true)) {
-                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/audit" class="actions btn btn-sm btn-theme" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" class="fa-fw" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
+                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/audit" class="actions btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" class="fa-fw" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
             }
 
             if ((row.available_actions) && (row.available_actions.update === true)) {
