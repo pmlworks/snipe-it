@@ -84,6 +84,7 @@
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
+            --table-border-row: 1px solid #ecf0f5;
             --table-border-row-top: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
@@ -437,7 +438,7 @@
         .table > tbody > tr > td,
         .table > tfoot > tr > td
         {
-            border-top: var(--table-border-row);
+            border-top: var(--table-border-row) !important;
         }
 
 
