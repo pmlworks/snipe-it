@@ -29,7 +29,7 @@
                         </div>
 
 
-                        <table class="table">
+                        <table class="table table-striped">
                             @foreach ($models as $model)
 
                                 <tr>

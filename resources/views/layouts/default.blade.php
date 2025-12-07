@@ -43,25 +43,25 @@
 
         :root {
             color-scheme: light dark;
-            --main-theme-color: {{ $snipeSettings->header_color ?? '#5fa4cc' }};
-            --btn-theme-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l + 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --btn-theme-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
             --btn-theme-hover: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --btn-theme-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l + 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --color-fg: light-dark(#373636, #ffffff);
+            --main-footer-bg-color: light-dark(#ffffff,#3d4144);
+            --main-footer-text-color: light-dark(#605e5e, #d2d6de);
+            --main-footer-top-border-color: light-dark(#d2d6de,#605e5e);
+            --main-theme-color: {{ $snipeSettings->header_color ?? '#5fa4cc' }};
+            --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --nav-primary-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
+            --search-highlight: #e9d15b;
+            --sidenav-hover-color-bg: #4c4b4b;
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
-            --sidenav-hover-color-bg: #4c4b4b;
-            --search-highlight: #e9d15b;
-            --color-fg: light-dark(#373636, #ffffff);
             --text-danger: light-dark(#a94442,#dd4b39);
+            --text-help: light-dark(#605e5e,#a6a4a4);
+            --text-info: light-dark(#31708f,#2baae6);
             --text-success: light-dark(#039516,#4ced61);
             --text-warning: light-dark(#da9113,#f3a51f);
-            --text-info: light-dark(#31708f,#2baae6);
-            --text-help: light-dark(#605e5e,#a6a4a4);
-            --nav-primary-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
-            --nav-hover-text-color: {{ $nav_link_color ?? 'light-dark(hsl(from var(--main-theme-color) h s calc(l - 10)),hsl(from var(--main-theme-color) h s calc(l - 10)))' }};
-            --main-footer-bg-color: light-dark(#ffffff,#3d4144);
-            --main-footer-top-border-color: light-dark(#d2d6de,#605e5e);
-            --main-footer-text-color: light-dark(#605e5e, #d2d6de);
 
         }
 
@@ -80,18 +80,18 @@
             --callout-left-border: var(--box-header-top-border-color);
             --color-bg: #ecf0f5;
             --header-color: #000000;
+            --input-group-bg: hsl(from var(--box-bg) h s calc(l - 5));
+            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l - 50));
             --link-color: {{ $link_light_color ?? '#296282' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
-            --table-border-row: 1px solid #ecf0f5;
             --table-border-row-top: 1px solid #ecf0f5;
+            --table-border-row: 1px solid #ecf0f5;
             --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
             --table-stripe-bg: #ffffff;
             --text-legend-help: var(--text-help);
             --text-warning: #da9113;
-            --input-group-bg: hsl(from var(--box-bg) h s calc(l - 5));
-            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l - 50));
 
         }
 
@@ -110,6 +110,8 @@
             --callout-left-border: #323131;
             --color-bg: #222222;
             --header-color: #ffffff;
+            --input-group-bg: hsl(from var(--box-bg) h s calc(l + 10));
+            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l + 50));
             --link-color: {{ $link_dark_color ?? '#5fa4cc' }};
             --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
@@ -118,8 +120,6 @@
             --table-stripe-bg-alt: #323131;
             --table-stripe-bg: #494747;
             --text-legend-help: #d6d6d6;
-            --input-group-bg: hsl(from var(--box-bg) h s calc(l + 10));
-            --input-group-fg: hsl(from var(--input-group-bg) h s calc(l + 50));
 
         }
 
