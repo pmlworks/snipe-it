@@ -801,6 +801,10 @@
             color: var(--color-fg) !important;
         }
 
+        .table > tbody + tbody {
+            border-top: 0px !important;
+        }
+
     </style>
 
     {{-- Custom CSS --}}
