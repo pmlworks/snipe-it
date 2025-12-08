@@ -54,121 +54,121 @@
     </div> <!-- .col-md-12-->
 </div>
 
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">
-                            {{ trans('general.licenses') }}
-                            </h3>
-                        </div>
+{{--<div class="row">--}}
+{{--    <div class="col-md-8 col-md-offset-2">--}}
+{{--            <div class="box box-default">--}}
+{{--                <div class="box-header with-border">--}}
+{{--                    <div class="row">--}}
+{{--                        <div class="col-md-8">--}}
+{{--                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">--}}
+{{--                            {{ trans('general.licenses') }}--}}
+{{--                            </h3>--}}
+{{--                        </div>--}}
 
-                        <div class="col-md-4 text-right">
-                            <a href="{{ route('modal.show', [ 'type' => 'kit-license', 'itemId' => $item->id]) }}" data-refresh="kitLicensesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }} </a>
+{{--                        <div class="col-md-4 text-right">--}}
+{{--                            <a href="{{ route('modal.show', [ 'type' => 'kit-license', 'itemId' => $item->id]) }}" data-refresh="kitLicensesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }} </a>--}}
 
-                        </div>
-                    </div>
+{{--                        </div>--}}
+{{--                    </div>--}}
 
-                </div>
-                <div class="box-body">
-                    <div class="table-responsive">
-                    <table
-                    data-cookie-id-table="kitLicensesTable"
-                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableLicenses() }}"
-                    data-side-pagination="server"
-                    data-sort-order="asc"
-                    data-sort-name="name"
-                    id="kitLicensesTable"
-                    class="table table-striped snipe-table"
-                    data-url="{{ route('api.kits.licenses.index', $item->id) }}"
-                    data-export-options='{
-                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",
-                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                    }'>
-                    </table>
-                    </div>
-                </div> <!--.box-body-->
-            </div> <!-- /.box.box-default-->
-        </div> <!-- .col-md-12-->
-    </div>
+{{--                </div>--}}
+{{--                <div class="box-body">--}}
+{{--                    <div class="table-responsive">--}}
+{{--                    <table--}}
+{{--                    data-cookie-id-table="kitLicensesTable"--}}
+{{--                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableLicenses() }}"--}}
+{{--                    data-side-pagination="server"--}}
+{{--                    data-sort-order="asc"--}}
+{{--                    data-sort-name="name"--}}
+{{--                    id="kitLicensesTable"--}}
+{{--                    class="table table-striped snipe-table"--}}
+{{--                    data-url="{{ route('api.kits.licenses.index', $item->id) }}"--}}
+{{--                    data-export-options='{--}}
+{{--                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",--}}
+{{--                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]--}}
+{{--                    }'>--}}
+{{--                    </table>--}}
+{{--                    </div>--}}
+{{--                </div> <!--.box-body-->--}}
+{{--            </div> <!-- /.box.box-default-->--}}
+{{--        </div> <!-- .col-md-12-->--}}
+{{--    </div>--}}
 
-<div class="row">
-    <div class="col-md-8 col-md-offset-2">
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">
-                                {{ trans('general.consumables') }}
-                            </h3>
-                        </div>
+{{--<div class="row">--}}
+{{--    <div class="col-md-8 col-md-offset-2">--}}
+{{--            <div class="box box-default">--}}
+{{--                <div class="box-header with-border">--}}
+{{--                    <div class="row">--}}
+{{--                        <div class="col-md-8">--}}
+{{--                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">--}}
+{{--                                {{ trans('general.consumables') }}--}}
+{{--                            </h3>--}}
+{{--                        </div>--}}
 
-                        <div class="col-md-4 text-right">
-                            <a href="{{ route('modal.show', ['type' => 'kit-consumable', 'itemId' => $item->id]) }}" data-refresh="kitConsumablesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }}</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="table-responsive">
-                    <table
-                    data-cookie-id-table="kitConsumablesTable"
-                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableConsumables() }}"
-                    data-side-pagination="server"
-                    data-sort-order="asc"
-                    data-sort-name="name"
-                    id="kitConsumablesTable"
-                    class="table table-striped snipe-table"
-                    data-url="{{ route('api.kits.consumables.index', $item->id) }}"
-                    data-export-options='{
-                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",
-                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                    }'>
-                    </table>
-                    </div>
-                </div> <!--.box-body-->
-            </div> <!-- /.box.box-default-->
-        </div> <!-- .col-md-12-->
-    </div>
-<div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">
-                                {{ trans('general.accessories') }}
-                            </h3>
-                        </div>
+{{--                        <div class="col-md-4 text-right">--}}
+{{--                            <a href="{{ route('modal.show', ['type' => 'kit-consumable', 'itemId' => $item->id]) }}" data-refresh="kitConsumablesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }}</a>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="box-body">--}}
+{{--                    <div class="table-responsive">--}}
+{{--                    <table--}}
+{{--                    data-cookie-id-table="kitConsumablesTable"--}}
+{{--                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableConsumables() }}"--}}
+{{--                    data-side-pagination="server"--}}
+{{--                    data-sort-order="asc"--}}
+{{--                    data-sort-name="name"--}}
+{{--                    id="kitConsumablesTable"--}}
+{{--                    class="table table-striped snipe-table"--}}
+{{--                    data-url="{{ route('api.kits.consumables.index', $item->id) }}"--}}
+{{--                    data-export-options='{--}}
+{{--                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",--}}
+{{--                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]--}}
+{{--                    }'>--}}
+{{--                    </table>--}}
+{{--                    </div>--}}
+{{--                </div> <!--.box-body-->--}}
+{{--            </div> <!-- /.box.box-default-->--}}
+{{--        </div> <!-- .col-md-12-->--}}
+{{--    </div>--}}
+{{--<div class="row">--}}
+{{--        <div class="col-md-8 col-md-offset-2">--}}
+{{--            <div class="box box-default">--}}
+{{--                <div class="box-header with-border">--}}
+{{--                    <div class="row">--}}
+{{--                        <div class="col-md-8">--}}
+{{--                            <h3 class="box-title" style="padding-top: 8px; padding-left: 15px;">--}}
+{{--                                {{ trans('general.accessories') }}--}}
+{{--                            </h3>--}}
+{{--                        </div>--}}
 
-                        <div class="col-md-4 text-right">
-                            <a href="{{ route('modal.show', ['type' => 'kit-accessory', 'itemId' => $item->id]) }}" data-refresh="kitAccessoriesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }}</a>
-                        </div>
-                    </div>
+{{--                        <div class="col-md-4 text-right">--}}
+{{--                            <a href="{{ route('modal.show', ['type' => 'kit-accessory', 'itemId' => $item->id]) }}" data-refresh="kitAccessoriesTable" data-toggle="modal" data-target="#createModal" class="btn btn-theme btn-sm pull-right"><i class="fas fa-plus icon-white"></i> {{ trans('general.append') }}</a>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 
-                </div>
-                <div class="box-body">
-                    <div class="table-responsive">
-                    <table
-                    data-cookie-id-table="kitAccessoriesTable"
-                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableAccessories() }}"
-                    data-side-pagination="server"
-                    data-sort-order="asc"
-                    data-sort-name="name"
-                    id="kitAccessoriesTable"
-                    class="table table-striped snipe-table"
-                    data-url="{{ route('api.kits.accessories.index', $item->id) }}"
-                    data-export-options='{
-                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",
-                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                    }'>
-                    </table>
-                    </div>
-                </div> <!--.box-body-->
-            </div> <!-- /.box.box-default-->
-        </div> <!-- .col-md-12-->
-    </div>
+{{--                </div>--}}
+{{--                <div class="box-body">--}}
+{{--                    <div class="table-responsive">--}}
+{{--                    <table--}}
+{{--                    data-cookie-id-table="kitAccessoriesTable"--}}
+{{--                    data-columns="{{ \App\Presenters\PredefinedKitPresenter::dataTableAccessories() }}"--}}
+{{--                    data-side-pagination="server"--}}
+{{--                    data-sort-order="asc"--}}
+{{--                    data-sort-name="name"--}}
+{{--                    id="kitAccessoriesTable"--}}
+{{--                    class="table table-striped snipe-table"--}}
+{{--                    data-url="{{ route('api.kits.accessories.index', $item->id) }}"--}}
+{{--                    data-export-options='{--}}
+{{--                    "fileName": "export-kit-models-{{ date('Y-m-d') }}",--}}
+{{--                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]--}}
+{{--                    }'>--}}
+{{--                    </table>--}}
+{{--                    </div>--}}
+{{--                </div> <!--.box-body-->--}}
+{{--            </div> <!-- /.box.box-default-->--}}
+{{--        </div> <!-- .col-md-12-->--}}
+{{--    </div>--}}
 @stop
 
 @section('moar_scripts')
