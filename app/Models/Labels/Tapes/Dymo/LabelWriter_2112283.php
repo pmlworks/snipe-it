@@ -133,6 +133,12 @@ class LabelWriter_2112283 extends LabelWriter
             );
             $currentY += $fieldSize + $fieldMargin;
         }
+        if ($record->has('barcode1d')) {
+            static::write1DBarcode(
+                $pdf, $record->get('barcode1d')->content, $record->get('barcode1d')->type,
+                $currentX, $barcodeSize + self::BARCODE_MARGIN, $usableWidth - self::TAG_SIZE, self::TAG_SIZE
+            );
+        }
     }
 
 }
