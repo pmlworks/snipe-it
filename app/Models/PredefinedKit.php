@@ -189,7 +189,7 @@ class PredefinedKit extends SnipeModel
      */
     public function accessories()
     {
-        return $this->hasMany(\App\Models\Accessory::class, 'accessory_id', 'kit_id')->withPivot('id', 'quantity');
+        return $this->belongsToMany(\App\Models\Accessory::class, 'kits_accessories', 'kit_id', 'accessory_id')->withPivot('id', 'quantity');
     }
 
     /**
