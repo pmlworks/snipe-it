@@ -104,10 +104,18 @@ class LabelWriter_11354 extends LabelWriter
 
         foreach ($record->get('fields') as $field) {
             static::writeText(
-                $pdf, (($field['label']) ? $field['label'].' ' : '') . $field['value'],
+                $pdf, $field['label'],
                 $currentX, $currentY,
-                'freesans', '', self::FIELD_SIZE, 'L',
-                $usableWidth, self::FIELD_SIZE, true, 0, 0.3
+                'freesans', '', self::TITLE_SIZE, 'L',
+                $usableWidth, self::TITLE_SIZE, true, 0
+            );
+            $currentY += self::TITLE_SIZE + self::TITLE_MARGIN;
+
+            static::writeText(
+                $pdf, $field['value'],
+                $currentX, $currentY,
+                'freemono', 'B', self::FIELD_SIZE, 'L',
+                $usableWidth, self::FIELD_SIZE, true, 0, 0.5
             );
             $currentY += self::FIELD_SIZE + self::FIELD_MARGIN;
         }
