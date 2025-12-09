@@ -152,7 +152,7 @@ class ImportController extends Controller
                 $date = date('Y-m-d-his');
 
                 $fixed_filename = Str::of($file->getClientOriginalName())->basename('.csv').'.csv';
-                
+
                 try {
                     $file->move($path, $date.'-'.$fixed_filename);
                 } catch (FileException $exception) {
@@ -292,12 +292,12 @@ class ImportController extends Controller
             try {
                 // Try to delete the file
                 Storage::delete('imports/'.$import->file_path);
-                // $import->delete();
+                $import->delete();
 
                 return response()->json(Helper::formatStandardApiResponse('success', null, trans('admin/hardware/message.import.file_delete_success')));
             } catch (\Exception $e) {
                 // If the file delete didn't work, remove it from the database anyway and return a warning
-                // $import->delete();
+                $import->delete();
 
                 return response()->json(Helper::formatStandardApiResponse('warning', null, trans('admin/hardware/message.import.file_not_deleted_warning')));
             }
