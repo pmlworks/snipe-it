@@ -150,12 +150,20 @@
                                                         <i class="fa-solid fa-list-check" aria-hidden="true"></i>
                                                         <span class="sr-only">{{ trans('general.import') }}</span>
                                                     </button>
-                                                    <a href="#" wire:click.prevent="$set('activeFileId',null)" data-tooltip="true" data-title="{{ trans('general.delete') }}">
-                                                    <button class="btn btn-sm btn-danger" wire:click="destroy({{ $currentFile->id }})">
-                                                        <i class="fas fa-trash icon-white" aria-hidden="true"></i>
-                                                        <span class="sr-only">{{ trans('general.delete') }}</span>
-                                                    </button>
-                                                    </a>
+                                                    @if ((auth()->user()->id == $currentFile->adminuser->id) || (auth()->user()->isSuperUser()))
+                                                        <a href="#" wire:click.prevent="$set('activeFileId',null)" data-tooltip="true" data-title="{{ trans('general.delete') }}">
+                                                            <button class="btn btn-sm btn-danger" wire:click="destroy({{ $currentFile->id }})">
+                                                                <i class="fas fa-trash icon-white" aria-hidden="true"></i>
+                                                                <span class="sr-only">{{ trans('general.delete') }}</span>
+                                                            </button>
+                                                        </a>
+                                                    @else
+                                                        <a data-tooltip="true" class="btn btn-sm btn-danger disabled" data-title="{{ trans('general.delete') }}">
+                                                            <i class="fas fa-trash icon-white" aria-hidden="true"></i>
+                                                            <span class="sr-only">{{ trans('general.delete') }}</span>
+                                                        </a>
+                                                    @endif
+
                                     			</td>
                                     		</tr>
 
