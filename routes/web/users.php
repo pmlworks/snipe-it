@@ -100,7 +100,7 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
     )->name('users/bulkedit')
         ->breadcrumbs(fn (Trail $trail) =>
         $trail->parent('users.index')
-            ->push(trans('general.bulk_checkin_delete'), route('ldap/user')));
+            ->push(trans('general.bulk_checkin_delete'), route('users.index')));
 
     Route::post(
         'merge',
