@@ -97,9 +97,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 table-responsive" style="padding-top: 30px;">
-                                <table
-                                        data-id-table="upload-table"
-
+                                <table data-id-table="upload-table"
                                         data-side-pagination="client"
                                         id="upload-table"
                                         class="col-md-12 table table-striped snipe-table">
@@ -126,9 +124,26 @@
                                     @foreach($this->files as $currentFile)
 
                                     		<tr style="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? 'font-weight: bold' : '' }}" class="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? '' : '' }}">
-                                    			<td>{{ $currentFile->file_path }}</td>
+                                    			<td>
+                                                    @if ((auth()->user()->id == $currentFile->adminuser->id) || (auth()->user()->isSuperUser()))
+                                                        <a href="{{ route('imports.download', $currentFile) }}">{{ $currentFile->file_path }}</a>
+                                                    @else
+                                                        {{ $currentFile->file_path }}
+                                                    @endif
+                                                </td>
                                     			<td>{{ Helper::getFormattedDateObject($currentFile->created_at, 'datetime', false) }}</td>
-                                                <td>{{ ($currentFile->adminuser) ? $currentFile->adminuser->present()->fullName : '--'}}</td>
+                                                <td>
+                                                    @if ($currentFile->adminuser)
+                                                        @can('view', $currentFile->adminuser)
+                                                            <a href="{{ route('users.show', $currentFile->adminuser) }}">{{ $currentFile->adminuser->display_name }}</a>
+                                                        @else
+                                                            {{ $currentFile->adminuser->display_name }}
+                                                        @endcan
+                                                    @else
+                                                        ---
+                                                    @endif
+
+                                                </td>
                                     			<td>{{ Helper::formatFilesizeUnits($currentFile->filesize) }}</td>
                                                 <td class="col-md-1 text-right" style="white-space: nowrap;">
                                                     <button class="btn btn-sm btn-info" wire:click="selectFile({{ $currentFile->id }})" data-tooltip="true" data-title="{{ trans('general.import_this_file') }}">
