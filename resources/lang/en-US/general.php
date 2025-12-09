@@ -465,7 +465,7 @@ return [
     'backup_delete_not_allowed'     => 'Deleting backups has been disabled in the .env file. Contact support or your systems administrator.',
     'additional_files'           => 'Additional Files',
     'shitty_browser'        => 'No signature detected. If you are using an older browser, please use a more modern browser to complete your asset acceptance.',
-    'bulk_soft_delete'      =>'Also soft-delete these users. Their asset history will remain intact unless/until you purge deleted records in the Admin Settings.',
+    'bulk_soft_delete'      =>'Also soft-delete these users. Their item history will remain intact unless/until you purge deleted records in the Admin Settings.',
     'bulk_checkin_delete_success' => 'Your selected users have been deleted and their items have been checked in.',
     'bulk_checkin_success' => 'The items for the selected users have been checked in.',
     'set_to_null'           => 'Delete values for this selection|Delete values for all :selection_count selections ',
@@ -649,6 +649,7 @@ return [
     'upload_deleted'        => 'Upload Deleted',
     'child_locations' => 'Child Locations',
     'append' => 'Append',
+    'optional' => 'OPTIONAL',
 
 // Add form placeholders here
     'placeholders' => [
