@@ -756,9 +756,6 @@ Route::group(['middleware' => 'web'], function () {
         ]
     )->name('ui.files.destroy')
         ->where(['object_type' => 'assets|maintenances|hardware|models|users|locations|accessories|consumables|licenses|suppliers|components']);
-
-
-
 });
 
 
