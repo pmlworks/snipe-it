@@ -87,7 +87,7 @@
                     'fullscreen',
                     'advancedSearch',
                 ],
-                classes: 'table table-responsive table-striped snipe-table table-no-bordered',
+                classes: 'table table-striped snipe-table table-no-bordered',
                 clickToSelect: data_with_default('click-to-select', true),
                 cookie: true,
                 cookieExpire: '2y',
