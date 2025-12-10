@@ -15,7 +15,6 @@
       <div class="box-body">
         <!-- checked out Accessories table -->
 
-        <div class="table-responsive">
           <table
                   data-cookie-id-table="pendingAcceptances"
                   data-id-table="pendingAcceptances"
@@ -55,8 +54,6 @@
             </tbody>
           </table>
         </div>
-
-       </div> <!-- .box-body-->
     </div><!--.box.box-default-->
   </div> <!-- .col-md-12-->
 </div> <!-- .row-->
