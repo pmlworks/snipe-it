@@ -57,12 +57,16 @@
             --sidenav-hover-color-bg: #4c4b4b;
             --sidenav-text-hover-color: #fff;
             --sidenav-text-nohover-color: #b8c7ce;
+            --table-border-row-color: light-dark(#ecf0f5, #656464);
+            --table-border-row-top: 1px solid #ecf0f5;
+            --table-border-row: 1px solid var(--table-border-row-color);
+            --table-stripe-bg-alt: light-dark(rgba(211, 211, 211, 0.25), #323131);
+            --table-stripe-bg: light-dark(#ffffff, #494747);
             --text-danger: light-dark(#a94442,#dd4b39);
             --text-help: light-dark(#605e5e,#a6a4a4);
             --text-info: light-dark(#31708f,#2baae6);
             --text-success: light-dark(#039516,#4ced61);
             --text-warning: light-dark(#da9113,#f3a51f);
-
         }
 
         [data-theme="light"] {
@@ -86,12 +90,7 @@
             --link-hover:  hsl(from var(--link-color) h s calc(l - 10));
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
-            --table-border-row-top: 1px solid #ecf0f5;
-            --table-border-row: 1px solid #ecf0f5;
-            --table-stripe-bg-alt: rgba(211, 211, 211, 0.25);
-            --table-stripe-bg: #ffffff;
             --text-legend-help: var(--text-help);
-            --text-warning: #da9113;
 
         }
 
@@ -116,9 +115,6 @@
             --link-hover:  hsl(from var(--link-color) h s calc(l + 15));
             --main-theme-hover: hsl(from var(--main-theme-color) h s calc(l - 10));
             --tab-bottom-border: 1px solid var(--box-header-top-border-color);
-            --table-border-row: 1px solid #656464;
-            --table-stripe-bg-alt: #323131;
-            --table-stripe-bg: #494747;
             --text-legend-help: #d6d6d6;
 
         }
@@ -403,6 +399,26 @@
             border-left: 1px solid transparent;
             border-right: 1px solid  transparent;
 
+        }
+
+        .panel {
+            border-color: var(--box-header-top-border-color);
+        }
+        .panel-body {
+            background-color: var(--box-bg) !important;
+        }
+
+        .panel-heading,
+        .panel-default > .panel-heading
+        {
+            color: var(--color-fg) !important;
+            background-color: var(--table-stripe-bg-alt) !important;
+            border-color: var(--box-header-top-border-color);
+        }
+
+        .panel-footer {
+            background-color: var(--box-bg) !important;
+            border-color: var(--box-header-top-border-color);
         }
 
         .nav-tabs-custom > .nav-tabs > li.active
