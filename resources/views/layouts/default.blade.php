@@ -805,6 +805,10 @@
             border-top: 0px !important;
         }
 
+        h4#progress-text {
+            color: white !important;
+        }
+
     </style>
 
     {{-- Custom CSS --}}
