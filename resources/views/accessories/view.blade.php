@@ -313,9 +313,7 @@
               </div>
           @endif
 
-</div>
 
-    <div class="col-md-3 pull-right">
 
         @can('update', \App\Models\Accessory::class)
             <div class="text-center" style="padding-top:5px;">
