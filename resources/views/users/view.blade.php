@@ -1080,7 +1080,7 @@
           <div class="tab-pane" id="managed-users">
 
               @include('partials.users-bulk-actions')
-              
+
               <table
                       data-columns="{{ \App\Presenters\UserPresenter::dataTableLayout() }}"
                       data-cookie-id-table="managedUsersTable"
