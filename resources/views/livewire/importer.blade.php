@@ -152,7 +152,7 @@
                                                         <span class="sr-only">{{ trans('general.import') }}</span>
                                                     </button>
 
-                                                    @if ((auth()->user()->id == $currentFile->adminuser->id) || (auth()->user()->isSuperUser()))
+                                                    @if ((auth()->user()->id == $currentFile->adminuser?->id) || (auth()->user()->isSuperUser()))
                                                         <a href="#" wire:click.prevent="$set('activeFileId',null)" data-tooltip="true" data-title="{{ trans('general.delete') }}">
                                                             <button class="btn btn-sm btn-danger" wire:click="destroy({{ $currentFile->id }})">
                                                                 <i class="fas fa-trash icon-white" aria-hidden="true"></i>
