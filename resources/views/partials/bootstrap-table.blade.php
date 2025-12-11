@@ -1167,7 +1167,7 @@
                 value.name = value.name + ' (' + value.username + ')';
             }
 
-            return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + '"></i> ' + value.name + '</a></nobr>';
+            return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</a></nobr>';
 
         } else {
             return '';
