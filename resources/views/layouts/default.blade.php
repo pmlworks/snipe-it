@@ -284,8 +284,15 @@
             cursor: pointer;
         }
 
-        h1, h2, h3, h4, p {
-            color: var(--color-fg);
+        h1,
+        h2,
+        h3,
+        h4,
+        p,
+        .modal-title,
+        .modal-header h2
+        {
+            color: var(--color-fg) !important;
         }
 
         .btn-danger,
@@ -299,7 +306,6 @@
         .btn-primary:focus,
         .modal-danger,
         .modal-danger h2,
-        .modal-header h2,
         .modal-warning h2
         .bg-maroon,
         .bg-maroon:hover,
@@ -1805,9 +1811,9 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h2 class="modal-title" id="dataConfirmModalLabel">
+                        <h4 class="modal-title" id="dataConfirmModalLabel">
                             <span class="modal-header-icon"></span>&nbsp;
-                        </h2>
+                        </h4>
                     </div>
                     <div class="modal-body"></div>
                     <div class="modal-footer">
