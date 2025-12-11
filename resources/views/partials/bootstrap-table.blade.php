@@ -745,7 +745,7 @@
                 window.location.href = '{{ route('licenses.create') }}';
             },
             attributes: {
-                class: 'btn-info',
+                class: 'btn-warning',
                 title: '{{ trans('general.create') }}',
                 @if ($snipeSettings->shortcuts_enabled == 1)
                 accesskey: 'n'
@@ -761,7 +761,6 @@
                 window.location.href = '{{ route('licenses.export', ['category_id' => (isset($category)) ? $category->id :'' ]) }}';
             },
             attributes: {
-                class: 'btn-warning',
                 title: '{{ trans('general.export_all_to_csv') }}',
             }
         },
