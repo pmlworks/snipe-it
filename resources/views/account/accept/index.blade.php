@@ -43,7 +43,7 @@
                 @if ($acceptance->checkoutable)
                 <td>{{ ($acceptance->checkoutable) ? $acceptance->checkoutable->present()->name : '' }}</td>
                 <td>{{ $acceptance->checkoutable_item_type }}</td>
-                <td>{{ $acceptance->checkoutableCategoryName ?? '' }}</td>
+                <td>{{ $acceptance->checkoutable_category_name ?? '' }}</td>
                 <td>{{ $acceptance->qty ?? '1' }}</td>
                 <td>{{ ($acceptance->checkoutable) ? $acceptance->checkoutable->serial : '' }}</td>
                 <td><a href="{{ route('account.accept.item', $acceptance) }}" class="btn btn-theme btn-sm">{{ trans('general.accept_decline') }}</a></td>

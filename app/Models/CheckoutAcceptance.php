@@ -48,23 +48,29 @@ class CheckoutAcceptance extends Model
             default            => class_basename($type),
         };
     }
-    public function getCheckoutableCategoryNameAttribute(): ?string
+    /**
+     * Accessor for the checkoutable item's category name.
+     *
+     * @return Attribute
+     */
+    protected function checkoutableCategoryName(): Attribute
     {
-        $item = $this->checkoutable;
+        return Attribute::make(
+            get: function () {
+                $item = $this->checkoutable;
 
-        if (! $item) {
-            return null;
-        }
+                if ($item instanceof Asset) {
 
-        return match (true) {
-            $item instanceof Asset => $item->model?->category?->name,
-            $item instanceof LicenseSeat => $item->license?->category?->name,
-            $item instanceof Accessory,
-            $item instanceof Component,
-            $item instanceof Consumable => $item->category?->name,
+                    return $item->model?->category?->name;
+                }
+                if ($item instanceof LicenseSeat) {
 
-            default => null,
-        };
+                    return $item->license?->category?->name;
+                }
+
+                return $item->category?->name;
+            },
+        );
     }
     /**
      * The resource that was is out
