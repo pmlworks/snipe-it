@@ -148,7 +148,7 @@
 
 
         .footer-links a {
-            color: light-dark(hsl(from var(--link-color) h s calc(l + 10)),hsl(from var(--link-color) h s calc(l - 32))) !important;
+            color: var(--link-color) !important;
         }
 
         h2 small {
