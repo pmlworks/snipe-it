@@ -62,7 +62,7 @@
             --table-border-row: 1px solid var(--table-border-row-color);
             --table-stripe-bg-alt: light-dark(rgba(211, 211, 211, 0.25), #323131);
             --table-stripe-bg: light-dark(#ffffff, #494747);
-            --text-danger: light-dark(#a94442,#dd4b39);
+            --text-danger: light-dark(#a94442, #fa5b48);
             --text-help: light-dark(#605e5e,#a6a4a4);
             --text-info: light-dark(#31708f,#2baae6);
             --text-success: light-dark(#039516,#4ced61);
@@ -148,7 +148,7 @@
 
 
         .footer-links a {
-            color: light-dark(hsl(from var(--link-color) h s calc(l + 10)),hsl(from var(--link-color) h s calc(l - 32))) !important;
+            color: var(--link-color) !important;
         }
 
         h2 small {
@@ -666,7 +666,7 @@
         .table > tfoot > tr > th,
         .table > thead > tr > td,
         .table > tbody > tr > td,
-        .table > tfoot > tr > td,
+        .table > tfoot > tr > td
 
         {
             border-top-color: var(--box-header-bottom-border-color) !important;
@@ -683,6 +683,10 @@
         .has-error
         {
             color: var(--text-danger) !important;
+        }
+
+        .has-error .form-control {
+            border-color: var(--text-danger);
         }
 
         .alert a {
@@ -734,6 +738,15 @@
         input[type="checkbox"]::before {
             box-shadow: inset 1em 1em hsl(from var(--main-theme-color) h s calc(l - 20)) !important;
         }
+
+
+        input[type="checkbox"],
+        input[type="radio"],
+        label.form-control
+        {
+            cursor: pointer !important;
+        }
+
 
         .callout.callout-legend {
             background-color: var(--callout-bg-color);
