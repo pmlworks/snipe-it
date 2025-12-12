@@ -481,9 +481,7 @@
         }
 
 
-        .small-box h3, .small-box p {
-            color: white;
-        }
+
 
         /**
         main header nav
@@ -505,7 +503,6 @@
             color: var(--nav-primary-text-color) !important;
         }
 
-
         .dropdown-menu > li > a:link,
         .dropdown-menu > li > a:visited,
         .dropdown-menu > .active > a:link,
@@ -521,7 +518,6 @@
             /*color: var(--nav-primary-text-color) !important;*/
 
         }
-
 
         .btn-tableButton.active.focus,
         .btn-tableButton.active:focus,
@@ -841,6 +837,10 @@
         }
 
         h4#progress-text {
+            color: white !important;
+        }
+
+        .small-box h3, .small-box p {
             color: white !important;
         }
 
