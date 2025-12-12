@@ -397,7 +397,8 @@
         .nav-tabs-custom > .nav-tabs > li:first-of-type,
         .nav-tabs-custom > .nav-tabs > li.active > a:link,
         .nav-tabs-custom > .nav-tabs > li.active > a:visited,
-        .nav-tabs-custom > .nav-tabs > li.active > a:hover
+        .nav-tabs-custom > .nav-tabs > li.active > a:hover,
+        .bootstrap-table.fullscreen
         {
 
             color: var(--color-fg);
@@ -636,7 +637,7 @@
             background-color: #2c3b41;
         }
 
-        .sidebar-menu>li>.treeview-menu
+        .sidebar-menu>li>.treeview-menu,
         {
             background-color: #1e282c;
         }
@@ -672,7 +673,6 @@
             border-top-color: var(--box-header-bottom-border-color) !important;
             border-bottom-color: var(--box-header-bottom-border-color) !important;
         }
-
 
 
         .help-block {
