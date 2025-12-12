@@ -739,6 +739,15 @@
             box-shadow: inset 1em 1em hsl(from var(--main-theme-color) h s calc(l - 20)) !important;
         }
 
+
+        input[type="checkbox"],
+        input[type="radio"],
+        label.form-control
+        {
+            cursor: pointer !important;
+        }
+
+
         .callout.callout-legend {
             background-color: var(--callout-bg-color);
             border-left: 5px solid var(--callout-left-border);
