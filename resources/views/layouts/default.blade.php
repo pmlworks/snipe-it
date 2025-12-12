@@ -306,7 +306,7 @@
         .btn-primary:focus,
         .modal-danger,
         .modal-danger h2,
-        .modal-warning h2
+        .modal-warning h2,
         .bg-maroon,
         .bg-maroon:hover,
         .bg-maroon:focus,
