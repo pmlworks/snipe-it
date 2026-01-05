@@ -10,10 +10,12 @@ use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\AuditNotification;
+use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
+use Throwable;
 
 trait Loggable
 {
@@ -282,10 +284,29 @@ trait Loggable
             'location' => ($location) ? $location->name : '',
             'note' => $note,
         ];
+
         if(Setting::getSettings()->webhook_selected === 'microsoft' && Str::contains(Setting::getSettings()->webhook_endpoint, 'workflows')) {
-            $message = AuditNotification::toMicrosoftTeams($params);
-            $notification = new TeamsNotification(Setting::getSettings()->webhook_endpoint);
-            $notification->success()->sendMessage($message[0], $message[1]);
+
+                $endpoint = Setting::getSettings()->webhook_endpoint;
+
+            try {
+                $message = AuditNotification::toMicrosoftTeams($params);
+                $notification = new TeamsNotification($endpoint);
+                $notification->success()->sendMessage($message[0], $message[1]);
+
+            } catch (ConnectException $e) {
+                Log::warning('Teams webhook connection failed', [
+                    'endpoint' => $endpoint,
+                    'error' => $e->getMessage(),
+                ]);
+
+            } catch (Throwable $e) {
+                Log::error('Teams webhook failed unexpectedly', [
+                    'endpoint' => $endpoint,
+                    'exception' => get_class($e),
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
         else {
             Setting::getSettings()->notify(new AuditNotification($params));
