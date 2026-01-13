@@ -44,6 +44,8 @@ return [
     'redirect_to_checked_out_to'   => 'Eiti į išduotus',
     'select_statustype'	=> 'Pasirinkite būsenos tipą',
     'serial'			=> 'Serijinis numeris',
+    'serial_required'	=> 'Turtui :number būtina nurodyti serijinį numerį',
+    'serial_required_post_model_update'	=> ':asset_model buvo atnaujintas, kad būtų reikalaujama serijinio numerio. Pridėkite šio turto serijinį numerį.',
     'status'			=> 'Būsena',
     'tag'				=> 'Inventorinis numeris',
     'update'			=> 'Turto atnaujinimas',

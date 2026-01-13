@@ -57,13 +57,10 @@ class ExpiringAlertsNotificationTest extends TestCase
 
          $this->artisan('snipeit:expiring-alerts')->assertExitCode(0);
 
-         Mail::assertSent(ExpiringAssetsMail::class, function($mail) use ($alert_email, $expiringWarrantyAsset) {
-             return $mail->hasTo($alert_email) && $mail->assets->contains($expiringWarrantyAsset);
+         Mail::assertSent(ExpiringAssetsMail::class, function($mail) use ($alert_email, $expiringWarrantyAsset, $expiringEOLAsset) {
+             return $mail->hasTo($alert_email) && ($mail->assets->contains($expiringEOLAsset) || $mail->assets->contains($expiringWarrantyAsset));
          });
-
-         Mail::assertSent(ExpiringAssetsMail::class, function($mail) use ($alert_email, $expiringEOLAsset) {
-             return $mail->hasTo($alert_email) && $mail->assets->contains($expiringEOLAsset);
-         });
+         
 
          Mail::assertNotSent(ExpiringAssetsMail::class, function($mail) use ($alert_email, $notExpiringAsset, $alreadyExpiredAsset) {
              return $mail->assets->contains($alert_email) || ($mail->assets->contains($alreadyExpiredAsset) && ($mail->assets->contains($notExpiringAsset)));

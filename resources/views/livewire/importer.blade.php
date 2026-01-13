@@ -22,7 +22,7 @@
 
         @if($import_errors)
           <div class="col-md-12">
-            <div class="box">
+            <div class="box box-default">
                 <div class="box-body">
                     <div class="alert alert-warning">
 
@@ -60,27 +60,27 @@
 @endif
 
             <div class="col-md-9">
-                <div class="box">
+                <div class="box box-default">
                     <div class="box-body">
                         <div class="row">
 
                             <div class="col-md-12">
 
                                 @if($progress != -1)
-                                    <div class="col-md-10 col-sm-5 col-xs-12" style="height: 35px;" id='progress-container'>
+                                    <div class="col-md-10 col-sm-5 col-xs-12" style="height: 33px;" id='progress-container'>
                                         <div class="progress progress-striped-active" style="height: 100%;">
-                                            <div id='progress-bar' class="progress-bar {{ $progress_bar_class }}" role="progressbar" style="width: {{ $progress }}%">
+                                            <div id='progress-bar' class="progress-bar progress-bar-striped {{ $progress_bar_class }}" role="progressbar" style="width: {{ $progress }}%">
                                                 <h4 id="progress-text">{!! $progress_message  !!}</h4>
                                             </div>
                                         </div>
                                     </div>
                                 @endif
 
-                                <div class="col-md-4 col-sm-5 col-xs-12 text-right pull-right">
+                                <div class="col-md-2 col-sm-5 col-xs-12 text-right pull-right">
 
                                     <!-- The fileinput-button span is used to style the file input field as button -->
                                     @if (!config('app.lock_passwords'))
-                                        <span class="btn btn-primary fileinput-button">
+                                        <span class="btn btn-theme btn-block fileinput-button">
                                         <span>{{ trans('button.select_file') }}</span>
                                          <!-- The file input field used as target for the file upload widget -->
                                         <label for="files[]"><span class="sr-only">{{ trans('admin/importer/general.select_file') }}</span></label>
@@ -97,9 +97,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 table-responsive" style="padding-top: 30px;">
-                                <table
-                                        data-id-table="upload-table"
-
+                                <table data-id-table="upload-table"
                                         data-side-pagination="client"
                                         id="upload-table"
                                         class="col-md-12 table table-striped snipe-table">
@@ -125,32 +123,59 @@
 
                                     @foreach($this->files as $currentFile)
 
-                                    		<tr style="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? 'font-weight: bold' : '' }}" class="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? 'warning' : '' }}">
-                                    			<td>{{ $currentFile->file_path }}</td>
+                                    		<tr style="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? 'font-weight: bold' : '' }}" class="{{ ($this->activeFile && ($currentFile->id == $this->activeFile->id)) ? '' : '' }}">
+                                    			<td>
+
+                                                    @if ((auth()->user()->id == $currentFile->adminuser?->id) || (auth()->user()->isSuperUser()))
+                                                        <a href="{{ route('imports.download', $currentFile) }}">{{ $currentFile->file_path }}</a>
+                                                    @else
+                                                        {{ $currentFile->file_path }}
+                                                    @endif
+                                                </td>
                                     			<td>{{ Helper::getFormattedDateObject($currentFile->created_at, 'datetime', false) }}</td>
-                                                <td>{{ ($currentFile->adminuser) ? $currentFile->adminuser->present()->fullName : '--'}}</td>
+                                                <td>
+                                                    @if ($currentFile->adminuser)
+                                                        @can('view', $currentFile->adminuser)
+                                                            <a href="{{ route('users.show', $currentFile->adminuser) }}">{{ $currentFile->adminuser->display_name }}</a>
+                                                        @else
+                                                            {{ $currentFile->adminuser->display_name }}
+                                                        @endcan
+                                                    @else
+                                                        ---
+                                                    @endif
+
+                                                </td>
                                     			<td>{{ Helper::formatFilesizeUnits($currentFile->filesize) }}</td>
                                                 <td class="col-md-1 text-right" style="white-space: nowrap;">
-                                                    <button class="btn btn-sm btn-info" wire:click="selectFile({{ $currentFile->id }})" data-tooltip="true" title="{{ trans('general.import_this_file') }}">
+                                                    <button class="btn btn-sm btn-info" wire:click="selectFile({{ $currentFile->id }})" data-tooltip="true" data-title="{{ trans('general.import_this_file') }}">
                                                         <i class="fa-solid fa-list-check" aria-hidden="true"></i>
                                                         <span class="sr-only">{{ trans('general.import') }}</span>
                                                     </button>
-                                                    <a href="#" wire:click.prevent="$set('activeFileId',null)">
-                                                    <button class="btn btn-sm btn-danger" wire:click="destroy({{ $currentFile->id }})">
-                                                        <i class="fas fa-trash icon-white" aria-hidden="true"></i>
-                                                        <span class="sr-only">{{ trans('general.delete') }}</span>
-                                                    </button>
-                                                    </a>
+
+                                                    @if ((auth()->user()->id == $currentFile->adminuser?->id) || (auth()->user()->isSuperUser()))
+                                                        <a href="#" wire:click.prevent="$set('activeFileId',null)" data-tooltip="true" data-title="{{ trans('general.delete') }}">
+                                                            <button class="btn btn-sm btn-danger" wire:click="destroy({{ $currentFile->id }})">
+                                                                <i class="fas fa-trash icon-white" aria-hidden="true"></i>
+                                                                <span class="sr-only">{{ trans('general.delete') }}</span>
+                                                            </button>
+                                                        </a>
+                                                    @else
+                                                        <a data-tooltip="true" class="btn btn-sm btn-danger disabled" data-title="{{ trans('general.delete') }}">
+                                                            <i class="fas fa-trash icon-white" aria-hidden="true"></i>
+                                                            <span class="sr-only">{{ trans('general.delete') }}</span>
+                                                        </a>
+                                                    @endif
+
                                     			</td>
                                     		</tr>
 
                                             @if( $currentFile && $this->activeFile && ($currentFile->id == $this->activeFile->id))
-                                                <tr class="warning">
+                                                <tr>
                                                     <td colspan="5">
 
                                                         <div class="form-group">
 
-                                                                <label for="typeOfImport" class="col-md-3 col-xs-12">
+                                                                <label for="typeOfImport" class="col-md-3 col-xs-12 control-label">
                                                                     {{ trans('general.import_type') }}
                                                                 </label>
 

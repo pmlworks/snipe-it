@@ -49,6 +49,13 @@ class LicensePresenter extends Presenter
                 'title' => trans('admin/licenses/form.expiration'),
                 'formatter' => 'dateDisplayFormatter',
             ], [
+                'field' => 'termination_date',
+                'searchable' => true,
+                'sortable' => true,
+                'visible' => false,
+                'title' => trans('admin/licenses/form.termination_date'),
+                'formatter' => 'dateDisplayFormatter',
+            ], [
                 'field' => 'license_email',
                 'searchable' => true,
                 'sortable' => true,
@@ -108,14 +115,6 @@ class LicensePresenter extends Presenter
                 'sortable' => true,
                 'visible' => false,
                 'title' => trans('general.purchase_date'),
-                'formatter' => 'dateDisplayFormatter',
-            ],
-            [
-                'field' => 'termination_date',
-                'searchable' => true,
-                'sortable' => true,
-                'visible' => false,
-                'title' => trans('admin/licenses/form.termination_date'),
                 'formatter' => 'dateDisplayFormatter',
             ],
             [
@@ -249,10 +248,20 @@ class LicensePresenter extends Presenter
                 'title' => trans('admin/users/table.email'),
                 'visible' => true,
                 'formatter' => 'emailFormatter',
-            ], [
-                'field' => 'department',
+            ],
+            [
+                'field' => 'assigned_user.company',
                 'searchable' => false,
-                'sortable' => true,
+                'sortable' => false,
+                'switchable' => true,
+                'title' => trans('general.company'),
+                'visible' => true,
+                'formatter' => 'companiesLinkObjFormatter',
+            ],
+            [
+                'field' => 'assigned_user.department',
+                'searchable' => false,
+                'sortable' => false,
                 'switchable' => true,
                 'title' => trans('general.department'),
                 'visible' => false,

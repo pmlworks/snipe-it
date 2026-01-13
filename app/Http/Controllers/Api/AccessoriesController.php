@@ -54,6 +54,15 @@ class AccessoriesController extends Controller
                 'notes',
                 'checkouts_count',
                 'qty',
+                // These are *relationships* so we wouldn't normally include them in this array,
+                // since they would normally create a `column not found` error,
+                // BUT we account for them in the ordering switch down at the end of this method
+                // DO NOT ADD ANYTHING TO THIS LIST WITHOUT CHECKING THE ORDERING SWITCH BELOW!
+                'company',
+                'location',
+                'category',
+                'supplier',
+                'manufacturer',
             ];
 
 
@@ -61,9 +70,22 @@ class AccessoriesController extends Controller
             ->with('category', 'company', 'manufacturer', 'checkouts', 'location', 'supplier', 'adminuser')
             ->withCount('checkouts as checkouts_count');
 
-        if ($request->filled('search')) {
-            $accessories = $accessories->TextSearch($request->input('search'));
+        $filter = [];
+
+        if ($request->filled('filter')) {
+            $filter = json_decode($request->input('filter'), true);
+            $filter = array_filter($filter, function ($key) use ($allowed_columns) {
+                return in_array($key, $allowed_columns);
+            }, ARRAY_FILTER_USE_KEY);
+
         }
+
+        if ((! is_null($filter)) && (count($filter)) > 0) {
+            $accessories->ByFilter($filter);
+        } elseif ($request->filled('search')) {
+            $accessories->TextSearch($request->input('search'));
+        }
+
 
         if ($request->filled('company_id')) {
             $accessories->where('accessories.company_id', '=', $request->input('company_id'));
@@ -303,7 +325,14 @@ class AccessoriesController extends Controller
         }
 
         // Set this value to be able to pass the qty through to the event
-        event(new CheckoutableCheckedOut($accessory, $target, auth()->user(), $request->input('note')));
+        event(new CheckoutableCheckedOut(
+            $accessory,
+            $target,
+            auth()->user(),
+            $request->input('note'),
+            [],
+            $accessory->checkout_qty,
+        ));
 
         return response()->json(Helper::formatStandardApiResponse('success', $payload, trans('admin/accessories/message.checkout.success')));
 
@@ -367,7 +396,7 @@ class AccessoriesController extends Controller
         ]);
 
         if ($request->filled('search')) {
-            $accessories = $accessories->where('accessories.name', 'LIKE', '%'.$request->get('search').'%');
+            $accessories = $accessories->where('accessories.name', 'LIKE', '%'.$request->input('search').'%');
         }
 
         $accessories = $accessories->orderBy('name', 'ASC')->paginate(50);

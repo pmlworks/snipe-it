@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\Helper;
 use App\Models\Traits\CompanyableTrait;
 use App\Models\Traits\HasUploads;
+use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
 use App\Presenters\Presentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,7 +36,7 @@ class Component extends SnipeModel
      * Category validation rules
      */
     public $rules = [
-        'name'           => 'required|min:3|max:191',
+        'name'           => 'required|max:191',
         'qty'            => 'required|integer|min:1',
         'category_id'    => 'required|integer|exists:categories,id',
         'supplier_id'    => 'nullable|integer|exists:suppliers,id',
@@ -108,6 +109,18 @@ class Component extends SnipeModel
         'supplier'     => ['name'],
         'manufacturer' => ['name'],
     ];
+
+    public static function booted()
+    {
+        static::saving(function ($model) {
+            // We use 'sum_unconstrained_assets' as a 'cache' of the count of the sum of unconstrained assets, but
+            // Eloquent will gladly try to save the value of that attribute in the case where we populate it ourselves.
+            // But when it gets populated by 'withSum()' - it seems to work fine due to some Eloquent magic I am not
+            // aware of. During a save, the quantity may have changed or other aspects may have changed, so
+            // "invalidating the 'cache'" seems like a fair choice here.
+            unset($model->sum_unconstrained_assets);
+        });
+    }
 
 
     public function isDeletable()
@@ -217,24 +230,6 @@ class Component extends SnipeModel
         return $this->category->require_acceptance;
     }
 
-    /**
-     * Checks for a category-specific EULA, and if that doesn't exist,
-     * checks for a settings level EULA
-     *
-     * @author [A. Gianotto] [<snipe@snipe.net>]
-     * @since [v4.0]
-     * @return string | false
-     */
-    public function getEula()
-    {
-        if ($this->category->eula_text) {
-            return  Helper::parseEscapedMarkedown($this->category->eula_text);
-        } elseif ((Setting::getSettings()->default_eula_text) && ($this->category->use_default_eula == '1')) {
-            return  Helper::parseEscapedMarkedown(Setting::getSettings()->default_eula_text);
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Establishes the component -> action logs relationship
@@ -255,14 +250,28 @@ class Component extends SnipeModel
      * @since  [v5.0]
      * @return int
      */
-    public function numCheckedOut()
+    public function numCheckedOut(bool $recalculate = false)
     {
-        $checkedout = 0;
+        /**
+         *
+         * WARNING: This method caches the result, so if you're doing something
+         * that is going to change the number of checked-out items, make sure to pass
+         * 'true' as the first parameter to force this to recalculate the number of checked-out
+         * items!!!!!
+         *
+         */
 
         // In case there are elements checked out to assets that belong to a different company
         // than this asset and full multiple company support is on we'll remove the global scope,
         // so they are included in the count.
-        return $this->uncontrainedAssets->sum('pivot.assigned_qty');
+        if (is_null($this->sum_unconstrained_assets) || $recalculate) {
+            // This, in a components-listing context, is mostly important for when it sets a 'zero' which
+            // is *not* null - so we don't have to keep recalculating for un-checked-out components
+            // NOTE: doing this will add a 'pseudo-attribute' to the component in question, so we need to _remove_ this
+            // before we save - so that gets handled in the 'saving' callback defined in the 'booted' method, above.
+            $this->sum_unconstrained_assets = $this->uncontrainedAssets()->sum('assigned_qty') ?? 0;
+        }
+        return $this->sum_unconstrained_assets;
     }
 
 
@@ -292,7 +301,19 @@ class Component extends SnipeModel
     {
         return $this->category?->checkin_email;
     }
-
+    /**
+     * Get the list of checkouts for this License
+     *
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @since  [v2.0]
+     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     */
+    public function checkouts()
+    {
+        return $this->assetlog()->where('action_type', '=', 'checkout')
+            ->orderBy('created_at', 'desc')
+            ->withTrashed();
+    }
 
     /**
      * Check how many items within a component are remaining
@@ -306,7 +327,10 @@ class Component extends SnipeModel
         return $this->qty - $this->numCheckedOut();
     }
 
+    public function totalCostSum() {
 
+        return $this->purchase_cost !== null ? $this->qty * $this->purchase_cost : null;
+    }
     /**
      * -----------------------------------------------
      * BEGIN MUTATORS
@@ -336,6 +360,97 @@ class Component extends SnipeModel
      * -----------------------------------------------
      **/
 
+    /**
+     * Query builder scope to search on text filters for complex Bootstrap Tables API
+     *
+     * @param \Illuminate\Database\Query\Builder $query  Query builder instance
+     * @param text                               $filter JSON array of search keys and terms
+     *
+     * @return \Illuminate\Database\Query\Builder          Modified query builder
+     */
+    public function scopeByFilter($query, $filter)
+    {
+        return $query->where(
+            function ($query) use ($filter) {
+                foreach ($filter as $fieldname => $search_val) {
+
+                    if ($fieldname == 'name') {
+                        $query->where('components.name', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'notes') {
+                        $query->where('components.notes', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'model_number') {
+                        $query->where('components.model_number', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'order_number') {
+                        $query->where('components.order_number', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'serial') {
+                        $query->where('components.serial', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'serial') {
+                        $query->where('components.serial', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'purchase_cost') {
+                        $query->where('components.purchase_cost', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'location') {
+                        $query->whereHas(
+                            'location', function ($query) use ($search_val) {
+                            $query->where('locations.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+                    if ($fieldname == 'manufacturer') {
+                        $query->whereHas(
+                            'manufacturer', function ($query) use ($search_val) {
+                            $query->where('manufacturers.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+
+                    if ($fieldname == 'supplier') {
+                        $query->whereHas(
+                            'supplier', function ($query) use ($search_val) {
+                            $query->where('suppliers.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+
+                    if ($fieldname == 'category') {
+                        $query->whereHas(
+                            'category', function ($query) use ($search_val) {
+                            $query->where('categories.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+                    if ($fieldname == 'company') {
+                        $query->whereHas(
+                            'company', function ($query) use ($search_val) {
+                            $query->where('companies.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+
+                }
+
+
+            }
+        );
+    }
 
     /**
      * Query builder scope to order on company

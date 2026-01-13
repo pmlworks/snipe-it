@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'activated_help_text' => 'Der Nutzer kann sich einloggen',
+    'activated_help_text' => 'Dieser Benutzer kann sich anmelden',
     'activated_disabled_help_text' => 'Sie können den Aktiverungsstatus für Ihren eigenen Account nicht ändern.',
     'assets_user'       => 'Assets zugewiesen an :name',
     'bulk_update_warn'	=> 'Sie sind dabei, die Eigenschaften von :user_count Benutzern zu bearbeiten. Bitte beachten Sie, dass Sie Ihre eigenen Benutzerattribute nicht über dieses Formular ändern können. Sie müssen Ihren eigenen Benutzer einzeln bearbeiten.',
@@ -15,7 +15,8 @@ return [
     'info'				=> 'Info',
     'restore_user'		=> 'Klicken Sie hier, um sie wiederherzustellen.',
     'last_login'        => 'Letzte Anmeldung',
-    'ldap_config_text'  => 'Die LDAP Konfigurations Einstellungen finden Sie hier Admin -> Einstellungen. Der (optional) wählbare Standort wird für alle importierten Benutzer gesetzt.',
+    'ldap_config_text'  => 'Der ausgewählte Standort wird für ALLE importierten Benutzer festgelegt. Dies wird ihren bestehenden Standort überschreiben und ist ein ungewöhnlicher Anwendungsfall, daher ist es typischerweise am besten, diese leer zu lassen.',
+    'ldap_sync_intro'   => 'Klicken Sie auf die Schaltfläche unten, um Ihre LDAP-Benutzer manuell zu synchronisieren. Um mehr über die automatische Konfiguration der LDAP-Synchronisation zu erfahren, lesen Sie bitte die <a href=":link" target="_blank">-Dokumentation <i class="fa fa-external-link"></i></a>.',
     'print_assigned'    => 'Alles zugewiesene drucken',
     'email_assigned'    => 'Alles zugewiesene per Mail zusenden',
     'user_notified'     => 'Der Benutzer hat eine Liste seiner aktuell zugewiesenen Artikel per E-Mail erhalten.',
@@ -24,7 +25,6 @@ return [
     'auto_assign_label' => 'Diesen Benutzer bei der automatischen Zuweisung berechtigter Lizenzen einbeziehen',
     'auto_assign_help'  => 'Diesen Benutzer bei der automatischen Zuweisung von Lizenzen überspringen',
     'software_user'     => 'Software herausgegeben an :name',
-    'send_email_help'   => 'Sie müssen eine E-Mail-Adresse angeben, um dem Benutzer Zugangsdaten zu zusenden. Das Versenden von Zugangsdaten ist nur bei der Erstellung eines Benutzers möglich. Passwörter werden in einem Einweg-Hash gespeichert und können danach nicht mehr ausgelesen werden.',
     'view_user'         => 'Benutzer :name ansehen',
     'usercsv'           => 'CSV Datei',
     'two_factor_admin_optin_help' => 'Ihre aktuellen Administrator-Einstellungen erlauben die selektive Durchführung der zwei-Faktor-Authentifizierung.  ',
@@ -54,4 +54,6 @@ return [
     'all_assigned_list_generation' => 'Generiert am:',
     'email_user_creds_on_create' => 'Diesem Benutzer seine Zugangsdaten per E-Mail senden?',
     'department_manager' => 'Abteilungsleiter',
+    'generate_password' => 'Zufälliges Passwort generieren',
+    'individual_override' => 'Dieser Benutzer hat mindestens eine individuelle Berechtigung, die Gruppenberechtigungen überschreiben kann.',
 ];

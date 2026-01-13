@@ -89,7 +89,7 @@
                         <strong>{{ trans('general.company') }}</strong>
                       </div>
                       <div class="col-md-9">
-                        <a href="{{ route('companies.show', $license->company->id) }}">{{ $license->company->name }}</a>
+                          {!!  $license->company->present()->formattedNameLink !!}
                       </div>
                     </div>
                   @endif
@@ -100,13 +100,7 @@
                         <strong>{{ trans('admin/hardware/form.manufacturer') }}</strong>
                       </div>
                       <div class="col-md-9">
-                        @can('view', \App\Models\Manufacturer::class)
-                          <a href="{{ route('manufacturers.show', $license->manufacturer->id) }}">
-                            {{ $license->manufacturer->name }}
-                          </a>
-                        @else
-                          {{ $license->manufacturer->name }}
-                        @endcan
+                          {!!  $license->manufacturer->present()->formattedNameLink !!}
 
                         @if ($license->manufacturer->url)
                           <br><x-icon type="globe-us" /> <a href="{{ $license->manufacturer->url }}" rel="noopener">{{ $license->manufacturer->url }}</a>
@@ -134,13 +128,15 @@
                     <div class="row">
                       <div class="col-md-3">
                         <strong>{{ trans('admin/licenses/form.license_key') }}</strong>
-                        <i class="fa-regular fa-clipboard js-copy-link" data-clipboard-target=".js-copy" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
-                          <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                        </i>
                       </div>
                       <div class="col-md-9">
                         @can('viewKeys', $license)
-                          <code><span class="js-copy">{!! nl2br(e($license->serial)) !!}</span></code>
+
+                          <code>
+                              <x-copy-to-clipboard copy_what="license_key">
+                                  {!! nl2br(e($license->serial)) !!}
+                              </x-copy-to-clipboard>
+                          </code>
                         @else
                           ------------
                         @endcan
@@ -194,13 +190,7 @@
                       </div>
                       <div class="col-md-9">
                         @if ($license->supplier->deleted_at=='')
-                          @can('view', \App\Models\Supplier::class)
-                            <a href="{{ route('suppliers.show', $license->supplier->id) }}">
-                              {{ $license->supplier->name }}
-                            </a>
-                          @else
-                            {{ $license->supplier->name }}
-                          @endcan
+                              {!!  $license->supplier->present()->formattedNameLink !!}
 
                           @if ($license->supplier->url)
                             <br><x-icon type="globe-us" /> <a href="{{ $license->supplier->url }}" rel="noopener">{{ $license->supplier->url }}</a>
@@ -451,9 +441,6 @@
           <div class="tab-pane" id="seats">
             <div class="row">
               <div class="col-md-12">
-
-                <div class="table-responsive">
-
                   <table
                           data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayoutSeats() }}"
                           data-cookie-id-table="seatsTable"
@@ -470,9 +457,6 @@
                         "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                         }'>
                   </table>
-
-                </div>
-
               </div>
 
             </div> <!--/.row-->
@@ -481,8 +465,6 @@
           <div class="tab-pane" id="available-seats">
             <div class="row">
               <div class="col-md-12">
-                <div class="table-responsive">
-
                   <table
                           data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayoutSeats() }}"
                           data-cookie-id-table="availableSeatsTable"
@@ -500,8 +482,6 @@
                         }'>
                   </table>
 
-                </div>
-
               </div>
 
             </div> <!--/.row-->
@@ -516,7 +496,7 @@
           <div class="tab-pane" id="history">
             <div class="row">
               <div class="col-md-12">
-                <div class="table-responsive">
+
                   <table
                           data-columns="{{ \App\Presenters\HistoryPresenter::dataTableLayout() }}"
                           class="table table-striped snipe-table"
@@ -531,7 +511,6 @@
                      }'
                           data-url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}">
                   </table>
-                </div>
               </div> <!-- /.col-md-12-->
 
 

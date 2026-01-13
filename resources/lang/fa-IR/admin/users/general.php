@@ -17,7 +17,8 @@ return [
     'info'				=> 'اطلاعات',
     'restore_user'		=> 'برای بازسازی آنها اینجا کلیک کنید.',
     'last_login'        => 'آخرین ورود',
-    'ldap_config_text'  => 'تنظشیمات تاییدیه LDPA در فولدر app/config در فایلی به نام idap.php وجود دارد.مکان مشخص شده برای تمامی کاربران وارد شده تنظیم میشود.شما نیاز دارید که حداقل یه مکان را اضافه کرده باشید تا بتوانید از این ویژگی استفاده کنید.',
+    'ldap_config_text'  => 'The selected location will be set for ALL imported users. This will overwrite their existing location, and is an unusual use-case, so leaving this blank is typically best.',
+    'ldap_sync_intro'   => 'Click on the button below to manually sync your LDAP users. To learn more about configuring LDAP sync to run automatically, please see the <a href=":link" target="_blank">documentation <i class="fa fa-external-link"></i></a> .',
     'print_assigned'    => 'چاپ همه موارد واگذار شده',
     'email_assigned'    => 'لیست ایمیل همه اختصاص داده شده
 ',
@@ -28,8 +29,6 @@ return [
     'auto_assign_label' => 'Include this user when auto-assigning eligible licenses',
     'auto_assign_help'  => 'Skip this user in auto assignment of licenses',
     'software_user'     => 'برنامه چک شد برای:',
-    'send_email_help'   => 'شما باید یک آدرس ایمیل برای این کاربر ارائه دهید تا اطلاعات کاربری خود را ارسال کند. ارسال اعتبار نامه ایمیل فقط با ایجاد کاربر امکان پذیر است. رمزهای عبور در یک هش یک طرفه ذخیره می شوند و پس از ذخیره نمی توان آنها را بازیابی کرد.
-',
     'view_user'         => 'نمایش کاربر :',
     'usercsv'           => 'فایل CSV',
     'two_factor_admin_optin_help' => 'تنظیمات مدیریت فعلی شما اجازه اجرای مجدد احراز هویت دو عامل را می دهد.',
@@ -72,4 +71,6 @@ return [
     'all_assigned_list_generation' => 'Generated on:',
     'email_user_creds_on_create' => 'Email this user their credentials?',
     'department_manager' => 'Department Manager',
+    'generate_password' => 'Generate random password',
+    'individual_override' => 'This user has at least one individual permission set, which may override group permissions.',
 ];

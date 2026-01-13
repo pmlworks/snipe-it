@@ -34,10 +34,10 @@
 
                    <div class="col-md-12">
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.scoping') }}
-                           </legend>
+                           </x-form-legend>
                             <!-- Full Multiple Companies Support -->
                             <div class="form-group {{ $errors->has('full_multiple_companies_support') ? 'error' : '' }}">
                                 <div class="col-md-8 col-md-offset-3">
@@ -63,16 +63,15 @@
 
                        </fieldset>
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.formats') }}
-                           </legend>
-
+                           </x-form-legend>
                            <!-- Email domain -->
                            <div class="form-group {{ $errors->has('email_domain') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="email_domain">{{ trans('general.email_domain') }}</label>
-                               </div>
+
+                               <label for="email_domain" class="col-md-3 control-label">{{ trans('general.email_domain') }}</label>
+
                                <div class="col-md-8">
                                    <input class="form-control" placeholder="example.com" name="email_domain" type="text" value="{{ old('email_domain', $setting->email_domain) }}" id="email_domain">
                                    <span class="help-block">{{ trans('general.email_domain_help')  }}</span>
@@ -83,20 +82,25 @@
 
                            <!-- Email format -->
                            <div class="form-group {{ $errors->has('email_format') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="email_format">{{ trans('admin/settings/general.email_formats.email_format') }}</label>
-                               </div>
+
+                               <label for="email_format" class="col-md-3 control-label">{{ trans('admin/settings/general.email_formats.email_format') }}</label>
+
                                <div class="col-md-8">
-                                   {!! Form::email_format('email_format', old('email_format', $setting->email_format), 'select2') !!}
+                                   <x-input.email-format-select
+                                       name="email_format"
+                                       :selected="old('email_format', $setting->email_format)"
+                                       style="width: 100%"
+                                       aria-label="email_format"
+                                   />
                                    {!! $errors->first('email_format', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                </div>
                            </div>
 
                            <!-- Username format -->
                            <div class="form-group {{ $errors->has('username_format') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="username_format">{{ trans('admin/settings/general.username_formats.username_format') }}</label>
-                               </div>
+
+                               <label for="username_format" class="col-md-3 control-label">{{ trans('admin/settings/general.username_formats.username_format') }}</label>
+
                                <div class="col-md-8">
                                    {!! Form::username_format('username_format', old('username_format', $setting->username_format), 'select2') !!}
                                    {!! $errors->first('username_format', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
@@ -110,10 +114,10 @@
                        </fieldset>
 
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.profiles') }}
-                           </legend>
+                           </x-form-legend>
                            <!-- user profile edit checkbox -->
                            <div class="form-group">
                                <div class="col-md-8 col-md-offset-3">
@@ -126,10 +130,10 @@
                            </div>
                        </fieldset>
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.eula') }}
-                           </legend>
+                           </x-form-legend>
 
                            <!-- Require signature for acceptance -->
                            <div class="form-group {{ $errors->has('require_accept_signature') ? 'error' : '' }}">
@@ -146,9 +150,8 @@
 
                            <!-- Default EULA -->
                            <div class="form-group {{ $errors->has('default_eula_text') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="default_eula_text">{{ trans('admin/settings/general.default_eula_text') }}</label>
-                               </div>
+                               <label for="default_eula_text" class="col-md-3 control-label">{{ trans('admin/settings/general.default_eula_text') }}</label>
+
                                <div class="col-md-8">
                                    <x-input.textarea
                                            name="default_eula_text"
@@ -163,14 +166,16 @@
 
                        </fieldset>
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">{{ trans('admin/settings/general.legends.misc_display') }}</legend>
+                       <fieldset>
+                           <x-form-legend>
+                               {{ trans('admin/settings/general.legends.misc_display') }}
+                           </x-form-legend>
 
                            <!-- Thumb Size -->
                            <div class="form-group {{ $errors->has('thumbnail_max_h') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="thumbnail_max_h">{{ trans('admin/settings/general.thumbnail_max_h') }}</label>
-                               </div>
+
+                               <label for="thumbnail_max_h" class="col-md-3 control-label">{{ trans('admin/settings/general.thumbnail_max_h') }}</label>
+
                                <div class="col-md-8">
                                    <input class="form-control" style="max-width: 100px;" placeholder="50" maxlength="3" name="thumbnail_max_h" type="number" value="{{ old('thumbnail_max_h', ($setting->thumbnail_max_h ?? '25')) }}" id="thumbnail_max_h">
                                    <p class="help-block">{{ trans('admin/settings/general.thumbnail_max_h_help') }}</p>
@@ -242,16 +247,16 @@
                        </fieldset>
 
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('general.email') }}
-                           </legend>
+                           </x-form-legend>
 
                            <!-- Mail test -->
                            <div class="form-group">
-                               <div class="col-md-3">
-                                   <label for="login_note">{{trans('admin/settings/general.test_mail')}}</label>
-                               </div>
+
+                               <label for="login_note" class="col-md-3 control-label">{{trans('admin/settings/general.test_mail')}}</label>
+
                                <div class="col-md-8" id="mailtestrow">
                                    <a class="btn btn-default btn-sm pull-left" id="mailtest" style="margin-right: 10px;">
                                        {{ trans('admin/settings/general.mail_test') }}</a>
@@ -286,10 +291,10 @@
                        </fieldset>
 
 
-                       <fieldset name="checkin-preferences" class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset name="checkin-preferences"">
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.checkin') }}
-                           </legend>
+                           </x-form-legend>
 
                            <!-- Require Notes on checkin/checkout checkbox -->
                                <div class="form-group">
@@ -307,16 +312,16 @@
 
 
 
-                       <fieldset name="dashboard" class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset name="dashboard">
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.dashboard') }}
-                           </legend>
+                           </x-form-legend>
 
                            <!-- login text -->
                            <div class="form-group {{ $errors->has('login_note') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="login_note">{{ trans('admin/settings/general.login_note') }}</label>
-                               </div>
+
+                               <label for="login_note" class="col-md-3 control-label">{{ trans('admin/settings/general.login_note') }}</label>
+
                                <div class="col-md-8">
                                    @if (config('app.lock_passwords'))
 
@@ -333,9 +338,9 @@
 
                                <!-- dash chart -->
                                <div class="form-group {{ $errors->has('dash_chart_type') ? 'error' : '' }}">
-                                   <div class="col-md-3">
-                                       <label for="show_in_model_list">{{ trans('general.pie_chart_type') }}</label>
-                                   </div>
+
+                                   <label for="show_in_model_list" class="col-md-3 control-label">{{ trans('general.pie_chart_type') }}</label>
+
                                    <div class="col-md-8">
                                        <x-input.select
                                            name="dash_chart_type"
@@ -348,9 +353,9 @@
 
                                <!-- dashboard text -->
                                <div class="form-group {{ $errors->has('dashboard_message') ? 'error' : '' }}">
-                                   <div class="col-md-3">
-                                       <label for="dashboard_message">{{ trans('admin/settings/general.dashboard_message') }}</label>
-                                   </div>
+
+                                   <label for="dashboard_message" class="col-md-3 control-label">{{ trans('admin/settings/general.dashboard_message') }}</label>
+
                                    <div class="col-md-8">
                                        @if (config('app.lock_passwords'))
 
@@ -369,16 +374,16 @@
                        </fieldset>
 
 
-                       <fieldset class="bottom-padded">
-                           <legend class="highlight">
+                       <fieldset>
+                           <x-form-legend>
                                {{ trans('admin/settings/general.legends.misc') }}
-                           </legend>
+                           </x-form-legend>
 
                            <!-- Privacy Policy Footer-->
                            <div class="form-group {{ $errors->has('privacy_policy_link') ? 'error' : '' }}">
-                               <div class="col-md-3">
-                                   <label for="privacy_policy_link">{{ trans('admin/settings/general.privacy_policy_link') }}</label>
-                               </div>
+
+                               <label for="privacy_policy_link" class="col-md-3 control-label">{{ trans('admin/settings/general.privacy_policy_link') }}</label>
+
                                <div class="col-md-8">
 
                                    @if (config('app.lock_passwords'))
@@ -400,9 +405,9 @@
                            
                                <!-- Depreciation method -->
                                <div class="form-group {{ $errors->has('depreciation_method') ? 'error' : '' }}">
-                                   <div class="col-md-3">
-                                       <label for="depreciation_method">{{ trans('admin/depreciations/general.depreciation_method') }}</label>
-                                   </div>
+
+                                   <label for="depreciation_method" class="col-md-3 control-label">{{ trans('admin/depreciations/general.depreciation_method') }}</label>
+
                                    <div class="col-md-8">
                                        <x-input.select
                                            name="depreciation_method"

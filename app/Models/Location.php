@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Traits\UniqueUndeletedTrait;
 use App\Models\Traits\CompanyableTrait;
 use App\Models\Traits\HasUploads;
+use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
 use App\Presenters\Presentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,7 @@ class Location extends SnipeModel
 
     protected $table = 'locations';
     protected $rules = [
-        'name'          => 'required|min:2|max:255|unique_undeleted',
+        'name'          => 'required|max:255|unique_undeleted',
         'address'       => 'max:191|nullable',
         'address2'      => 'max:191|nullable',
         'city'          => 'max:191|nullable',
@@ -76,6 +77,7 @@ class Location extends SnipeModel
         'manager_id',
         'image',
         'company_id',
+        'tag_color',
         'notes',
     ];
     protected $hidden = ['user_id'];

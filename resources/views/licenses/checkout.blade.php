@@ -33,31 +33,46 @@
                             <p class="form-control-static">{{ $license->name }}</p>
                         </div>
                     </div>
-                    <!-- Category -->
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">{{ trans('general.category') }}</label>
-                        <div class="col-md-9">
-                            <p class="form-control-static">{{ $license->category->name }}</p>
+
+                    @if ($license->company)
+                        <!-- company name -->
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{ trans('general.company') }}</label>
+                            <div class="col-md-6">
+                                <p class="form-control-static">{!! $license->company->present()->formattedNameLink  !!}</p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
+
+                    @if ($license->category)
+                        <!-- category name -->
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{ trans('general.category') }}</label>
+                            <div class="col-md-6">
+                                <p class="form-control-static">{!! $license->category->present()->formattedNameLink  !!}</p>
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Serial -->
                     @can('viewKeys', $license)
                     <div class="form-group">
                         <label class="col-sm-3 control-label">{{ trans('admin/licenses/form.license_key') }}
-                            <i class="fa-regular fa-clipboard js-copy-link hidden-print" data-clipboard-target=".js-copy-key" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
-                                <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                            </i>
+
                         </label>
                         <div class="col-md-9">
-                            <p class="form-control-static"><code style="white-space: pre-wrap"><span class="js-copy-key">{{ $license->serial }}</span></code>
+                            <p class="form-control-static">
+                                <x-copy-to-clipboard copy_what="license_key" style="white-space: pre-wrap">
+                                    <code>{!! nl2br(e($license->serial)) !!}</code>
+                                </x-copy-to-clipboard>
                             </p>
                         </div>
                     </div>
                     @endcan
 
                     @include ('partials.forms.checkout-selector', ['user_select' => 'true','asset_select' => 'true', 'location_select' => 'false'])
-                    @include ('partials.forms.edit.user-select', ['translated_name' => trans('general.user'), 'fieldname' => 'assigned_to', 'style' => session('checkout_to_type') == 'user' ? '' : 'display: none;'])
+                    @include ('partials.forms.edit.user-select', ['translated_name' => trans('general.user'), 'fieldname' => 'assigned_to', 'style' => (session('checkout_to_type') ?: 'user') == 'user' ? '' : 'display: none;'])
                     @include ('partials.forms.edit.asset-select', ['translated_name' => trans('general.select_asset'), 'fieldname' => 'asset_id', 'style' => session('checkout_to_type') == 'asset' ? '' : 'display: none;'])
 
                     <!-- Note -->

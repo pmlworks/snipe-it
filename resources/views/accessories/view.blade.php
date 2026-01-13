@@ -72,7 +72,6 @@
                 <div class="tab-content">
 
                     <div class="tab-pane active" id="checkedout">
-                        <div class="table table-responsive">
                           <div class="row">
                               <div class="col-md-12">
                                 <table
@@ -89,16 +88,14 @@
                                     "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                                     }'>
                                 </table>
-                            </div><!--col-md-9-->
-                          </div> <!-- close tab-pane div -->
-                        </div>
+                            </div><!--./col-md-12-->
+                          </div> <!-- ./row -->
                     </div>
 
                     <!-- history tab pane -->
                      <div class="tab-pane fade" id="history">
-                         <div class="table-responsive">
-                             <div class="row">
-                                 <div class="col-md-12">
+                         <div class="row">
+                             <div class="col-md-12">
                                 <table
                                         data-columns="{{ \App\Presenters\HistoryPresenter::dataTableLayout() }}"
                                         class="table table-striped snipe-table"
@@ -108,14 +105,13 @@
                                         data-side-pagination="server"
                                         data-sort-order="desc"
                                         data-export-options='{
-                       "fileName": "export-{{ str_slug($accessory->name) }}-history-{{ date('Y-m-d') }}",
-                       "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                     }'
+                                           "fileName": "export-{{ str_slug($accessory->name) }}-history-{{ date('Y-m-d') }}",
+                                           "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                                         }'
                                         data-url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}">
-                                        </table>
-                                    </div> <!-- /.col-md-12-->
-                                </div> <!-- /.row-->
-                            </div><!--tab history-->
+                                    </table>
+                                </div> <!-- /.col-md-12-->
+                            </div> <!-- /.row-->
                      </div>
 
 
@@ -166,7 +162,7 @@
                   <strong> {{ trans('general.company')}}</strong>
               </div>
               <div class="col-md-9">
-                  <a href="{{ route('companies.show', $accessory->company->id) }}">{{ $accessory->company->name }} </a>
+                  {!!  $accessory->company->present()->formattedNameLink !!}
               </div>
           </div>
       @endif
@@ -177,7 +173,7 @@
                       <strong>{{ trans('general.location')}}</strong>
                   </div>
                   <div class="col-md-9">
-                      <a href="{{ route('locations.show', $accessory->location->id) }}">{{ $accessory->location->name }} </a>
+                      {!!  $accessory->location->present()->formattedNameLink !!}
                   </div>
               </div>
           @endif
@@ -188,7 +184,7 @@
                   <strong>{{ trans('general.category')}}</strong>
               </div>
               <div class="col-md-9">
-                  <a href="{{ route('categories.show', $accessory->category->id) }}">{{ $accessory->category->name }} </a>
+                  {!!  $accessory->category->present()->formattedNameLink !!}
               </div>
           </div>
       @endif
@@ -199,7 +195,7 @@
                       <strong>{{ trans('general.manufacturer')}}</strong>
                   </div>
                   <div class="col-md-9">
-                      <a href="{{ route('manufacturers.show', $accessory->manufacturer->id) }}">{{ $accessory->manufacturer->name }} </a>
+                      {!!  $accessory->manufacturer->present()->formattedNameLink !!}
                   </div>
               </div>
           @endif
@@ -241,6 +237,18 @@
                   </div>
                   <div class="col-md-9" style="word-wrap: break-word;">
                       {{ Helper::formatCurrencyOutput($accessory->purchase_cost) }}
+                  </div>
+              </div>
+          @endif
+          @if ($accessory->purchase_cost)
+              <div class="row">
+                  <div class="col-md-3" style="padding-bottom: 10px;">
+                      <strong>
+                          {{ trans('general.total_cost') }}
+                      </strong>
+                  </div>
+                  <div class="col-md-9" style="word-wrap: break-word;">
+                      {{ Helper::formatCurrencyOutput($accessory->totalCostSum()) }}
                   </div>
               </div>
           @endif
@@ -301,9 +309,7 @@
               </div>
           @endif
 
-</div>
 
-    <div class="col-md-3 pull-right">
 
         @can('update', \App\Models\Accessory::class)
             <div class="text-center" style="padding-top:5px;">

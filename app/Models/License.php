@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Helpers\Helper;
 use App\Models\Traits\CompanyableTrait;
 use App\Models\Traits\HasUploads;
+use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
 use App\Presenters\Presentable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +47,7 @@ class License extends Depreciable
     ];
 
     protected $rules = [
-        'name'   => 'required|string|min:3|max:255',
+        'name'   => 'required|string|max:255',
         'seats' => 'required|min:1|integer|limit_change:10000', // limit_change is a "pseudo-rule" that translates into 'between', see prepareLimitChangeRule() below
         'license_email'   => 'email|nullable|max:120',
         'license_name'   => 'string|nullable|max:100',
@@ -156,6 +158,29 @@ class License extends Depreciable
         );
     }
 
+
+    protected function terminatesFormattedDate(): Attribute
+    {
+        return Attribute:: make(
+            get: fn(mixed $value, array $attributes) => $attributes['termination_date'] ? Helper::getFormattedDateObject($attributes['termination_date'], 'date', false) : null,
+        );
+    }
+
+    protected function terminatesDiffInDays(): Attribute
+    {
+        return Attribute:: make(
+            get: fn(mixed $value, array $attributes) => $attributes['termination_date'] ? Carbon::now()->diffInDays($attributes['termination_date']) : null,
+        );
+    }
+
+    protected function terminatesDiffForHumans(): Attribute
+    {
+        return Attribute:: make(
+            get: fn(mixed $value, array $attributes) => $attributes['termination_date'] ? Carbon::parse($attributes['termination_date'])->diffForHumans() : null,
+        );
+    }
+
+
     public function prepareLimitChangeRule($parameters, $field)
     {
         $actual_seat_count = $this->licenseseats()->count(); //we use the *actual* seat count here, in case your license has gone wonky
@@ -198,6 +223,7 @@ class License extends Depreciable
             $logAction->created_by = auth()->id() ?: 1; // We don't have an id while running the importer from CLI.
             $logAction->note = "deleted {$change} seats";
             $logAction->target_id = null;
+            $logAction->quantity = $change;
             $logAction->logaction('delete seats');
 
             return true;
@@ -234,6 +260,7 @@ class License extends Depreciable
             $logAction->created_by = auth()->id() ?: 1; // Importer.
             $logAction->note = "added {$change} seats";
             $logAction->target_id = null;
+            $logAction->quantity = $change;
             $logAction->logaction('add seats');
         }
 
@@ -299,16 +326,16 @@ class License extends Depreciable
     }
 
     public function isInactive(): bool
-    {
-        $day = now()->startOfDay();
+{
+    $day = now()->startOfDay();
 
-        $expired = $this->expiration_date && $this->asDateTime($this->expiration_date)->startofDay()->lessThanOrEqualTo($day);
+    $expired = $this->expiration_date && $this->asDateTime($this->expiration_date)->startofDay()->lessThanOrEqualTo($day);
 
-        $terminated = $this->termination_date && $this->asDateTime($this->termination_date)->startofDay()->lessThanOrEqualTo($day);
+    $terminated = $this->termination_date && $this->asDateTime($this->termination_date)->startofDay()->lessThanOrEqualTo($day);
 
 
         return $this->isExpired() || $this->isTerminated();
-    }
+}
 
     public function isExpired(): bool
     {
@@ -391,7 +418,12 @@ class License extends Depreciable
         }
         return false;
     }
-
+    public function checkouts()
+    {
+        return $this->assetlog()->where('action_type', '=', 'checkout')
+            ->orderBy('created_at', 'desc')
+            ->withTrashed();
+    }
     /**
      * Determine whether the user should be required to accept the license
      *
@@ -408,27 +440,6 @@ class License extends Depreciable
         return false;
     }
 
-    /**
-     * Checks for a category-specific EULA, and if that doesn't exist,
-     * checks for a settings level EULA
-     *
-     * @author [A. Gianotto] [<snipe@snipe.net>]
-     * @since  [v4.0]
-     * @return string | false
-     */
-    public function getEula()
-    {
-        if ($this->category) {
-            if ($this->category->eula_text) {
-                return Helper::parseEscapedMarkedown($this->category->eula_text);
-            } elseif ($this->category->use_default_eula == '1') {
-                return Helper::parseEscapedMarkedown(Setting::getSettings()->default_eula_text);
-            } 
-        }
-
-        return false;
-        
-    }
 
     /**
      * Establishes the license -> assigned user relationship
@@ -727,8 +738,41 @@ class License extends Depreciable
         return $this->hasMany(\App\Models\LicenseSeat::class)->whereNull('assigned_to')->whereNull('deleted_at')->whereNull('asset_id');
     }
 
+    public function scopeActiveLicenses($query)
+    {
+
+        return $query->whereNull('licenses.deleted_at')
+
+            // The termination date is null or within range
+            ->where(function ($query)  {
+                $query->whereNull('termination_date')
+                    ->orWhereDate('termination_date', '>', [Carbon::now()]);
+            })
+            ->where(function ($query) {
+                $query->whereNull('expiration_date')
+                    ->orWhereDate('expiration_date', '>', [Carbon::now()]);
+            });
+    }
+
     /**
-     * Returns expiring licenses.
+     * Expiried/terminated licenses scope
+     *
+     * @author A. Gianotto <snipe@snipe.net>
+     * @since  [v1.0]
+     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     * @see \App\Console\Commands\SendExpiringLicenseNotifications
+     */
+    public function scopeExpiredLicenses($query)
+    {
+        return $query->whereDate('termination_date', '<=', Carbon::now())// The termination date is null or within range
+        ->orWhere(function ($query) {
+                    $query->whereDate('expiration_date', '<=', Carbon::now());
+        })
+        ->whereNull('licenses.deleted_at');
+    }
+
+    /**
+     * Expiring/terminating licenses scope
      *
      * This checks if:
      *
@@ -742,63 +786,28 @@ class License extends Depreciable
      * @return \Illuminate\Database\Eloquent\Relations\Relation
      * @see \App\Console\Commands\SendExpiringLicenseNotifications
      */
-    public static function getExpiringLicenses($days = 60)
+    public function scopeExpiringLicenses($query, $days = 60, $includeExpired = false)
     {
-
-        return self::whereNull('deleted_at')
-
-            // The termination date is null or within range
-            ->where(function ($query) use ($days) {
-                $query->whereNull('termination_date')
-                    ->orWhereBetween('termination_date', [Carbon::now(), Carbon::now()->addDays($days)]);
-            })
-            ->where(function ($query) use ($days) {
+        return $query// The termination date is null or within range
+        ->where(function ($query) use ($days) {
+            $query->whereNull('termination_date')
+                ->orWhereBetween('termination_date', [Carbon::now(), Carbon::now()->addDays($days)]);
+        })
+            ->where(function ($query) use ($days, $includeExpired) {
                 $query->whereNotNull('expiration_date')
-                    // Handle expired licenses without termination dates
-                    ->where(function ($query) use ($days) {
+                    // Handle expiring licenses without termination dates
+                    ->where(function ($query) use ($days, $includeExpired) {
                         $query->whereNull('termination_date')
-                            ->whereBetween('expiration_date', [Carbon::now(), Carbon::now()->addDays($days)]);
+                            ->whereBetween('expiration_date', [Carbon::now(), Carbon::now()->addDays($days)])
+                            //include expired licenses if requested
+                            ->when($includeExpired, function ($query) use ($days) {
+                                $query->orwhereDate('expiration_date', '<=', Carbon::now());
+                            });
                     })
-
-                    // Handle expired licenses with termination dates in the future
+                    // Handle expiring licenses with termination dates in the future
                     ->orWhere(function ($query) use ($days) {
                         $query->whereBetween('termination_date', [Carbon::now(), Carbon::now()->addDays($days)]);
                     });
-            })
-            ->orderBy('expiration_date', 'ASC')
-            ->orderBy('termination_date', 'ASC')
-            ->get();
-    }
-
-    public function scopeActiveLicenses($query)
-    {
-
-        return $query->whereNull('deleted_at')
-
-            // The termination date is null or within range
-            ->where(function ($query)  {
-                $query->whereNull('termination_date')
-                    ->orWhereDate('termination_date', '>', [Carbon::now()]);
-            })
-            ->where(function ($query) {
-                $query->whereNull('expiration_date')
-                    ->orWhereDate('expiration_date', '>', [Carbon::now()]);
-            });
-    }
-
-    public function scopeExpiredLicenses($query)
-    {
-
-        return $query->whereNull('deleted_at')
-
-            // The termination date is null or within range
-            ->where(function ($query)  {
-                $query->whereNull('termination_date')
-                    ->orWhereDate('termination_date', '<=', [Carbon::now()]);
-            })
-            ->orWhere(function ($query) {
-                $query->whereNull('expiration_date')
-                    ->orWhereDate('expiration_date', '<=', [Carbon::now()]);
             });
     }
 

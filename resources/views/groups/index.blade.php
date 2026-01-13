@@ -18,8 +18,6 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-        <div class="table-responsive">
-
             <table
                 data-cookie-id-table="groupsTable"
                 data-side-pagination="server"
@@ -42,12 +40,13 @@
                   <th data-switchable="true" data-sortable="true" data-field="notes" data-visible="true">{{ trans('general.notes') }}</th>
                   <th data-switchable="true" data-sortable="true" data-field="created_at" data-visible="true" data-formatter="dateDisplayFormatter">{{ trans('general.created_at') }}</th>
                <th data-switchable="false" data-searchable="false" data-sortable="true" data-field="created_by"  data-formatter="usersLinkObjFormatter">{{ trans('general.created_by') }}</th>
-               <th data-switchable="false" data-searchable="false" data-sortable="false" data-field="actions"   data-formatter="groupsActionsFormatter">{{ trans('table.actions') }}</th>
+                  <th data-switchable="false" data-searchable="false" data-sortable="true" data-field="created_at"  data-formatter="dateDisplayFormatter">{{ trans('general.created_at') }}</th>
+                  <th data-switchable="false" data-searchable="false" data-sortable="true" data-field="updated_at"  data-formatter="dateDisplayFormatter">{{ trans('general.updated_at') }}</th>
+                  <th data-switchable="false" data-searchable="false" data-sortable="false" data-field="actions"   data-formatter="groupsActionsFormatter">{{ trans('table.actions') }}</th>
 
               </tr>
             </thead>
           </table>
-        </div>
       </div> <!--.box-body-->
     </div> <!-- /.box.box-default-->
   </div> <!-- .col-md-12-->

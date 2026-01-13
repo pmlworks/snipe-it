@@ -49,7 +49,7 @@ class BreadcrumbsServiceProvider extends ServiceProvider
                 Breadcrumbs::for('hardware.index', fn (Trail $trail) =>
                 $trail->parent('home', route('home'))
                     ->push(trans('general.assets'), route('hardware.index'))
-                    ->push(request()->status.' '.trans('general.assets'), route('hardware.index', ['status' => request()->status]))
+                    ->push(trans('general.'.strtolower(e(request()->status))), route('hardware.index', ['status' => request()->status]))
                 );
 
             } else {
@@ -350,10 +350,15 @@ class BreadcrumbsServiceProvider extends ServiceProvider
          * Licenses Breadcrumbs
          */
         if ((request()->is('licenses*')) && (request()->status=='inactive')) {
+            Breadcrumbs::for('licenses.index', fn(Trail $trail) => $trail->parent('home', route('home'))
+                ->push(trans('general.licenses'), route('licenses.index'))
+                ->push(trans('general.show_inactive'), route('licenses.index'))
+            );
+        } elseif ((request()->is('licenses*')) && (request()->status=='expiring')) {
             Breadcrumbs::for('licenses.index', fn (Trail $trail) =>
             $trail->parent('home', route('home'))
                 ->push(trans('general.licenses'), route('licenses.index'))
-                ->push(trans('general.show_inactive'), route('licenses.index'))
+                ->push(trans('general.show_expiring'), route('licenses.index'))
             );
         } else {
             Breadcrumbs::for('licenses.index', fn (Trail $trail) =>

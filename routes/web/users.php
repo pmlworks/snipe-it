@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Users;
 use Illuminate\Support\Facades\Route;
+use Tabuna\Breadcrumbs\Trail;
 
 // User Management
 
@@ -13,7 +14,10 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
             Users\LDAPImportController::class, 
             'create'
         ]
-    )->name('ldap/user');
+    )->name('ldap/user')
+        ->breadcrumbs(fn (Trail $trail) =>
+        $trail->parent('users.index')
+            ->push(trans('general.ldap_user_sync'), route('ldap/user')));
 
     Route::post(
         'ldap',
@@ -93,7 +97,10 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
             Users\BulkUsersController::class, 
             'edit'
         ]
-    )->name('users/bulkedit');
+    )->name('users/bulkedit')
+        ->breadcrumbs(fn (Trail $trail) =>
+        $trail->parent('users.index')
+            ->push(trans('general.bulk_checkin_delete'), route('users.index')));
 
     Route::post(
         'merge',

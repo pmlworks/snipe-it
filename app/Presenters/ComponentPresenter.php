@@ -80,6 +80,25 @@ class ComponentPresenter extends Presenter
                 'visible' => false,
                 'formatter' => 'manufacturersLinkObjFormatter',
             ], [
+                'field' => 'location',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.location'),
+                'formatter' => 'locationsLinkObjFormatter',
+            ], [
+                'field' => 'order_number',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.order_number'),
+                'visible' => true,
+            ], [
+                'field' => 'purchase_date',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.purchase_date'),
+                'visible' => true,
+                'formatter' => 'dateDisplayFormatter',
+            ], [
                 'field' => 'min_amt',
                 'searchable' => false,
                 'sortable' => true,
@@ -104,32 +123,19 @@ class ComponentPresenter extends Presenter
                 'class' => 'text-right text-padding-number-cell',
                 'footerFormatter' => 'qtySumFormatter',
             ], [
-                'field' => 'location',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('general.location'),
-                'formatter' => 'locationsLinkObjFormatter',
-            ], [
-                'field' => 'order_number',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('general.order_number'),
-                'visible' => true,
-            ], [
-                'field' => 'purchase_date',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('general.purchase_date'),
-                'visible' => true,
-                'formatter' => 'dateDisplayFormatter',
-            ], [
                 'field' => 'purchase_cost',
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('general.unit_cost'),
                 'visible' => true,
-                'footerFormatter' => 'sumFormatterQuantity',
                 'class' => 'text-right',
+            ], [
+                'field' => 'total_cost',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('general.total_cost'),
+                'footerFormatter' => 'sumFormatterQuantity',
+                'class' => 'text-right text-padding-number-cell',
             ], [
                 'field' => 'notes',
                 'searchable' => true,
@@ -200,6 +206,6 @@ class ComponentPresenter extends Presenter
      */
     public function viewUrl()
     {
-        return route('accessories.show', $this->id);
+        return route('components.show', $this->id);
     }
 }

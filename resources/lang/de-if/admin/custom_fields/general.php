@@ -33,7 +33,7 @@ return [
     'create_fieldset_title' => 'Neuen Feldsatz erstellen',
     'create_field'            => 'Neues benutzerdefiniertes Feld',
     'create_field_title' => 'Neues benutzerdefiniertes Feld erstellen',
-    'value_encrypted'      	        => 'The value of this field is encrypted in the database. Only users with permission to view encrypted custom fields will be able to view the decrypted value',
+    'value_encrypted'      	        => 'Der Wert dieses Feldes wird in der Datenbank verschlüsselt. Nur Benutzer, die die Berechtigung haben, verschlüsselte benutzerdefinierte Felder anzuzeigen, können den entschlüsselten Wert anzeigen',
     'show_in_email'     => 'Feld miteinbeziehen bei Herausgabe-Emails an die Benutzer? Verschlüsselte Felder können nicht miteinbezogen werden',
     'show_in_email_short' => 'In E-Mails einbeziehen',
     'help_text' => 'Hilfetext',
@@ -67,4 +67,5 @@ return [
         'checkbox' => 'Auswahlfeld',
         'radio' => 'Auswahlknöpfe',
     ],
+    'general_help_text' => 'Benutzerdefinierte Felder speichern zusätzliche Informationen, die nicht von den Standard-Asset-Feldern abgedeckt sind. <a href="https://snipe-it.readme.io/docs/custom-fields#/"><i class="fa fa-external-link"></i></a>.',
 ];

@@ -2,7 +2,7 @@
 
 return [
     'about_asset_depreciations'  			=> 'Apie turto nusidėvėjimą',
-    'about_depreciations'  					=> 'Jūs galite nustatyti turto nusidėvėjimą pagal tiesinį nusidėvėjimo modelį.',
+    'about_depreciations'  					=> 'Galite nustatyti turto nusidėvėjimą pagal linijinį (tiesinį), pusmečio metodą taikomą su sąlyga arba visada taikomą pusmečio metodą.',
     'asset_depreciations'  					=> 'Turto nusidėvėjimas',
     'create'  					            => 'Sukurti nusidėvėjimą',
     'depreciation_name'  					=> 'Nusidėvėjimo pavadinimas',

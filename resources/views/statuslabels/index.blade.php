@@ -23,6 +23,7 @@
                     data-sort-name="name"
                     id="statuslabelsTable"
                     data-buttons="statuslabelButtons"
+                    data-advanced-search="false"
                     class="table table-striped snipe-table"
                     data-url="{{ route('api.statuslabels.index') }}"
                     data-export-options='{
@@ -37,7 +38,7 @@
   <div class="col-md-3">
     <h2>{{ trans('admin/statuslabels/table.about') }}</h2>
 
-      <div class="box">
+      <div class="box box-default">
           <div class="box-body">
               <p>{!!  trans('admin/statuslabels/table.info') !!}</p>
           </div>
@@ -76,11 +77,7 @@
 @include ('partials.bootstrap-table')
 
   <script nonce="{{ csrf_token() }}">
-      function colorSqFormatter(value, row) {
-          if (value) {
-              return '<span class="label" style="background-color: ' + value + ';">&nbsp;</span> ' + value;
-          }
-      }
+
 
       function statuslabelsAssetLinkFormatter(value, row) {
           if ((row) && (row.name)) {

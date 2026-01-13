@@ -210,6 +210,7 @@
                       @include('partials.asset-bulk-actions')
                       <table
                               data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                              data-show-columns-search="true"
                               data-cookie-id-table="assetsListingTable"
                               data-id-table="assetsListingTable"
                               data-side-pagination="server"
@@ -237,6 +238,7 @@
                       <table
                               role="table"
                               data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                              data-show-columns-search="true"
                               data-cookie-id-table="assetsAssignedListingTable"
                               data-id-table="assetsAssignedListingTable"
                               data-side-pagination="server"
@@ -262,6 +264,7 @@
                       <table
                               role="table"
                               data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                              data-show-columns-search="true"
                               data-cookie-id-table="RTDassetsListingTable"
                               data-id-table="RTDassetsListingTable"
                               data-side-pagination="server"
@@ -539,13 +542,13 @@
 
      @if ($location->deleted_at=='')
       <div class="col-md-12" style="padding-top: 5px;">
-          <a href="{{ route('locations.print_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social hidden-print">
+          <a href="{{ route('locations.print_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social hidden-print">
               <x-icon type="print" />
               {{ trans('admin/locations/table.print_inventory') }}
           </a>
       </div>
       <div class="col-md-12" style="padding-top: 5px;">
-          <a href="{{ route('locations.print_all_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-primary btn-social hidden-print">
+          <a href="{{ route('locations.print_all_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social hidden-print">
               <x-icon type="print" />
               {{ trans('admin/locations/table.print_all_assigned') }}
           </a>

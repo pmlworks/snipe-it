@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
+use App\Http\Traits\TwoColumnUniqueUndeletedTrait;
 use App\Models\Traits\HasUploads;
+use App\Models\Traits\Loggable;
+use App\Models\Traits\Requestable;
 use App\Models\Traits\Searchable;
+use App\Presenters\AssetModelPresenter;
 use App\Presenters\Presentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Watson\Validating\ValidatingTrait;
-use \App\Presenters\AssetModelPresenter;
-use App\Http\Traits\TwoColumnUniqueUndeletedTrait;
 
 /**
  * Model for Asset Models. Asset Models contain higher level
@@ -120,6 +122,22 @@ class AssetModel extends SnipeModel
     public function assets()
     {
         return $this->hasMany(\App\Models\Asset::class, 'model_id');
+    }
+
+
+    public function availableAssets()
+    {
+        return $this->hasMany(\App\Models\Asset::class, 'model_id')->RTD();
+    }
+
+    public function assignedAssets()
+    {
+        return $this->hasMany(\App\Models\Asset::class, 'model_id')->Deployed();
+    }
+
+    public function archivedAssets()
+    {
+        return $this->hasMany(\App\Models\Asset::class, 'model_id')->Archived();
     }
 
     /**
@@ -239,6 +257,57 @@ class AssetModel extends SnipeModel
      * BEGIN QUERY SCOPES
      * -----------------------------------------------
      **/
+
+    /**
+     * Query builder scope to search on text filters for complex Bootstrap Tables API
+     *
+     * @param \Illuminate\Database\Query\Builder $query  Query builder instance
+     * @param text                               $filter JSON array of search keys and terms
+     *
+     * @return \Illuminate\Database\Query\Builder          Modified query builder
+     */
+    public function scopeByFilter($query, $filter)
+    {
+        return $query->where(
+            function ($query) use ($filter) {
+                foreach ($filter as $fieldname => $search_val) {
+
+                    if ($fieldname == 'name') {
+                        $query->where('models.name', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'notes') {
+                        $query->where('models.notes', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'model_number') {
+                        $query->where('models.model_number', 'LIKE', '%' . $search_val . '%');
+                    }
+
+                    if ($fieldname == 'category') {
+                        $query->whereHas(
+                            'category', function ($query) use ($search_val) {
+                            $query->where('categories.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+                    if ($fieldname == 'manufacturer') {
+                        $query->whereHas(
+                            'manufacturer', function ($query) use ($search_val) {
+                            $query->where('manufacturers.name', 'LIKE', '%'.$search_val.'%');
+                        }
+                        );
+                    }
+
+
+
+                }
+
+
+            }
+        );
+    }
 
     /**
      * scopeInCategory

@@ -2,6 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Manufacturers\DeleteManufacturerAction;
+use App\Exceptions\ItemStillHasAccessories;
+use App\Exceptions\ItemStillHasAssets;
+use App\Exceptions\ItemStillHasChildren;
+use App\Exceptions\ItemStillHasComponents;
+use App\Exceptions\ItemStillHasConsumables;
+use App\Exceptions\ItemStillHasLicenses;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Transformers\ManufacturersTransformer;
@@ -40,6 +47,7 @@ class ManufacturersController extends Controller
             'consumables_count',
             'components_count',
             'licenses_count',
+            'tag_color',
             'notes',
         ];
 
@@ -56,6 +64,7 @@ class ManufacturersController extends Controller
                 'updated_at',
                 'image',
                 'deleted_at',
+                'tag_color',
                 'notes',
             ])
             ->with('adminuser')
@@ -69,9 +78,15 @@ class ManufacturersController extends Controller
             $manufacturers->onlyTrashed();
         }
 
+        if ($request->input('status') == 'deleted') {
+            $manufacturers->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $manufacturers = $manufacturers->TextSearch($request->input('search'));
         }
+
+
 
         if ($request->filled('name')) {
             $manufacturers->where('name', '=', $request->input('name'));
@@ -95,6 +110,10 @@ class ManufacturersController extends Controller
 
         if ($request->filled('support_email')) {
             $manufacturers->where('support_email', '=', $request->input('support_email'));
+        }
+
+        if ($request->filled('tag_color')) {
+            $manufacturers->where('tag_color', '=', $request->input('manufacturers.tag_color'));
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits
@@ -184,19 +203,19 @@ class ManufacturersController extends Controller
      * @since [v4.0]
      * @param  int  $id
      */
-    public function destroy($id) : JsonResponse
+    public function destroy(Manufacturer $manufacturer): JsonResponse
     {
-        $this->authorize('delete', Manufacturer::class);
-        $manufacturer = Manufacturer::findOrFail($id);
         $this->authorize('delete', $manufacturer);
-
-        if ($manufacturer->isDeletable()) {
-            $manufacturer->delete();
-            return response()->json(Helper::formatStandardApiResponse('success', null,  trans('admin/manufacturers/message.delete.success')));
+        try {
+            DeleteManufacturerAction::run($manufacturer);
+        } catch (ItemStillHasChildren $e) {
+            return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.bulk_delete_associations.general_assoc_warning', ['item' => trans('general.manufacturer')])));
+        } catch (\Exception $e) {
+            report($e);
+            return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.something_went_wrong')));
         }
 
-        return response()->json(Helper::formatStandardApiResponse('error', null,  trans('admin/manufacturers/message.assoc_users')));
-
+        return response()->json(Helper::formatStandardApiResponse('success', null, trans('admin/manufacturers/message.delete.success')));
     }
 
     /**
@@ -251,10 +270,11 @@ class ManufacturersController extends Controller
             'id',
             'name',
             'image',
+            'tag_color',
         ]);
 
         if ($request->filled('search')) {
-            $manufacturers = $manufacturers->where('name', 'LIKE', '%'.$request->get('search').'%');
+            $manufacturers = $manufacturers->where('name', 'LIKE', '%'.$request->input('search').'%');
         }
 
         $manufacturers = $manufacturers->orderBy('name', 'ASC')->paginate(50);

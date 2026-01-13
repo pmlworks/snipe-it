@@ -38,8 +38,8 @@
    @elseif (isset($item) && (isset($item->model)) && ($item->model->image != ''))
         <div class="form-group">
             <div class="col-md-8 col-md-offset-3">
-                <p class="text-info">
-                    <x-icon type="info-circle" /> {{ trans('general.use_cloned_no_image_help') }}
+                <p class="help-block">
+                    <x-icon type="info-circle" class="text-primary" /> {{ trans('general.use_cloned_no_image_help') }}
                 </p>
             </div>
         </div>
@@ -53,7 +53,7 @@
 
         <input type="file" id="{{ (isset($fieldname) ? $fieldname : 'image') }}" name="{{ (isset($fieldname) ? $fieldname : 'image') }}" aria-label="{{ (isset($fieldname) ? $fieldname : 'image') }}" class="sr-only">
 
-        <label class="btn btn-default" aria-hidden="true">
+        <label class="btn btn-sm btn-theme" aria-hidden="true">
             {{ trans('button.select_file')  }}
             <input type="file" name="{{ (isset($fieldname) ? $fieldname : 'image') }}" class="js-uploadFile" id="uploadFile" data-maxsize="{{ Helper::file_upload_max_size() }}" accept="image/gif,image/jpeg,image/webp,image/png,image/svg,image/svg+xml,image/avif" style="display:none; max-width: 90%" aria-label="{{ (isset($fieldname) ? $fieldname : 'image') }}" aria-hidden="true">
         </label>

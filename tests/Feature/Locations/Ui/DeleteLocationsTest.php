@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Users\Ui;
+namespace Tests\Feature\Locations\Ui;
 
 use App\Models\Consumable;
 use Tests\TestCase;

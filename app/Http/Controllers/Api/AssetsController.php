@@ -3,36 +3,38 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\CheckoutableCheckedIn;
-use App\Http\Requests\StoreAssetRequest;
-use App\Http\Requests\UpdateAssetRequest;
-use App\Http\Traits\MigratesLegacyAssetLocations;
-use App\Models\AccessoryCheckout;
-use App\Models\CheckoutAcceptance;
-use App\Models\LicenseSeat;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Gate;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetCheckoutRequest;
+use App\Http\Requests\FilterRequest;
+use App\Http\Requests\StoreAssetRequest;
+use App\Http\Requests\UpdateAssetRequest;
+use App\Http\Traits\MigratesLegacyAssetLocations;
 use App\Http\Transformers\AssetsTransformer;
+use App\Http\Transformers\ComponentsTransformer;
 use App\Http\Transformers\LicensesTransformer;
 use App\Http\Transformers\SelectlistTransformer;
+use App\Models\AccessoryCheckout;
 use App\Models\Asset;
 use App\Models\AssetModel;
+use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\License;
+use App\Models\LicenseSeat;
 use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
+use App\View\Label;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use App\View\Label;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -55,7 +57,7 @@ class AssetsController extends Controller
      * @param int $assetId
      * @since [v4.0]
      */
-    public function index(Request $request, $action = null, $upcoming_status = null) : JsonResponse | array
+    public function index(FilterRequest $request, $action = null, $upcoming_status = null) : JsonResponse | array
     {
 
 
@@ -115,6 +117,22 @@ class AssetsController extends Controller
             'asset_eol_date',
             'requestable',
             'jobtitle',
+            // These are *relationships* so we wouldn't normally include them in this array,
+            // since they would normally create a `column not found` error,
+            // BUT we account for them in the ordering switch down at the end of this method
+            // DO NOT ADD ANYTHING TO THIS LIST WITHOUT CHECKING THE ORDERING SWITCH BELOW!
+            'company',
+            'model',
+            'location',
+            'rtd_location',
+            'category',
+            'status_label',
+            'manufacturer',
+            'supplier',
+            'jobtitle',
+            'assigned_to',
+            'created_by',
+
         ];
 
         $all_custom_fields = CustomField::all(); //used as a 'cache' of custom fields throughout this page load
@@ -131,6 +149,7 @@ class AssetsController extends Controller
             $filter = array_filter($filter, function ($key) use ($allowed_columns) {
                 return in_array($key, $allowed_columns);
             }, ARRAY_FILTER_USE_KEY);
+
         }
 
         $assets = Asset::select('assets.*')
@@ -165,7 +184,7 @@ class AssetsController extends Controller
         // Search custom fields by column name
         foreach ($all_custom_fields as $field) {
             if ($request->filled($field->db_column_name()) && $field->db_column_name()) {
-                $assets->where($field->db_column_name(), '=', $request->input($field->db_column_name()));
+                $assets->where('assets.'.$field->db_column_name(), '=', $request->input($field->db_column_name()));
             }
         }
 
@@ -358,7 +377,7 @@ class AssetsController extends Controller
         }
 
         if ($request->filled('order_number')) {
-            $assets->where('assets.order_number', '=', strval($request->get('order_number')));
+            $assets->where('assets.order_number', '=', strval($request->input('order_number')));
         }
 
         // This is kinda gross, but we need to do this because the Bootstrap Tables
@@ -635,7 +654,7 @@ class AssetsController extends Controller
     public function store(StoreAssetRequest $request): JsonResponse
     {
         $asset = new Asset();
-        $asset->model()->associate(AssetModel::find((int) $request->get('model_id')));
+        $asset->model()->associate(AssetModel::find((int) $request->input('model_id')));
 
         $asset->fill($request->validated());
         $asset->created_by    = auth()->id();
@@ -664,8 +683,8 @@ class AssetsController extends Controller
                 // If input value is null, use custom field's default value
                 if ($field_val == null) {
                     Log::debug('Field value for ' . $field->db_column . ' is null');
-                    $field_val = $field->defaultValue($request->get('model_id'));
-                    Log::debug('Use the default fieldset value of ' . $field->defaultValue($request->get('model_id')));
+                    $field_val = $field->defaultValue($request->input('model_id'));
+                    Log::debug('Use the default fieldset value of ' . $field->defaultValue($request->input('model_id')));
                 }
 
                 // if the field is set to encrypted, make sure we encrypt the value
@@ -676,7 +695,7 @@ class AssetsController extends Controller
 
                         // If input value is null, use custom field's default value
                         if (($field_val == null) && ($request->has('model_id') != '')) {
-                            $field_val = Crypt::encrypt($field->defaultValue($request->get('model_id')));
+                            $field_val = Crypt::encrypt($field->defaultValue($request->input('model_id')));
                         } else {
                             $field_val = Crypt::encrypt($request->input($field->db_column));
                         }
@@ -694,15 +713,15 @@ class AssetsController extends Controller
         }
 
         if ($asset->save()) {
-            if ($request->get('assigned_user')) {
+            if ($request->input('assigned_user')) {
                 $target = User::find(request('assigned_user'));
-            } elseif ($request->get('assigned_asset')) {
+            } elseif ($request->input('assigned_asset')) {
                 $target = Asset::find(request('assigned_asset'));
-            } elseif ($request->get('assigned_location')) {
+            } elseif ($request->input('assigned_location')) {
                 $target = Location::find(request('assigned_location'));
             }
             if (isset($target)) {
-                $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), '', 'Checked out on asset creation', e($request->get('name')));
+                $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), '', 'Checked out on asset creation', e($request->input('name')));
             }
 
             if ($asset->image) {
@@ -779,19 +798,19 @@ class AssetsController extends Controller
             }
         }
         if ($asset->save()) {
-            if (($request->filled('assigned_user')) && ($target = User::find($request->get('assigned_user')))) {
+            if (($request->filled('assigned_user')) && ($target = User::find($request->input('assigned_user')))) {
                 $location = $target->location_id;
-            } elseif (($request->filled('assigned_asset')) && ($target = Asset::find($request->get('assigned_asset')))) {
+            } elseif (($request->filled('assigned_asset')) && ($target = Asset::find($request->input('assigned_asset')))) {
                 $location = $target->location_id;
 
                 Asset::where('assigned_type', \App\Models\Asset::class)->where('assigned_to', $asset->id)
                     ->update(['location_id' => $target->location_id]);
-            } elseif (($request->filled('assigned_location')) && ($target = Location::find($request->get('assigned_location')))) {
+            } elseif (($request->filled('assigned_location')) && ($target = Location::find($request->input('assigned_location')))) {
                 $location = $target->id;
             }
 
             if (isset($target)) {
-                $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), '', 'Checked out on asset update', e($request->get('name')), $location);
+                $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), '', 'Checked out on asset update', e($request->input('name')), $location);
             }
 
             if ($asset->image) {
@@ -935,7 +954,7 @@ class AssetsController extends Controller
         }
 
         if ($request->filled('status_id')) {
-            $asset->status_id = $request->get('status_id');
+            $asset->status_id = $request->input('status_id');
         }
 
         if (! isset($target)) {
@@ -1015,7 +1034,7 @@ class AssetsController extends Controller
         $checkin_at = $request->filled('checkin_at') ? $request->input('checkin_at') . ' ' . date('H:i:s') : date('Y-m-d H:i:s');
         $originalValues = $asset->getRawOriginal();
 
-        if (($request->filled('checkin_at')) && ($request->get('checkin_at') != date('Y-m-d'))) {
+        if (($request->filled('checkin_at')) && ($request->input('checkin_at') != date('Y-m-d'))) {
             $originalValues['action_date'] = $checkin_at;
         }
 
@@ -1124,7 +1143,7 @@ class AssetsController extends Controller
             /**
              * Update custom fields in the database.
              * Validation for these fields is handled through the AssetRequest form request
-             * $model = AssetModel::find($request->get('model_id'));
+             * $model = AssetModel::find($request->input('model_id'));
             */
             if (($asset->model) && ($asset->model->fieldset)) {
                 $payload['custom_fields'] = [];
@@ -1322,6 +1341,18 @@ class AssetsController extends Controller
         return (new AssetsTransformer)->transformCheckedoutAccessories($accessory_checkouts, $total);
     }
 
+    public function assignedComponents(Request $request, Asset $asset): JsonResponse|array
+    {
+        $this->authorize('view', Asset::class);
+        $this->authorize('view', $asset);
+
+        $asset->loadCount('components');
+        $total = $asset->components_count;
+
+        $components = $asset->load(['components' => fn($query) => $query->applyOffsetAndLimit($total)])->components;
+
+        return (new ComponentsTransformer)->transformComponents($components, $total);
+    }
 
     /**
      * Generate asset labels by tag

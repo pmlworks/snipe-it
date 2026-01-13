@@ -14,7 +14,7 @@ class ActionlogPresenter extends Presenter
                 return $user->present()->nameUrl();
             }
             // The user was deleted
-            return '<del>'.$user->getFullNameAttribute().'</del> (deleted)';
+            return '<del>'.$user->display_name.'</del> (deleted)';
         }
 
         return '';
@@ -102,7 +102,7 @@ class ActionlogPresenter extends Presenter
             return 'fa-solid fa-rotate-right';
         }
 
-        if ($this->action_type == 'note_added') {
+        if ($this->action_type == 'note added') {
             return 'fas fa-sticky-note';
         }
 

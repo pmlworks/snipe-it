@@ -11,10 +11,6 @@
 @parent
 @stop
 
-@section('header_right')
-<a href="{{ URL::previous() }}" class="btn btn-primary pull-right">
-  {{ trans('general.back') }}</a>
-@stop
 
 {{-- Page content --}}
 @section('content')
@@ -24,42 +20,21 @@
       padding-top: 0px;
     }
 
-    input[type='text'][disabled], input[disabled], textarea[disabled], input[readonly], textarea[readonly], .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
-      background-color: white;
-      color: #555555;
-      cursor:text;
+    input[type='text'][disabled],
+    input[disabled],
+    textarea[disabled],
+    input[readonly],
+    textarea[readonly],
+    .form-control[disabled],
+    .form-control[readonly],
+    fieldset[disabled]
+     {
+        cursor:text !important;
+        background-color: var(--table-stripe-bg) !important;
+        color: var(--color-fg) !important;
     }
-    table.permissions {
-      display:flex;
-      flex-direction: column;
-    }
-
-    .permissions.table > thead, .permissions.table > tbody {
-      margin: 15px;
-      margin-top: 0px;
-    }
-
-    .permissions.table > tbody {
-        border: 1px solid;
-    }
-
-    .header-row {
-      border-bottom: 1px solid #ccc;
-    }
-
-    .permissions-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .table > tbody > tr > td.permissions-item {
-      padding: 1px;
-      padding-left: 8px;
-    }
-
-    .header-name {
-      cursor: pointer;
+    input:required, select:required {
+        border-right: 5px solid orange !important;
     }
 
 </style>
@@ -176,10 +151,12 @@
 
                   </div>
 
-                  <div class="col-md-2">
+                  <div class="col-md-1 pull-left">
 
                     @if (Gate::allows('editableOnDemo') && (Gate::allows('canEditAuthFields', $user)) && ($user->ldap_import!='1'))
-                      <a href="#" class="left" id="genPassword">{{ trans('general.generate') }}</a>
+                      <a href="#" class="text-left btn btn-theme btn-sm" id="genPassword" data-tooltip="true" title="{{ trans('admin/users/general.generate_password') }}">
+                          <i class="fa-solid fa-wand-magic-sparkles"></i>
+                      </a>
                     @endif
                   </div>
                 </div>
@@ -295,7 +272,14 @@
 
                           <div class="col-md-8 col-md-offset-3">
                               <label class="form-control form-control--disabled">
-                                  {{ Form::checkbox('send_welcome', '1', old('send_welcome'), ['id' => "email_user_checkbox", 'aria-label'=>'send_welcome']) }}
+                                  <input
+                                      type="checkbox"
+                                      name="send_welcome"
+                                      id="email_user_checkbox"
+                                      value="1"
+                                      aria-label="send_welcome"
+                                      @checked(old('send_welcome'))
+                                  />
                                   {{ trans('general.send_welcome_email_to_users') }}
                               </label>
 
@@ -313,18 +297,16 @@
 
                       <div class="col-md-12">
 
-                      <fieldset name="optional-details">
+                      <fieldset>
 
-                          <legend class="highlight">
-                              <a id="optional_user_info">
-                                  <x-icon type="caret-right" id="optional_user_info_icon" />
+                          <x-form-legend>
+                              <h4 id="optional_user_details" class="remember-toggle">
+                                  <x-icon type="caret-down" class="fa-fw" id="toggle-arrow-optional_user_details" />
                                   {{ trans('admin/hardware/form.optional_infos') }}
-                              </a>
-                          </legend>
+                              </h4>
+                          </x-form-legend>
 
-                          <div id="optional_user_details" class="col-md-12" style="display:none">
-
-
+                          <div class="col-md-12 toggle-content-optional_user_details">
 
                               <!-- everything here should be what is considered optional -->
                               <br>
@@ -530,7 +512,7 @@
                               <!-- Zip -->
                               <div class="form-group{{ $errors->has('zip') ? ' has-error' : '' }}">
                                   <label class="col-md-3 control-label" for="zip">{{ trans('general.zip') }}</label>
-                                  <div class="col-md-3">
+                                  <div class="col-md-3 text-right">
                                       <input class="form-control" type="text" name="zip" id="zip" value="{{ old('zip', $user->zip) }}" maxlength="10" />
                                       {!! $errors->first('zip', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                   </div>
@@ -656,27 +638,24 @@
 
           @can('admin')
           <div class="tab-pane" id="permissions">
-            <div class="col-md-12">
-              @if (!Auth::user()->isSuperUser())
-                <p class="alert alert-warning">{{ trans('admin/users/general.superadmin_permission_warning') }}</p>
-              @endif
+                  @if (!Auth::user()->isSuperUser())
+                    <p class="alert alert-warning">{{ trans('admin/users/general.superadmin_permission_warning') }}</p>
+                  @endif
 
-              @if (!Auth::user()->hasAccess('admin'))
-                <p class="alert alert-warning">{{ trans('admin/users/general.admin_permission_warning') }}</p>
-              @endif
-            </div>
+                  @if (!Auth::user()->hasAccess('admin'))
+                    <p class="alert alert-warning">{{ trans('admin/users/general.admin_permission_warning') }}</p>
+                  @endif
 
-            <table class="table table-striped permissions">
-              <thead>
-                <tr class="permissions-row">
-                  <th class="col-md-5">{{ trans('admin/groups/titles.permission') }}</th>
-                  <th class="col-md-1">{{ trans('admin/groups/titles.grant') }}</th>
-                  <th class="col-md-1">{{ trans('admin/groups/titles.deny') }}</th>
-                  <th class="col-md-1">{{ trans('admin/users/table.inherit') }}</th>
-                </tr>
-              </thead>
-                @include('partials.forms.edit.permissions-base')
-            </table>
+                  <p class="alert alert-info">
+                      {{ trans('permissions.use_groups') }}
+                  </p>
+
+                  <div class="col-md-12">
+                    @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                  </div>
+
+
+
           </div><!-- /.tab-pane -->
           @endcan
         </div><!-- /.tab-content -->
@@ -724,34 +703,15 @@ $(document).ready(function() {
 
         @endif
     });
-
-
-	// Check/Uncheck all radio buttons in the group
-    $('tr.header-row input:radio').change(function() {
-        value = $(this).attr('value');
-        area = $(this).data('checker-group');
-        $('.radiochecker-'+area+'[value='+value+']').prop('checked', true);
-    });
-
-    $('.header-name').click(function() {
-        $(this).parent().nextUntil('tr.header-row').slideToggle(500);
-    });
-
+    
     $('.tooltip-base').tooltip({container: 'body'})
-    $(".superuser").change(function() {
-        var perms = $(this).val();
-        if (perms =='1') {
-            $("#nonadmin").hide();
-        } else {
-            $("#nonadmin").show();
-        }
-    });
+
 
     $('#genPassword').pGenerator({
         'bind': 'click',
         'passwordElement': '#password',
         'displayElement': '#generated-password',
-        'passwordLength': {{ ($settings->pwd_secure_min + 5) }},
+        'passwordLength': {{ ($settings->pwd_secure_min + 9) }},
         'uppercase': true,
         'lowercase': true,
         'numbers':   true,
@@ -761,23 +721,6 @@ $(document).ready(function() {
         }
     });
 
-    $("#optional_user_info").on("click",function(){
-        $('#optional_user_details').fadeToggle(100);
-        $('#optional_user_info_icon').toggleClass('fa-caret-right fa-caret-down');
-        var optional_user_info_open = $('#optional_user_info_icon').hasClass('fa-caret-down');
-        document.cookie = "optional_user_info_open="+optional_user_info_open+'; path=/';
-    });
-
-    var all_cookies = document.cookie.split(';')
-    for(var i in all_cookies) {
-        var trimmed_cookie = all_cookies[i].trim(' ')
-        if (trimmed_cookie.startsWith('optional_user_info_open=')) {
-            elems = all_cookies[i].split('=', 2)
-            if (elems[1] == 'true') {
-                $('#optional_user_info').trigger('click')
-            }
-        }
-    }
 
     $("#two_factor_reset").click(function(){
         $("#two_factor_resetrow").removeClass('success');
@@ -807,6 +750,8 @@ $(document).ready(function() {
 
         });
     });
+
+
 
 
 });

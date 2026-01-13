@@ -55,7 +55,9 @@
                           <span class="hidden-lg hidden-md">
                             <x-icon type="info-circle" class="fa-2x" />
                           </span>
-                            <span class="hidden-xs hidden-sm">{{ trans('admin/users/general.info') }}</span>
+                            <span class="hidden-xs hidden-sm">
+                                {{ trans('admin/users/general.info') }}
+                            </span>
                         </a>
                     </li>
 
@@ -64,9 +66,11 @@
                           <span class="hidden-lg hidden-md">
                            <x-icon type="licenses" class="fa-2x" />
                           </span>
-                            <span class="hidden-xs hidden-sm">{{ trans('general.licenses') }}
-                                {!! ($asset->licenses->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->licenses->count()).'</span>' : '' !!}
-                          </span>
+                            <span class="hidden-xs hidden-sm">
+                                {{ trans('general.licenses') }}
+                            </span>
+                            {!! ($asset->licenses->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->licenses->count()).'</span>' : '' !!}
+
                         </a>
                     </li>
 
@@ -75,9 +79,11 @@
                           <span class="hidden-lg hidden-md">
                             <x-icon type="components" class="fa-2x" />
                           </span>
-                            <span class="hidden-xs hidden-sm">{{ trans('general.components') }}
-                                {!! ($asset->components->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->components->count()).'</span>' : '' !!}
-                          </span>
+                            <span class="hidden-xs hidden-sm">
+                                {{ trans('general.components') }}
+                            </span>
+                            {!! ($asset->components->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->components->count()).'</span>' : '' !!}
+
                         </a>
                     </li>
 
@@ -88,24 +94,22 @@
                           </span>
                             <span class="hidden-xs hidden-sm">
                                 {{ trans('general.assets') }}
-                                {!! ($asset->assignedAssets()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->assignedAssets()->count()).'</span>' : '' !!}
+                            </span>
+                            {!! ($asset->assignedAssets()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->assignedAssets()->count()).'</span>' : '' !!}
 
-                          </span>
                         </a>
                     </li>
 
                     @if ($asset->assignedAccessories->count() > 0)
                         <li>
                             <a href="#accessories_assigned" data-toggle="tab" data-tooltip="true">
-
                                 <span class="hidden-lg hidden-md">
                                     <i class="fas fa-keyboard fa-2x"></i>
                                 </span>
                                 <span class="hidden-xs hidden-sm">
                                     {{ trans('general.accessories_assigned') }}
-                                    {!! ($asset->assignedAccessories()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->assignedAccessories()->count()).'</span>' : '' !!}
-
                                 </span>
+                                {!! ($asset->assignedAccessories()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->assignedAccessories()->count()).'</span>' : '' !!}
                             </a>
                         </li>
                     @endif
@@ -114,15 +118,13 @@
                     @if ($asset->audits->count() > 0)
                     <li>
                         <a href="#audits" data-toggle="tab" data-tooltip="true">
-
                             <span class="hidden-lg hidden-md">
                                 <i class="fas fa-clipboard-check fa-2x"></i>
                             </span>
                             <span class="hidden-xs hidden-sm">
                                 {{ trans('general.audits') }}
-                                {!! ($asset->audits()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->audits()->count()).'</span>' : '' !!}
-
                             </span>
+                            {!! ($asset->audits()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->audits()->count()).'</span>' : '' !!}
                         </a>
                     </li>
                     @endif
@@ -142,9 +144,10 @@
                           <span class="hidden-lg hidden-md">
                               <x-icon type="maintenances" class="fa-2x" />
                           </span>
-                            <span class="hidden-xs hidden-sm">{{ trans('general.maintenances') }}
-                                {!! ($asset->maintenances()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->maintenances()->count()).'</span>' : '' !!}
-                          </span>
+                            <span class="hidden-xs hidden-sm">
+                                {{ trans('general.maintenances') }}
+                            </span>
+                            {!! ($asset->maintenances()->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->maintenances()->count()).'</span>' : '' !!}
                         </a>
                     </li>
 
@@ -153,9 +156,10 @@
                           <span class="hidden-lg hidden-md">
                             <x-icon type="files" class="fa-2x" />
                           </span>
-                            <span class="hidden-xs hidden-sm">{{ trans('general.files') }}
-                                {!! ($asset->uploads->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->uploads->count()).'</span>' : '' !!}
-                          </span>
+                            <span class="hidden-xs hidden-sm">
+                            {{ trans('general.files') }}
+                            </span>
+                            {!! ($asset->uploads->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->uploads->count()).'</span>' : '' !!}
                         </a>
                     </li>
 
@@ -167,8 +171,8 @@
                           </span>
                             <span class="hidden-xs hidden-sm">
                             {{ trans('general.additional_files') }}
-                                {!! ($asset->model) && ($asset->model->uploads->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->model->uploads->count()).'</span>' : '' !!}
-                          </span>
+                            </span>
+                            {!! ($asset->model) && ($asset->model->uploads->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($asset->model->uploads->count()).'</span>' : '' !!}
                         </a>
                     </li>
                     @endcan
@@ -227,7 +231,7 @@
                                         @can('checkin', $asset)
                                             <div class="col-md-12 hidden-print" style="padding-top: 5px;">
                                                     <span class="tooltip-wrapper"{!! (!$asset->model ? ' data-tooltip="true" title="'.trans('admin/hardware/general.model_invalid_fix').'"' : '') !!}>
-                                                        <a role="button" href="{{ route('hardware.checkin.create', $asset->id) }}" class="btn btn-sm btn-primary bg-purple btn-social btn-block hidden-print{{ (!$asset->model ? ' disabled' : '') }}">
+                                                        <a role="button" href="{{ route('hardware.checkin.create', $asset->id) }}" class="btn btn-sm btn-theme bg-purple btn-social btn-block hidden-print{{ (!$asset->model ? ' disabled' : '') }}">
                                                             <x-icon type="checkin" />
                                                             {{ trans('admin/hardware/general.checkin') }}
                                                         </a>
@@ -251,7 +255,7 @@
                                         <!-- Add notes -->
                                         @can('update', \App\Models\Asset::class)
                                             <div class="col-md-12 hidden-print" style="padding-top: 5px;">
-                                                <a href="#" style="width: 100%" data-toggle="modal" data-target="#createNoteModal" class="btn btn-sm btn-primary btn-block btn-social hidden-print">
+                                                <a href="#" style="width: 100%" data-toggle="modal" data-target="#createNoteModal" class="btn btn-sm btn-theme btn-block btn-social hidden-print">
                                                     <x-icon type="note" />
                                                     {{ trans('general.add_note') }}
                                                 </a>
@@ -286,7 +290,7 @@
                                 <div class="col-md-12 hidden-print" style="padding-top: 5px;">
                                     <form
                                         method="POST"
-                                        action="{{ route('hardware/bulkedit') }}"
+                                        action="{{ route('hardware.bulkedit.show') }}"
                                         accept-charset="UTF-8"
                                         class="form-inline"
                                         target="_blank"
@@ -318,7 +322,7 @@
                                         @else
                                             <form method="POST" action="{{ route('restore/hardware', [$asset]) }}">
                                                 @csrf
-                                                <button class="btn btn-sm btn-block btn-warning btn-social delete-asset">
+                                                <button class="btn btn-sm btn-block btn-warning btn-social">
                                                     <x-icon type="restore" />
                                                     {{ trans('general.restore') }}
                                                 </button>
@@ -382,7 +386,8 @@
                                                         @if ($asset->location->parent)
                                                             <i class="fas fa-long-arrow-alt-right" aria-hidden="true"></i>
                                                         @endif
-                                                        {{ $asset->location->name }}</li>
+                                                    {!!  $asset->location->present()->formattedNameLink !!}
+                                                </li>
                                                 <li>{{ $asset->location->address }}
                                                     @if ($asset->location->address2!='')
                                                         {{ $asset->location->address2 }}
@@ -432,11 +437,7 @@
                                                 <strong>{{ trans('admin/hardware/form.tag') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                <span class="js-copy-assettag">{{ $asset->asset_tag  }}</span>
-
-                                                <i class="fa-regular fa-clipboard js-copy-link hidden-print" data-clipboard-target=".js-copy-assettag" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
-                                                    <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                                                </i>
+                                                <x-copy-to-clipboard copy_what="assettag">{{ $asset->asset_tag  }}</x-copy-to-clipboard>
                                             </div>
                                         </div>
                                     @endif
@@ -496,7 +497,7 @@
                                                 <strong>{{ trans('general.company') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                <a href="{{ url('/companies/' . $asset->company->id) }}">{{ $asset->company->name }}</a>
+                                                {!!  $asset->company->present()->formattedNameLink !!}
                                             </div>
                                         </div>
                                     @endif
@@ -507,7 +508,10 @@
                                                 <strong>{{ trans('admin/hardware/form.name') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                {{ $asset->name }}
+                                                <x-copy-to-clipboard copy_what="assetname">
+                                                    {{ $asset->name }}
+                                                </x-copy-to-clipboard>
+
                                             </div>
                                         </div>
                                     @endif
@@ -518,11 +522,9 @@
                                                 <strong>{{ trans('admin/hardware/form.serial') }}</strong>
                                             </div>
                                             <div class="col-md-9">
-                                                <span class="js-copy-serial">{{ $asset->serial  }}</span>
-
-                                                <i class="fa-regular fa-clipboard js-copy-link hidden-print" data-clipboard-target=".js-copy-serial" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
-                                                    <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                                                </i>
+                                                <x-copy-to-clipboard copy_what="serial">
+                                                    {{ $asset->serial  }}
+                                                </x-copy-to-clipboard>
                                             </div>
                                         </div>
                                     @endif
@@ -551,7 +553,7 @@
                                                 {!! $asset->checkInvalidNextAuditDate() ? '<i class="fas fa-exclamation-triangle text-orange" aria-hidden="true"></i>' : '' !!}
                                                 {{ Helper::getFormattedDateObject($audit_log->created_at, 'datetime', false) }}
                                                 @if ($audit_log->user)
-                                                    (by {{ link_to_route('users.show', $audit_log->user->display_name, [$audit_log->user->id]) }})
+                                                    ({{ link_to_route('users.show', $audit_log->user->display_name, [$audit_log->user->id]) }})
                                                 @endif
 
                                             </div>
@@ -581,17 +583,10 @@
                                             </div>
                                             <div class="col-md-9">
                                                 <ul class="list-unstyled">
-                                                    @can('view', \App\Models\Manufacturer::class)
 
-                                                        <li>
-                                                            <a href="{{ route('manufacturers.show', $asset->model->manufacturer->id) }}">
-                                                                {{ $asset->model->manufacturer->name }}
-                                                            </a>
-                                                        </li>
-
-                                                    @else
-                                                        <li> {{ $asset->model->manufacturer->name }}</li>
-                                                    @endcan
+                                                    <li>
+                                                        <x-copy-to-clipboard copy_what="manufacturer">{!!  $asset->model->manufacturer->present()->formattedNameLink !!}</x-copy-to-clipboard>
+                                                    </li>
 
                                                     @if (($asset->model) && ($asset->model->manufacturer) &&  ($asset->model->manufacturer->url!=''))
                                                         <li>
@@ -655,15 +650,7 @@
                                         </div>
                                         <div class="col-md-9">
                                             @if (($asset->model) && ($asset->model->category))
-
-                                                @can('view', \App\Models\Category::class)
-
-                                                    <a href="{{ route('categories.show', $asset->model->category->id) }}">
-                                                        {{ $asset->model->category->name }}
-                                                    </a>
-                                                @else
-                                                    {{ $asset->model->category->name }}
-                                                @endcan
+                                                <x-copy-to-clipboard copy_what="category">{!!  $asset->model->category->present()->formattedNameLink !!}</x-copy-to-clipboard>
                                             @else
                                                 Invalid category
                                             @endif
@@ -679,14 +666,7 @@
                                             </div>
                                             <div class="col-md-9">
                                                 @if ($asset->model)
-
-                                                    @can('view', \App\Models\AssetModel::class)
-                                                        <a href="{{ route('models.show', $asset->model->id) }}">
-                                                            {{ $asset->model->name }}
-                                                        </a>
-                                                    @else
-                                                        {{ $asset->model->name }}
-                                                    @endcan
+                                                    <x-copy-to-clipboard copy_what="model">{!!  $asset->model->present()->formattedNameLink !!}</x-copy-to-clipboard>
 
                                                 @endif
                                             </div>
@@ -700,7 +680,9 @@
                                             </strong>
                                         </div>
                                         <div class="col-md-9">
-                                            {{ ($asset->model) ? $asset->model->model_number : ''}}
+                                            @if (($asset->model) && ($asset->model->model_number!=''))
+                                                <x-copy-to-clipboard copy_what="model_number">{{ ($asset->model) ? $asset->model->model_number : ''}}</x-copy-to-clipboard>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -733,9 +715,12 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9{{ (($field->format=='URL') && ($asset->{$field->db_column_name()}!='')) ? ' ellipsis': '' }}">
+
                                                     @if (!empty($asset->{$field->db_column_name()}))
+                                                        <x-copy-to-clipboard copy_what="{{ $field->id }}">
+                                                        </x-copy-to-clipboard>
                                                         {{-- Hidden span used as copy target --}}
-                                                        {{-- It's tempting to break out the HTML into separate lines for this, but it results in extra spaces being added onto the end of the coipied value --}}
+                                                        {{-- It's tempting to break out the HTML into separate lines for this, but it results in extra spaces being added onto the end of the copied value --}}
                                                         @if (($field->field_encrypted=='1') && (Gate::allows('assets.view.encrypted_custom_fields')))
                                                             <span class="js-copy-{{ $field->id }} visually-hidden hidden-print" style="font-size: 0px;">{{ ($field->isFieldDecryptable($asset->{$field->db_column_name()}) ? Helper::gracefulDecrypt($field, $asset->{$field->db_column_name()}) : $asset->{$field->db_column_name()}) }}</span>
                                                         @elseif (($field->field_encrypted=='1') && (Gate::denies('assets.view.encrypted_custom_fields')))
@@ -744,15 +729,7 @@
                                                             <span class="js-copy-{{ $field->id }} visually-hidden hidden-print" style="font-size: 0px;">{{ $asset->{$field->db_column_name()} }}</span>
                                                         @endif
 
-                                                            {{-- Clipboard icon --}}
-                                                            <i class="fa-regular fa-clipboard js-copy-link hidden-print"
-                                                               data-clipboard-target=".js-copy-{{ $field->id }}"
-                                                               aria-hidden="true"
-                                                               data-tooltip="true"
-                                                               data-placement="top"
-                                                               title="{{ trans('general.copy_to_clipboard') }}">
-                                                                <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                                                            </i>
+
                                                         @endif
                                                         @if (($field->field_encrypted=='1') && ($asset->{$field->db_column_name()}!='') && (Gate::allows('assets.view.encrypted_custom_fields')))
                                                             <i class="fas fa-lock" data-tooltip="true" data-placement="top" title="{{ trans('admin/custom_fields/general.value_encrypted') }}" onclick="showHideEncValue(this)" id="text-{{ $field->id }}"></i>
@@ -832,14 +809,16 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @if (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @elseif (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @else
-                                                        {{ $snipeSettings->default_currency }}
-                                                    @endif
-                                                    {{ Helper::formatCurrencyOutput($asset->purchase_cost)}}
+                                                    <x-copy-to-clipboard copy_what="purchase_cost">
+                                                        @if (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @elseif (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @else
+                                                            {{ $snipeSettings->default_currency }}
+                                                        @endif
+                                                        {{ Helper::formatCurrencyOutput($asset->purchase_cost)}}
+                                                    </x-copy-to-clipboard>
 
                                                 </div>
                                             </div>
@@ -852,14 +831,16 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @if (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @elseif (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @else
-                                                        {{ $snipeSettings->default_currency }}
-                                                    @endif
-                                                    {{Helper::formatCurrencyOutput($asset->getComponentCost())}}
+                                                    <x-copy-to-clipboard copy_what="component_cost">
+                                                        @if (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @elseif (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @else
+                                                            {{ $snipeSettings->default_currency }}
+                                                        @endif
+                                                        {{Helper::formatCurrencyOutput($asset->getComponentCost())}}
+                                                    </x-copy-to-clipboard>
                                                 </div>
                                             </div>
                                         @endif
@@ -871,14 +852,16 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @if (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @elseif (($asset->id) && ($asset->location))
-                                                        {{ $asset->location->currency }}
-                                                    @else
-                                                        {{ $snipeSettings->default_currency }}
-                                                    @endif
+                                                    <x-copy-to-clipboard copy_what="current_value">
+                                                        @if (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @elseif (($asset->id) && ($asset->location))
+                                                            {{ $asset->location->currency }}
+                                                        @else
+                                                            {{ $snipeSettings->default_currency }}
+                                                        @endif
                                                     {{ Helper::formatCurrencyOutput($asset->getDepreciatedValue() )}}
+                                                    </x-copy-to-clipboard>
 
 
                                                 </div>
@@ -892,7 +875,7 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    <a href="{{ route('hardware.index', ['order_number' => $asset->order_number]) }}">{{ $asset->order_number }}</a>
+                                                    <x-copy-to-clipboard copy_what="order_number"><a href="{{ route('hardware.index', ['order_number' => $asset->order_number]) }}">{{ $asset->order_number }}</a></x-copy-to-clipboard>
                                                 </div>
                                             </div>
                                         @endif
@@ -905,13 +888,7 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @can ('superuser')
-                                                        <a href="{{ route('suppliers.show', $asset->supplier_id) }}">
-                                                            {{ $asset->supplier->name }}
-                                                        </a>
-                                                    @else
-                                                        {{ $asset->supplier->name }}
-                                                    @endcan
+                                                    <x-copy-to-clipboard copy_what="supplier">{!!  $asset->supplier->present()->formattedNameLink !!}</x-copy-to-clipboard>
                                                 </div>
                                             </div>
                                         @endif
@@ -1055,13 +1032,15 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @can('superuser')
-                                                        <a href="{{ route('locations.show', ['location' => $asset->location->id]) }}">
+                                                    <x-copy-to-clipboard copy_what="location">
+                                                        @can('superuser')
+                                                            <a href="{{ route('locations.show', ['location' => $asset->location->id]) }}">
+                                                                {{ $asset->location->name }}
+                                                            </a>
+                                                        @else
                                                             {{ $asset->location->name }}
-                                                        </a>
-                                                    @else
-                                                        {{ $asset->location->name }}
-                                                    @endcan
+                                                        @endcan
+                                                    </x-copy-to-clipboard>
                                                 </div>
                                             </div>
                                         @endif
@@ -1074,13 +1053,15 @@
                                                     </strong>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    @can('superuser')
-                                                        <a href="{{ route('locations.show', ['location' => $asset->defaultLoc->id]) }}">
+                                                    <x-copy-to-clipboard copy_what="default_location">
+                                                        @can('superuser')
+                                                            <a href="{{ route('locations.show', ['location' => $asset->defaultLoc->id]) }}">
+                                                                {{ $asset->defaultLoc->name }}
+                                                            </a>
+                                                        @else
                                                             {{ $asset->defaultLoc->name }}
-                                                        </a>
-                                                    @else
-                                                        {{ $asset->defaultLoc->name }}
-                                                    @endcan
+                                                        @endcan
+                                                    </x-copy-to-clipboard>
                                                 </div>
                                             </div>
                                         @endif
@@ -1281,38 +1262,30 @@
                                     @include('partials.asset-bulk-actions')
 
                                         <!-- checked out assets table -->
-                                        <div class="table-responsive">
-
                                             <table
-                                                    data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
-                                                    data-cookie-id-table="assetsTable"
-                                                    data-id-table="assetsTable"
-                                                    data-side-pagination="server"
-                                                    data-sort-order="asc"
-                                                    data-toolbar="#assetsBulkEditToolbar"
-                                                    data-bulk-button-id="#bulkAssetEditButton"
-                                                    data-bulk-form-id="#assetsBulkForm"
-                                                    id="assetsListingTable"
-                                                    class="table table-striped snipe-table"
-                                                    data-url="{{route('api.assets.index',['assigned_to' => $asset->id, 'assigned_type' => 'App\Models\Asset']) }}"
-                                                    data-export-options='{
-                                  "fileName": "export-assets-{{ str_slug($asset->name) }}-assets-{{ date('Y-m-d') }}",
-                                  "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                                  }'>
-
+                                                data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                                                data-show-columns-search="true"
+                                                data-cookie-id-table="assetsTable"
+                                                data-id-table="assetsTable"
+                                                data-side-pagination="server"
+                                                data-sort-order="asc"
+                                                data-toolbar="#assetsBulkEditToolbar"
+                                                data-bulk-button-id="#bulkAssetEditButton"
+                                                data-bulk-form-id="#assetsBulkForm"
+                                                id="assetsListingTable"
+                                                class="table table-striped snipe-table"
+                                                data-url="{{route('api.assets.index',['assigned_to' => $asset->id, 'assigned_type' => 'App\Models\Asset']) }}"
+                                                data-export-options='{
+                                                  "fileName": "export-assets-{{ str_slug($asset->name) }}-assets-{{ date('Y-m-d') }}",
+                                                  "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
+                                                  }'>
                                             </table>
-                                        </div>
-
-
                                 </div><!-- /col -->
                             </div> <!-- row -->
                         </div> <!-- /.tab-pane software -->
 
 
                     <div class="tab-pane" id="accessories_assigned">
-
-
-                        <div class="table table-responsive">
 
                             <h2 class="box-title" style="float:left">
                                 {{ trans('general.accessories_assigned') }}
@@ -1333,7 +1306,6 @@
                                   }'>
                             </table>
 
-                        </div><!-- /.table-responsive -->
                     </div><!-- /.tab-pane -->
 
 
@@ -1386,7 +1358,8 @@
                                         <th data-visible="true" data-field="icon" style="width: 40px;" class="hidden-xs" data-formatter="iconFormatter">{{ trans('admin/hardware/table.icon') }}</th>
                                         <th data-visible="true" data-field="created_at" data-sortable="true" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
                                         <th data-visible="true" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.created_by') }}</th>
-                                        <th class="col-sm-2" data-field="file" data-sortable="true" data-visible="false" data-formatter="fileUploadNameFormatter">{{ trans('general.file_name') }}</th>
+                                        <th data-visible="true" data-field="image" data-formatter="auditImageFormatter">{{ trans('general.image') }}</th>
+                                        <th class="col-sm-2" data-field="file" data-sortable="true" data-visible="false" data-formatter="fileNameFormatter">{{ trans('general.file_name') }}</th>
                                         <th data-field="note">{{ trans('general.notes') }}</th>
                                         <th data-visible="false" data-field="file" data-visible="false"  data-formatter="fileDownloadButtonsFormatter">{{ trans('general.download') }}</th>
                                         <th data-field="log_meta" data-visible="true" data-formatter="changeLogFormatter">{{ trans('admin/hardware/table.changed')}}</th>

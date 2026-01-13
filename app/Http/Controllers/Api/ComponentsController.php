@@ -45,15 +45,39 @@ class ComponentsController extends Controller
                 'qty',
                 'image',
                 'notes',
+                // These are *relationships* so we wouldn't normally include them in this array,
+                // since they would normally create a `column not found` error,
+                // BUT we account for them in the ordering switch down at the end of this method
+                // DO NOT ADD ANYTHING TO THIS LIST WITHOUT CHECKING THE ORDERING SWITCH BELOW!
+                'company',
+                'location',
+                'category',
+                'manufacturer',
+                'supplier',
+
             ];
 
         $components = Component::select('components.*')
-            ->with('company', 'location', 'category', 'assets', 'supplier', 'adminuser', 'manufacturer', 'uncontrainedAssets')
-            ->withSum('uncontrainedAssets', 'components_assets.assigned_qty');
+            ->with('company', 'location', 'category', 'supplier', 'adminuser', 'manufacturer')
+            ->withSum('uncontrainedAssets as sum_unconstrained_assets', 'components_assets.assigned_qty');
 
-        if ($request->filled('search')) {
-            $components = $components->TextSearch($request->input('search'));
+        $filter = [];
+
+        if ($request->filled('filter')) {
+            $filter = json_decode($request->input('filter'), true);
+
+            $filter = array_filter($filter, function ($key) use ($allowed_columns) {
+                return in_array($key, $allowed_columns);
+            }, ARRAY_FILTER_USE_KEY);
+
         }
+
+        if ((! is_null($filter)) && (count($filter)) > 0) {
+            $components->ByFilter($filter);
+        } elseif ($request->filled('search')) {
+            $components->TextSearch($request->input('search'));
+        }
+
 
         if ($request->filled('name')) {
             $components->where('name', '=', $request->input('name'));
@@ -88,7 +112,8 @@ class ComponentsController extends Controller
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits
-        $offset = ($request->input('offset') > $components->count()) ? $components->count() : app('api_offset_value');
+        $components_count = $components->count();
+        $offset = ($request->input('offset') > $components_count) ? $components_count : app('api_offset_value');
         $limit = app('api_limit_value');
 
         $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
@@ -119,7 +144,7 @@ class ComponentsController extends Controller
                 break;
         }
 
-        $total = $components->count();
+        $total = $components_count;
         $components = $components->skip($offset)->take($limit)->get();
 
         return (new ComponentsTransformer)->transformComponents($components, $total);
@@ -278,11 +303,11 @@ class ComponentsController extends Controller
         }
 
         // Make sure there is at least one available to checkout
-        if ($component->numRemaining() < $request->get('assigned_qty')) {
-            return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/components/message.checkout.unavailable', ['remaining' => $component->numRemaining(), 'requested' => $request->get('assigned_qty')])));
+        if ($component->numRemaining() < $request->input('assigned_qty')) {
+            return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/components/message.checkout.unavailable', ['remaining' => $component->numRemaining(), 'requested' => $request->input('assigned_qty')])));
         }
 
-        if ($component->numRemaining() >= $request->get('assigned_qty')) {
+        if ($component->numRemaining() >= $request->input('assigned_qty')) {
 
             $asset = Asset::find($request->input('assigned_to'));
             $component->assigned_to = $request->input('assigned_to');
@@ -290,18 +315,18 @@ class ComponentsController extends Controller
             $component->assets()->attach($component->id, [
                 'component_id' => $component->id,
                 'created_at' => Carbon::now(),
-                'assigned_qty' => $request->get('assigned_qty', 1),
+                'assigned_qty' => $request->input('assigned_qty', 1),
                 'created_by' => auth()->id(),
-                'asset_id' => $request->get('assigned_to'),
-                'note' => $request->get('note'),
+                'asset_id' => $request->input('assigned_to'),
+                'note' => $request->input('note'),
             ]);
 
-            $component->logCheckout($request->input('note'), $asset);
+            $component->logCheckout($request->input('note'), $asset, null, [], $request->get('assigned_qty', 1));
 
             return response()->json(Helper::formatStandardApiResponse('success', null,  trans('admin/components/message.checkout.success')));
         }
 
-        return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/components/message.checkout.unavailable', ['remaining' => $component->numRemaining(), 'requested' => $request->get('assigned_qty')])));
+        return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/components/message.checkout.unavailable', ['remaining' => $component->numRemaining(), 'requested' => $request->input('assigned_qty')])));
     }
 
     /**

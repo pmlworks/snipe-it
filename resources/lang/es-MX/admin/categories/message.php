@@ -18,9 +18,11 @@ return array(
     ),
 
     'delete' => array(
-        'confirm'   => '¿Está seguro de que desea eliminar esta categoría?',
-        'error'   => 'Hubo un problema eliminando la categoría. Inténtelo de nuevo.',
-        'success' => 'La categoría fue eliminada exitosamente.'
+        'confirm'                => '¿Está seguro de que desea eliminar esta categoría?',
+        'error'                  => 'Hubo un problema eliminando la categoría. Inténtelo de nuevo.',
+        'success'                => 'La categoría fue eliminada exitosamente.',
+        'bulk_success'           => 'Las categorías fueron eliminadas exitosamente.',
+        'partial_success'        => 'La categoría fue eliminada exitosamente. Ve abajo para más información. | :count categorías fueron eliminadas exitosamente. Ve abajo para más información.',
     )
 
 );

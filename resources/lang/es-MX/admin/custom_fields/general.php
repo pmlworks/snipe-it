@@ -33,7 +33,7 @@ return [
     'create_fieldset_title' => 'Crear un nuevo grupo de campos',
     'create_field'            => 'Nuevo campo personalizado',
     'create_field_title' => 'Crear un nuevo campo personalizado',
-    'value_encrypted'      	        => 'The value of this field is encrypted in the database. Only users with permission to view encrypted custom fields will be able to view the decrypted value',
+    'value_encrypted'      	        => 'El valor de este campo está encriptado en la base de datos. Solo usuarios con permiso para ver campos personalizados encriptados serán capaces de ver el contenido desencriptado',
     'show_in_email'     => '¿Incluir el valor de este campo en los correos de asignación enviados al usuario? Los campos cifrados no se pueden incluir en los correos electrónicos',
     'show_in_email_short' => 'Incluir en los correos electrónicos',
     'help_text' => 'Texto de ayuda',
@@ -65,6 +65,7 @@ return [
         'listbox' => 'List Box',
         'textarea' => 'Textarea (multi-line)',
         'checkbox' => 'Checkbox',
-        'radio' => 'Radio Buttons',
+        'radio' => 'Botones de radio',
     ],
+    'general_help_text' => 'Los campos personalizados almacenan informacion que no está cubierta por los campos de activos por defecto. <a href="https://snipe-it.readme.io/docs/custom-fields#/"><i class="fa fa-external-link"></i></a>.',
 ];

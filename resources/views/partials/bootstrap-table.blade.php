@@ -60,6 +60,7 @@
             }
 
 
+
             $(this).bootstrapTable({
 
                 ajaxOptions: {
@@ -67,39 +68,55 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 },
-                classes: 'table table-responsive table-striped snipe-table table-no-bordered',
                 // reorderableColumns: true,
+                // buttonsPrefix: "btn",
+                addrbar: {{ (config('session.bs_table_addrbar') == 'true') ? 'true' : 'false'}}, // deeplink search phrases, sorting, etc
+                advancedSearch: data_with_default('advanced-search', true),
+                buttonsClass: "tableButton tableButton btn-theme hidden-print",
+                buttonsOrder: [
+                    'columns',
+                    'btnAdd',
+                    'btnShowDeleted',
+                    'btnShowAdmins',
+                    'btnShowExpiring',
+                    'btnShowInactive',
+                    'refresh',
+                    'btnExport',
+                    'export',
+                    'print',
+                    'fullscreen',
+                    'advancedSearch',
+                ],
+                classes: 'table table-responsive table-striped snipe-table table-no-bordered',
+                clickToSelect: data_with_default('click-to-select', true),
+                cookie: true,
+                cookieExpire: '2y',
+                cookieStorage: '{{ config('session.bs_table_storage') }}',
+                iconsPrefix: 'fa',
+                maintainSelected: data_with_default('maintain-selected', true),
+                minimumCountColumns: data_with_default('minimum-count-columns', 2),
+                mobileResponsive: data_with_default('mobile-responsive', true),
+                pagination: data_with_default('pagination', true),
+                paginationFirstText: "{{ trans('general.first') }}",
+                paginationLastText: "{{ trans('general.last') }}",
+                paginationNextText: "{{ trans('general.next') }}",
+                paginationPreText: "{{ trans('general.previous') }}",
+                search: data_with_default('search', true),
+                searchHighlight: data_with_default('search-highlight', true),
+                showColumns: data_with_default('show-columns', true),
+                showColumnsToggleAll: data_with_default('show-columns-toggle-all', true),
+                showExport: data_with_default('show-export', true),
+                showFullscreen: data_with_default('show-fullscreen', true),
+                showPrint: data_with_default('show-print', true),
+                showRefresh: data_with_default('show-refresh', true),
+                showSearchClearButton: data_with_default('show-search-clear-button', true),
+                sortName: data_with_default('sort-name', 'created_at'),
+                sortOrder: data_with_default('sort-order', 'desc'),
                 stickyHeader: true,
                 stickyHeaderOffsetLeft: parseInt($('body').css('padding-left'), 10),
                 stickyHeaderOffsetRight: parseInt($('body').css('padding-right'), 10),
-                undefinedText: '',
-                iconsPrefix: 'fa',
-                cookieStorage: '{{ config('session.bs_table_storage') }}',
-                cookie: true,
-                cookieExpire: '2y',
-                search: data_with_default('search', true),
-                advancedSearch: data_with_default('advanced-search', true),
-                searchHighlight: data_with_default('search-highlight', true),
-                clickToSelect: data_with_default('click-to-select', true),
-                showPrint: data_with_default('show-print', true),
-                showFullscreen: data_with_default('show-fullscreen', true),
-                showColumns: data_with_default('show-columns', true),
-                showExport: data_with_default('show-export', true),
-                showColumnsToggleAll: data_with_default('show-columns-toggle-all', true),
-                showRefresh: data_with_default('show-refresh', true),
-                pagination: data_with_default('pagination', true),
-                sortOrder: data_with_default('sort-order', 'desc'),
-                sortName: data_with_default('sort-name', 'created_at'),
-                minimumCountColumns: data_with_default('minimum-count-columns', 2),
-                mobileResponsive: data_with_default('mobile-responsive', true),
-                maintainSelected: data_with_default('maintain-selected', true),
                 trimOnSearch: false,
-                showSearchClearButton: data_with_default('show-search-clear-button', true),
-                addrbar: {{ (config('session.bs_table_addrbar') == 'true') ? 'true' : 'false'}}, // deeplink search phrases, sorting, etc
-                paginationFirstText: "{{ trans('general.first') }}",
-                paginationLastText: "{{ trans('general.last') }}",
-                paginationPreText: "{{ trans('general.previous') }}",
-                paginationNextText: "{{ trans('general.next') }}",
+                undefinedText: '',
                 pageList: ['10', '20', '30', '50', '100', '150', '200'{!! ((config('app.max_results') > 200) ? ",'500'" : '') !!}{!! ((config('app.max_results') > 500) ? ",'".config('app.max_results')."'" : '') !!}],
                 pageSize: {{  (($snipeSettings->per_page!='') && ($snipeSettings->per_page > 0)) ? $snipeSettings->per_page : 20 }},
                 paginationVAlign: 'both',
@@ -124,7 +141,7 @@
                     print: 'fa-print',
                     refresh: 'fas fa-sync-alt',
                     export: 'fa-download',
-                    clearSearch: 'fa-times'
+                    clearSearch: 'fa-times',
                 },
                 locale: '{{ app()->getLocale() }}',
                 exportOptions: export_options,
@@ -136,6 +153,8 @@
                     var lookup = {};
                     var lookup_initialized = false;
                     var ths = $('th');
+                    var toolbar_buttons = $('.tableButton');
+
                     ths.each(function (index, element) {
                         th = $(element);
                         //only populate the lookup table once; don't need to keep doing it.
@@ -143,21 +162,48 @@
                             // th -> tr -> thead -> table
                             var table = th.parent().parent().parent()
                             var column_data = table.data('columns')
+
                             for (var column in column_data) {
                                 lookup[column_data[column].field] = column_data[column].titleTooltip;
                             }
+
                             lookup_initialized = true
                         }
 
                         field = th.data('field'); // find fieldname this column refers to
                         title = lookup[field];
+
                         if (title) {
                             th.attr('data-toggle', 'tooltip');
+                            th.attr('data-tooltip', 'true');
                             th.attr('data-placement', 'top');
-                            // th.attr('title', title) //this causes 'double-titles' which looks gross
                             th.tooltip({container: 'body', title: title});
+
                         }
-                    })
+                    });
+
+                    // Add tooltips to the toolbar buttons too
+                    toolbar_buttons.each(function (index, element) {
+                        tableButton = $(element);
+                        title = tableButton.attr('title');
+                        override_class = tableButton.attr('class');
+
+                        if (title) {
+                            // Keep this commented out so that we don't interfere with the dropdown toggle for columns, etc
+                            // tableButton.attr('data-toggle', 'tooltip');
+                            tableButton.attr('data-tooltip', 'true');
+                            tableButton.attr('data-placement', 'auto');
+
+                            // This prevents the slight button jitter on the mouseovees on the dashboard
+                            tableButton.tooltip({container: 'body', title: title});
+
+                            // This handles the case where we want a different color button than the default
+                            if ((override_class) && ((override_class.indexOf('btn-info') >= 0)) || (override_class.indexOf('btn-danger') >= 0)) {
+                                tableButton.removeClass('btn-primary');
+                            }
+                        }
+                    });
+
                 },
                 formatNoMatches: function () {
                     return '{{ trans('table.no_matching_records') }}';
@@ -166,6 +212,584 @@
             });
 
         });
+    });
+
+
+    // User table buttons
+    window.userButtons = () => ({
+        @can('create', \App\Models\User::class)
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('users.create') }}';
+            },
+            attributes: {
+                title: '{{ trans('general.create') }}',
+                class: 'btn-warning',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+        @endcan
+
+        btnExport: {
+            text: '{{ trans('general.export_all_to_csv') }}',
+            icon: 'fa-solid fa-file-csv',
+            event () {
+                window.location.href = '{{ route('users.export') }}';
+            },
+            attributes: {
+                title: '{{ trans('general.export_all_to_csv') }}',
+            }
+        },
+
+        btnShowAdmins: {
+            text: '{{ trans('general.show_admins') }}',
+            icon: 'fa-solid fa-crown',
+            event () {
+                window.location.href = '{{ (request()->input('admins') == "true") ? route('users.index') : route('users.index', ['admins' => 'true']) }}';
+            },
+            attributes: {
+                title: '{{ trans('general.show_admins') }}',
+                class: '{{ (request()->input('admins') == "true") ? ' btn-selected text-danger' : '' }}'
+            }
+        },
+
+        btnShowDeleted: {
+            text: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
+            icon: 'fa-solid fa-trash',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "deleted") ? route('users.index') : route('users.index', ['status' => 'deleted']) }}';
+            },
+            attributes: {
+                class: '{{ (request()->input('status') == "deleted") ? ' btn-selected text-danger ' : '' }}',
+                title: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
+
+            }
+        },
+
+    }); // end user table buttons
+
+
+    @can('create', \App\Models\Company::class)
+    // Company table buttons
+    window.companyButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('companies.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+
+    }); // End company table buttons
+    @endcan
+
+
+    @can('create', \App\Models\Groups::class)
+    // Groups table buttons
+    window.groupButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('groups.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+
+    }); // End Groups table buttons
+    @endcan
+
+
+    // Asset table buttons
+    window.assetButtons = () => ({
+        @can('create', \App\Models\Asset::class)
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('hardware.create') }}';
+            },
+            attributes: {
+                title: '{{ trans('general.create') }}',
+                class: 'btn-warning',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+        @endcan
+
+        @can('update', \App\Models\Asset::class)
+        btnAddMaintenance: {
+            text: '{{ trans('button.add_maintenance') }}',
+            icon: 'fa-solid fa-screwdriver-wrench',
+            event () {
+                window.location.href = '{{ route('maintenances.create', ['asset_id' => (isset($asset)) ? $asset->id :'' ]) }}';
+            },
+            attributes: {
+                title: '{{ trans('button.add_maintenance') }}',
+            }
+        },
+        @endcan
+
+
+        btnExport: {
+            text: '{{ trans('admin/hardware/general.custom_export') }}',
+            icon: 'fa-solid fa-file-csv',
+            event () {
+                window.location.href = '{{ route('reports/custom') }}';
+            },
+            attributes: {
+                title: '{{ trans('admin/hardware/general.custom_export') }}',
+            }
+        },
+
+        btnShowDeleted: {
+            text: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+            icon: 'fa-solid fa-trash',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "Deleted") ? route('hardware.index') : route('hardware.index', ['status' => 'Deleted']) }}';
+            },
+            attributes: {
+                class: '{{ (request()->input('status') == "Deleted") ? 'btn-selected text-danger' : '' }}',
+                title: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+
+            }
+        },
+    });
+
+    @can('create', \App\Models\Location::class)
+    // Location table buttons
+    window.locationButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('locations.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+
+        btnShowDeleted: {
+            text: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
+            icon: 'fa-solid fa-trash',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "deleted") ? route('locations.index') : route('locations.index', ['status' => 'deleted']) }}';
+            },
+            attributes: {
+                class: '{{ (request()->input('status') == "deleted") ? 'btn-selected text-danger' : '' }}',
+                title: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
+
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Accessory::class)
+    // Accessory table buttons
+    window.accessoryButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('accessories.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Depreciation::class)
+    // Accessory table buttons
+    window.depreciationButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('depreciations.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\CustomField::class)
+    // Accessory table buttons
+    window.customFieldButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('fields.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+
+    @can('create', \App\Models\CustomFieldset::class)
+    // Accessory table buttons
+    window.customFieldsetButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('fieldsets.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Component::class)
+    // Compoment table buttons
+    window.componentButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('components.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Consumable::class)
+    // Consumable table buttons
+    window.consumableButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('consumables.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Manufacturer::class)
+    // Manufacturer table buttons
+    window.manufacturerButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('manufacturers.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            },
+        },
+
+        btnShowDeleted: {
+            text: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+            icon: 'fa-solid fa-trash',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "deleted") ? route('manufacturers.index') : route('manufacturers.index', ['status' => 'deleted']) }}';
+            },
+            attributes: {
+                class: '{{ (request()->input('status') == "deleted") ? 'btn-selected text-danger' : '' }}',
+                title: '{{ (request()->input('status') == "deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Supplier::class)
+    // Consumable table buttons
+    window.supplierButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('suppliers.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Department::class)
+    // Department table buttons
+    window.departmentButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('departments.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Department::class)
+    // Custom Field table buttons
+    window.departmentButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('departments.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('update', \App\Models\Asset::class)
+    // Custom Field table buttons
+    window.maintenanceButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('maintenances.create', ['asset_id' => (isset($asset)) ? $asset->id :'' ]) }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('button.add_maintenance') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Category::class)
+    // Custom Field table buttons
+    window.categoryButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('categories.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\PredefinedKit::class)
+    // Custom Field table buttons
+    window.kitButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('kits.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\AssetModel::class)
+    // Custom Field table buttons
+    window.modelButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('models.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+        btnShowDeleted: {
+            text: '{{ (request()->input('status') == "deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+            icon: 'fa-solid fa-trash',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "deleted") ? route('models.index') : route('models.index', ['status' => 'deleted']) }}';
+            },
+            attributes: {
+                class: '{{ (request()->input('status') == "deleted") ? ' btn-selected text-danger' : '' }}',
+                title: '{{ (request()->input('status') == "deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+
+            }
+        },
+    });
+    @endcan
+
+    @can('create', \App\Models\Statuslabel::class)
+    // Status label table buttons
+    window.statuslabelButtons = () => ({
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('statuslabels.create') }}';
+            },
+            attributes: {
+                class: 'btn-info',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            }
+        },
+    });
+    @endcan
+
+
+    // License table buttons
+    window.licenseButtons = () => ({
+        @can('create', \App\Models\License::class)
+        btnAdd: {
+            text: '{{ trans('general.create') }}',
+            icon: 'fa fa-plus',
+            event () {
+                window.location.href = '{{ route('licenses.create') }}';
+            },
+            attributes: {
+                class: 'btn-warning',
+                title: '{{ trans('general.create') }}',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            },
+        },
+        @endcan
+
+        btnExport: {
+            text: '{{ trans('general.export_all_to_csv') }}',
+            icon: 'fa-solid fa-file-csv',
+            event () {
+                window.location.href = '{{ route('licenses.export', ['category_id' => (isset($category)) ? $category->id :'' ]) }}';
+            },
+            attributes: {
+                title: '{{ trans('general.export_all_to_csv') }}',
+            }
+        },
+
+        btnShowExpiring: {
+            text: '{{ (request()->input('status') == "expiring") ? trans('general.list_all') : trans('general.show_expiring') }}',
+            icon: 'fas fa-clock',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "expiring") ? route('licenses.index') : route('licenses.index', ['status' => 'expiring']) }}';
+            },
+            attributes: {
+                class: "{{ (request()->input('status') == "expiring") ? ' btn-warning' : '' }}",
+                title: '{{ (request()->input('status') == "expiring") ? trans('general.list_all') : trans('general.show_expiring') }}',
+
+            }
+        },
+
+        btnShowInactive: {
+            text: '{{ (request()->input('status') == "inactive") ? trans('general.list_all') : trans('general.show_inactive') }}',
+            icon: 'fas fa-history',
+            event () {
+                window.location.href = '{{ (request()->input('status') == "inactive") ? route('licenses.index') : route('licenses.index', ['status' => 'inactive']) }}';
+            },
+            attributes: {
+                class: "{{ (request()->input('status') == "inactive") ? ' btn-warning' : '' }}",
+                title: '{{ (request()->input('status') == "inactive") ? trans('general.list_all') : trans('general.show_inactive') }}',
+
+            }
+        },
     });
 
 
@@ -301,8 +925,15 @@
     // This only works for model index pages because it uses the row's model ID
     function genericRowLinkFormatter(destination) {
         return function (value,row) {
+
+            if ((row) && (row.tag_color) && (row.tag_color!='') && (row.tag_color!=undefined)) {
+                var tag_icon = '<i class="fa-solid fa-square" style="color: ' + row.tag_color + ';" aria-hidden="true"></i> ';
+            } else {
+                var tag_icon = '';
+            }
+
             if (value) {
-                return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '">' + value + '</a>';
+                return tag_icon + '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '">' + value + '</a>';
             }
         };
     }
@@ -369,15 +1000,35 @@
 
                 // Add some overrides for any funny urls we have
                 var dest = destination;
+                var tag_color;
                 var polymorphicItemFormatterDest = '';
+
+
+
                 if (destination == 'fieldsets') {
                     var polymorphicItemFormatterDest = 'fields/';
-                } 
+                }
 
-                return '<nobr><a href="{{ config('app.url') }}/' + polymorphicItemFormatterDest + dest + '/' + value.id + '">' + value.name + '</a></span>';
+                // Handle the preceding icon if a tag_color is given in the API response
+                if ((value.tag_color) && (value.tag_color!='')) {
+                    var tag_icon = '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i>';
+                } else {
+                    var tag_icon = '';
+                }
+
+                return '<nobr>'+ tag_icon + ' <a href="{{ config('app.url') }}/' + polymorphicItemFormatterDest + dest + '/' + value.id + '">' + value.name + '</a></span>';
             }
         };
     }
+
+
+    function colorTagFormatter(value, row) {
+        if (value) {
+            return '<i class="fa-solid fa-square" style="color: ' + value + ';" aria-hidden="true"></i> ' + value;
+        }
+    }
+
+
 
 
     function licenseKeyFormatter(value, row) {
@@ -418,18 +1069,18 @@
             }
 
             if ((row.available_actions) && (row.available_actions.clone === true)) {
-                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/clone" class="actions btn btn-sm btn-info" data-tooltip="true" title="{{ trans('general.clone_item') }}"><x-icon type="clone" /><span class="sr-only">{{ trans('general.clone_item') }}</span></a>&nbsp;';
+                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/clone" class="actions btn btn-sm btn-info" data-tooltip="true" title="{{ trans('general.clone_item') }}"><x-icon type="clone" class="fa-fw" /><span class="sr-only">{{ trans('general.clone_item') }}</span></a>&nbsp;';
             }
 
             if ((row.available_actions) && (row.available_actions.audit === true)) {
-                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/audit" class="actions btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
+                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/audit" class="actions btn btn-sm btn-primary" data-tooltip="true" title="{{ trans('general.audit') }}"><x-icon type="audit" class="fa-fw" /><span class="sr-only">{{ trans('general.audit') }}</span></a>&nbsp;';
             }
 
             if ((row.available_actions) && (row.available_actions.update === true)) {
-                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/edit" class="actions btn btn-sm btn-warning" data-tooltip="true" title="{{ trans('general.update') }}"><x-icon type="edit" /><span class="sr-only">{{ trans('general.update') }}</span></a>&nbsp;';
+                actions += '<a href="{{ config('app.url') }}/' + dest + '/' + row.id + '/edit" class="actions btn btn-sm btn-warning" data-tooltip="true" title="{{ trans('general.update') }}"><x-icon type="edit" class="fa-fw" /><span class="sr-only">{{ trans('general.update') }}</span></a>&nbsp;';
             } else {
                 if ((row.available_actions) && (row.available_actions.update != true)) {
-                    actions += '<span data-tooltip="true" title="{{ trans('general.cannot_be_edited') }}"><a class="btn btn-warning btn-sm disabled" onClick="return false;"><x-icon type="edit" /></a></span>&nbsp;';
+                    actions += '<span data-tooltip="true" title="{{ trans('general.cannot_be_edited') }}"><a class="btn btn-warning btn-sm disabled" onClick="return false;"><x-icon type="edit" class="fa-fw" /></a></span>&nbsp;';
                 }
             }
 
@@ -450,11 +1101,11 @@
                     + ' data-toggle="modal" data-icon="fa-trash"'
                     + ' data-content="{{ trans('general.sure_to_delete') }}: ' + name_for_box + '?" '
                     + ' data-title="{{  trans('general.delete') }}" onClick="return false;">'
-                    + '<x-icon type="delete" /><span class="sr-only">{{ trans('general.delete') }}</span></a>&nbsp;';
+                    + '<x-icon type="delete" class="fa-fw" /><span class="sr-only">{{ trans('general.delete') }}</span></a>&nbsp;';
             } else {
                 // Do not show the delete button on things that are already deleted
                 if ((row.available_actions) && (row.available_actions.restore != true)) {
-                    actions += '<span data-tooltip="true" title="{{ trans('general.cannot_be_deleted') }}"><a class="btn btn-danger btn-sm delete-asset disabled" onClick="return false;"><x-icon type="delete" /><span class="sr-only">{{ trans('general.cannot_be_deleted') }}</span></a></span>&nbsp;';
+                    actions += '<span data-tooltip="true" title="{{ trans('general.cannot_be_deleted') }}"><a class="btn btn-danger btn-sm delete-asset disabled" onClick="return false;"><x-icon type="delete" class="fa-fw" /><span class="sr-only">{{ trans('general.cannot_be_deleted') }}</span></a></span>&nbsp;';
                 }
 
             }
@@ -463,7 +1114,7 @@
             if ((row.available_actions) && (row.available_actions.restore === true)) {
                 actions += '<form style="display: inline;" method="POST" action="{{ config('app.url') }}/' + dest + '/' + row.id + '/restore"> ';
                 actions += '@csrf';
-                actions += '<button class="btn btn-sm btn-warning" data-tooltip="true" title="{{ trans('general.restore') }}"><x-icon type="restore" /><span class="sr-only">{{ trans('general.restore') }}</span></button>&nbsp;';
+                actions += '<button class="btn btn-sm btn-warning" data-tooltip="true" title="{{ trans('general.restore') }}"><x-icon type="restore" class="fa-fw" /><span class="sr-only">{{ trans('general.restore') }}</span></button>&nbsp;';
             }
 
             actions +='</nobr>';
@@ -515,7 +1166,7 @@
                 value.name = value.name + ' (' + value.username + ')';
             }
 
-            return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' text-{{ $snipeSettings->skin!='' ? $snipeSettings->skin : 'blue' }} "></i> ' + value.name + '</a></nobr>';
+            return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</a></nobr>';
 
         } else {
             return '';
@@ -560,14 +1211,14 @@
 
         // check that checkin is not disabled
         if (row.user_can_checkout === false) {
-            return '<span class="btn btn-sm bg-maroon disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.unavailable') }}">{{ trans('general.checkout') }}</span>';
+            return '<span class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.unavailable') }}">{{ trans('general.checkout') }}</span>';
         } else if (row.disabled === true) {
-            return '<span class="btn btn-sm bg-maroon disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.license_is_inactive') }}">{{ trans('general.checkout') }}</span>';
+            return '<span class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.license_is_inactive') }}">{{ trans('general.checkout') }}</span>';
 
         } else
             // The user is allowed to check the license seat out and it's available
         if ((row.available_actions.checkout === true) && (row.user_can_checkout === true) && (row.disabled === false)) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkout/" class="btn btn-sm bg-maroon" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkout/" class="btn btn-sm bg-maroon btn-checkout" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
         }
     }
     // We need a special formatter for license seats, since they don't work exactly the same
@@ -578,16 +1229,16 @@
             return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
         }
         if (row.disabled) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-maroon disabled" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkout') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkout') }}</a>';
         }
         // The user is allowed to check the license seat out and it's available
         if ((row.available_actions.checkout === true) && (row.user_can_checkout === true) && ((!row.assigned_asset) && (!row.assigned_user))) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.license_id + '/checkout/'+row.id+'" class="btn btn-sm bg-maroon" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.license_id + '/checkout/'+row.id+'" class="btn btn-sm bg-maroon btn-checkout" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
         }
 
         // The user is allowed to check the license seat in and it's available
         if ((row.available_actions.checkin === true) && ((row.assigned_asset) || (row.assigned_user))) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin/" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin/" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
         }
 
     }
@@ -598,7 +1249,7 @@
             // The user is allowed to check items out, AND the item is deployable
             if ((row.available_actions.checkout == true) && (row.user_can_checkout == true) && ((!row.asset_id) && (!row.assigned_to))) {
 
-                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkout" class="btn btn-sm bg-maroon" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
+                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkout" class="btn btn-sm bg-maroon btn-checkout" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
 
             // The user is allowed to check items out, but the item is not able to be checked out
             } else if (((row.user_can_checkout == false)) && (row.available_actions.checkout == true) && (!row.assigned_to)) {
@@ -606,17 +1257,17 @@
                 // We use slightly different language for assets versus other things, since they are the only
                 // item that has a status label
                 if (destination =='hardware') {
-                    return '<span  data-tooltip="true" title="{{ trans('admin/hardware/general.undeployable_tooltip') }}"><a class="btn btn-sm bg-maroon disabled">{{ trans('general.checkout') }}</a></span>';
+                    return '<span  data-tooltip="true" title="{{ trans('admin/hardware/general.undeployable_tooltip') }}"><a class="btn btn-sm bg-maroon btn-checkout disabled">{{ trans('general.checkout') }}</a></span>';
                 } else {
-                    return '<span  data-tooltip="true" title="{{ trans('general.undeployable_tooltip') }}"><a class="btn btn-sm bg-maroon disabled">{{ trans('general.checkout') }}</a></span>';
+                    return '<span  data-tooltip="true" title="{{ trans('general.undeployable_tooltip') }}"><a class="btn btn-sm bg-maroon btn-checkout disabled">{{ trans('general.checkout') }}</a></span>';
                 }
 
             // The user is allowed to check items in
             } else if (row.available_actions.checkin == true)  {
                 if (row.assigned_to) {
-                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkin" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
                 } else if (row.assigned_pivot_id) {
-                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.assigned_pivot_id + '/checkin" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.assigned_pivot_id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
                 }
 
             }
@@ -811,7 +1462,14 @@
 
     function deployedLocationFormatter(row, value) {
         if ((row) && (row!=undefined)) {
-            return '<a href="{{ config('app.url') }}/locations/' + row.id + '">' + row.name + '</a>';
+            // Handle the preceding icon if a tag_color is given in the API response
+            if ((row.tag_color) && (row.tag_color!='')) {
+                var tag_icon = '<i class="fa-solid fa-square" style="color: ' + row.tag_color + ';" aria-hidden="true"></i> ';
+            } else {
+                var tag_icon = '';
+            }
+
+            return '<nobr>' + tag_icon +'<a href="{{ config('app.url') }}/locations/' + row.id + '">' + row.name + '</a></nobr>';
         } else if (value.rtd_location) {
             return '<a href="{{ config('app.url') }}/locations/' + value.rtd_location.id + '">' + value.rtd_location.name + '</a>';
         }
@@ -936,9 +1594,9 @@
         }
     }
 
-    function auditImageFormatter(value){
-        if (value){
-            return '<a href="' + value.url + '" data-toggle="lightbox" data-type="image"><img src="' + value.url + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive" alt=""></a>'
+    function auditImageFormatter(value, row) {
+        if ((row) && (row.file) && (row.file.url)) {
+            return '<a href="' + row.file.url + '" data-toggle="lightbox" data-type="image"><img src="' + row.file.url + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive" alt=""></a>'
         }
     }
 
@@ -965,7 +1623,7 @@
     // This is users in the user accounts section for EULAs
     function downloadFormatter(value) {
         if (value) {
-            return '<a href="' + value + '" class="btn btn-sm btn-default"><x-icon type="download" /></a>';
+            return '<a href="' + value + '" class="btn btn-sm btn-theme"><x-icon type="download" /></a>';
         }
     }
 
@@ -986,10 +1644,10 @@
                 return '';
             }
 
-            var download_button = '<a href="' + download_url + '" class="btn btn-sm btn-default" data-tooltip="true" title="{{ trans('general.download') }}"><x-icon type="download" /></a>';
-            var download_button_disabled = '<span data-tooltip="true" title="{{ trans('general.file_does_not_exist') }}"><a class="btn btn-sm btn-default disabled"><x-icon type="download" /></a></span>';
-            var inline_button = '<a href="'+ download_url +'?inline=true" class="btn btn-sm btn-default" target="_blank" data-tooltip="true" title="{{ trans('general.open_new_window') }}"><x-icon type="external-link" /></a>';
-            var inline_button_disabled = '<span data-tooltip="true" title="{{ trans('general.file_not_inlineable') }}"><a class="btn btn-sm btn-default disabled" target="_blank" data-tooltip="true" title="{{ trans('general.file_does_not_exist') }}"><x-icon type="external-link" /></a></span>';
+            var download_button = '<a href="' + download_url + '" class="btn btn-sm btn-theme" data-tooltip="true" title="{{ trans('general.download') }}"><x-icon type="download" /></a>';
+            var download_button_disabled = '<span data-tooltip="true" title="{{ trans('general.file_does_not_exist') }}"><a class="btn btn-sm btn-theme disabled"><x-icon type="download" /></a></span>';
+            var inline_button = '<a href="'+ download_url +'?inline=true" class="btn btn-sm btn-theme" target="_blank" data-tooltip="true" title="{{ trans('general.open_new_window') }}"><x-icon type="external-link" /></a>';
+            var inline_button_disabled = '<span data-tooltip="true" title="{{ trans('general.file_not_inlineable') }}"><a class="btn btn-sm btn-theme disabled" target="_blank" data-tooltip="true" title="{{ trans('general.file_does_not_exist') }}"><x-icon type="external-link" /></a></span>';
 
             if (exists_on_disk === true) {
                 if (inlinable === true) {
@@ -1087,8 +1745,8 @@
                 .replace('%NOTE%', (row.note) ? row.note : '')
                 .replace('%PANEL_CLASS%', (row.exists_on_disk === true) ? 'default' : 'danger')
                 .replace('%FILE_EMBED%', embed_code)
-                .replace('%DOWNLOAD_BUTTON%', (row.exists_on_disk === true) ? '<a href="'+ row.url +'" class="btn btn-sm btn-default"><x-icon type="download" /></a> ' : '<span class="btn btn-sm btn-default disabled" data-tooltip="true" title="{{ trans('general.file_upload_status.file_not_found') }}"><x-icon type="download" /></span>')
-                .replace('%NEW_WINDOW_BUTTON%', (row.exists_on_disk === true) ? '<a href="'+ row.url +'?inline=true" class="btn btn-sm btn-default" target="_blank"><x-icon type="external-link" /></a> ' : '<span class="btn btn-sm btn-default disabled" data-tooltip="true" title="{{ trans('general.file_upload_status.file_not_found') }}"><x-icon type="external-link"/></span>')
+                .replace('%DOWNLOAD_BUTTON%', (row.exists_on_disk === true) ? '<a href="'+ row.url +'" class="btn btn-sm btn-theme"><x-icon type="download" /></a> ' : '<span class="btn btn-sm btn-theme disabled" data-tooltip="true" title="{{ trans('general.file_upload_status.file_not_found') }}"><x-icon type="download" /></span>')
+                .replace('%NEW_WINDOW_BUTTON%', (row.exists_on_disk === true) ? '<a href="'+ row.url +'?inline=true" class="btn btn-sm btn-theme" target="_blank"><x-icon type="external-link" /></a> ' : '<span class="btn btn-sm btn-theme disabled" data-tooltip="true" title="{{ trans('general.file_upload_status.file_not_found') }}"><x-icon type="external-link"/></span>')
                 .replace('%DELETE_BUTTON%', (row.available_actions.delete === true) ?
                     '<a href="'+delete_url+'" class="delete-asset btn btn-danger btn-sm" data-icon="fa-trash" data-toggle="modal" data-content="{{ trans('general.file_upload_status.confirm_delete') }} '+ row.filename +'?" data-title="{{ trans('general.delete') }}" onClick="return false;" data-target="#dataConfirmModal"><x-icon type="delete" /><span class="sr-only">{{ trans('general.delete') }}</span></a>' :
                     '<a class="btn btn-sm btn-danger disabled" data-tooltip="true" title="{{ trans('general.file_upload_status.file_not_found') }}"><x-icon type="delete" /><span class="sr-only">{{ trans('general.delete') }}</span></a>'
@@ -1262,547 +1920,6 @@
 
         });
     });
-
-
-    // User table buttons
-    window.userButtons = () => ({
-        @can('create', \App\Models\User::class)
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('users.create') }}';
-            },
-            attributes: {
-                title: '{{ trans('general.create') }}',
-                class: 'btn btn-primary',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-        @endcan
-
-        btnExport: {
-            text: '{{ trans('general.export') }}',
-            icon: 'fa-solid fa-file-csv',
-            event () {
-                window.location.href = '{{ route('users.export') }}';
-            },
-            attributes: {
-                title: '{{ trans('general.export') }}'
-            }
-        },
-
-        btnShowAdmins: {
-            text: '{{ trans('general.show_admins') }}',
-            icon: 'fa-solid fa-crown{{ (request()->input('admins') == "true") ? ' text-danger' : '' }}',
-            event () {
-                window.location.href = '{{ (request()->input('admins') == "true") ? route('users.index') : route('users.index', ['admins' => 'true']) }}';
-            },
-            attributes: {
-                title: '{{ trans('general.show_admins') }}',
-
-            }
-        },
-
-        btnShowDeleted: {
-            text: '{{ (request()->input('status') == "deleted") ?trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
-            icon: 'fa-solid fa-trash {{ (request()->input('status') == "deleted") ? ' text-danger' : ' fa-user-trash' }}',
-            event () {
-                window.location.href = '{{ (request()->input('status') == "deleted") ? route('users.index') : route('users.index', ['status' => 'deleted']) }}';
-            },
-            attributes: {
-                title: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
-
-            }
-        },
-
-    }); // end user table buttons
-
-
-    @can('create', \App\Models\Company::class)
-    // Company table buttons
-    window.companyButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('companies.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-
-    }); // End company table buttons
-    @endcan
-
-
-    // Asset table buttons
-    window.assetButtons = () => ({
-        @can('create', \App\Models\Asset::class)
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('hardware.create') }}';
-            },
-            attributes: {
-                title: '{{ trans('general.create') }}',
-                class: 'btn btn-primary',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-        @endcan
-
-        @can('update', \App\Models\Asset::class)
-        btnAddMaintenance: {
-            text: '{{ trans('button.add_maintenance') }}',
-            icon: 'fa-solid fa-screwdriver-wrench',
-            event () {
-                window.location.href = '{{ route('maintenances.create', ['asset_id' => (isset($asset)) ? $asset->id :'' ]) }}';
-            },
-            attributes: {
-                title: '{{ trans('button.add_maintenance') }}',
-            }
-        },
-        @endcan
-
-
-        btnExport: {
-            text: '{{ trans('admin/hardware/general.custom_export') }}',
-            icon: 'fa-solid fa-file-csv',
-            event () {
-                window.location.href = '{{ route('reports/custom') }}';
-            },
-            attributes: {
-                title: '{{ trans('admin/hardware/general.custom_export') }}'
-            }
-        },
-
-        btnShowDeleted: {
-            text: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-            icon: 'fa-solid fa-trash {{ (request()->input('status') == "Deleted") ? ' text-danger' : '' }}',
-            event () {
-                window.location.href = '{{ (request()->input('status') == "Deleted") ? route('hardware.index') : route('hardware.index', ['status' => 'Deleted']) }}';
-            },
-            attributes: {
-                title: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-
-            }
-        },
-    });
-
-    @can('create', \App\Models\Location::class)
-    // Location table buttons
-    window.locationButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('locations.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-
-        btnShowDeleted: {
-            text: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
-            icon: 'fa-solid fa-trash {{ (request()->input('status') == "deleted") ? ' text-danger' : ' fa-user-trash' }}',
-            event () {
-                window.location.href = '{{ (request()->input('status') == "deleted") ? route('locations.index') : route('locations.index', ['status' => 'deleted']) }}';
-            },
-            attributes: {
-                title: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
-
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Accessory::class)
-    // Accessory table buttons
-    window.accessoryButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('accessories.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                    accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Depreciation::class)
-    // Accessory table buttons
-    window.depreciationButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('depreciations.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\CustomField::class)
-    // Accessory table buttons
-    window.customFieldButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('fields.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-
-    @can('create', \App\Models\CustomFieldset::class)
-    // Accessory table buttons
-    window.customFieldsetButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('fieldsets.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Component::class)
-    // Compoment table buttons
-    window.componentButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('components.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Consumable::class)
-    // Consumable table buttons
-    window.consumableButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('consumables.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Manufacturer::class)
-    // Consumable table buttons
-    window.manufacturerButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('manufacturers.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            },
-
-            btnShowDeleted: {
-                text: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-                icon: 'fa-solid fa-trash {{ (request()->input('status') == "deleted") ? ' text-danger' : '' }}',
-                event () {
-                    window.location.href = '{{ (request()->input('status') == "deleted") ? route('manufacturers.index') : route('manufacturers.index', ['status' => 'deleted']) }}';
-                },
-                attributes: {
-                    title: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-
-                }
-            },
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Supplier::class)
-    // Consumable table buttons
-    window.supplierButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('suppliers.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Component::class)
-    // License table buttons
-    window.licenseButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('licenses.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Department::class)
-    // Department table buttons
-    window.departmentButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('departments.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\CustomField::class)
-    // Custom Field table buttons
-    window.departmentButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('departments.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('update', \App\Models\Asset::class)
-    // Custom Field table buttons
-    window.maintenanceButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('maintenances.create', ['asset_id' => (isset($asset)) ? $asset->id :'' ]) }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Category::class)
-    // Custom Field table buttons
-    window.categoryButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('categories.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\AssetModel::class)
-    // Custom Field table buttons
-    window.modelButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('models.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-        btnShowDeleted: {
-            text: '{{ (request()->input('status') == "deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-            icon: 'fa-solid fa-trash {{ (request()->input('status') == "deleted") ? ' text-danger' : '' }}',
-            event () {
-                window.location.href = '{{ (request()->input('status') == "deleted") ? route('models.index') : route('models.index', ['status' => 'deleted']) }}';
-            },
-            attributes: {
-                title: '{{ (request()->input('status') == "deleted") ? trans('general.list_all') : trans('general.deleted') }}',
-
-            }
-        },
-    });
-    @endcan
-
-    @can('create', \App\Models\Statuslabel::class)
-    // Status label table buttons
-    window.statuslabelButtons = () => ({
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('statuslabels.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-    });
-    @endcan
-
-
-    // License table buttons
-    window.licenseButtons = () => ({
-        @can('create', \App\Models\License::class)
-        btnAdd: {
-            text: '{{ trans('general.create') }}',
-            icon: 'fa fa-plus',
-            event () {
-                window.location.href = '{{ route('licenses.create') }}';
-            },
-            attributes: {
-                class: 'btn btn-primary',
-                title: '{{ trans('general.create') }}',
-                @if ($snipeSettings->shortcuts_enabled == 1)
-                accesskey: 'n'
-                @endif
-            }
-        },
-        @endcan
-
-        btnExport: {
-            text: '{{ trans('general.export') }}',
-            icon: 'fa-solid fa-file-csv',
-            event () {
-                window.location.href = '{{ route('licenses.export', ['category_id' => (isset($category)) ? $category->id :'' ]) }}';
-            },
-            attributes: {
-                title: '{{ trans('general.export') }}'
-            }
-        },
-
-        btnShowInactive: {
-            text: '{{ (request()->input('status') == "inactive") ? trans('general.list_all') : trans('general.show_inactive') }}',
-            icon: 'fas fa-clock {{ (request()->input('status') == "inactive") ? ' text-danger' : '' }}',
-            event () {
-                window.location.href = '{{ (request()->input('status') == "inactive") ? route('licenses.index') : route('licenses.index', ['status' => 'inactive']) }}';
-            },
-            attributes: {
-                title: '{{ (request()->input('status') == "inactive") ? trans('general.list_all') : trans('general.show_inactive') }}',
-
-            }
-        },
-    });
-
-
-
-
 
     $(function() {
 

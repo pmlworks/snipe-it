@@ -163,7 +163,7 @@ class BulkAssetsController extends Controller
         $modelNames = [];
 
         foreach($models as $model) {
-            $modelNames[] = $model->model->name;
+            $modelNames[] = $model->model?->name;
         }
 
         if ($request->filled('bulk_actions')) {
@@ -240,10 +240,6 @@ class BulkAssetsController extends Controller
             $custom_fields_to_null[str_replace('null', '', $key)] = $value;
         }
 
-
-
-
-
      
         if (! $request->filled('ids') || count($request->input('ids')) == 0) {
             return redirect($bulk_back_url)->with('error', trans('admin/hardware/message.update.no_assets_selected'));
@@ -274,6 +270,7 @@ class BulkAssetsController extends Controller
             || ($request->filled('company_id'))
             || ($request->filled('status_id'))
             || ($request->filled('model_id'))
+            || ($request->filled('notes'))
             || ($request->filled('next_audit_date'))
             || ($request->filled('asset_eol_date'))
             || ($request->filled('null_name'))
@@ -470,7 +467,7 @@ class BulkAssetsController extends Controller
                  */
 
                 // Does the model have a fieldset?
-                if ($asset->model->fieldset) {
+                if ($asset->model?->fieldset) {
                     foreach ($asset->model->fieldset->fields as $field) {
 
                         // null custom fields
@@ -591,7 +588,7 @@ class BulkAssetsController extends Controller
         if ($request->session()->has('bulk_back_url')) {
             $bulk_back_url = $request->session()->pull('bulk_back_url');
         }
-        $assetIds = $request->get('ids');
+        $assetIds = $request->input('ids');
 
         if(empty($assetIds)) {
             return redirect($bulk_back_url)->with('error', trans('admin/hardware/message.delete.nothing_updated'));
@@ -621,9 +618,25 @@ class BulkAssetsController extends Controller
     {
         $this->authorize('checkout', Asset::class);
 
+        $alreadyAssigned = collect();
+
+        if (old('selected_assets') && is_array(old('selected_assets'))) {
+            $assets = Asset::findMany(old('selected_assets'));
+
+            [$assignable, $alreadyAssigned] = $assets->partition(function (Asset $asset) {
+                return !$asset->assigned_to;
+            });
+
+            session()->flashInput(['selected_assets' => $assignable->pluck('id')->values()->toArray()]);
+        }
+
         $do_not_change = ['' => trans('general.do_not_change')];
         $status_label_list = $do_not_change + Helper::deployableStatusLabelList();
-        return view('hardware/bulk-checkout')->with('statusLabel_list', $status_label_list);
+
+        return view('hardware/bulk-checkout', [
+            'statusLabel_list' => $status_label_list,
+            'removed_assets' => $alreadyAssigned,
+        ]);
     }
 
     /**
@@ -639,13 +652,37 @@ class BulkAssetsController extends Controller
             $target = $this->determineCheckoutTarget();
             session()->put(['checkout_to_type' => $target]);
 
-            if (! is_array($request->get('selected_assets'))) {
+            if (! is_array($request->input('selected_assets'))) {
                 return redirect()->route('hardware.bulkcheckout.show')->withInput()->with('error', trans('admin/hardware/message.checkout.no_assets_selected'));
             }
 
-            $asset_ids = array_filter($request->get('selected_assets'));
+            $asset_ids = array_filter($request->input('selected_assets'));
 
             $assets = Asset::findOrFail($asset_ids);
+
+            // Prevent checking out assets that are already checked out
+            if ($assets->pluck('assigned_to')->unique()->filter()->isNotEmpty()) {
+                // re-add the asset ids so the assets select is re-populated
+                $request->session()->flashInput(['selected_assets' => $asset_ids]);
+
+                return redirect(route('hardware.bulkcheckout.show'))
+                    ->with('error', trans('general.error_assets_already_checked_out'));
+            }
+
+            // Prevent checking out assets across companies if FMCS enabled
+            if (Setting::getSettings()->full_multiple_companies_support && $target->company_id) {
+                $company_ids = $assets->pluck('company_id')->unique();
+
+                // if there is more than one unique company id or the singular company id does not match
+                // then the checkout is invalid
+                if ($company_ids->count() > 1 || $company_ids->first() != $target->company_id) {
+                    // re-add the asset ids so the assets select is re-populated
+                    $request->session()->flashInput(['selected_assets' => $asset_ids]);
+
+                    return redirect(route('hardware.bulkcheckout.show'))
+                        ->with('error', trans('general.error_user_company_multiple'));
+                }
+            }
 
             if (request('checkout_to_type') == 'asset') {
                 foreach ($asset_ids as $asset_id) {
@@ -655,14 +692,14 @@ class BulkAssetsController extends Controller
                 }
             }
             $checkout_at = date('Y-m-d H:i:s');
-            if (($request->filled('checkout_at')) && ($request->get('checkout_at') != date('Y-m-d'))) {
-                $checkout_at = $request->get('checkout_at');
+            if (($request->filled('checkout_at')) && ($request->input('checkout_at') != date('Y-m-d'))) {
+                $checkout_at = $request->input('checkout_at');
             }
 
             $expected_checkin = '';
 
             if ($request->filled('expected_checkin')) {
-                $expected_checkin = $request->get('expected_checkin');
+                $expected_checkin = $request->input('expected_checkin');
             }
 
             $errors = [];
@@ -672,10 +709,10 @@ class BulkAssetsController extends Controller
 
                     // See if there is a status label passed
                     if ($request->filled('status_id')) {
-                        $asset->status_id = $request->get('status_id');
+                        $asset->status_id = $request->input('status_id');
                     }
 
-                    $checkout_success = $asset->checkOut($target, $admin, $checkout_at, $expected_checkin, e($request->get('note')), $asset->name, null);
+                    $checkout_success = $asset->checkOut($target, $admin, $checkout_at, $expected_checkin, e($request->input('note')), $asset->name, null);
 
                     //TODO - I think this logic is duplicated in the checkOut method?
                     if ($target->location_id != '') {
@@ -706,7 +743,7 @@ class BulkAssetsController extends Controller
     public function restore(Request $request) : RedirectResponse
     {
         $this->authorize('update', Asset::class);
-        $assetIds = $request->get('ids');
+        $assetIds = $request->input('ids');
 
         if (empty($assetIds)) {
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.restore.nothing_updated'));

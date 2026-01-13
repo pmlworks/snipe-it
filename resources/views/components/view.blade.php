@@ -102,7 +102,7 @@
       <div class="tab-content">
 
         <div class="tab-pane active" id="checkedout">
-          <div class="table table-responsive">
+
 
             <table
                     data-cookie-id-table="componentsCheckedoutTable"
@@ -139,12 +139,9 @@
               </thead>
             </table>
 
-          </div>
         </div> <!-- close tab-pane div -->
 
         <div class="tab-pane" id="history">
-          <div class="table-responsive">
-
             <table
                     data-columns="{{ \App\Presenters\HistoryPresenter::dataTableLayout() }}"
                     class="table table-striped snipe-table"
@@ -161,7 +158,6 @@
                     data-cookie-id-table="componentHistory"
                     data-cookie="true">
             </table>
-          </div>
         </div><!-- /.tab-pane -->
 
 
@@ -190,6 +186,28 @@
 
     @endif
 
+        @if ($component->company)
+            <div class="col-md-12" style="padding-bottom: 5px;">
+                <strong>{{ trans('general.company') }}: </strong>
+                {!!  $component->company->present()->formattedNameLink !!}
+            </div>
+        @endif
+
+        @if ($component->category)
+            <div class="col-md-12" style="padding-bottom: 5px;">
+                <strong>{{ trans('general.category') }}: </strong>
+                {!!  $component->category->present()->formattedNameLink !!}
+            </div>
+        @endif
+
+        @if ($component->location)
+            <div class="col-md-12" style="padding-bottom: 5px;">
+                <strong>{{ trans('general.location') }}: </strong>
+                {!!  $component->location->present()->formattedNameLink !!}
+            </div>
+        @endif
+
+
     @if ($component->serial!='')
     <div class="col-md-12" style="padding-bottom: 5px;"><strong>{{ trans('admin/hardware/form.serial') }}: </strong>
     {{ $component->serial }} </div>
@@ -205,6 +223,13 @@
     {{ $snipeSettings->default_currency }}
 
     {{ Helper::formatCurrencyOutput($component->purchase_cost) }} </div>
+    @endif
+
+    @if ($component->purchase_cost)
+        <div class="col-md-12" style="padding-bottom: 5px;"><strong>{{ trans('general.total_cost') }}:</strong>
+            {{ $snipeSettings->default_currency }}
+
+            {{ Helper::formatCurrencyOutput($component->totalCostSum()) }} </div>
     @endif
 
     @if ($component->order_number)

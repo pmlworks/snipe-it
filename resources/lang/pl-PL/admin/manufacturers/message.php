@@ -22,9 +22,11 @@ return array(
     ),
 
     'delete' => array(
-        'confirm'   => 'Czy na pewno usunąć danego producenta?',
+        'confirm' => 'Czy na pewno usunąć danego producenta?',
         'error'   => 'Podczas usuwania producenta wystąpił błąd. Spróbuj ponownie.',
-        'success' => 'Producent usunięty pomyślnie.'
+        'success'                => 'Pomyślnie usunięto producenta.',
+        'bulk_success'           => 'Pomyślnie usunięto producentów.',
+        'partial_success'        => 'Pomyślnie usunięto producenta. Więcej informacji poniżej. |Pomyślnie usunięto :count producentów. Więcej informacji poniżej.',
     )
 
 );

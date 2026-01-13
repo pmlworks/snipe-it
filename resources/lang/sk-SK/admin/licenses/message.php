@@ -46,11 +46,12 @@ return array(
         'not_enough_seats' => 'Nedostatok licenčných miest pre odovzdanie',
         'mismatch' => 'Poskytnutý licenčný slot sa nezhoduje s licenciou',
         'unavailable' => 'Tento slot nie je dostupné pre odovzdanie.',
+        'license_is_inactive' => 'Platnosť tejto licencie vypršala alebo bola ukončená.',
     ),
 
     'checkin' => array(
         'error'   => 'Pri prevzatí licencie nastala chyba. Skúste prosím znovu.',
-        'not_reassignable' => 'Licencia nie je preraditeľná',
+        'not_reassignable' => 'Sídlo bolo použité',
         'success' => 'Licencia bola úspešne prevzatá'
     ),
 

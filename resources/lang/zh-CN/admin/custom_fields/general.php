@@ -33,7 +33,7 @@ return [
     'create_fieldset_title' => '创建一个新的字段集',
     'create_field'            => '新增字段',
     'create_field_title' => '创建一个新自定义字段',
-    'value_encrypted'      	        => 'The value of this field is encrypted in the database. Only users with permission to view encrypted custom fields will be able to view the decrypted value',
+    'value_encrypted'      	        => '此字段的值是在数据库中加密的。 只有拥有查看加密自定义字段权限的用户才能查看该值',
     'show_in_email'     => '是否在发送给用户的签出通知邮件中包含此字段？邮件中不包含加密字段。',
     'show_in_email_short' => '包含在电子邮件中',
     'help_text' => '帮助文本',
@@ -48,7 +48,7 @@ return [
     'db_convert_warning' => '警告。此字段作为 <code>:db_column</code> 的自定义字段表，但应该是 <code>:expected</code>。',
     'is_unique' => '此值在所有资产中必须是唯一的',
     'unique' => '唯一的',
-    'display_in_user_view' => '允许借出的用户在他们的“查看已分配的资产”页面中查看这些值',
+    'display_in_user_view' => '允许已签出资产的用户在其“查看已分配资产”页面中看到这些值',
     'display_in_user_view_table' => '对用户可见',
     'auto_add_to_fieldsets' => '自动将此添加到每个新字段集',
     'add_to_preexisting_fieldsets' => '添加到任何现有的字段集',
@@ -67,4 +67,5 @@ return [
         'checkbox' => '复选框',
         'radio' => '单选按钮',
     ],
+    'general_help_text' => '自定义字段用于存储默认资产字段中不包含的附加信息。<a href="https://snipe-it.readme.io/docs/custom-fields#/"><i class="fa fa-external-link"></i></a>。',
 ];

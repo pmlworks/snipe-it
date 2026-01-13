@@ -100,6 +100,26 @@
                     </span>
             </a>
           </li>
+
+            <li>
+                <a href="#files" data-toggle="tab">
+
+                        <span class="hidden-lg hidden-md">
+                          <i class="fas fa-barcode fa-2x"></i>
+                        </span>
+                    <span class="hidden-xs hidden-sm">
+                            {{ trans('general.files') }}
+                        {!! ($supplier->uploads->count() > 0 ) ? '<span class="badge badge-secondary">'.number_format($supplier->uploads->count()).'</span>' : '' !!}
+                          </span>
+                </a>
+            </li>
+
+            <li class="pull-right">
+                <a href="#" data-toggle="modal" data-target="#uploadFileModal">
+                    <x-icon type="paperclip" />
+                    {{ trans('button.upload') }}
+                </a>
+            </li>
         </ul>
 
 
@@ -109,11 +129,12 @@
           <div class="tab-pane active" id="assets">
             <h2 class="box-title">{{ trans('general.assets') }}</h2>
 
-            <div class="table table-responsive">
+
               @include('partials.asset-bulk-actions')
               <table
                       data-cookie-id-table="suppliersAssetsTable"
                       data-columns="{{ \App\Presenters\AssetPresenter::dataTableLayout() }}"
+                      data-show-columns-search="true"
                       data-id-table="suppliersAssetsTable"
                       data-show-footer="true"
                       data-side-pagination="server"
@@ -129,15 +150,12 @@
                               "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                               }'>
               </table>
-
-            </div><!-- /.table-responsive -->
           </div><!-- /.tab-pane -->
 
 
 
           <div class="tab-pane" id="accessories">
             <h2 class="box-title">{{ trans('general.accessories') }}</h2>
-            <div class="table table-responsive">
               <table
                       data-columns="{{ \App\Presenters\AccessoryPresenter::dataTableLayout() }}"
                       data-cookie-id-table="accessoriesListingTable"
@@ -152,14 +170,12 @@
                               "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                               }'>
               </table>
-            </div><!-- /.table-responsive -->
           </div><!-- /.tab-pane -->
 
 
           <div class="tab-pane" id="licenses">
             <h2 class="box-title">{{ trans('general.licenses') }}</h2>
 
-            <div class="table table-responsive">
               <table
                       data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayout() }}"
                       data-cookie-id-table="licensesListingTable"
@@ -175,12 +191,11 @@
                               }'>
               </table>
 
-            </div><!-- /.table-responsive -->
           </div><!-- /.tab-pane -->
 
             <div class="tab-pane" id="components">
                 <h2 class="box-title">{{ trans('general.components') }}</h2>
-                <div class="table table-responsive">
+
                     <table
                             data-columns="{{ \App\Presenters\ComponentPresenter::dataTableLayout() }}"
                             data-cookie-id-table="componentsListingTable"
@@ -195,12 +210,11 @@
                               "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                               }'>
                     </table>
-                </div><!-- /.table-responsive -->
             </div><!-- /.tab-pane -->
 
             <div class="tab-pane" id="consumables">
             <h2 class="box-title">{{ trans('general.consumables') }}</h2>
-            <div class="table table-responsive">
+
                 <table
                         data-columns="{{ \App\Presenters\ConsumablePresenter::dataTableLayout() }}"
                         data-cookie-id-table="consumablesListingTable"
@@ -215,13 +229,11 @@
                               "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                               }'>
                 </table>
-            </div><!-- /.table-responsive -->
         </div><!-- /.tab-pane -->
 
 
           <div class="tab-pane" id="maintenances">
             <h2 class="box-title">{{ trans('admin/maintenances/general.maintenances') }}</h2>
-            <div class="table table-responsive">
 
               <table
                       data-columns="{{ \App\Presenters\MaintenancesPresenter::dataTableLayout() }}"
@@ -239,8 +251,15 @@
                               }'>
 
               </table>
-            </div><!-- /.table-responsive -->
           </div><!-- /.tab-pane -->
+
+            <div class="tab-pane fade" id="files">
+                <div class="row">
+                    <div class="col-md-12">
+                        <x-filestable object_type="suppliers" :object="$supplier" />
+                    </div> <!-- /.col-md-12 -->
+                </div> <!-- /.row -->
+            </div>
 
         </div><!--/.col-md-9-->
       </div><!--/.col-md-9-->
@@ -317,6 +336,9 @@
   </div>
   </div>
 
+  @can('update', \App\Models\Supplier::class)
+      @include ('modals.upload-file', ['item_type' => 'supplier', 'item_id' => $supplier->id])
+  @endcan
 @stop
 
 @section('moar_scripts')
