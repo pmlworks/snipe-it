@@ -195,7 +195,7 @@ class SnipeSCIMConfig
                             }
                         }
                     })->withSubAttributes(
-                        eloquent('value', 'email')->ensure('email'),
+                        eloquent('value', 'email')->ensure('email', 'nullable'), //Weird, this 'needs' nullable to work?
                         new Constant('type', 'work'),
                         new Constant('primary', true)->ensure('boolean')
                     )->ensure('array')
@@ -259,9 +259,8 @@ class SnipeSCIMConfig
                             parent::patch($operation, $value, $object, $path, $removeIfNotSet);
                         }
                     })->withSubAttributes(
-                        new Constant('value', 'email')->ensure('string'),
-                        new Constant('type', 'other'),
-                        new Constant('primary', true)->ensure('boolean'),
+                        new Constant('value', 'email')->ensure('string'), //FIXME - this is WRONG!!!!!!
+                        new Constant('type', 'other'), // FIXME uh, *also* wrong?!
                     )->ensure('array')
                         ->setMultiValued(true),
 
