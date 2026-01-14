@@ -10,7 +10,10 @@ use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\AuditNotification;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -287,7 +290,7 @@ trait Loggable
 
         if(Setting::getSettings()->webhook_selected === 'microsoft' && Str::contains(Setting::getSettings()->webhook_endpoint, 'workflows')) {
 
-                $endpoint = Setting::getSettings()->webhook_endpoint;
+            $endpoint = Setting::getSettings()->webhook_endpoint;
 
             try {
                 $message = AuditNotification::toMicrosoftTeams($params);
@@ -297,10 +300,31 @@ trait Loggable
             } catch (ConnectException $e) {
                 Log::warning('Teams webhook connection failed', [
                     'endpoint' => $endpoint,
+                    'error' => $e->getMessage()
+                ]);
+
+            } catch (ServerException $e) {
+
+                Log::error('Teams webhook server error', [
+                    'endpoint' => $endpoint,
+                    'status' => $e->getResponse()?->getStatusCode(),
                     'error' => $e->getMessage(),
                 ]);
 
-            } catch (Throwable $e) {
+            } catch (ClientException $e) {
+
+                Log::warning('Teams webhook client error', [
+                    'endpoint' => $endpoint,
+                    'status' => $e->getResponse()?->getStatusCode(),
+                    'error' => $e->getMessage(),
+                ]);
+            } catch (RequestException $e) {
+
+                Log::error('Teams webhook request failure', [
+                    'endpoint' => $endpoint,
+                    'error' => $e->getMessage(),
+                ]);
+            }catch (Throwable $e) {
                 Log::error('Teams webhook failed unexpectedly', [
                     'endpoint' => $endpoint,
                     'exception' => get_class($e),
