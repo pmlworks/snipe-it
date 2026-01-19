@@ -12,12 +12,10 @@
 @stop
 
 
-{{-- Content --}}
+{{-- Page content --}}
 @section('content')
-<div class="row">
-  <div class="col-md-12">
-    <div class="box box-default">
-      <div class="box-body">
+    <x-container>
+        <x-box>
             <table
                 data-cookie-id-table="groupsTable"
                 data-side-pagination="server"
@@ -47,10 +45,8 @@
               </tr>
             </thead>
           </table>
-      </div> <!--.box-body-->
-    </div> <!-- /.box.box-default-->
-  </div> <!-- .col-md-12-->
-</div>
+        </x-box>
+    </x-container>
 @stop
 @section('moar_scripts')
 @include ('partials.bootstrap-table', ['exportFile' => 'groups-export', 'search' => true])
