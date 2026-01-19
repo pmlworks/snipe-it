@@ -1,7 +1,7 @@
 @props([
     'box_style' => 'default',
     'header' => false,
-    'footer' => true,
+    'footer' => false,
 
 ])
 
