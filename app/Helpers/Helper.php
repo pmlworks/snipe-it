@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 use App\Models\Accessory;
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Component;
@@ -1581,6 +1582,19 @@ class Helper
                 'fa-IR',
                 'he-IL'
             ]) ? 'rtl' : 'ltr';
+    }
+    public static function getAssetFirstCheckout($assetId) {
+
+        if (!$assetId) {
+            return null;
+        }
+        $first_checkout = Actionlog::where('item_id', $assetId)
+            ->where('item_type', Asset::class)
+            ->where('action_type', 'checkout')
+            ->oldest('created_at')
+            ->first();
+
+        return self::getFormattedDateObject($first_checkout?->created_at, 'datetime');
     }
 
 
