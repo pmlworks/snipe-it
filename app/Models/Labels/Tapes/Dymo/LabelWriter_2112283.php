@@ -83,27 +83,20 @@ class LabelWriter_2112283 extends LabelWriter
             $usableWidth -= $barcodeSize + self::BARCODE_MARGIN;
         }
 
-        if ($record->has('title')) {
-            static::writeText(
-                $pdf, $record->get('title'),
-                $currentX, $currentY,
-                'freesans', 'b', self::TITLE_SIZE, 'L',
-                $usableWidth, self::TITLE_SIZE, true, 0
-            );
-            $currentY += self::TITLE_SIZE + self::TITLE_MARGIN;
+        $title = $record->has('title') ? $record->get('title') : null;
+        $fields = $record->get('fields');
+        $maxFields = $this->getSupportFields();
+        $fields = collect($fields);
+        if ($title) {
+            $maxFields = max(0, $maxFields - 1); // title consumes one row’s worth of space
         }
 
-        $fields = $record->get('fields');
-        // Below rescales the size of the field box to fit, it feels like it could/should be abstracted one class above
-        // to be usable on other labels but im unsure of how to implement that, since it uses a lot of private
-        // constants.
-
-        // Figure out how tall the label fields wants to be
-        $fieldCount = count($fields);
+        $fields = $fields->take($maxFields)->values();
 
         $usableHeight = $pa->h
             - self::TAG_SIZE           // bottom tag text
             - self::BARCODE_MARGIN;    // gap between fields and 1D
+
         $field_layout = Helper::labelFieldLayoutScaling(
             pdf: $pdf,
             fields: $fields,
@@ -113,29 +106,42 @@ class LabelWriter_2112283 extends LabelWriter
             baseLabelSize: self::LABEL_SIZE,
             baseFieldSize: self::FIELD_SIZE,
             baseFieldMargin: self::FIELD_MARGIN,
+            title: $title,
+            baseTitleSize: self::TITLE_SIZE,
+            baseTitleMargin: self::TITLE_MARGIN,
             baseLabelPadding: 1.5,
             baseGap: 1.5,
             maxScale: 1.8,
             labelFont: 'freesans',
         );
+        extract($field_layout);
 
+        if ($hasTitle) {
+            static::writeText(
+                $pdf, $title,
+                $currentX, $currentY,
+                'freesans', 'b', $titleSize, 'L',
+                $usableWidth, $titleSize, true, 0
+            );
+            $currentY += $titleAdvance;
+        }
         foreach ($fields as $field) {
             $labelText = rtrim($field['label'], ':') . ':';
 
             static::writeText(
                 $pdf, $labelText,
                 $currentX, $currentY,
-                'freesans', '', $field_layout['labelSize'], 'L',
-                $field_layout['labelWidth'], $field_layout['rowAdvance'], true, 0
+                'freesans', '', $labelSize, 'L',
+                $labelWidth, $rowAdvance, true, 0
             );
 
             static::writeText(
                 $pdf, $field['value'],
                 $field_layout['valueX'], $currentY,
-                'freemono', 'B', $field_layout['fieldSize'], 'L',
-                $field_layout['valueWidth'], $field_layout['rowAdvance'], true, 0, 0.01
+                'freemono', 'B', $fieldSize, 'L',
+                $valueWidth, $rowAdvance, true, 0, 0.01
             );
-            $currentY += $field_layout['rowAdvance'];
+            $currentY += $rowAdvance;
         }
         if ($record->has('barcode1d')) {
             static::write1DBarcode(

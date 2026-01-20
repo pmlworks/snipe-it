@@ -1757,18 +1757,26 @@ class Helper
         float $baseLabelSize,
         float $baseFieldSize,
         float $baseFieldMargin,
+        ?string $title            = null,
+        float $baseTitleSize      = 0.0,
+        float $baseTitleMargin    = 0.0,
         float $baseLabelPadding = 1.5,
         float $baseGap          = 1.5,
         float $maxScale         = 1.8,
         string $labelFont       = 'freesans',
+
     )  : array
     {
         $fieldCount = count($fields);
         $perFieldHeight = max($baseLabelSize, $baseFieldSize) + $baseFieldMargin;
-        $baseHeight = $fieldCount * $perFieldHeight;
+        $baseFieldsHeight = $fieldCount * $perFieldHeight;
+
+        $hasTitle = is_string($title) && trim($title) !== '';
+        $baseTitleHeight = $hasTitle ? ($baseTitleSize + $baseTitleMargin) : 0.0;
+        $baseTotalHeight = $baseTitleHeight + $baseFieldsHeight;
         $scale = 1.0;
-        if ($baseHeight > 0 && $usableHeight > 0) {
-            $scale = $usableHeight / $baseHeight;
+        if ($baseTotalHeight > 0 && $usableHeight > 0) {
+            $scale = $usableHeight / $baseTotalHeight;
         }
 
         $scale = min($scale, $maxScale);
@@ -1778,6 +1786,10 @@ class Helper
         $fieldMargin = $baseFieldMargin * $scale;
 
         $rowAdvance = max($labelSize, $fieldSize) + $fieldMargin;
+        $titleSize   = $hasTitle ? ($baseTitleSize   * $scale) : 0.0;
+        $titleMargin = $hasTitle ? ($baseTitleMargin * $scale) : 0.0;
+        $titleAdvance = $hasTitle ? ($titleSize + $titleMargin) : 0.0;
+
         $pdf->SetFont($labelFont, '', $baseLabelSize);
 
         $maxLabelWidthPerUnit = 0;
@@ -1796,6 +1808,11 @@ class Helper
 
         return compact(
             'scale',
+            'hasTitle',
+            'scale',
+            'titleSize',
+            'titleMargin',
+            'titleAdvance',
             'labelSize',
             'fieldSize',
             'fieldMargin',
