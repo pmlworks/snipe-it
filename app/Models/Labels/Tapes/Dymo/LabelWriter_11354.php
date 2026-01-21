@@ -127,16 +127,15 @@ class LabelWriter_11354 extends LabelWriter
             maxScale: 1.8,
             labelFont: 'freesans',
         );
-        extract($field_layout);
 
-        if ($hasTitle) {
+        if ($field_layout['hasTitle']) {
             static::writeText(
                 $pdf, $title,
                 $currentX, $currentY,
-                'freesans', 'b', $titleSize, 'L',
-                $usableWidth, $titleSize, true, 0
+                'freesans', 'b', $field_layout['titleSize'], 'L',
+                $usableWidth, $field_layout['titleSize'], true, 0
             );
-            $currentY += $titleAdvance;
+            $currentY += $field_layout['titleAdvance'];
         }
         foreach ($fields as $field) {
             $rawLabel = $field['label'] ?? null;
@@ -147,11 +146,11 @@ class LabelWriter_11354 extends LabelWriter
                 static::writeText(
                     $pdf, $value,
                     $currentX, $currentY,
-                    'freemono', 'B', $fieldSize, 'L',
-                    $usableWidth, $rowAdvance, true, 0, 0.01
+                    'freemono', 'B', $field_layout['fieldSize'], 'L',
+                    $usableWidth, $field_layout['rowAdvance'], true, 0, 0.01
                 );
 
-                $currentY += $rowAdvance;
+                $currentY += $field_layout['rowAdvance'];
                 continue;
             }
 
@@ -160,17 +159,17 @@ class LabelWriter_11354 extends LabelWriter
             static::writeText(
                 $pdf, $labelText,
                 $currentX, $currentY,
-                'freesans', '', $labelSize, 'L',
-                $labelWidth, $rowAdvance, true, 0
+                'freesans', '', $field_layout['labelSize'], 'L',
+                $field_layout['labelWidth'], $field_layout['rowAdvance'], true,
             );
 
             static::writeText(
                 $pdf, $field['value'],
                 $field_layout['valueX'], $currentY,
-                'freemono', 'B', $fieldSize, 'L',
-                $valueWidth, $rowAdvance, true, 0, 0.01
+                'freemono', 'B', $field_layout['fieldSize'], 'L',
+                $field_layout['valueWidth'], $field_layout['rowAdvance'], true, 0, 0.01
             );
-            $currentY += $rowAdvance;
+            $currentY += $field_layout['rowAdvance'];;
         }
     }
 
