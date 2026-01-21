@@ -1815,7 +1815,6 @@ class Helper
         return compact(
             'scale',
             'hasTitle',
-            'scale',
             'titleSize',
             'titleMargin',
             'titleAdvance',
