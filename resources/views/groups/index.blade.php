@@ -8,7 +8,6 @@
 
 @section('header_right')
 <a href="{{ route('groups.create') }}" class="btn btn-primary text-right"> {{ trans('general.create') }}</a>
-<a href="{{ route('settings.index') }}" class="btn btn-default text-right">{{ trans('general.back') }}</a>
 @stop
 
 
