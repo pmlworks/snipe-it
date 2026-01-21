@@ -1794,6 +1794,12 @@ class Helper
 
         $maxLabelWidthPerUnit = 0;
         foreach ($fields as $field) {
+            $rawLabel = $field['label'] ?? null;
+
+            // If no label, do not include it in label-column sizing
+            if (!is_string($rawLabel) || trim($rawLabel) === '') {
+                continue;
+            }
             $label = rtrim($field['label'], ':') . ':';
             $width = $pdf->GetStringWidth($label);
             $maxLabelWidthPerUnit = max($maxLabelWidthPerUnit, $width / $baseLabelSize);

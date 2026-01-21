@@ -126,6 +126,22 @@ class LabelWriter_1933081 extends LabelWriter
             $currentY += $titleAdvance;
         }
         foreach ($fields as $field) {
+            $rawLabel = $field['label'] ?? null;
+            $value    = (string)($field['value'] ?? '');
+
+            // No label: value takes the whole row
+            if (!is_string($rawLabel) || trim($rawLabel) === '') {
+                static::writeText(
+                    $pdf, $value,
+                    $currentX, $currentY,
+                    'freemono', 'B', $fieldSize, 'L',
+                    $usableWidth, $rowAdvance, true, 0, 0.01
+                );
+
+                $currentY += $rowAdvance;
+                continue;
+            }
+
             $labelText = rtrim($field['label'], ':') . ':';
 
             static::writeText(
