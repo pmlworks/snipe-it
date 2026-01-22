@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
 
             @if ($manufacturer_count == 0)
 
@@ -61,7 +61,7 @@
                     </table>
 
                     @endif
-        </x-box.container>
+        </x-box>
     </x-container>
 @stop
 

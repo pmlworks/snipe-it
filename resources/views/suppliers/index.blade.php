@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
 
               <x-tables.bulk-actions
                       id_divname='suppliersBulkEditToolbar'
@@ -44,7 +44,7 @@
             "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
             }'>
       </table>
-        </x-box.container>
+        </x-box>
     </x-container>
 @stop
 

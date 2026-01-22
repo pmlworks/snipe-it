@@ -14,7 +14,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
             <table
                 data-cookie-id-table="groupsTable"
                 data-side-pagination="server"
@@ -44,7 +44,7 @@
               </tr>
             </thead>
           </table>
-        </x-box.container>
+        </x-box>
     </x-container>
 @stop
 @section('moar_scripts')
