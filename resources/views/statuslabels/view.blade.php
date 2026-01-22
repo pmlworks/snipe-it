@@ -8,7 +8,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box>
+        <x-box.container>
             @include('partials.asset-bulk-actions')
 
                 <table
@@ -30,7 +30,7 @@
                       "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                       }'>
                 </table>
-        </x-box>
+        </x-box.container>
     </x-container>
 @stop
 

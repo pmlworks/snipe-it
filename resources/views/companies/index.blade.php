@@ -11,7 +11,7 @@
     <x-container columns="2">
 
         <x-page-column class="col-md-9">
-            <x-box>
+            <x-box.container>
                 <table
                   data-columns="{{ \App\Presenters\CompanyPresenter::dataTableLayout() }}"
                   data-cookie-id-table="companiesTable"
@@ -28,7 +28,7 @@
                             "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                             }'>
                 </table>
-            </x-box>
+            </x-box.container>
         </x-page-column>
 
 

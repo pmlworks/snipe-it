@@ -10,7 +10,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box>
+        <x-box.container>
 
           <table
               data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayout() }}"
@@ -30,7 +30,7 @@
             }'>
           </table>
 
-        </x-box>
+        </x-box.container>
     </x-container>
 @stop
 
