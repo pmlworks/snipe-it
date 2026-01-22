@@ -2,7 +2,6 @@
     'box_style' => 'default',
     'header' => false,
     'footer' => false,
-
 ])
 
 <!-- Start box component -->
