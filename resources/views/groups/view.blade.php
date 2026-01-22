@@ -15,7 +15,7 @@
 @section('content')
     <x-container columns="2">
         <x-page-column class="col-md-9">
-            <x-box>
+            <x-box.container>
 
 
 

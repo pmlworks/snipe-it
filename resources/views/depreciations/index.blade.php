@@ -11,7 +11,7 @@
     <x-container>
 
         <x-page-column>
-            <x-box>
+            <x-box.container>
               <table
                   data-columns="{{ \App\Presenters\DepreciationPresenter::dataTableLayout() }}"
                   data-cookie-id-table="depreciationsTable"
