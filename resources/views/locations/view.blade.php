@@ -144,6 +144,7 @@
               <x-slot:tabpanes>
 
                   <!-- start users tab pane -->
+                  @can('view', \App\Models\User::class)
                   <x-tabs.pane name="users" class="active">
                       <x-slot:header>
                           {{ trans('general.users') }}
@@ -167,9 +168,11 @@
                       </x-slot:content>
 
                   </x-tabs.pane>
+                  @endcan
                   <!-- end users tab pane -->
 
                   <!-- start assets tab pane -->
+                  @can('view', \App\Models\Asset::class)
                   <x-tabs.pane name="assets">
                       <x-slot:header>
                           {{ trans('admin/locations/message.current_location') }}
@@ -195,6 +198,8 @@
 
 
                   <!-- start assigned assets tab pane -->
+
+
                   <x-tabs.pane name="assets_assigned">
                       <x-slot:header>
                           {{ trans('admin/locations/message.assigned_assets') }}
@@ -214,9 +219,8 @@
                                   export_filename="export-locations-{{ str_slug($location->name) }}-assets-{{ date('Y-m-d') }}"
                           />
                       </x-slot:content>
-
                   </x-tabs.pane>
-                  <!-- end assigned assets tab pane -->
+                 <!-- end assigned assets tab pane -->
 
 
 
@@ -240,10 +244,12 @@
                       </x-slot:content>
 
                   </x-tabs.pane>
+                  @endcan
                   <!-- end rtd assets tab pane -->
 
 
                   <!-- start accessories tab pane -->
+                  @can('view', \App\Models\Accessory::class)
                   <x-tabs.pane name="accessories">
                       <x-slot:header>
                           {{ trans('general.accessories') }}
@@ -279,10 +285,12 @@
                       </x-slot:content>
 
                   </x-tabs.pane>
+                  @endcan
                   <!-- end assigned accessories tab pane -->
 
 
                   <!-- start consumables tab pane -->
+                  @can('view', \App\Models\Consumable::class)
                   <x-tabs.pane name="consumables">
                       <x-slot:header>
                           {{ trans('general.consumables') }}
@@ -299,9 +307,11 @@
                       </x-slot:content>
 
                   </x-tabs.pane>
+                  @endcan
                   <!-- end consumables tab pane -->
 
                   <!-- start components tab pane -->
+                  @can('view', \App\Models\Component::class)
                   <x-tabs.pane name="components">
                       <x-slot:header>
                           {{ trans('general.components') }}
@@ -316,6 +326,7 @@
                           />
                       </x-slot:content>
                   </x-tabs.pane>
+                  @endcan
                   <!-- end components tab pane -->
 
                   <!-- start child locations tab pane -->
