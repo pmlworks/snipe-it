@@ -9,9 +9,9 @@
 <div class="box box-{{ $box_style }}">
 
     @if ($header)
-    <x-box-header>
+    <x-box.header>
         {{ $header }}
-    </x-box-header>
+    </x-box.header>
     @endif
 
     <div class="box-body">
@@ -19,8 +19,8 @@
     </div>
 
     @if ($footer)
-        <x-box-footer>
+        <x-box.footer>
         {{ $footer }}
-        </x-box-footer>
+        </x-box.footer>
     @endif
 </div>

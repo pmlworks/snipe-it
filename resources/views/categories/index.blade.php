@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box>
+        <x-box.container>
 
           <x-tables.bulk-actions
                   id_divname='categoriesBulkEditToolbar'

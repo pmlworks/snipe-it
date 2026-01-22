@@ -16,7 +16,7 @@
 @section('content')
 
         <x-container>
-            <x-box>
+            <x-box.container>
 
                 <table
                         data-columns="{{ \App\Presenters\UserPresenter::dataTableLayout() }}"

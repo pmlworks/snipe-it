@@ -54,7 +54,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box>
+        <x-box.container>
 
                 @include('partials.asset-bulk-actions', ['status' => $requestStatus])
                    

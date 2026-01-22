@@ -16,7 +16,7 @@
 @section('content')
 
     <x-container>
-        <x-box>
+        <x-box.container>
 
     @include('partials.models-bulk-actions')
             <table

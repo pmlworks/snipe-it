@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box>
+        <x-box.container>
 
             @if ($manufacturer_count == 0)
 
