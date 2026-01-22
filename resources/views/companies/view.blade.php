@@ -9,7 +9,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
 
@@ -205,7 +205,7 @@
 
                 </div><!-- /.tab-content -->
             </div><!-- nav-tabs-custom -->
-        </x-box.container>
+        </x-box>
     </x-container>
 
 @stop

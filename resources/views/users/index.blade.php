@@ -28,7 +28,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
 
             @include('partials.users-bulk-actions')
 
@@ -59,7 +59,7 @@
                 "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                 }'>
                     </table>
-        </x-box.container>
+        </x-box>
     </x-container>
 
 

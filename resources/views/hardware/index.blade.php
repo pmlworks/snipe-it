@@ -54,7 +54,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
 
                 @include('partials.asset-bulk-actions', ['status' => $requestStatus])
                    
@@ -85,7 +85,7 @@
                 }'>
               </table>
 
-        </x-box.container>
+        </x-box>
     </x-container>
 @stop
 
