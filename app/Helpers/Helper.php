@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 use App\Models\Accessory;
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Component;
@@ -13,6 +14,7 @@ use App\Models\Setting;
 use App\Models\Statuslabel;
 use App\Models\License;
 use App\Models\Location;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -1384,7 +1386,19 @@ class Helper
      * @return string[]
      */
     public static function SettingUrls(){
-        $settings=['#','fields.index', 'statuslabels.index', 'models.index', 'categories.index', 'manufacturers.index', 'suppliers.index', 'departments.index', 'locations.index', 'companies.index', 'depreciations.index'];
+        $settings=[
+            '#',
+            'fields*',
+            'statuslabels*',
+            'models*',
+            'categories*',
+            'manufacturers*',
+            'suppliers*',
+            'departments*',
+            'locations*',
+            'companies*',
+            'depreciations*'
+        ];
 
         return $settings;
         }
@@ -1569,6 +1583,19 @@ class Helper
                 'he-IL'
             ]) ? 'rtl' : 'ltr';
     }
+    public static function getAssetFirstCheckout($assetId) {
+
+        if (!$assetId) {
+            return null;
+        }
+        $first_checkout = Actionlog::where('item_id', $assetId)
+            ->where('item_type', Asset::class)
+            ->where('action_type', 'checkout')
+            ->oldest('created_at')
+            ->first();
+
+        return self::getFormattedDateObject($first_checkout?->created_at, 'datetime');
+    }
 
 
     static public function getRedirectOption($request, $id, $table, $item_id = null) : RedirectResponse
@@ -1734,5 +1761,84 @@ class Helper
             }
         }
         return $mismatched;
+    }
+    static public function labelFieldLayoutScaling(
+        $pdf,
+        iterable|\Closure $fields,
+        float $currentX,
+        float $usableWidth,
+        float $usableHeight,
+        float $baseLabelSize,
+        float $baseFieldSize,
+        float $baseFieldMargin,
+        ?string $title            = null,
+        float $baseTitleSize      = 0.0,
+        float $baseTitleMargin    = 0.0,
+        float $baseLabelPadding = 1.5,
+        float $baseGap          = 1.5,
+        float $maxScale         = 1.8,
+        string $labelFont       = 'freesans',
+
+    )  : array
+    {
+        $fieldCount = count($fields);
+        $perFieldHeight = max($baseLabelSize, $baseFieldSize) + $baseFieldMargin;
+        $baseFieldsHeight = $fieldCount * $perFieldHeight;
+
+        $hasTitle = is_string($title) && trim($title) !== '';
+        $baseTitleHeight = $hasTitle ? ($baseTitleSize + $baseTitleMargin) : 0.0;
+        $baseTotalHeight = $baseTitleHeight + $baseFieldsHeight;
+        $scale = 1.0;
+        if ($baseTotalHeight > 0 && $usableHeight > 0) {
+            $scale = $usableHeight / $baseTotalHeight;
+        }
+
+        $scale = min($scale, $maxScale);
+
+        $labelSize = $baseLabelSize;
+        $fieldSize = $baseFieldSize * $scale;
+        $fieldMargin = $baseFieldMargin * $scale;
+
+        $rowAdvance = max($labelSize, $fieldSize) + $fieldMargin;
+        $titleSize   = $hasTitle ? ($baseTitleSize   * $scale) : 0.0;
+        $titleMargin = $hasTitle ? ($baseTitleMargin * $scale) : 0.0;
+        $titleAdvance = $hasTitle ? ($titleSize + $titleMargin) : 0.0;
+
+        $pdf->SetFont($labelFont, '', $baseLabelSize);
+
+        $maxLabelWidthPerUnit = 0;
+        foreach ($fields as $field) {
+            $rawLabel = $field['label'] ?? null;
+
+            // If no label, do not include it in label-column sizing
+            if (!is_string($rawLabel) || trim($rawLabel) === '') {
+                continue;
+            }
+            $label = rtrim($field['label'], ':') . ':';
+            $width = $pdf->GetStringWidth($label);
+            $maxLabelWidthPerUnit = max($maxLabelWidthPerUnit, $width / $baseLabelSize);
+        }
+
+        $labelPadding = $baseLabelPadding * $scale;
+        $gap = $baseGap * $scale;
+
+        $labelWidth = ($maxLabelWidthPerUnit * $labelSize) + $labelPadding;
+        $valueX = $currentX + $labelWidth + $gap;
+        $valueWidth = $usableWidth - $labelWidth - $gap;
+
+        return compact(
+            'scale',
+            'hasTitle',
+            'titleSize',
+            'titleMargin',
+            'titleAdvance',
+            'labelSize',
+            'fieldSize',
+            'fieldMargin',
+            'rowAdvance',
+            'labelWidth',
+            'valueX',
+            'valueWidth'
+        );
     }
 }
