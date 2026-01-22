@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use ArieTimmerman\Laravel\SCIMServer\Exceptions\SCIMException;
 use ArieTimmerman\Laravel\SCIMServer\Helper;
 use ArieTimmerman\Laravel\SCIMServer\Parser\Path;
 use ArieTimmerman\Laravel\SCIMServer\SCIM\Schema;
@@ -29,6 +30,15 @@ function complex($name = null): Complex
 function eloquent($name, $attribute = null): Attribute
 {
     return new Eloquent($name, $attribute);
+}
+
+class EloquentWithRemove extends Eloquent
+{
+    public function remove($value, Model &$object, Path $path = null)
+    {
+        $object->{$this->attribute} = null;
+    }
+
 }
 
 class MappedTable extends Attribute
@@ -61,7 +71,7 @@ class MappedTable extends Attribute
 
     public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
     {
-        \Log::error("implementing custom patch for value: '$value' of attribute " . $this->scim_attribute_name);
+        \Log::error("implementing custom patch for value: '$value' of attribute " . $this->scim_attribute_name); //FIXME
         $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
     }
 
@@ -235,7 +245,7 @@ class SnipeSCIMConfig
                                         break;
 
                                     default:
-                                        throw new \Exception("Unknown phone type '{$phone['type']}'");
+                                        throw new SCIMException("Unknown phone type '" . @$phone['type'] . "'", 400);
                                 }
                             }
                         }
@@ -243,7 +253,7 @@ class SnipeSCIMConfig
                         public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             if ($path->getValuePathFilter() != null) {
-                                \Log::error("value object IS: " . print_r($value, true));
+                                \Log::error("value object IS: " . print_r($value, true)); //FIXME
                                 if ((string)$path == 'phoneNumbers[type eq "mobile"].value') {
                                     \Log::error("YAY!!!!! We are patching an mobile fone! We can do this!"); //FIXME
                                     $object->mobile = $value; //I don't know why the value is the raw value, but it is?
@@ -354,7 +364,7 @@ class SnipeSCIMConfig
                 (new AttributeSchema(self::ENTERPRISE, false))->withSubAttributes(
                     eloquent('employeeNumber', 'employee_num')->ensure('nullable'),
                     new MappedTable('department', 'department', Department::class, 'department_id', 'name'),
-                    (new class('manager') extends Complex {
+                    (new class('manager') extends UpdatableComplex {
                         protected function doRead(&$object, $attributes = [])
                         {
                             if (!$object->manager) {
@@ -367,32 +377,38 @@ class SnipeSCIMConfig
                             ];
                         }
 
-                        public function add($value, Model &$object)
+                        public function doWrite($operation, $value, Model &$object, $path = null, $removeIfNotSet = false)
                         {
                             \Log::error("What type of value is value? " . gettype($value));
+                            $manager_id = null;
                             if (is_scalar($value)) {
-                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?");
-                                $object->manager_id = $value;
-                            } else {
-                                //FIXME - do this properly
-                                \Log::error("Non-Microsoft - Trying to 'ADD' for maanger with value: " . print_r($value, true));
-                                throw new \Exception("dunno how to do this (add manager)");
-                            }
-                        }
+                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?"); //FIXME
+                                $manager_id = $value;
+                            } elseif (array_key_exists('$ref', $value)) {
+                                // Here's the spec: https://datatracker.ietf.org/doc/html/rfc7643#section-4.3
 
-                        // TODO - we keep repeating ourselves between add/replace, we should maybe make our own class
-                        // to make this a nicer shorthand?
-                        public function replace($value, Model &$object, $path = null, $removeIfNotSet = false)
-                        {
-                            \Log::error("What type of value is value? " . gettype($value));
-                            if (is_scalar($value)) {
-                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?");
-                                $object->manager_id = $value;
-                            } else {
-                                //FIXME - actualy do this? (Try on one of the other platforms)
-                                \Log::error("Non-Microsoft - Trying to 'ADD' for maanger with value: " . print_r($value, true));
-                                throw new \Exception("dunno how to do this (add manager)");
+                                // according to the spec it's _recommended_ to do:
+                                // $ref - which should be the URI of the manager
+
+                                // extract ID from URL, jam it in?
+                                $url = $value['$ref'];
+                                $users_prefix = route('scim.resources', ['resourceType' => 'User']) . '/';
+                                if (string_starts_with($url, $users_prefix)) {
+                                    $manager_id = substr($url, strlen($users_prefix));
+                                }
+                            } elseif (array_key_exists('value', $value)) {
+                                // this is _Snipe-IT_'s ID being passed as 'value' I believe?
+                                // if you use the 'managerId' field in Okta, you get:
+                                //     [value] => 9999999
+                                // that, at least, is the spec - but *what* ID is that?! It's supposed to be a Snipe-IT one!
+                                $manager_id = $value['value'];
                             }
+                            \Log::error("Non-Microsoft - Trying to '$operation' for maanger with value: " . print_r($value, true)); //FIXME
+                            if ($manager_id && User::find($manager_id)) {
+                                $object->manager_id = $manager_id;
+                                return;
+                            }
+                            throw new SCIMException("No manager given, or manager doesn't exist", 400);
                         }
                     }) // ->withSubAttributes() ... -> ensure() ?
                 ),
@@ -437,7 +453,7 @@ class SnipeSCIMConfig
                     }
                 }
                 ),
-                eloquent('externalId', 'scim_externalid'),
+                new EloquentWithRemove('externalId', 'scim_externalid'),
                 new Meta('Groups'),
                 (new AttributeSchema(Schema::SCHEMA_GROUP, true))->withSubAttributes(
                     eloquent('displayName', 'name')->ensure('required', 'min:3', function ($attribute, $value, $fail) {
