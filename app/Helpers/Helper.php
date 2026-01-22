@@ -1583,20 +1583,6 @@ class Helper
                 'he-IL'
             ]) ? 'rtl' : 'ltr';
     }
-    public static function getAssetFirstCheckout($assetId) {
-
-        if (!$assetId) {
-            return null;
-        }
-        $first_checkout = Actionlog::where('item_id', $assetId)
-            ->where('item_type', Asset::class)
-            ->where('action_type', 'checkout')
-            ->oldest('created_at')
-            ->first();
-
-        return self::getFormattedDateObject($first_checkout?->created_at, 'datetime');
-    }
-
 
     static public function getRedirectOption($request, $id, $table, $item_id = null) : RedirectResponse
     {

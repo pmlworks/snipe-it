@@ -158,7 +158,8 @@ class AssetPresenter extends Presenter
                 'visible' => false,
                 'title' => trans('general.first_checkout'),
                 'formatter' => 'dateDisplayFormatter',
-            ], [
+            ],
+            [
                 'field' => 'age',
                 'searchable' => false,
                 'sortable' => false,

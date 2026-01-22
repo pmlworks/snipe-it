@@ -1112,7 +1112,7 @@
                                                 </strong>
                                             </div>
                                             <div class="col-md-9">
-                                                {{ Helper::getAssetFirstCheckout($asset->id)['formatted'] ?? '' }}
+                                                {{ Helper::getFormattedDateObject($asset->first_checkout_at, 'datetime')['formatted'] ?? '' }}
                                             </div>
                                         </div>
 
