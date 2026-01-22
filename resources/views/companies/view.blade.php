@@ -205,7 +205,7 @@
 
                 </div><!-- /.tab-content -->
             </div><!-- nav-tabs-custom -->
-        </x-box>
+        </x-box.container>
     </x-container>
 
 @stop

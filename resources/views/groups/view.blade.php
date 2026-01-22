@@ -31,7 +31,7 @@
                                         "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
                                         }'>
                                 </table>
-            </x-box>
+            </x-box.container>
 
         </x-page-column>
 

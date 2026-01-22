@@ -61,7 +61,7 @@
                     </table>
 
                     @endif
-        </x-box>
+        </x-box.container>
     </x-container>
 @stop
 

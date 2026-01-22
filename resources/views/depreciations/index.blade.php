@@ -29,7 +29,7 @@
                     }'>
               </table>
 
-            </x-box>
+            </x-box.container>
         </x-page-column>
 
     </x-container>

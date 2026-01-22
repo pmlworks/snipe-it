@@ -31,7 +31,7 @@
                 }'>
         </table>
 
-        </x-box>
+        </x-box.container>
     </x-container>
 @stop
 

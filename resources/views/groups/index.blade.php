@@ -44,7 +44,7 @@
               </tr>
             </thead>
           </table>
-        </x-box>
+        </x-box.container>
     </x-container>
 @stop
 @section('moar_scripts')
