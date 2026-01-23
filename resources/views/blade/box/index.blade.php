@@ -3,16 +3,18 @@
     'header' => false,
     'footer' => false,
 ])
-@aware(['name'])
+@aware(['name', 'route'])
 
 
 <!-- Start box component -->
 <div class="box box-{{ $box_style }}">
 
     @if ($header)
-    <x-box.header>
-        {{ $header }}
-    </x-box.header>
+        <div class="box-header with-border">
+            <h2 class="box-title">
+                {{ $header }}
+            </h2>
+        </div>
     @endif
 
     <div class="box-body">
@@ -26,9 +28,7 @@
         {{ $slot }}
     </div>
 
-    @if ($footer)
-        <x-box.footer>
-        {{ $footer }}
-        </x-box.footer>
+    @if ($route)
+        <x-box.footer />
     @endif
 </div>
