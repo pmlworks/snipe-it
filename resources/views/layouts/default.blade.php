@@ -688,7 +688,7 @@
             background-color: #2c3b41;
         }
 
-        .sidebar-menu>li>.treeview-menu,
+        .sidebar-menu>li>.treeview-menu
         {
             background-color: #1e282c;
         }
