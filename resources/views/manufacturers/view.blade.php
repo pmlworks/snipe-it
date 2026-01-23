@@ -31,7 +31,7 @@
                     @can('view', \App\Models\License::class)
                         <x-tabs.nav-item
                                 name="licenses"
-                                icon="far fa-keyboard fa-fw"
+                                icon="far fa-save"
                                 label="{{ trans('general.licenses') }}"
                                 count="{{ $manufacturer->licenses->count() }}"
                                 tooltip="{{ trans('general.licenses') }}"
@@ -41,7 +41,7 @@
                     @can('view', \App\Models\Accessory::class)
                         <x-tabs.nav-item
                                 name="accessories"
-                                icon="fas fa-tint fa-fw"
+                                icon="far fa-keyboard fa-fw"
                                 label="{{ trans('general.accessories') }}"
                                 count="{{ $manufacturer->accessories->count() }}"
                                 tooltip="{{ trans('general.accessories') }}"
@@ -71,7 +71,7 @@
                     @can('update', $manufacturer)
                         <x-tabs.nav-item-upload />
                     @endcan
-                    
+
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
@@ -125,7 +125,7 @@
                     @can('view', \App\Models\Accessory::class)
                         <x-tabs.pane name="accessories">
                             <x-slot:header>
-                                {{ trans('general.licenses') }}
+                                {{ trans('general.accessories') }}
                             </x-slot:header>
 
                             <x-slot:content>
