@@ -21,6 +21,13 @@ class LicensePresenter extends Presenter
                 'switchable' => true,
                 'title' => trans('general.id'),
                 'visible' => false,
+            ],  [
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('general.name'),
+                'formatter' => 'licensesLinkFormatter',
             ], [
                 'field' => 'company',
                 'searchable' => true,
@@ -29,13 +36,6 @@ class LicensePresenter extends Presenter
                 'title' => trans('admin/companies/table.title'),
                 'visible' => false,
                 'formatter' => 'companiesLinkObjFormatter',
-            ], [
-                'field' => 'name',
-                'searchable' => true,
-                'sortable' => true,
-                'switchable' => false,
-                'title' => trans('general.name'),
-                'formatter' => 'licensesLinkFormatter',
             ], [
                 'field' => 'product_key',
                 'searchable' => true,
