@@ -11,25 +11,17 @@
     <x-container>
         <x-box>
 
-        <table
-                data-columns="{{ \App\Presenters\ConsumablePresenter::dataTableLayout() }}"
-                data-cookie-id-table="consumablesTable"
-                data-id-table="consumablesTable"
-                data-side-pagination="server"
-                data-footer-style="footerStyle"
-                data-show-footer="true"
-                data-sort-order="asc"
-                data-sort-name="name"
-                data-toolbar="#toolbar"
-                id="consumablesTable"
-                data-buttons="consumableButtons"
-                class="table table-striped snipe-table"
-                data-url="{{ route('api.consumables.index') }}"
-                data-export-options='{
-                "fileName": "export-consumables-{{ date('Y-m-d') }}",
-                "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                }'>
-        </table>
+            <x-table
+                    show_column_search="false"
+                    show_advanced_search="true"
+                    show_footer="true"
+                    buttons="consumableButtons"
+                    fixed_right_number="2"
+                    fixed_number="1"
+                    api_url="{{ route('api.consumables.index') }}"
+                    :presenter="\App\Presenters\ConsumablePresenter::dataTableLayout()"
+                    export_filename="export-consumables-{{ date('Y-m-d') }}"
+            />
 
         </x-box>
     </x-container>

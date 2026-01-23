@@ -9,36 +9,24 @@
 
 {{-- Page content --}}
 @section('content')
+    <x-container>
+        <x-box>
 
-<div class="row">
-  <div class="col-md-12">
+            <x-table
+                    show_column_search="false"
+                    show_footer="true"
+                    buttons="accessoryButtons"
+                    fixed_right_number="2"
+                    fixed_number="1"
+                    api_url="{{ route('api.accessories.index') }}"
+                    :presenter="\App\Presenters\AccessoryPresenter::dataTableLayout()"
+                    export_filename="export-accessories-{{ date('Y-m-d') }}"
+            />
 
-    <div class="box box-default">
-      <div class="box-body">
-
-            <table
-                data-columns="{{ \App\Presenters\AccessoryPresenter::dataTableLayout() }}"
-                data-cookie-id-table="accessoriesTable"
-                data-id-table="accessoriesTable"
-                data-side-pagination="server"
-                data-show-footer="true"
-                data-sort-order="asc"
-                data-footer-style="footerStyle"
-                id="accessoriesTable"
-                data-buttons="accessoryButtons"
-                class="table table-striped snipe-table"
-                data-url="{{route('api.accessories.index') }}"
-                data-export-options='{
-                    "fileName": "export-accessories-{{ date('Y-m-d') }}",
-                    "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                    }'>
-          </table>
-      </div>
-    </div>
-  </div>
-</div>
-
+        </x-box>
+    </x-container>
 @stop
+
 
 @section('moar_scripts')
 @include ('partials.bootstrap-table')
