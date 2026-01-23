@@ -32,7 +32,7 @@
                       <x-tabs.nav-item
                               name="assets"
                               icon="fa-solid fa-house-laptop fa-fw"
-                              label="{{ trans('general.users') }}"
+                              label="{{ trans('general.assets') }}"
                               count="{{ $location->assets()->AssetsForShow()->count() }}"
                               tooltip="{{ trans('admin/locations/message.current_location') }}"
                       />
