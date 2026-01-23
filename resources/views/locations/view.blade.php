@@ -140,7 +140,7 @@
                       </x-slot:header>
 
                       <x-slot:bulkactions>
-                      @include('partials.users-bulk-actions')
+                          <x-table.bulk-users />
                       </x-slot:bulkactions>
 
                       <x-slot:content>
@@ -168,7 +168,7 @@
                       </x-slot:header>
 
                       <x-slot:bulkactions>
-                         <x-bulk-menus.assets />
+                         <x-table.bulk-assets />
                       </x-slot:bulkactions>
 
                       <x-slot:content>
@@ -195,7 +195,7 @@
                       </x-slot:header>
 
                       <x-slot:bulkactions>
-                          <x-bulk-menus.assets />
+                          <x-table.bulk-assets />
                       </x-slot:bulkactions>
 
                       <x-slot:content>
@@ -220,7 +220,7 @@
                       </x-slot:header>
 
                       <x-slot:bulkactions>
-                          <x-bulk-menus.assets />
+                          <x-table.bulk-assets />
                       </x-slot:bulkactions>
 
                       <x-slot:content>
