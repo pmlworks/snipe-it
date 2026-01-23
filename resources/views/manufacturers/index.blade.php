@@ -26,7 +26,7 @@
                     </form>
 
               @else
-                        <x-tables.bulk-actions
+                        <x-table.bulk-actions
                                 id_divname='manufacturersBulkEditToolbar'
                                 action_route="{{route('manufacturers.bulk.delete')}}"
                                 id_formname="manufacturersBulkForm"
@@ -36,7 +36,7 @@
                             @can('delete', App\Models\Manufacturer::class)
                                 <option>{{trans('general.delete')}}</option>
                             @endcan
-                        </x-tables.bulk-actions>
+                        </x-table.bulk-actions>
 
                     <table
                       data-columns="{{ \App\Presenters\ManufacturerPresenter::dataTableLayout() }}"

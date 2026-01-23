@@ -11,7 +11,7 @@
     <x-container>
         <x-box>
 
-              <x-tables.bulk-actions
+              <x-table.bulk-actions
                       id_divname='suppliersBulkEditToolbar'
                       action_route="{{route('suppliers.bulk.delete')}}"
                       id_formname="suppliersBulkForm"
@@ -21,7 +21,7 @@
               @can('delete', App\Models\Supplier::class)
                   <option>Delete</option>
               @endcan
-              </x-tables.bulk-actions>
+              </x-table.bulk-actions>
 
             <table
             data-columns="{{ \App\Presenters\SupplierPresenter::dataTableLayout() }}"
