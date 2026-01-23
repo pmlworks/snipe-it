@@ -6,10 +6,9 @@
 <div id="{{ $name }}" {{ $attributes->merge(['class' => 'tab-pane fade']) }}  style="min-height: 400px !important;">
 
     @if (isset($header))
-        <h2 class="box-title{{ (!isset($bulkactions)) ? 'pull-left' : '' }}">
+        <h2 class="box-title{{ (!isset($bulkactions)) ? ' pull-left' : '' }}">
             {{ $header }}
         </h2>
-
     @endif
 
     @if (isset($bulkactions))
