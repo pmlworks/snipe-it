@@ -121,7 +121,8 @@
 
         .label2_fields,
         .l2fd-main,
-        .l2fd-listitem
+        .l2fd-listitem,
+        .fixed-table-loading
         {
             background-color: var(--box-bg) !important;
             color: var(--color-fg) !important;
