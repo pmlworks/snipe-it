@@ -21,7 +21,6 @@
                               class="active"
                               name="users"
                               icon="fa-solid fa-house-user fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.users') }}"
                               count="{{ $location->users()->count() }}"
                               tooltip="{{ trans('general.users') }}"
@@ -33,7 +32,6 @@
                       <x-tabs.nav-item
                               name="assets"
                               icon="fa-solid fa-house-laptop fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.users') }}"
                               count="{{ $location->assets()->AssetsForShow()->count() }}"
                               tooltip="{{ trans('admin/locations/message.current_location') }}"
@@ -42,7 +40,6 @@
                       <x-tabs.nav-item
                               name="rtd_assets"
                               icon="fa-solid fa-house-flag fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('admin/hardware/form.default_location') }}"
                               count="{{ $location->rtd_assets()->AssetsForShow()->count() }}"
                               tooltip="{{ trans('admin/hardware/form.default_location') }}"
@@ -51,7 +48,6 @@
                       <x-tabs.nav-item
                               name="assets_assigned"
                               icon="fas fa-barcode fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('admin/locations/message.assigned_assets') }}"
                               count="{{ $location->assignedAssets()->AssetsForShow()->count() }}"
                               tooltip="{{ trans('admin/locations/message.assigned_assets') }}"
@@ -64,7 +60,6 @@
                       <x-tabs.nav-item
                               name="accessories"
                               icon="far fa-keyboard fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.accessories') }}"
                               count="{{ $location->accessories()->count() }}"
                               tooltip="{{ trans('general.accessories') }}"
@@ -73,7 +68,6 @@
                       <x-tabs.nav-item
                               name="accessories_assigned"
                               icon="fas fa-keyboard fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.accessories_assigned') }}"
                               count="{{ $location->assignedAccessories()->count() }}"
                               tooltip="{{ trans('general.accessories_assigned') }}"
@@ -87,7 +81,6 @@
                       <x-tabs.nav-item
                               name="consumables"
                               icon="fas fa-tint fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.consumables') }}"
                               count="{{ $location->consumables()->count() }}"
                               tooltip="{{ trans('general.consumables') }}"
@@ -100,7 +93,6 @@
                       <x-tabs.nav-item
                               name="components"
                               icon="fas fa-hdd fa-fw"
-                              icon_style="font-size: 17px"
                               label="{{ trans('general.components') }}"
                               count="{{ $location->components->count() }}"
                               tooltip="{{ trans('general.components') }}"
@@ -112,7 +104,6 @@
                   <x-tabs.nav-item
                           name="child_locations"
                           icon="fa-solid fa-city fa-fw"
-                          icon_style="font-size: 17px"
                           label="{{ trans('general.child_locations') }}"
                           count="{{ $location->children()->count() }}"
                           tooltip="{{ trans('general.child_locations') }}"
@@ -121,7 +112,6 @@
                   <x-tabs.nav-item
                           name="files"
                           icon="fa-solid fa-file-contract fa-fw"
-                          icon_style="font-size: 17px"
                           label="{{ trans('general.files') }}"
                           count="{{ $location->uploads()->count() }}"
                           tooltip="{{ trans('general.files') }}"
@@ -130,7 +120,6 @@
                   <x-tabs.nav-item
                           name="history"
                           icon="fa-solid fa-clock-rotate-left fa-fw"
-                          icon_style="font-size: 17px"
                           label="{{ trans('general.history') }}"
                           tooltip="{{ trans('general.history') }}"
                   />
@@ -145,7 +134,7 @@
 
                   <!-- start users tab pane -->
                   @can('view', \App\Models\User::class)
-                  <x-tabs.pane name="users" class="active">
+                  <x-tabs.pane name="users" class="in active">
                       <x-slot:header>
                           {{ trans('general.users') }}
                       </x-slot:header>
