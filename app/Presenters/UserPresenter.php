@@ -36,6 +36,15 @@ class UserPresenter extends Presenter
                 'visible' => false,
             ],
             [
+                'field' => 'username',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('admin/users/table.username'),
+                'visible' => true,
+                'formatter' => 'usernameRoleLinkFormatter',
+            ],
+            [
                 'field' => 'avatar',
                 'searchable' => false,
                 'sortable' => false,
@@ -43,15 +52,6 @@ class UserPresenter extends Presenter
                 'title' => trans('general.importer.avatar'),
                 'visible' => false,
                 'formatter' => 'imageFormatter',
-            ],
-            [
-                'field' => 'company',
-                'searchable' => true,
-                'sortable' => true,
-                'switchable' => true,
-                'title' => trans('admin/companies/table.title'),
-                'visible' => false,
-                'formatter' => 'companiesLinkObjFormatter',
             ],
             [
                 'field' => 'name',
@@ -83,14 +83,15 @@ class UserPresenter extends Presenter
                 'title' => trans('admin/users/table.display_name'),
                 'visible' => false,
                 'formatter' => 'usersLinkFormatter',
-            ], [
-                'field' => 'username',
+            ],
+            [
+                'field' => 'company',
                 'searchable' => true,
                 'sortable' => true,
-                'switchable' => false,
-                'title' => trans('admin/users/table.username'),
-                'visible' => true,
-                'formatter' => 'usernameRoleLinkFormatter',
+                'switchable' => true,
+                'title' => trans('admin/companies/table.title'),
+                'visible' => false,
+                'formatter' => 'companiesLinkObjFormatter',
             ],
             [
                 'field' => 'employee_num',

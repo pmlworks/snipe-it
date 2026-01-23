@@ -42,6 +42,7 @@
                     data-bulk-form-id="#usersBulkForm"
                     data-show-columns-search="true"
                     id="usersTable"
+                    data-fixed-number="2"
                     data-buttons="userButtons"
                     class="table table-striped snipe-table"
                     data-url="{{ route('api.users.index',

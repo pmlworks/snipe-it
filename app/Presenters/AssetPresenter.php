@@ -30,6 +30,21 @@ class AssetPresenter extends Presenter
                 'switchable' => true,
                 'title' => trans('general.id'),
                 'visible' => false,
+            ],  [
+                'field' => 'asset_tag',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('admin/hardware/table.asset_tag'),
+                'visible' => true,
+                'formatter' => 'hardwareLinkFormatter',
+            ],  [
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/form.name'),
+                'visible' => true,
+                'formatter' => 'hardwareLinkFormatter',
             ], [
                 'field' => 'company',
                 'searchable' => true,
@@ -39,13 +54,6 @@ class AssetPresenter extends Presenter
                 'visible' => false,
                 'formatter' => 'companiesLinkObjFormatter',
             ], [
-                'field' => 'name',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('admin/hardware/form.name'),
-                'visible' => true,
-                'formatter' => 'hardwareLinkFormatter',
-            ], [
                 'field' => 'image',
                 'searchable' => false,
                 'sortable' => true,
@@ -53,15 +61,7 @@ class AssetPresenter extends Presenter
                 'title' => trans('admin/hardware/table.image'),
                 'visible' => true,
                 'formatter' => 'imageFormatter',
-            ], [
-                'field' => 'asset_tag',
-                'searchable' => true,
-                'sortable' => true,
-                'switchable' => false,
-                'title' => trans('admin/hardware/table.asset_tag'),
-                'visible' => true,
-                'formatter' => 'hardwareLinkFormatter',
-            ], [
+            ],[
                 'field' => 'serial',
                 'searchable' => true,
                 'sortable' => true,
