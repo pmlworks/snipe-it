@@ -12,19 +12,20 @@
     <x-container>
         <x-box>
 
-            <x-table.bulk-actions
-                    id_divname='categoriesBulkEditToolbar'
+            <x-slot:bulkactions>
+                <x-table.bulk-actions
+                    name='category'
                     action_route="{{route('categories.bulk.delete')}}"
-                    id_formname="categoriesBulkForm"
-                    id_button="bulkCategoryEditButton"
                     model_name="category"
-            >
+                >
                 @can('delete', App\Models\Category::class)
                     <option>Delete</option>
                 @endcan
-            </x-table.bulk-actions>
+                </x-table.bulk-actions>
+            </x-slot:bulkactions>
 
             <x-table
+                    name="category"
                     buttons="categoryButtons"
                     fixed_right_number="1"
                     fixed_number="1"
