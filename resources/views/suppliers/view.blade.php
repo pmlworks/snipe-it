@@ -28,7 +28,6 @@
                             icon="fas fa-barcode fa-fw"
                             label="{{ trans('general.assets') }}"
                             count="{{ $supplier->assets()->AssetsForShow()->count() }}"
-                            tooltip="{{ trans('general.assets') }}"
                         />
                     @endcan
 
@@ -38,7 +37,6 @@
                                 icon="far fa-keyboard fa-fw"
                                 label="{{ trans('general.accessories') }}"
                                 count="{{ $supplier->accessories()->count() }}"
-                                tooltip="{{ trans('general.accessories') }}"
                         />
                     @endcan
 
@@ -49,7 +47,6 @@
                                 icon="fas fa-tint fa-fw"
                                 label="{{ trans('general.consumables') }}"
                                 count="{{ $supplier->consumables()->count() }}"
-                                tooltip="{{ trans('general.consumables') }}"
                         />
                     @endcan
 
@@ -59,7 +56,6 @@
                                 icon="fas fa-hdd fa-fw"
                                 label="{{ trans('general.components') }}"
                                 count="{{ $supplier->components->count() }}"
-                                tooltip="{{ trans('general.components') }}"
                         />
                     @endcan
 
@@ -69,7 +65,6 @@
                                 icon="fa-solid fa-screwdriver-wrench"
                                 label="{{ trans('general.maintenances') }}"
                                 count="{{ $supplier->maintenances->count() }}"
-                                tooltip="{{ trans('general.components') }}"
                         />
                     @endcan
 
@@ -78,7 +73,6 @@
                     icon="fa-solid fa-file-contract fa-fw"
                     label="{{ trans('general.files') }}"
                     count="{{ $supplier->uploads()->count() }}"
-                    tooltip="{{ trans('general.files') }}"
                 />
 
                 @can('update', $supplier)
@@ -236,67 +230,48 @@
             </x-tabs>
         </x-page-column>
         <x-page-column class="col-md-3">
-            @if (($supplier->address!='') && ($supplier->state!='') && ($supplier->country!='') && (config('services.google.maps_api_key')))
-                <div class="col-md-12 text-center" style="padding-bottom: 20px;">
-                    <img src="https://maps.googleapis.com/maps/api/staticmap?markers={{ urlencode($supplier->address.','.$supplier->city.' '.$supplier->state.' '.$supplier->country.' '.$supplier->zip) }}&size=500x300&maptype=roadmap&key={{ config('services.google.maps_api_key') }}" class="img-responsive img-thumbnail" alt="Map">
-                </div>
-            @endif
 
+            <x-box>
+                <x-box.contact :contact="$supplier" img_path="{{ app('suppliers_upload_url') }}">
 
-            <ul class="list-unstyled" style="line-height: 25px; padding-bottom: 20px; padding-top: 20px;">
-                @if ($supplier->contact!='')
-                    <li><x-icon type="user" /> {{ $supplier->contact }}</li>
-                @endif
-                @if ($supplier->phone!='')
-                    <li><i class="fas fa-phone"></i>
-                        <a href="tel:{{ $supplier->phone }}">{{ $supplier->phone }}</a>
-                    </li>
-                @endif
-                @if ($supplier->fax!='')
-                    <li><i class="fas fa-print"></i> {{ $supplier->fax }}</li>
-                @endif
+                    <x-info-element icon_type="contact-card">
+                        {{ $supplier->contact }}
+                    </x-info-element>
 
-                @if ($supplier->email!='')
-                    <li>
-                        <i class="far fa-envelope"></i>
-                        <a href="mailto:{{ $supplier->email }}">
+                    <x-info-element>
+                        {!! nl2br($supplier->present()->displayAddress) !!}
+                    </x-info-element>
+
+                    <x-info-element icon_type="phone">
+                        <x-info-element.phone>
+                            {{ $supplier->phone }}
+                        </x-info-element.phone>
+                    </x-info-element>
+
+                    <x-info-element icon_type="fax">
+                        <x-info-element.phone>
+                            {{ $supplier->fax }}
+                        </x-info-element.phone>
+                    </x-info-element>
+
+                    <x-info-element icon_type="email">
+                        <x-info-element.email>
                             {{ $supplier->email }}
-                        </a>
-                    </li>
-                @endif
+                        </x-info-element.email>
+                    </x-info-element>
 
-                @if ($supplier->url!='')
-                    <li>
-                        <i class="fas fa-globe-americas"></i>
-                        <a href="{{ $supplier->url }}" target="_new">{{ $supplier->url }}</a>
-                    </li>
-                @endif
+                    <x-info-element icon_type="globe-us">
+                        <x-info-element.url>
+                            {{ $supplier->url }}
+                        </x-info-element.url>
+                    </x-info-element>
 
-                @if ($supplier->address!='')
-                    <li><br>
-                        {{ $supplier->address }}
 
-                        @if ($supplier->address2)
-                            <br>
-                            {{ $supplier->address2 }}
-                        @endif
-                        @if (($supplier->city) || ($supplier->state))
-                            <br>
-                            {{ $supplier->city }} {{ strtoupper($supplier->state) }} {{ $supplier->zip }} {{ strtoupper($supplier->country) }}
-                        @endif
-                    </li>
-                @endif
 
-                @if ($supplier->notes!='')
-                    <li><i class="fa fa-comment"></i> {!! nl2br(Helper::parseEscapedMarkedownInline($supplier->notes)) !!}</li>
-                @endif
+                </x-box.contact>
 
-            </ul>
-            @if ($supplier->image!='')
-                <div class="col-md-12 text-center" style="padding-bottom: 20px;">
-                    <img src="{{ Storage::disk('public')->url(app('suppliers_upload_url').e($supplier->image)) }}" class="img-responsive img-thumbnail" alt="{{ $supplier->name }}">
-                </div>
-            @endif
+
+            </x-box>
         </x-page-column>
 
     </x-container>
