@@ -206,6 +206,12 @@ class IconHelper
                 return 'fa-solid fa-lightbulb';
             case 'highlight':
                 return 'fa-solid fa-highlighter';
+            case 'manager':
+                return 'fa-solid fa-building-user';
+            case 'company':
+                return 'fa-regular fa-building';
+            case 'parent':
+                return 'fa-solid fa-building-flag';
         }
     }
 }
