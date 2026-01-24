@@ -15,14 +15,14 @@
         <x-box>
 
                 <!-- Name -->
-                <x-form-row
+                <x-form.row
                         :label="trans('admin/manufacturers/table.name')"
                         :$item
                         name="name"
                 />
 
                 <!-- URL -->
-                <x-form-row
+                <x-form.row
                         :label="trans('general.url')"
                         :$item
                         name="url"
@@ -33,7 +33,7 @@
                 />
 
                 <!-- Support URL -->
-                <x-form-row
+                <x-form.row
                         :label="trans('admin/manufacturers/table.support_url')"
                         :$item
                         name="support_url"
@@ -44,7 +44,7 @@
                 />
 
                 <!-- Warranty Lookup URL -->
-                <x-form-row
+                <x-form.row
                         :label="trans('admin/manufacturers/table.warranty_lookup_url')"
                         :$item
                         name="warranty_lookup_url"
@@ -56,7 +56,7 @@
                 />
 
                 <!-- Support Phone -->
-                <x-form-row
+                <x-form.row
                         :label="trans('admin/manufacturers/table.support_phone')"
                         :$item
                         name="support_phone"
@@ -69,7 +69,7 @@
 
 
                 <!-- Support Email -->
-                <x-form-row
+                <x-form.row
                         :label="trans('admin/manufacturers/table.support_email')"
                         :$item
                         name="support_email"
@@ -85,7 +85,7 @@
 
 
                 <!-- Notes -->
-                <x-form-row
+                <x-form.row
                         :label="trans('general.notes')"
                         :$item
                         name="notes"
@@ -94,9 +94,9 @@
                 />
 
                 <fieldset name="color-preferences">
-                    <x-form-legend help_text="{{ trans('general.tag_color_help') }}">
+                    <x-form.legend help_text="{{ trans('general.tag_color_help') }}">
                         {{ trans('general.tag_color') }}
-                    </x-form-legend>
+                    </x-form.legend>
                     <!--  color -->
                     <div class="form-group {{ $errors->has('tag_color') ? 'error' : '' }}">
                         <label for="tag_color" class="col-md-3 control-label">
