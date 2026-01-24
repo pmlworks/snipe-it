@@ -100,7 +100,9 @@ return [
     'created_at' 			=> 'Created At',
     'created_by'            => 'Created By',
     'record_created' 		=> 'Record Created',
-    'updated_at' 			=> 'Updated at',
+    'updated_at' 			=> 'Updated At',
+    'updated_plain' 		=> 'Updated',
+    'created_plain' 		=> 'Created',
     'currency'  			=> '$', // this is deprecated
     'currency_text'  		=> 'Currency', //
     'current'  				=> 'Current',

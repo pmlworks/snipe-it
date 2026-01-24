@@ -19,19 +19,53 @@
         {{ $slot }}
 
 
-
         @if ($contact->notes)
-            <li class="list-group-item">
-                <i class="fa fa-note-sticky"></i>
+            <x-info-element>
+                <i class="fa fa-note-sticky fa-fw"></i>
                 {!! nl2br(Helper::parseEscapedMarkedownInline($contact->notes)) !!}
-            </li>
+            </x-info-element>
+        @endif
+
+
+        @if ($contact->created_by)
+            <x-info-element>
+                <span class="text-muted">
+                    <x-icon type="user" class="fa-fw" />
+                    {{ trans('general.created_by') }}
+                    {{ $contact->adminuser->display_name }}
+                </span>
+            </x-info-element>
+        @endif
+
+
+        @if ($contact->created_at)
+            <x-info-element>
+                <span class="text-muted">
+                    <x-icon type="calendar" class="fa-fw" />
+                    {{ trans('general.created_plain') }}
+                    {{ $contact->created_at }}
+                </span>
+            </x-info-element>
+        @endif
+
+        @if ($contact->updated_at)
+            <x-info-element>
+                <span class="text-muted">
+                    <x-icon type="calendar" class="fa-fw" />
+                    {{ trans('general.updated_plain') }}
+                    {{ $contact->updated_at }}
+                </span>
+            </x-info-element>
         @endif
     </ul>
+
+    @if (($contact->address!='') && ($contact->state!='') && ($contact->country!='') && (config('services.google.maps_api_key')))
+        <x-info-element>
+            <img src="https://maps.googleapis.com/maps/api/staticmap?markers={{ urlencode($contact->address.','.$contact->city.' '.$contact->state.' '.$contact->country.' '.$contact->zip) }}&size=500x300&maptype=roadmap&key={{ config('services.google.maps_api_key') }}" class="img-responsive" alt="Map">
+        </x-info-element>
+    @endif
+
 </div>
 
 
-@if (($contact->address!='') && ($contact->state!='') && ($contact->country!='') && (config('services.google.maps_api_key')))
-    <div class="col-md-12 text-center" style="padding-bottom: 20px;">
-        <img src="https://maps.googleapis.com/maps/api/staticmap?markers={{ urlencode($contact->address.','.$contact->city.' '.$contact->state.' '.$contact->country.' '.$contact->zip) }}&size=500x300&maptype=roadmap&key={{ config('services.google.maps_api_key') }}" class="img-responsive img-thumbnail" alt="Map">
-    </div>
-@endif
+

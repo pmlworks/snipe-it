@@ -260,17 +260,13 @@
                         </x-info-element.email>
                     </x-info-element>
 
-                    <x-info-element icon_type="globe-us">
+                    <x-info-element icon_type="external-link">
                         <x-info-element.url>
                             {{ $supplier->url }}
                         </x-info-element.url>
                     </x-info-element>
 
-
-
                 </x-box.contact>
-
-
             </x-box>
         </x-page-column>
 
