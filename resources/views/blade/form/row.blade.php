@@ -18,7 +18,7 @@
 
     <!-- form label -->
     @if (isset($label))
-        <x-form-label  :for="$name" class="{{ $label_class ?? 'col-md-3' }}">{{ $label }}</x-form-label>
+        <x-form.label  :for="$name" class="{{ $label_class ?? 'col-md-3' }}">{{ $label }}</x-form.label>
     @endif
 
 
@@ -46,9 +46,9 @@
     @if ($info_tooltip_text)
         <!-- Info Tooltip -->
         <div class="col-md-1 text-left" style="padding-left:0; margin-top: 5px;">
-            <x-form-tooltip>
+            <x-form.tooltip>
                 {{ $info_tooltip_text }}
-            </x-form-tooltip>
+            </x-form.tooltip>
         </div>
     @endif
 
