@@ -5,7 +5,7 @@
 @aware(['contact' => null])
 
 @if (!$slot->isEmpty())
-    <li class="list-group-item">
+    <li {{ $attributes->merge(['class' => 'list-group-item']) }}>
 
         @if ($icon_type)
             <x-icon type="{{ $icon_type }}" class="fa-fw" />
