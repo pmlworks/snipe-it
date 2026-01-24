@@ -144,7 +144,7 @@ class IconHelper
             case 'more-files':
                 return 'fa-solid fa-laptop-file';
             case 'maintenances':
-                return 'fas fa-wrench';
+                return 'fa-solid fa-screwdriver-wrench';
             case 'seats':
                 return 'far fa-list-alt';
             case 'globe-us':
