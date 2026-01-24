@@ -32,7 +32,7 @@ abstract class Presenter
         }
 
         if ($this->model->city) {
-            $address .= e($this->model->city).',';
+            $address .= e($this->model->city).', ';
         }
 
         if ($this->model->state) {
