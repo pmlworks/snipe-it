@@ -233,39 +233,6 @@
 
             <x-box>
                 <x-box.contact :contact="$supplier" img_path="{{ app('suppliers_upload_url') }}">
-
-                    <x-info-element icon_type="contact-card">
-                        {{ $supplier->contact }}
-                    </x-info-element>
-
-                    <x-info-element>
-                        {!! nl2br($supplier->present()->displayAddress) !!}
-                    </x-info-element>
-
-                    <x-info-element icon_type="phone">
-                        <x-info-element.phone>
-                            {{ $supplier->phone }}
-                        </x-info-element.phone>
-                    </x-info-element>
-
-                    <x-info-element icon_type="fax">
-                        <x-info-element.phone>
-                            {{ $supplier->fax }}
-                        </x-info-element.phone>
-                    </x-info-element>
-
-                    <x-info-element icon_type="email">
-                        <x-info-element.email>
-                            {{ $supplier->email }}
-                        </x-info-element.email>
-                    </x-info-element>
-
-                    <x-info-element icon_type="external-link">
-                        <x-info-element.url>
-                            {{ $supplier->url }}
-                        </x-info-element.url>
-                    </x-info-element>
-
                 </x-box.contact>
             </x-box>
         </x-page-column>

@@ -369,132 +369,76 @@
         </x-page-column>
         <x-page-column class="col-md-3">
 
-      @if ($location->image!='')
-          <div class="col-md-12 text-center" style="padding-bottom: 17px;">
-              <img src="{{ Storage::disk('public')->url('locations/'.e($location->image)) }}" class="img-responsive img-thumbnail" style="width:100%" alt="{{ $location->name }}">
-          </div>
-      @endif
+            <x-box>
+                <x-box.contact :contact="$location" img_path="{{ app('locations_upload_url') }}">
 
-      @if (($location->state!='') && ($location->country!='') && (config('services.google.maps_api_key')))
-          <div class="col-md-12 text-center" style="padding-bottom: 10px;">
-              <img src="https://maps.googleapis.com/maps/api/staticmap?markers={{ urlencode($location->address.','.$location->city.' '.$location->state.' '.$location->country.' '.$location->zip) }}&size=700x500&maptype=roadmap&key={{ config('services.google.maps_api_key') }}" class="img-thumbnail" style="width:100%" alt="Map">
-          </div>
-      @endif
+                    <x-slot:before_list>
+                        @can('update', $location)
+                            @if ($location->deleted_at=='')
+                                    <a href="{{ route('locations.edit', ['location' => $location->id]) }}" class="btn btn-block btn-sm btn-warning btn-social">
+                                        <x-icon type="edit" />
+                                        {{ trans('admin/locations/table.update') }}
+                                    </a>
+                            @else
+                                    <a class="btn btn-block btn-sm btn-warning btn-social disabled">
+                                        <x-icon type="edit" />
+                                        {{ trans('admin/locations/table.update') }}
+                                    </a>
+                            @endif
+                        @endcan
 
-      <div class="col-md-12">
+                        @if ($location->deleted_at=='')
+                                <a href="{{ route('locations.print_assigned', ['locationId' => $location->id]) }}" class="btn btn-block btn-sm btn-theme btn-social hidden-print">
+                                    <x-icon type="print" />
+                                    {{ trans('admin/locations/table.print_inventory') }}
+                                </a>
 
-          <ul class="list-unstyled" style="line-height: 22px; padding-bottom: 20px;">
+                                <a href="{{ route('locations.print_all_assigned', ['locationId' => $location->id]) }}" class="btn btn-block btn-sm btn-theme btn-social hidden-print">
+                                    <x-icon type="print" />
+                                    {{ trans('admin/locations/table.print_all_assigned') }}
+                                </a>
 
-              @if ($location->notes)
-                  <li>
-                      <strong>{{ trans('general.notes') }}</strong>:
-                      {!! nl2br(Helper::parseEscapedMarkedownInline($location->notes)) !!}
-                  </li>
-              @endif
+                        @endif
 
-              @if ($location->address!='')
-                  <li>{{ $location->address }}</li>
-              @endif
-              @if ($location->address2!='')
-                  <li>{{ $location->address2 }}</li>
-              @endif
-              @if (($location->city!='') || ($location->state!='') || ($location->zip!=''))
-                  <li>{{ $location->city }} {{ $location->state }} {{ $location->zip }}</li>
-              @endif
-              @if ($location->manager)
-                  <li><strong>{{ trans('admin/users/table.manager') }}</strong>: {!! $location->manager->present()->nameUrl() !!}</li>
-              @endif
-              @if ($location->company)
-                  <li><strong>{{ trans('admin/companies/table.name') }}</strong>: {!! $location->company->present()->nameUrl() !!}</li>
-              @endif
-              @if ($location->parent)
-                  <li><strong>{{ trans('admin/locations/table.parent') }}</strong>: {!! $location->parent->present()->nameUrl() !!}</li>
-              @endif
-              @if ($location->ldap_ou)
-                  <li><strong>{{ trans('admin/locations/table.ldap_ou') }}</strong>: {{ $location->ldap_ou }}</li>
-              @endif
+                        @can('delete', $location)
+
+                                @if ($location->deleted_at=='')
+                                    @if ($location->isDeletable())
+                                        <button class="btn btn-sm btn-block btn-danger btn-social delete-asset" data-toggle="modal" data-title="{{ trans('general.delete') }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $location->name]) }}" data-target="#dataConfirmModal">
+                                            <x-icon type="delete" /> {{ trans('general.delete') }}
+                                        </button>
+                                    @else
+                                        <div data-placement="top" data-tooltip="true" data-title="{{ trans('admin/locations/message.assoc_users') }}" style="padding-top: 5px; padding-bottom: 5px;">
+                                              <a href="#" class="btn btn-block btn-sm btn-danger btn-social hidden-print disabled" data-tooltip="true">
+                                                <x-icon type="delete" /> {{ trans('general.delete') }}
+                                              </a>
+                                        </div>
+                                    @endif
+
+                                @else
+                                    <form method="POST" action="{{ route('locations.restore', ['location' => $location->id]) }}">
+                                        @csrf
+                                        <button class="btn btn-sm btn-block btn-warning btn-social">
+                                            <x-icon type="restore" />
+                                            {{ trans('general.restore') }}
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        @endcan
+
+                    </x-slot:before_list>
 
 
-              @if ((($location->address!='') && ($location->city!='')) || ($location->state!='') || ($location->country!=''))
-                      <li>
-                        <a href="https://maps.google.com/?q={{ urlencode($location->address.','. $location->city.','.$location->state.','.$location->country.','.$location->zip) }}" target="_blank">
-                            {!! trans('admin/locations/message.open_map', ['map_provider_icon' => '<i class="fa-brands fa-google" aria-hidden="true"></i>']) !!}
-                            <x-icon type="external-link"/>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://maps.apple.com/?q={{ urlencode($location->address.','. $location->city.','.$location->state.','.$location->country.','.$location->zip) }}" target="_blank">
-                            {!! trans('admin/locations/message.open_map', ['map_provider_icon' => '<i class="fa-brands fa-apple" aria-hidden="true" style="font-size: 18px"></i>']) !!}
-                            <x-icon type="external-link"/></a>
-                  </li>
-              @endif
+                @if ($location->ldap_ou)
+                        <x-info-element icon_type="ldap">
+                            {{ $location->ldap_ou }}
+                        </x-info-element>
+                    @endif
 
-          </ul>
-      </div>
 
-      @can('update', $location)
-          @if ($location->deleted_at=='')
-              <div class="col-md-12">
-                  <a href="{{ route('locations.edit', ['location' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-warning btn-social">
-                      <x-icon type="edit" />
-                      {{ trans('admin/locations/table.update') }}
-                  </a>
-              </div>
-              @else
-              <div class="col-md-12">
-                  <a style="width: 100%;" class="btn btn-sm btn-warning btn-social disabled">
-                      <x-icon type="edit" />
-                      {{ trans('admin/locations/table.update') }}
-                  </a>
-              </div>
-              @endif
-      @endcan
-
-     @if ($location->deleted_at=='')
-      <div class="col-md-12" style="padding-top: 5px;">
-          <a href="{{ route('locations.print_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social hidden-print">
-              <x-icon type="print" />
-              {{ trans('admin/locations/table.print_inventory') }}
-          </a>
-      </div>
-      <div class="col-md-12" style="padding-top: 5px;">
-          <a href="{{ route('locations.print_all_assigned', ['locationId' => $location->id]) }}" style="width: 100%;" class="btn btn-sm btn-theme btn-social hidden-print">
-              <x-icon type="print" />
-              {{ trans('admin/locations/table.print_all_assigned') }}
-          </a>
-      </div>
-      @endif
-
-          @can('delete', $location)
-              <div class="col-md-12 hidden-print" style="padding-top: 10px;">
-
-            @if ($location->deleted_at=='')
-
-                @if ($location->isDeletable())
-                      <button class="btn btn-sm btn-block btn-danger btn-social delete-asset" data-toggle="modal" data-title="{{ trans('general.delete') }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $location->name]) }}" data-target="#dataConfirmModal">
-                          <x-icon type="delete" />
-                          {{ trans('general.delete') }}
-                      </button>
-                @else
-                      <span data-placement="top" data-tooltip="true" data-title="{{ trans('admin/locations/message.assoc_users') }}">
-                          <a href="#" class="btn btn-block btn-sm btn-danger btn-social hidden-print disabled" data-tooltip="true">
-                          <x-icon type="delete" />
-                          {{ trans('general.delete') }}
-                      </a>
-                          </span>
-                @endif
-
-            @else
-                  <form method="POST" action="{{ route('locations.restore', ['location' => $location->id]) }}">
-                      @csrf
-                      <button class="btn btn-sm btn-block btn-warning btn-social">
-                          <x-icon type="restore" />
-                          {{ trans('general.restore') }}
-                      </button>
-                  </form>
-            @endif
-              </div>
-    @endcan
+                </x-box.contact>
+            </x-box>
 
         </x-page-column>
     </x-container>

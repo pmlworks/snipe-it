@@ -193,42 +193,6 @@
             <x-box>
                 <x-box.contact :contact="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
 
-                    <x-info-element icon_type="contact-card">
-                        {{ $manufacturer->contact }}
-                    </x-info-element>
-
-                    <x-info-element icon_type="phone">
-                        <x-info-element.phone>
-                            {{ $manufacturer->support_phone }}
-                        </x-info-element.phone>
-                    </x-info-element>
-
-                    <x-info-element icon_type="fax">
-                        <x-info-element.phone>
-                            {{ $manufacturer->fax }}
-                        </x-info-element.phone>
-                    </x-info-element>
-
-                    <x-info-element icon_type="email">
-                        <x-info-element.email>
-                            {{ $manufacturer->email }}
-                        </x-info-element.email>
-                    </x-info-element>
-
-                    <x-info-element icon_type="external-link">
-                        <x-info-element.url>
-                            {{ $manufacturer->url }}
-                        </x-info-element.url>
-                    </x-info-element>
-
-                    <x-info-element icon_type="external-link">
-                        <x-info-element.url>
-                            {{ $manufacturer->support_url }}
-                        </x-info-element.url>
-                    </x-info-element>
-
-
-
                 </x-box.contact>
             </x-box>
         </x-page-column>
