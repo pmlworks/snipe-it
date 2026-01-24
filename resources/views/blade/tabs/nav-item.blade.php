@@ -1,14 +1,15 @@
 @props([
-    'name' => false,
-    'label' => false,
+    'name' => null,
+    'label' => null,
     'count' => 0,
-    'icon' => false,
-    'icon_style' => false,
-    'tooltip' => false,
+    'icon' => null,
+    'icon_style' => null,
+    'tooltip' => null,
 ])
 <!-- start tab nav item -->
 <li {{ $attributes->merge(['class' => '']) }}>
-    <a href="#{{ $name ?? 'info' }}" data-toggle="tab"{!! ($tooltip) ? ' data-tooltip="true" title="'.$tooltip.'"' : '' !!}>
+
+    <a href="#{{ $name ?? 'info' }}" data-toggle="tab" data-tooltip="true" title="{{ $tooltip ?? $label }}">
 
         @if ($icon)
 
@@ -27,8 +28,6 @@
         @elseif ($label)
             {{ $label }}
         @endif
-
-
 
         @if ($count > 0)
             <span class="badge">{{ number_format($count) }}</span>
