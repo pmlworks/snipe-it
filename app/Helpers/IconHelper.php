@@ -131,9 +131,12 @@ class IconHelper
                 return 'fa-regular fa-clipboard';
             case 'paperclip':
                 return 'fas fa-paperclip';
+            case 'contact-card':
+                return 'fa-regular fa-id-card';
             case 'files':
                 return 'fa-regular fa-file';
             case 'more-info':
+            case 'support':
                 return 'far fa-life-ring';
             case 'calendar':
                 return 'fas fa-calendar';
