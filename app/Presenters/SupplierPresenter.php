@@ -3,7 +3,7 @@
 namespace App\Presenters;
 
 /**
- * Class LocationPresenter
+ * Class SupplierPresenter
  */
 class SupplierPresenter extends Presenter
 {

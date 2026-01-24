@@ -21,6 +21,13 @@ class ComponentPresenter extends Presenter
                 'switchable' => true,
                 'title' => trans('general.id'),
                 'visible' => false,
+            ], [
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.name'),
+                'visible' => true,
+                'formatter' => 'componentsLinkFormatter',
             ],
             [
                 'field' => 'company',
@@ -31,14 +38,7 @@ class ComponentPresenter extends Presenter
                 'visible' => false,
                 'formatter' => 'companiesLinkObjFormatter',
             ],
-            [
-                'field' => 'name',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('general.name'),
-                'visible' => true,
-                'formatter' => 'componentsLinkFormatter',
-            ], [
+             [
                 'field' => 'image',
                 'searchable' => false,
                 'sortable' => true,

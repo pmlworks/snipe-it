@@ -333,6 +333,7 @@ class LocationPresenter extends Presenter
                 'switchable' => false,
                 'title' => trans('table.actions'),
                 'formatter' => 'accessoriesInOutFormatter',
+                'printIgnore' => true,
             ],
         ];
 

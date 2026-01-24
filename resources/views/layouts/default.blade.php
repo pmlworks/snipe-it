@@ -121,10 +121,16 @@
 
         .label2_fields,
         .l2fd-main,
-        .l2fd-listitem
+        .l2fd-listitem,
+        .fixed-table-loading,
+        .list-group-item
         {
             background-color: var(--box-bg) !important;
             color: var(--color-fg) !important;
+        }
+
+        .list-group-item {
+            border: var(--tab-bottom-border);
         }
 
         footer.main-footer {
@@ -418,6 +424,8 @@
         .box.box-default {
             border-top:  var(--box-header-top-border);
         }
+
+
 
         .box-header.with-border {
             border-bottom: var(--box-header-bottom-border);
@@ -892,6 +900,10 @@
 
         .small-box h3, .small-box p {
             color: white !important;
+        }
+
+        .box.box-theme {
+            border-top:  var(--main-theme-color) !important;
         }
 
     </style>

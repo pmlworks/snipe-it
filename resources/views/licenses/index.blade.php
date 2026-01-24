@@ -12,23 +12,17 @@
     <x-container>
         <x-box>
 
-          <table
-              data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayout() }}"
-              data-cookie-id-table="licensesTable"
-              data-side-pagination="server"
-              data-footer-style="footerStyle"
-              data-show-footer="true"
-              data-sort-order="asc"
-              data-sort-name="name"
-              id="licensesTable"
-              data-buttons="licenseButtons"
-              class="table table-striped snipe-table"
-              data-url="{{ route('api.licenses.index', ['status' => e(request('status'))]) }}"
-              data-export-options='{
-            "fileName": "export-licenses-{{ date('Y-m-d') }}",
-            "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-            }'>
-          </table>
+            <x-table
+                    show_column_search="false"
+                    show_advanced_search="true"
+                    show_footer="true"
+                    buttons="licenseButtons"
+                    fixed_right_number="2"
+                    fixed_number="1"
+                    api_url="{{ route('api.licenses.index', ['status' => e(request('status'))]) }}"
+                    :presenter="\App\Presenters\LicensePresenter::dataTableLayout()"
+                    export_filename="export-licenses-{{ date('Y-m-d') }}"
+            />
 
         </x-box>
     </x-container>
