@@ -212,6 +212,16 @@ class IconHelper
                 return 'fa-regular fa-building';
             case 'parent':
                 return 'fa-solid fa-building-flag';
+            case 'number':
+                return 'fa-solid fa-hashtag';
+            case 'depreciation':
+                return 'fa-solid fa-arrows-down-to-line';
+            case 'manufacturer':
+                return 'fa-solid fa-industry';
+            case 'fieldset' :
+                return 'fa-regular fa-rectangle-list';
+            case 'deleted-date':
+                return 'fa-solid fa-calendar-xmark';
         }
     }
 }
