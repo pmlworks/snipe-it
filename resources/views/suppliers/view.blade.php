@@ -232,8 +232,8 @@
         <x-page-column class="col-md-3">
 
             <x-box>
-                <x-box.contact :contact="$supplier" img_path="{{ app('suppliers_upload_url') }}">
-                </x-box.contact>
+                <x-box.info-panel :contact="$supplier" img_path="{{ app('suppliers_upload_url') }}">
+                </x-box.info-panel>
             </x-box>
         </x-page-column>
 

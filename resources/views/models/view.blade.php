@@ -108,7 +108,7 @@
         </x-page-column>
         <x-page-column class="col-md-3">
             <x-box>
-                <x-box.contact :contact="$model" img_path="{{ app('models_upload_url') }}">
+                <x-box.info-panel :contact="$model" img_path="{{ app('models_upload_url') }}">
                     <x-slot:before_list>
 
                         @can('update', \App\Models\AssetModel::class)
@@ -152,7 +152,7 @@
 
                     </x-slot:before_list>
 
-                </x-box.contact>
+                </x-box.info-panel>
             </x-box>
         </x-page-column>
     </x-container>

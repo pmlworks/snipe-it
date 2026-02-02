@@ -139,8 +139,8 @@
                                                 <div class="col-md-9">
                                                     @if ($license->isTerminated())
                                                         <span class="text-danger">
-                           <x-icon type="warning" class="text-warning" />
-                          </span>
+                                                       <x-icon type="warning" class="text-warning" />
+                                                      </span>
                                                     @endif
 
                                                     {{ Helper::getFormattedDateObject($license->termination_date, 'date', false) }}
@@ -150,19 +150,6 @@
 
 
 
-                                    @if ($license->purchase_cost > 0)
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>
-                                                    {{ trans('general.purchase_cost') }}
-                                                </strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ $snipeSettings->default_currency }}
-                                                {{ Helper::formatCurrencyOutput($license->purchase_cost) }}
-                                            </div>
-                                        </div>
-                                    @endif
 
 
                                     @if ($license->purchase_order)
@@ -299,7 +286,7 @@
 
         <x-page-column class="col-md-3">
             <x-box>
-                <x-box.contact :contact="$license" img_path="{{ app('licenses_upload_url') }}">
+                <x-box.info-panel :contact="$license" img_path="{{ app('licenses_upload_url') }}">
 
                     <x-slot:before_list>
 
@@ -377,7 +364,7 @@
 
 
                     </x-slot:before_list>
-                </x-box.contact>
+                </x-box.info-panel>
             </x-box>
 
         </x-page-column>

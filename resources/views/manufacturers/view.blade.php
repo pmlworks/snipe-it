@@ -191,9 +191,9 @@
         <x-page-column class="col-md-3">
 
             <x-box>
-                <x-box.contact :contact="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
+                <x-box.info-panel :contact="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
 
-                </x-box.contact>
+                </x-box.info-panel>
             </x-box>
         </x-page-column>
     </x-container>
