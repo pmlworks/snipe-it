@@ -212,7 +212,7 @@ class SnipeSCIMConfig
                         ->setMultiValued(true),
 
                     // phone chonk
-                    (new class ('phoneNumbers') extends Complex {
+                    (new class ('phoneNumbers') extends UpdatableComplex {
                         protected function doRead(&$object, $attributes = [])
                         {
                             $phones = [];
@@ -275,7 +275,7 @@ class SnipeSCIMConfig
                         ->setMultiValued(true),
 
                     // addresses chonk
-                    (new class ('addresses') extends Complex {
+                    (new class ('addresses') extends Complex { //FIXME - swap this for UpdatableComplex
                         static $addressmap = [
                             'streetAddress' => 'address',
                             'locality' => 'city',
