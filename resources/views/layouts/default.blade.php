@@ -725,7 +725,7 @@
         .table > tfoot > tr > td
 
         {
-            border-top-color: var(--box-header-bottom-border-color) !important;
+            border-top-color: var(--box-bg) !important;
             border-bottom-color: var(--box-header-bottom-border-color) !important;
         }
 
