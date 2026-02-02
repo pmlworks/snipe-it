@@ -228,6 +228,15 @@ class IconHelper
                 return 'fa-solid fa-icons';
             case 'cost':
                 return 'fa-solid fa-money-bills';
+            case 'available':
+                return 'fa-solid fa-box';
+            case 'checkedout':
+                return 'fa-solid fa-box-open';
+            case 'purchase_order':
+                return 'fa-solid fa-file-invoice-dollar';
+            case 'order':
+                return 'fa-solid fa-file-invoice';
+
         }
     }
 }
