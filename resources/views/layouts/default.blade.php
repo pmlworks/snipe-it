@@ -521,14 +521,18 @@
 
         .table-striped > tbody > tr:nth-of-type(even),
         .row-new-striped > .row:nth-of-type(even),
-        .row-new-striped > .div:nth-of-type(odd) {
+        .row-new-striped > .div:nth-of-type(odd),
+        .cansort
+        {
             background-color: var(--table-stripe-bg) !important;
             border-top: var(--table-border-row-top) !important;
+            color: var(--nav-primary-text-color) !important;
         }
 
         .table-striped > tbody > tr:nth-of-type(odd),
         .row-new-striped > .row:nth-of-type(even),
-        .row-new-striped > .div:nth-of-type(odd)
+        .row-new-striped > .div:nth-of-type(odd),
+        .cansort
         {
             background-color: var(--table-stripe-bg-alt) !important;
             border-top: var(--table-border-row-top) !important;
