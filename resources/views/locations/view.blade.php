@@ -100,7 +100,6 @@
 
                   @endcan
 
-
                   <x-tabs.nav-item
                           name="child_locations"
                           icon="fa-solid fa-city fa-fw"

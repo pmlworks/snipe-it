@@ -222,6 +222,12 @@ class IconHelper
                 return 'fa-regular fa-rectangle-list';
             case 'deleted-date':
                 return 'fa-solid fa-calendar-xmark';
+            case 'eol':
+                return 'fa-regular fa-calendar-days';
+            case 'category':
+                return 'fa-solid fa-icons';
+            case 'cost':
+                return 'fa-solid fa-money-bills';
         }
     }
 }
