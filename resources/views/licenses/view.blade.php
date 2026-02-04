@@ -204,6 +204,15 @@
         </x-page-column>
     </x-container>
 
+@can('checkout', \App\Models\License::class)
+    @include ('modals.confirm-action',
+          [
+              'modal_name' => 'checkoutFromAllModal',
+              'route' => route('licenses.bulkcheckout', $license->id),
+              'title' => trans('general.modal_confirm_generic'),
+              'body' => trans_choice('admin/licenses/general.bulk.checkout_all.modal', 2, ['available_seats_count' => $available_seats_count])
+          ])
+@endcan
 
 
   @can('update', \App\Models\License::class)
