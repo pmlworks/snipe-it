@@ -676,6 +676,10 @@
             background-color: #1e282c;
         }
 
+        .list-group-item.subitem {
+            padding-left:20px !important;
+        }
+
         .sidebar-menu>li.active > a,
         .sidebar-menu>li:hover>a,
         .treeview-menu>li> a
@@ -701,6 +705,10 @@
             background-color: #1e282c;
         }
 
+
+        .list-group-item:first-child {
+            border-top: 0 !important;
+        }
 
         .sidebar-menu > li > a:link,
         .sidebar-menu > li > a:visited,

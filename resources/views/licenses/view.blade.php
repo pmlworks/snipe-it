@@ -14,38 +14,32 @@
             <x-tabs>
                 <x-slot:tabnav>
 
-                    <x-tabs.nav-item
-                            name="info"
-                            class="active"
-                            icon="fas fa-info-circle"
-                            label="{{ trans('admin/users/general.info') }}"
-                    />
 
                     <x-tabs.nav-item
                             name="seats"
-                            icon="far fa-list-alt"
+                            class="active"
+                            icon_type="checkedout"
                             label="{{ trans('general.assigned') }}"
                             count="{{ $license->assignedCount()->count() }}"
                     />
 
                     <x-tabs.nav-item
                             name="available"
-                            icon="far fa-list"
+                            icon_type="available"
                             label="{{ trans('general.available') }}"
                             count="{{ $license->availCount()->count() }}"
                     />
 
                 <x-tabs.nav-item
                         name="files"
-                        icon="fa-solid fa-file-contract fa-fw"
+                        icon_type="files"
                         label="{{ trans('general.files') }}"
                         count="{{ $license->uploads()->count() }}"
                 />
 
-
                 <x-tabs.nav-item
                         name="history"
-                        icon="fa-solid fa-clock-rotate-left fa-fw"
+                        icon_type="history"
                         label="{{ trans('general.history') }}"
                         tooltip="{{ trans('general.history') }}"
                 />
@@ -57,168 +51,18 @@
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
-                    <!-- start info tab pane -->
-                        <x-tabs.pane name="info" class="in active">
 
-                            <x-slot:content>
-
-                                <div class="container row-new-striped">
-
-                                    @if (!is_null($license->serial))
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>{{ trans('admin/licenses/form.license_key') }}</strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                @can('viewKeys', $license)
-
-                                                    <code>
-                                                        <x-copy-to-clipboard copy_what="license_key">
-                                                            {!! nl2br(e($license->serial)) !!}
-                                                        </x-copy-to-clipboard>
-                                                    </code>
-                                                @else
-                                                    ------------
-                                                @endcan
-                                            </div>
-                                        </div>
-                                    @endif
-
-
-                                    @if ($license->license_name!='')
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>{{ trans('admin/licenses/form.to_name') }}</strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ $license->license_name }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    @if ($license->license_email!='')
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>
-                                                    {{ trans('admin/licenses/form.to_email') }}
-                                                </strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ $license->license_email }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-
-
-                                @if (isset($license->expiration_date))
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>
-                                                    {{ trans('admin/licenses/form.expiration') }}
-                                                </strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                @if ($license->isExpired())
-                                                    <span class="text-danger">
-                                                       <x-icon type="warning" class="text-warning" />
-                                                      </span>
-                                                @endif
-                                                {{ Helper::getFormattedDateObject($license->expiration_date, 'date', false) }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                        @if ($license->termination_date)
-                                            <div class="row">
-                                                <div class="col-md-3">
-                                                    <strong>
-                                                        {{ trans('admin/licenses/form.termination_date') }}
-                                                    </strong>
-                                                </div>
-                                                <div class="col-md-9">
-                                                    @if ($license->isTerminated())
-                                                        <span class="text-danger">
-                                                       <x-icon type="warning" class="text-warning" />
-                                                      </span>
-                                                    @endif
-
-                                                    {{ Helper::getFormattedDateObject($license->termination_date, 'date', false) }}
-                                                </div>
-                                            </div>
-                                        @endif
-
-
-
-
-
-                                    @if ($license->purchase_order)
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>
-                                                    {{ trans('admin/licenses/form.purchase_order') }}
-                                                </strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {{ $license->purchase_order }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <strong>
-                                                {{ trans('admin/licenses/form.maintained') }}
-                                            </strong>
-                                        </div>
-                                        <div class="col-md-9">
-                                            {!! $license->maintained ? '<i class="fas fa-check fa-fw text-success" aria-hidden="true"></i> '.trans('general.yes') : '<i class="fas fa-times fa-fw text-danger" aria-hidden="true"></i> '.trans('general.no') !!}
-                                        </div>
-                                    </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <strong>
-                                                    {{ trans('admin/licenses/form.reassignable') }}
-                                                </strong>
-                                            </div>
-                                            <div class="col-md-9">
-                                                {!! $license->reassignable ? '<i class="fas fa-check fa-fw text-success" aria-hidden="true"></i> '.trans('general.yes') : '<i class="fas fa-times fa-fw text-danger" aria-hidden="true"></i> '.trans('general.no') !!}
-                                            </div>
-                                        </div>
-
-
-
-
-
-                                </div>
-
-                            </x-slot:content>
-                        </x-tabs.pane>
-                    <!-- end info tab pane -->
-
-                    <x-tabs.pane name="seats">
+                    <x-tabs.pane name="seats" class="in active">
                         <x-slot:header>
                             {{ trans('general.assigned') }}
                         </x-slot:header>
                         <x-slot:content>
 
-                            <table
-                                    data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayoutSeats() }}"
-                                    data-cookie-id-table="seatsTable"
-                                    data-id-table="seatsTable"
-                                    id="seatsTable"
-                                    data-search="false"
-                                    data-side-pagination="server"
-                                    data-sort-order="asc"
-                                    data-sort-name="name"
-                                    class="table table-striped snipe-table"
-                                    data-url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
-                                    data-export-options='{
-                        "fileName": "export-seats-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}",
-                        "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                        }'>
-                            </table>
+                            <x-table
+                                    api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
+                                    :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                                    export_filename="export-{{ str_slug($license->name) }}-assigned-{{ date('Y-m-d') }}"
+                            />
 
                         </x-slot:content>
                     </x-tabs.pane>
@@ -229,22 +73,12 @@
                             {{ trans('general.available') }}
                         </x-slot:header>
                         <x-slot:content>
-                            <table
-                                    data-columns="{{ \App\Presenters\LicensePresenter::dataTableLayoutSeats() }}"
-                                    data-cookie-id-table="availableSeatsTable"
-                                    data-id-table="availableSeatsTable"
-                                    id="availableSeatsTable"
-                                    data-search="false"
-                                    data-side-pagination="server"
-                                    data-sort-order="asc"
-                                    data-sort-name="name"
-                                    class="table table-striped snipe-table"
-                                    data-url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
-                                    data-export-options='{
-                        "fileName": "export-available-seats-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}",
-                        "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                        }'>
-                            </table>
+
+                            <x-table
+                                    api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
+                                    :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                                    export_filename="export-{{ str_slug($license->name) }}-available-{{ date('Y-m-d') }}"
+                            />
 
                         </x-slot:content>
                     </x-tabs.pane>
@@ -310,7 +144,7 @@
                                 </a>
 
                                 <a href="#" class="btn bg-maroon btn-sm btn-social btn-block hidden-print" style="margin-bottom: 5px;" data-toggle="modal" data-tooltip="true" title="{{ trans('admin/licenses/general.bulk.checkout_all.enabled_tooltip') }}" data-target="#checkoutFromAllModal">
-                                    <x-icon type="checkout" />
+                                    <x-icon type="checkout-all" />
                                     {{ trans('admin/licenses/general.bulk.checkout_all.button') }}
                                 </a>
 
@@ -352,11 +186,11 @@
                                     </a>
                                 @else
                                     <span data-tooltip="true" title=" {{ trans('admin/licenses/general.delete_disabled') }}">
-            <a href="#" class="btn btn-block btn-danger btn-sm btn-social delete-asset disabled" onClick="return false;">
-              <x-icon type="delete" />
-              {{ trans('general.delete') }}
-            </a>
-          </span>
+                                        <a href="#" class="btn btn-block btn-danger btn-sm btn-social delete-asset disabled" onClick="return false;">
+                                          <x-icon type="delete" />
+                                          {{ trans('general.delete') }}
+                                        </a>
+                                      </span>
                                 @endif
                             @endcan
 

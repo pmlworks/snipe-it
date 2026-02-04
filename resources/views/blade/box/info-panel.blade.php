@@ -28,52 +28,52 @@
 
     <ul class="list-group list-group-unbordered">
 
+
         {{ $slot }}
 
         <x-info-element icon_type="notes">
             {!! nl2br(Helper::parseEscapedMarkedownInline($contact->notes)) !!}
         </x-info-element>
 
-        @if ($contact->company)
-            <x-info-element icon_type="company">
-                @can('view', $contact->company)
-                    <a href="{{ route('companies.show', $contact->company) }}">
-                        {{ $contact->company->display_name }}
-                    </a>
-                @else
-                    {{ $contact->company->display_name }}
-                @endcan
+        @if ($contact->license_name)
+            @can('viewKeys', $contact)
+                <x-info-element>
+                    <x-copy-to-clipboard copy_what="license_key">
+                        <code>{{ $contact->serial }}</code>
+                    </x-copy-to-clipboard>
+                </x-info-element>
+            @else
+                ------------
+            @endcan
+        @endif
+
+        @if ($contact->license_name)
+            <x-info-element icon_type="contact-card">
+                {{ trans('admin/licenses/form.to_name') }}
+                {{ $contact->license_name }}
             </x-info-element>
         @endif
 
-        @if ($contact->category)
-            <x-info-element icon_type="category">
-                @can('view', $contact->category)
-                    <a href="{{ route('categories.show', $contact->category) }}">
-                        {{ $contact->category->display_name }}
-                    </a>
-                @else
-                    {{ $contact->category->display_name }}
-                @endcan
+        @if ($contact->license_email)
+            <x-info-element icon_type="email">
+                {{ trans('admin/licenses/form.to_email') }}
+                <x-info-element.email>
+                    {{ $contact->license_email }}
+                </x-info-element.email>
             </x-info-element>
         @endif
 
-        <x-info-element icon_type="contact-card">
-            {{ $contact->contact }}
-        </x-info-element>
-
-        @if ($contact->manager)
-            <x-info-element icon_type="manager">
-                @can('view', $contact->manager)
-                    <a href="{{ route('users.show', $contact->manager) }}">
-                        {{ $contact->manager->display_name }}
-                    </a>
-                @else
-                    {{ $contact->manager->display_name }}
-                @endcan
+        @if ($contact->termination_date)
+            <x-info-element icon_type="terminates">
+                {{ Helper::getFormattedDateObject($contact->termination_date, 'date', false) }}
             </x-info-element>
         @endif
 
+        @if ($contact->expiration_date)
+            <x-info-element icon_type="expiration">
+                {{ Helper::getFormattedDateObject($contact->expiration_date, 'date', false) }}
+            </x-info-element>
+        @endif
 
         @if ($contact->model_number)
             <x-info-element icon_type="number">
@@ -81,60 +81,139 @@
             </x-info-element>
         @endif
 
+        @if ($contact->order_number)
+            <x-info-element icon_type="order">
+                {{ $contact->order_number }}
+            </x-info-element>
+        @endif
+
+        @if ($contact->purchase_order)
+            <x-info-element icon_type="purchase_order">
+                {{ $contact->purchase_order }}
+            </x-info-element>
+        @endif
+
+        @if (function_exists('numRemaining'))
+            <x-info-element icon_type="available">
+                {{ $contact->numRemaining() }}
+                {{ trans('general.remaining') }}
+            </x-info-element>
+
+            <x-info-element icon_type="checkedout">
+                {{ $contact->checkouts_count }}
+                {{ trans('general.checked_out') }}
+            </x-info-element>
+        @endif
+
+
+        @if ($contact->company)
+            <x-info-element icon_type="company" icon_color="{{ $contact->company->tag_color }}">
+                {!!  $contact->company->present()->nameUrl !!}
+            </x-info-element>
+        @endif
+
+        @if ($contact->category)
+            <x-info-element icon_type="category" icon_color="{{ $contact->category->tag_color }}">
+                {!!  $contact->category->present()->nameUrl !!}
+            </x-info-element>
+        @endif
+
+        @if ($contact->location)
+            <x-info-element icon_type="location" icon_color="{{ $contact->location->tag_color }}">
+                {!!  $contact->location->present()->nameUrl !!}
+            </x-info-element>
+        @endif
+
+
+        @if ($contact->manager)
+            <x-info-element icon_type="manager">
+                {!!  $contact->manager->present()->nameUrl !!}
+            </x-info-element>
+        @endif
+
+
         @if ($contact->fieldset)
             <x-info-element icon_type="fieldset">
-                @can('view', $contact->fieldset)
-                    <a href="{{ route('fieldsets.show', $contact->fieldset) }}">
-                        {{ $contact->fieldset->name }}
-                    </a>
-                @else
-                    {{ $contact->fieldset->name }}
-                @endcan
+                {!!  $contact->fieldset->present()->nameUrl !!}
             </x-info-element>
         @endif
 
         @if ($contact->manufacturer)
             <x-info-element icon_type="manufacturer">
-                @can('view', $contact->manufacturer)
-                    <a href="{{ route('manufacturers.show', $contact->manufacturer) }}">
-                        {{ $contact->manufacturer->name }}
-                    </a>
-                @else
-                    {{ $contact->manufacturer->name }}
-                @endcan
-
-
+                <strong>{{ trans('general.manufacturer') }}</strong>
             </x-info-element>
 
-            <x-info-element icon_type="contact-card">
-                {{ $contact->manufacturer->contact }}
+            <x-info-element class="subitem">
+                {!!  $contact->manufacturer->present()->formattedNameLink !!}
             </x-info-element>
 
-            <x-info-element icon_type="phone">
+            <x-info-element icon_type="phone" class="subitem">
                 <x-info-element.phone>
                     {{ $contact->manufacturer->support_phone }}
                 </x-info-element.phone>
             </x-info-element>
 
-            <x-info-element icon_type="email">
+            <x-info-element icon_type="email" class="subitem">
                 <x-info-element.email>
                     {{ $contact->manufacturer->support_email }}
                 </x-info-element.email>
             </x-info-element>
 
-            <x-info-element icon_type="external-link">
+            <x-info-element icon_type="external-link" class="subitem">
                 <x-info-element.url>
                     {{ $contact->manufacturer->url }}
                 </x-info-element.url>
             </x-info-element>
 
-            <x-info-element icon_type="external-link">
+            <x-info-element icon_type="external-link" class="subitem">
                 <x-info-element.url>
                     {{ $contact->manufacturer->support_url }}
                 </x-info-element.url>
             </x-info-element>
+        @endif
+
+
+        @if ($contact->supplier)
+            <x-info-element icon_type="manufacturer">
+                <strong>{{ trans('general.supplier') }}</strong>
+            </x-info-element>
+
+            <x-info-element class="subitem">
+                {!!  $contact->supplier->present()->formattedNameLink !!}
+            </x-info-element>
+
+            <x-info-element icon_type="contact-card" class="subitem">
+                {{ $contact->supplier->contact }}
+            </x-info-element>
+
+            @if ($contact->supplier->present()->displayAddress)
+                <x-info-element class="subitem">
+                    {!! nl2br($contact->supplier->present()->displayAddress) !!}
+                </x-info-element>
+            @endif
+
+            <x-info-element icon_type="phone" class="subitem">
+                <x-info-element.phone>
+                    {{ $contact->supplier->phone }}
+                    {{ $contact->supplier->phone }}
+                </x-info-element.phone>
+            </x-info-element>
+
+            <x-info-element icon_type="email" class="subitem">
+                <x-info-element.email>
+                    {{ $contact->supplier->email }}
+                </x-info-element.email>
+            </x-info-element>
+
+            <x-info-element icon_type="external-link" class="subitem">
+                <x-info-element.url>
+                    {{ $contact->supplier->url }}
+                </x-info-element.url>
+            </x-info-element>
 
         @endif
+
+
 
         @if ($contact->parent)
             <x-info-element icon_type="parent">
@@ -142,15 +221,14 @@
             </x-info-element>
         @endif
 
-        @if ($contact->depreciation)
+        @if ($contact->depreciation && $contact->purchase_date)
             <x-info-element icon_type="depreciation">
-                @can('view', $contact->fieldset)
-                    <a href="{{ route('depreciations.show', $contact->depreciation) }}">{{ $contact->depreciation->display_name }}</a>
-                @else
-                    {{ $contact->depreciation->display_name }}
-                @endif
-
+                {!!  $contact->depreciation->present()->nameUrl !!}
                 ({{ $contact->depreciation->months.' '.trans('general.months')}})
+            </x-info-element>
+
+            <x-info-element icon_type="depreciation-calendar">
+                {{ Helper::getFormattedDateObject($contact->depreciated_date(), 'date', false) }}
             </x-info-element>
         @endif
 
@@ -236,7 +314,50 @@
         @endif
 
 
-        @if ($contact->created_by)
+        @if ($contact->maintained)
+            @if ($contact->maintained == 1)
+                <x-info-element>
+                    <x-icon type="checkmark" class="fa-fw text-success" />
+                    {{ trans('admin/licenses/form.maintained') }}
+                </x-info-element>
+            @else
+                <x-info-element>
+                    <x-icon type="x" class="fa-fw text-danger" />
+                    {{ trans('admin/licenses/form.maintained') }}
+                </x-info-element>
+            @endif
+        @endif
+
+        @if ($contact->reassignable)
+            @if ($contact->reassignable == 1)
+                <x-info-element>
+                    <x-icon type="checkmark" class="fa-fw text-success" />
+                    {{ trans('admin/licenses/form.reassignable') }}
+                </x-info-element>
+            @else
+                <x-info-element>
+                    <x-icon type="x" class="text-danger" />
+                    {{ trans('admin/licenses/form.reassignable') }}
+                </x-info-element>
+            @endif
+        @endif
+
+        @if ($contact->requestable)
+            @if ($contact->requestable == 1)
+                <x-info-element>
+                    <x-icon type="checkmark" class="fa-fw text-success" />
+                   {{ trans('admin/hardware/general.requestable') }}
+                </x-info-element>
+            @else
+                <x-info-element>
+                    <x-icon type="x" class="fa-fw text-danger" />
+                    {{ trans('admin/hardware/general.requestable') }}
+                </x-info-element>
+            @endif
+        @endif
+
+
+        @if ($contact->adminuser)
             <x-info-element>
                 <span class="text-muted">
                     <x-icon type="user" class="fa-fw" />
