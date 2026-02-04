@@ -55,7 +55,7 @@ class IconHelper
             case 'download':
                 return 'fas fa-download';
             case 'checkmark':
-                return 'fas fa-check icon-white';
+                return 'fas fa-check';
             case 'x':
                 return 'fas fa-times';
             case 'logout':
@@ -216,6 +216,10 @@ class IconHelper
                 return 'fa-solid fa-hashtag';
             case 'depreciation':
                 return 'fa-solid fa-arrows-down-to-line';
+            case 'depreciation-calendar':
+            case 'expiration':
+            case 'terminates':
+                return 'fa-regular fa-calendar-xmark';
             case 'manufacturer':
                 return 'fa-solid fa-industry';
             case 'fieldset' :
@@ -236,6 +240,8 @@ class IconHelper
                 return 'fa-solid fa-file-invoice-dollar';
             case 'order':
                 return 'fa-solid fa-file-invoice';
+            case 'checkout-all':
+                return 'fa-solid fa-arrows-down-to-people';
 
         }
     }
