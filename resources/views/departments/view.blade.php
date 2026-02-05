@@ -15,14 +15,18 @@
         <x-page-column class="col-md-9">
             <x-box>
 
-            <x-table
-                    show_column_search="true"
-                    show_advanced_search="true"
-                    buttons="licenseButtons"
-                    api_url="{{ route('api.users.index', ['department_id' => $department->id]) }}"
-                    :presenter="\App\Presenters\UserPresenter::dataTableLayout()"
-                    export_filename="export-{{ str_slug($department->name) }}-users-{{ date('Y-m-d') }}"
-            />
+                <x-slot:bulkactions>
+                    <x-table.bulk-users />
+                </x-slot:bulkactions>
+
+                <x-table
+                        show_column_search="true"
+                        show_advanced_search="true"
+                        buttons="licenseButtons"
+                        api_url="{{ route('api.users.index', ['department_id' => $department->id]) }}"
+                        :presenter="\App\Presenters\UserPresenter::dataTableLayout()"
+                        export_filename="export-{{ str_slug($department->name) }}-users-{{ date('Y-m-d') }}"
+                />
             </x-box>
 
         </x-page-column>
