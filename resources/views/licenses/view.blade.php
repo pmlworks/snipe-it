@@ -180,7 +180,7 @@
                             @can('delete', $license)
 
                                 @if ($license->availCount()->count() == $license->seats)
-                                    <a class="btn btn-block btn-danger btn-sm btn-social delete-asset" data-icon="fa fa trash" data-toggle="modal" data-title="{{ trans('general.delete') }}" data-content="{{ trans('general.delete_confirm', ['item' => $license->name]) }}" data-target="#dataConfirmModal" onClick="return false;">
+                                    <a class="btn btn-block btn-danger btn-sm btn-social delete-asset" data-icon="fa fa-trash" data-toggle="modal" data-title="{{ trans('general.delete') }}" data-content="{{ trans('general.delete_confirm', ['item' => $license->name]) }}" data-target="#dataConfirmModal" onClick="return false;">
                                         <x-icon type="delete" />
                                         {{ trans('general.delete') }}
                                     </a>
