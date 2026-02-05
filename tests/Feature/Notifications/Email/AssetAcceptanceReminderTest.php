@@ -21,11 +21,17 @@ use Tests\TestCase;
 
 class AssetAcceptanceReminderTest extends TestCase
 {
+    private User $admin;
+    private User $assignee;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Mail::fake();
+
+        $this->admin = User::factory()->canViewReports()->create();
+        $this->assignee = User::factory()->create();
     }
 
     public function testMustHavePermissionToSendReminder()
@@ -102,97 +108,81 @@ class AssetAcceptanceReminderTest extends TestCase
 
     public function testReminderIsSentToUserForAccessory()
     {
-        $checkedOutBy = User::factory()->canViewReports()->create();
-
-        $assignee = User::factory()->create(['email' => 'test@example.com']);
-
         $accessory = Accessory::factory()->create();
 
-        $acceptance = $this->createCheckoutAcceptance($accessory, $assignee);
+        $acceptance = $this->createCheckoutAcceptance($accessory, $this->assignee);
 
-        $this->createActionLogEntry($accessory, $checkedOutBy, $assignee, $acceptance);
+        $this->createActionLogEntry($accessory, $this->admin, $this->assignee, $acceptance);
 
-        $this->actingAs($checkedOutBy)
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $acceptance->id,
             ]))
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutAccessoryMail::class, 1);
-        Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) use ($assignee) {
-            return $mail->hasTo($assignee->email);
+        Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) {
+            return $mail->hasTo($this->assignee);
         });
     }
 
     public function testReminderIsSentToUserForAsset()
     {
-        $checkedOutBy = User::factory()->canViewReports()->create();
-
-        $assignee = User::factory()->create(['email' => 'test@example.com']);
-
         $asset = Asset::factory()->create();
 
-        $acceptance = $this->createCheckoutAcceptance($asset, $assignee);
+        $acceptance = $this->createCheckoutAcceptance($asset, $this->assignee);
 
-        $this->createActionLogEntry($asset, $checkedOutBy, $assignee, $acceptance);
+        $this->createActionLogEntry($asset, $this->admin, $this->assignee, $acceptance);
 
-        $this->actingAs($checkedOutBy)
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $acceptance->id,
             ]))
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutAssetMail::class, 1);
-        Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) use ($assignee) {
-            return $mail->hasTo($assignee->email);
+        Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
+            return $mail->hasTo($this->assignee);
         });
     }
 
     public function testReminderIsSentToUserForConsumable()
     {
-        $checkedOutBy = User::factory()->canViewReports()->create();
-
-        $assignee = User::factory()->create(['email' => 'test@example.com']);
-
         $consumable = Consumable::factory()->create();
 
-        $acceptance = $this->createCheckoutAcceptance($consumable, $assignee);
+        $acceptance = $this->createCheckoutAcceptance($consumable, $this->assignee);
 
-        $this->createActionLogEntry($consumable, $checkedOutBy, $assignee, $acceptance);
+        $this->createActionLogEntry($consumable, $this->admin, $this->assignee, $acceptance);
 
-        $this->actingAs($checkedOutBy)
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $acceptance->id,
             ]))
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutConsumableMail::class, 1);
-        Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) use ($assignee) {
-            return $mail->hasTo($assignee->email);
+        Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) {
+            return $mail->hasTo($this->assignee);
         });
     }
 
     public function testReminderIsSentToUserForLicenseSeat()
     {
-        $checkedOutBy = User::factory()->canViewReports()->create();
-
-        $assignee = User::factory()->create(['email' => 'test@example.com']);
-
         $licenseSeat = LicenseSeat::factory()->create();
 
-        $acceptance = $this->createCheckoutAcceptance($licenseSeat, $assignee);
+        $acceptance = $this->createCheckoutAcceptance($licenseSeat, $this->assignee);
 
-        $this->createActionLogEntry($licenseSeat, $checkedOutBy, $assignee, $acceptance);
+        $this->createActionLogEntry($licenseSeat, $this->admin, $this->assignee, $acceptance);
 
-        $this->actingAs($checkedOutBy)
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $acceptance->id,
             ]))
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutLicenseMail::class, 1);
-        Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) use ($assignee) {
-            return $mail->hasTo($assignee->email);
+        Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) {
+            return $mail->hasTo($this->assignee);
         });
     }
 
