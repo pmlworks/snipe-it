@@ -169,6 +169,11 @@
             border: 1px solid hsl(from var(--btn-theme-base) h s calc(l - 15)) !important;
         }
 
+        .btn-theme.active
+        {
+            background-color: var(--btn-theme-hover) !important;
+        }
+
         .btn-theme:focus {
             color: var(--nav-primary-text-color) !important;
         }
