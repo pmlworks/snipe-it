@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
-class AssetAcceptanceReminderTest extends TestCase
+class AcceptanceReminderTest extends TestCase
 {
     private User $admin;
     private User $assignee;
