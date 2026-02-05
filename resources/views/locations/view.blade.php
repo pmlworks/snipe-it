@@ -423,7 +423,6 @@
                                         </button>
                                     </form>
                                 @endif
-                            </div>
                         @endcan
 
                     </x-slot:before_list>
