@@ -727,6 +727,7 @@
         {
             border-top-color: var(--box-bg) !important;
             border-bottom-color: var(--box-header-bottom-border-color) !important;
+            color: var(--color-fg);
         }
 
 
