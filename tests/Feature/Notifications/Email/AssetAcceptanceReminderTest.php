@@ -4,14 +4,12 @@ namespace Tests\Feature\Notifications\Email;
 
 use App\Mail\CheckoutAccessoryMail;
 use App\Mail\CheckoutAssetMail;
-use App\Mail\CheckoutComponentMail;
 use App\Mail\CheckoutConsumableMail;
 use App\Mail\CheckoutLicenseMail;
 use App\Models\Accessory;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
-use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\License;
 use App\Models\LicenseSeat;
@@ -35,7 +33,9 @@ class AssetAcceptanceReminderTest extends TestCase
         $userWithoutPermission = User::factory()->create();
 
         $this->actingAs($userWithoutPermission)
-            ->post($this->routeFor($checkoutAcceptance))
+            ->post(route('reports/unaccepted_assets_sent_reminder', [
+                'acceptance_id' => $checkoutAcceptance->id,
+            ]))
             ->assertForbidden();
 
         Mail::assertNotSent(CheckoutAssetMail::class);
@@ -56,7 +56,9 @@ class AssetAcceptanceReminderTest extends TestCase
         $checkoutAcceptanceAlreadyAccepted = CheckoutAcceptance::factory()->accepted()->create();
 
         $this->actingAs(User::factory()->canViewReports()->create())
-            ->post($this->routeFor($checkoutAcceptanceAlreadyAccepted));
+            ->post(route('reports/unaccepted_assets_sent_reminder', [
+                'acceptance_id' => $checkoutAcceptanceAlreadyAccepted->id,
+            ]));
 
         Mail::assertNotSent(CheckoutAssetMail::class);
     }
@@ -88,7 +90,9 @@ class AssetAcceptanceReminderTest extends TestCase
         $checkoutAcceptance = $callback();
 
         $this->actingAs(User::factory()->canViewReports()->create())
-            ->post($this->routeFor($checkoutAcceptance))
+            ->post(route('reports/unaccepted_assets_sent_reminder', [
+                'acceptance_id' => $checkoutAcceptance->id,
+            ]))
             // check we didn't crash...
             ->assertRedirect();
 
@@ -136,7 +140,9 @@ class AssetAcceptanceReminderTest extends TestCase
             ]);
 
         $this->actingAs($checkedOutBy)
-            ->post($this->routeFor($acceptance))
+            ->post(route('reports/unaccepted_assets_sent_reminder', [
+                'acceptance_id' => $acceptance->id,
+            ]))
             ->assertRedirect(route('reports/unaccepted_assets'));
         }
 
@@ -144,12 +150,5 @@ class AssetAcceptanceReminderTest extends TestCase
         Mail::assertSent($mailable, function ($mail) use ($assignee) {
             return $mail->hasTo($assignee->email);
         });
-    }
-
-    private function routeFor(CheckoutAcceptance $checkoutAcceptance): string
-    {
-        return route('reports/unaccepted_assets_sent_reminder', [
-            'acceptance_id' => $checkoutAcceptance->id,
-        ]);
     }
 }
