@@ -14,6 +14,7 @@ use App\Models\Consumable;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -107,20 +108,9 @@ class AssetAcceptanceReminderTest extends TestCase
 
         $accessory = Accessory::factory()->create();
 
-        $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->pending()->create([
-            'checkoutable_id' => $accessory->id,
-            'checkoutable_type' => Accessory::class,
-            'assigned_to_id' => $assignee->id,
-        ]);
+        $acceptance = $this->createCheckoutAcceptance($accessory, $assignee);
 
-        Actionlog::factory()->create([
-            'action_type' => 'checkout',
-            'created_by' => $checkedOutBy->id,
-            'target_id' => $assignee->id,
-            'item_type' => Accessory::class,
-            'item_id' => $accessory->id,
-            'created_at' => $acceptance->created_at,
-        ]);
+        $this->createActionLogEntry($accessory, $checkedOutBy, $assignee, $acceptance);
 
         $this->actingAs($checkedOutBy)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
@@ -142,20 +132,9 @@ class AssetAcceptanceReminderTest extends TestCase
 
         $asset = Asset::factory()->create();
 
-        $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->pending()->create([
-            'checkoutable_id' => $asset->id,
-            'checkoutable_type' => Asset::class,
-            'assigned_to_id' => $assignee->id,
-        ]);
+        $acceptance = $this->createCheckoutAcceptance($asset, $assignee);
 
-        Actionlog::factory()->create([
-            'action_type' => 'checkout',
-            'created_by' => $checkedOutBy->id,
-            'target_id' => $assignee->id,
-            'item_type' => Asset::class,
-            'item_id' => $asset->id,
-            'created_at' => $acceptance->created_at,
-        ]);
+        $this->createActionLogEntry($asset, $checkedOutBy, $assignee, $acceptance);
 
         $this->actingAs($checkedOutBy)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
@@ -177,20 +156,9 @@ class AssetAcceptanceReminderTest extends TestCase
 
         $consumable = Consumable::factory()->create();
 
-        $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->pending()->create([
-            'checkoutable_id' => $consumable->id,
-            'checkoutable_type' => Consumable::class,
-            'assigned_to_id' => $assignee->id,
-        ]);
+        $acceptance = $this->createCheckoutAcceptance($consumable, $assignee);
 
-        Actionlog::factory()->create([
-            'action_type' => 'checkout',
-            'created_by' => $checkedOutBy->id,
-            'target_id' => $assignee->id,
-            'item_type' => Consumable::class,
-            'item_id' => $consumable->id,
-            'created_at' => $acceptance->created_at,
-        ]);
+        $this->createActionLogEntry($consumable, $checkedOutBy, $assignee, $acceptance);
 
         $this->actingAs($checkedOutBy)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
@@ -212,20 +180,9 @@ class AssetAcceptanceReminderTest extends TestCase
 
         $licenseSeat = LicenseSeat::factory()->create();
 
-        $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->pending()->create([
-            'checkoutable_id' => $licenseSeat->id,
-            'checkoutable_type' => LicenseSeat::class,
-            'assigned_to_id' => $assignee->id,
-        ]);
+        $acceptance = $this->createCheckoutAcceptance($licenseSeat, $assignee);
 
-        Actionlog::factory()->create([
-            'action_type' => 'checkout',
-            'created_by' => $checkedOutBy->id,
-            'target_id' => $assignee->id,
-            'item_type' => License::class,
-            'item_id' => $licenseSeat->license->id,
-            'created_at' => $acceptance->created_at,
-        ]);
+        $this->createActionLogEntry($licenseSeat, $checkedOutBy, $assignee, $acceptance);
 
         $this->actingAs($checkedOutBy)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
@@ -237,5 +194,37 @@ class AssetAcceptanceReminderTest extends TestCase
         Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) use ($assignee) {
             return $mail->hasTo($assignee->email);
         });
+    }
+
+    private function createCheckoutAcceptance(Model $item, Model $assignee): CheckoutAcceptance
+    {
+        return CheckoutAcceptance::factory()
+            ->for($item, 'checkoutable')
+            ->for($assignee, 'assignedTo')
+            ->withoutActionLog()
+            ->pending()
+            ->create();
+    }
+
+    private function createActionLogEntry(Model $item, Model $admin, Model $assignee, CheckoutAcceptance $acceptance): Actionlog
+    {
+        $itemId = $item->id;
+        $itemType = get_class($item);
+
+        if (get_class($item) === LicenseSeat::class) {
+            $itemId = $item->license->id;
+            $itemType = License::class;
+        }
+
+        return Actionlog::factory()
+            ->for($admin, 'adminuser')
+            ->for($assignee, 'target')
+            // ->for($item, 'item')
+            ->create([
+                'action_type' => 'checkout',
+                'item_id' => $itemId,
+                'item_type' => $itemType,
+                'created_at' => $acceptance->created_at,
+            ]);
     }
 }
