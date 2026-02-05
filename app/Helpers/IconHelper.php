@@ -242,6 +242,11 @@ class IconHelper
                 return 'fa-solid fa-file-invoice';
             case 'checkout-all':
                 return 'fa-solid fa-arrows-down-to-people';
+            case 'square-right':
+                return 'fa-regular fa-square-caret-right';
+            case 'square-left':
+                return 'fa-regular fa-square-caret-left';
+
 
         }
     }
