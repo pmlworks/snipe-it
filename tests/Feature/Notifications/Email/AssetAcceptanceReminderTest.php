@@ -14,6 +14,7 @@ use App\Models\Consumable;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\User;
+use Generator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -50,7 +51,7 @@ class AssetAcceptanceReminderTest extends TestCase
 
     public function testReminderNotSentIfAcceptanceDoesNotExist()
     {
-        $this->actingAs(User::factory()->canViewReports()->create())
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => 999999,
             ]));
@@ -62,7 +63,7 @@ class AssetAcceptanceReminderTest extends TestCase
     {
         $checkoutAcceptanceAlreadyAccepted = CheckoutAcceptance::factory()->accepted()->create();
 
-        $this->actingAs(User::factory()->canViewReports()->create())
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $checkoutAcceptanceAlreadyAccepted->id,
             ]));
@@ -70,7 +71,7 @@ class AssetAcceptanceReminderTest extends TestCase
         Mail::assertNotSent(CheckoutAssetMail::class);
     }
 
-    public static function CheckoutAcceptancesToUsersWithoutEmailAddresses()
+    public static function checkoutAcceptancesToUsersWithoutEmailAddresses(): Generator
     {
         yield 'User with null email address' => [
             function () {
@@ -91,12 +92,12 @@ class AssetAcceptanceReminderTest extends TestCase
         ];
     }
 
-    #[DataProvider('CheckoutAcceptancesToUsersWithoutEmailAddresses')]
+    #[DataProvider('checkoutAcceptancesToUsersWithoutEmailAddresses')]
     public function testUserWithoutEmailAddressHandledGracefully($callback)
     {
         $checkoutAcceptance = $callback();
 
-        $this->actingAs(User::factory()->canViewReports()->create())
+        $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
                 'acceptance_id' => $checkoutAcceptance->id,
             ]))
