@@ -210,7 +210,6 @@ class AssetAcceptanceReminderTest extends TestCase
         return Actionlog::factory()
             ->for($admin, 'adminuser')
             ->for($assignee, 'target')
-            // ->for($item, 'item')
             ->create([
                 'action_type' => 'checkout',
                 'item_id' => $itemId,
