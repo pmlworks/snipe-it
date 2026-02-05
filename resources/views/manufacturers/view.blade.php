@@ -8,9 +8,6 @@
 @parent
 @stop
 
-@section('header_right')
-  <a href="{{ route('manufacturers.edit', $manufacturer) }}" class="btn btn-primary text-right" style="margin-right: 10px;">{{ trans('general.update') }}</a>
-@stop
 
 {{-- Page content --}}
 @section('content')
@@ -192,6 +189,32 @@
 
             <x-box>
                 <x-box.info-panel :contact="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
+
+                    <x-slot:before_list>
+
+                        @can('update', \App\Models\Manufacturer::class)
+                            <a href="{{ ($manufacturer->deleted_at=='') ? route('manufacturers.edit', $manufacturer->id) : '#' }}" class="btn btn-block btn-sm btn-warning btn-social hidden-print{{ ($manufacturer->deleted_at!='') ? ' disabled' : '' }}">
+                                <x-icon type="edit" />
+                                {{ trans('general.update') }}
+                            </a>
+                        @endcan
+
+                            @can('delete', \App\Models\Manufacturer::class)
+
+                                @if ($manufacturer->assets()->count() > 0)
+                                    <button class="btn btn-block btn-sm btn-danger btn-social hidden-print disabled" data-tooltip="true"  data-placement="top" data-title="{{ trans('general.cannot_be_deleted') }}">
+                                        <x-icon type="delete" />
+                                        {{ trans('general.delete') }}
+                                    </button>
+                                @else
+                                    <button class="btn btn-block btn-sm btn-danger btn-social delete-asset" data-toggle="modal" title="{{ trans('general.delete_what', ['item'=> trans('general.manufacturer')]) }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $manufacturer->name]) }}" data-target="#dataConfirmModal" data-tooltip="true" data-icon="fa fa-trash" data-placement="top" data-title="{{ trans('general.delete_what', ['item'=> trans('general.manufacturer')]) }}" onClick="return false;">
+                                        <x-icon type="delete" />
+                                        {{ trans('general.delete') }}
+                                    </button>
+                                @endif
+                            @endcan
+
+                    </x-slot:before_list>
 
                 </x-box.info-panel>
             </x-box>
