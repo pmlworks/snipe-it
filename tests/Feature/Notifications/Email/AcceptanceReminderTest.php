@@ -129,8 +129,13 @@ class AcceptanceReminderTest extends TestCase
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutAccessoryMail::class, 1);
+
         Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) {
             return $mail->hasTo($this->assignee);
+        });
+
+        Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) {
+            return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
     }
 
@@ -149,8 +154,13 @@ class AcceptanceReminderTest extends TestCase
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutAssetMail::class, 1);
+
         Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
             return $mail->hasTo($this->assignee);
+        });
+
+        Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
+            return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
     }
 
@@ -169,8 +179,13 @@ class AcceptanceReminderTest extends TestCase
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutConsumableMail::class, 1);
+
         Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) {
             return $mail->hasTo($this->assignee);
+        });
+
+        Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) {
+            return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
     }
 
@@ -189,8 +204,13 @@ class AcceptanceReminderTest extends TestCase
             ->assertRedirect(route('reports/unaccepted_assets'));
 
         Mail::assertSent(CheckoutLicenseMail::class, 1);
+
         Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) {
             return $mail->hasTo($this->assignee);
+        });
+
+        Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) {
+            return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
     }
 
