@@ -7,6 +7,7 @@ use App\Mail\CheckoutAssetMail;
 use App\Mail\CheckoutConsumableMail;
 use App\Mail\CheckoutLicenseMail;
 use App\Models\Accessory;
+use App\Models\AccessoryCheckout;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
@@ -114,6 +115,12 @@ class AcceptanceReminderTest extends TestCase
         $acceptance = $this->createCheckoutAcceptance($accessory, $this->assignee);
 
         $this->createActionLogEntry($accessory, $this->admin, $this->assignee, $acceptance);
+
+        AccessoryCheckout::factory()
+            ->for($this->admin, 'adminuser')
+            ->for($accessory)
+            ->for($this->assignee, 'assignedTo')
+            ->create();
 
         $this->actingAs($this->admin)
             ->post(route('reports/unaccepted_assets_sent_reminder', [
