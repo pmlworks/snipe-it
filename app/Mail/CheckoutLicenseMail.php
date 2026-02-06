@@ -16,10 +16,12 @@ class CheckoutLicenseMail extends BaseMailable
 {
     use Queueable, SerializesModels;
 
+    private bool $firstTimeSending;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(LicenseSeat $licenseSeat, $checkedOutTo, User $checkedOutBy, $acceptance, $note)
+    public function __construct(LicenseSeat $licenseSeat, $checkedOutTo, User $checkedOutBy, $acceptance, $note, bool $firstTimeSending = true)
     {
         $this->item = $licenseSeat;
         $this->admin = $checkedOutBy;
@@ -27,6 +29,7 @@ class CheckoutLicenseMail extends BaseMailable
         $this->acceptance = $acceptance;
         $this->settings = Setting::getSettings();
         $this->target = $checkedOutTo;
+        $this->firstTimeSending = $firstTimeSending;
 
         if($this->target instanceof User){
             $this->target = $this->target->display_name;
@@ -45,7 +48,7 @@ class CheckoutLicenseMail extends BaseMailable
 
         return new Envelope(
             from: $from,
-            subject: trans('mail.Confirm_license_delivery'),
+            subject: $this->getSubject(),
         );
     }
 
@@ -81,5 +84,14 @@ class CheckoutLicenseMail extends BaseMailable
     public function attachments(): array
     {
         return [];
+    }
+
+    private function getSubject(): string
+    {
+        if ($this->firstTimeSending) {
+            return trans('mail.Confirm_license_delivery');
+        }
+
+        return trans('mail.unaccepted_asset_reminder');
     }
 }

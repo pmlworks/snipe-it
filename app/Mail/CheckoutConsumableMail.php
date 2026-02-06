@@ -15,10 +15,12 @@ class CheckoutConsumableMail extends BaseMailable
 {
     use Queueable, SerializesModels;
 
+    private bool $firstTimeSending;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(Consumable $consumable, $checkedOutTo, User $checkedOutBy, $acceptance, $note)
+    public function __construct(Consumable $consumable, $checkedOutTo, User $checkedOutBy, $acceptance, $note, bool $firstTimeSending = true)
     {
         $this->item = $consumable;
         $this->admin = $checkedOutBy;
@@ -26,6 +28,7 @@ class CheckoutConsumableMail extends BaseMailable
         $this->target = $checkedOutTo;
         $this->acceptance = $acceptance;
         $this->qty = $consumable->checkout_qty;
+        $this->firstTimeSending = $firstTimeSending;
 
         $this->settings = Setting::getSettings();
     }
@@ -39,7 +42,7 @@ class CheckoutConsumableMail extends BaseMailable
 
         return new Envelope(
             from: $from,
-            subject: trans('mail.Confirm_consumable_delivery'),
+            subject: $this->getSubject(),
         );
     }
 
@@ -77,5 +80,14 @@ class CheckoutConsumableMail extends BaseMailable
     public function attachments(): array
     {
         return [];
+    }
+
+    private function getSubject(): string
+    {
+        if ($this->firstTimeSending) {
+            return trans('mail.Confirm_consumable_delivery');
+        }
+
+        return trans('mail.unaccepted_asset_reminder');
     }
 }
