@@ -10,15 +10,13 @@
 @stop
 
 @section('header_right')
-    <a href="{{ route('suppliers.edit', $supplier->id) }}" class="btn btn-theme pull-right">
-        {{ trans('general.update') }}</a>
-@stop
-
+    <i class="fa-regular fa-2x fa-square-caret-right pull-right" id="expand-info-panel-button" data-tooltip="true" title="{{ trans('button.show_hide_info') }}"></i>
+@endsection
 
 {{-- Page content --}}
 @section('content')
     <x-container columns="2">
-        <x-page-column class="col-md-9">
+        <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
                     @can('view', \App\Models\Asset::class)

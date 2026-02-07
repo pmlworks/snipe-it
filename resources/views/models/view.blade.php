@@ -8,23 +8,8 @@
 @stop
 
 @section('header_right')
-    @can('update', \App\Models\AssetModel::class)
-        <div class="btn-group pull-right">
-            <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{ trans('button.actions') }}
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                @if ($model->deleted_at=='')
-                    <li><a href="{{ route('models.edit', $model->id) }}">{{ trans('admin/models/table.edit') }}</a></li>
-                    <li><a href="{{ route('models.clone.create', $model->id) }}">{{ trans('admin/models/table.clone') }}</a></li>
-                    <li><a href="{{ route('hardware.create', ['model_id' => $model->id]) }}">{{ trans('admin/hardware/form.create') }}</a></li>
-                @else
-                    <li><a href="{{ route('models.restore.store', $model->id) }}">{{ trans('admin/models/general.restore') }}</a></li>
-                @endif
-            </ul>
-        </div>
-    @endcan
-@stop
+    <i class="fa-regular fa-2x fa-square-caret-right pull-right" id="expand-info-panel-button" data-tooltip="true" title="{{ trans('button.show_hide_info') }}"></i>
+@endsection
 
 {{-- Page content --}}
 @section('content')
@@ -39,7 +24,7 @@
             </div>
         @endif
 
-        <x-page-column class="col-md-9">
+        <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
                     @can('view', \App\Models\Asset::class)

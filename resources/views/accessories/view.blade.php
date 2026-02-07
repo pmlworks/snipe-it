@@ -12,10 +12,14 @@
 @parent
 @stop
 
+@section('header_right')
+    <i class="fa-regular fa-2x fa-square-caret-right pull-right" id="expand-info-panel-button"></i>
+@endsection
+
 {{-- Page content --}}
 @section('content')
     <x-container columns="2">
-        <x-page-column class="col-md-9">
+        <x-page-column class="col-md-9 main-panel">
 
             <x-tabs>
                 <x-slot:tabnav>

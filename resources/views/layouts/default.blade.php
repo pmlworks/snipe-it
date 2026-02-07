@@ -2185,27 +2185,23 @@
             $(function () {
 
 
+                // Handle the info-panel
                 $("#expand-info-panel-button").click(function () {
-                    $('.side-box').toggle();
-                    $('.side-box-header').toggle();
+
+                    $('.side-box').parent('div').parent('div').parent('div').hide();
+                    $(window).on('load', function() {
+                        $('.side-box').parent('div').parent('div').parent('div').show();
+                    });
 
                     if($('.side-box').hasClass('expanded')) {
-                        alert('button clicked to hide');
-                        // $('.side-box').parent('div').slideUp();
-                        //$('.side-box').parent('div').animate({width:'toggle'},150);
-                        $('.main-panel').removeClass('col-md-9').addClass('col-md-11');
+                        $('.main-panel').removeClass('col-md-9').addClass('col-md-12');
                         $('.side-box').removeClass('expanded');
-                        $('.side-box').parent('div').parent('div').parent('div').removeClass('col-md-3').addClass('col-md-1');
                         $("#expand-info-panel-button").addClass('fa-square-caret-left').removeClass('fa-square-caret-right');
-
-                        // $('.side-box').animate({width:'toggle'},350).removeClass('expanded');
                     } else {
-                        alert('button clicked to expand');
+                        $('.side-box').parent('div').parent('div').parent('div').fadeToggle("fast")
                         $('.side-box').addClass('expanded');
-                        $('.side-box').parent('div').parent('div').parent('div').removeClass('col-md-1').addClass('col-md-3');
-                        $('.main-panel').removeClass('col-md-11').addClass('col-md-9');
+                        $('.main-panel').removeClass('col-md-12').addClass('col-md-9');
                         $("#expand-info-panel-button").addClass('fa-square-caret-right').removeClass('fa-square-caret-left');
-                       // $('.side-box').slideDown();
                     }
                 });
 

@@ -12,7 +12,7 @@
 
     <div class="box-tools pull-right">
         <button type="button" class="btn btn-box-tool">
-            <i class="fa-regular fa-2x fa-square-caret-right pull-right" id="expand-info-panel-button"></i>
+
         </button>
     </div>
 </div>
@@ -24,6 +24,8 @@
             <a href="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" data-toggle="lightbox" data-type="image">
                 <img src="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $contact->name }}">
             </a>
+        <br>
+        <br>
     @endif
 
 
