@@ -539,7 +539,7 @@
         {
             background-color: var(--table-stripe-bg) !important;
             border-top: var(--table-border-row-top) !important;
-            color: var(--nav-primary-text-color) !important;
+            color: var(--color-fg) !important;
         }
 
         .table-striped > tbody > tr:nth-of-type(odd),
@@ -549,7 +549,7 @@
         {
             background-color: var(--table-stripe-bg-alt) !important;
             border-top: var(--table-border-row-top) !important;
-            color: var(--nav-primary-text-color) !important;
+            color: var(--color-fg) !important;
         }
 
 
