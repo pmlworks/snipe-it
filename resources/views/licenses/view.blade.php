@@ -10,7 +10,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container columns="2">
-        <x-page-column class="col-md-9">
+        <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
 
