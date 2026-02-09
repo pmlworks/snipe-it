@@ -254,21 +254,13 @@
                                         <x-icon type="delete" /> {{ trans('general.delete') }}
                                     </button>
                                 @else
-                                    <div data-placement="top" data-tooltip="true" data-title="{{ trans('admin/locations/message.assoc_users') }}" style="padding-top: 5px; padding-bottom: 5px;">
+                                    <div data-placement="top" data-tooltip="true" data-title="{{ trans('general.cannot_be_deleted') }}" style="padding-top: 5px; padding-bottom: 5px;">
                                         <a href="#" class="btn btn-block btn-sm btn-danger btn-social hidden-print disabled" data-tooltip="true">
                                             <x-icon type="delete" /> {{ trans('general.delete') }}
                                         </a>
                                     </div>
                                 @endif
 
-                            @else
-                                <form method="POST" action="{{ route('locations.restore', ['location' => $location->id]) }}">
-                                    @csrf
-                                    <button class="btn btn-sm btn-block btn-warning btn-social">
-                                        <x-icon type="restore" />
-                                        {{ trans('general.restore') }}
-                                    </button>
-                                </form>
                             @endif
 
                         @endcan

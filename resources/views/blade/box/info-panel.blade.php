@@ -25,7 +25,6 @@
                 <img src="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $contact->name }}">
             </a>
         <br>
-        <br>
     @endif
 
 
@@ -310,6 +309,25 @@
             </x-info-element>
         @endif
 
+        @if ($contact->months)
+            <x-info-element>
+                <x-icon type="calendar" class="fa-fw" />
+                {{ $contact->months }}
+                {{ trans('general.months') }}
+            </x-info-element>
+        @endif
+
+        @if ($contact->depreciation_type)
+            <x-info-element>
+                <x-icon type="calendar" class="fa-fw" />
+                @if ($contact->depreciation_type == 'amount')
+                    {{ trans('general.depreciation_options.amount') }}
+                @elseif ($contact->depreciation_type == 'percent')
+                    {{ trans('general.depreciation_options.amount') }}
+                @endif
+            </x-info-element>
+        @endif
+
         @if ($contact->purchase_cost)
             <x-info-element>
                 <x-icon type="cost" class="fa-fw" />
@@ -368,6 +386,7 @@
                 </x-info-element>
             @endif
         @endif
+
 
 
         @if ($contact->adminuser)

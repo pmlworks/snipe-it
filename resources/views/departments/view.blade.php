@@ -25,6 +25,8 @@
                 <x-table
                         show_column_search="true"
                         show_advanced_search="true"
+                        fixed_right_number="1"
+                        fixed_number="2"
                         buttons="licenseButtons"
                         api_url="{{ route('api.users.index', ['department_id' => $department->id]) }}"
                         :presenter="\App\Presenters\UserPresenter::dataTableLayout()"
