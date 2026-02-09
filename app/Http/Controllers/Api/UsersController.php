@@ -492,7 +492,7 @@ class UsersController extends Controller
                 // Sync the groups since the user is a superuser and the groups pass validation
                 $user->groups()->sync($request->input('groups'));
             }
-            
+
 
             return response()->json(Helper::formatStandardApiResponse('success', (new UsersTransformer)->transformUser($user), trans('admin/users/message.success.create')));
         }
