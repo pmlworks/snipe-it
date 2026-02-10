@@ -290,25 +290,20 @@
         }
 
 
-        input[type="text"]:focus,
-        input[type="url"]:focus,
-        input[type="date"]:focus,
-        input[type="email"]:focus,
-        input[type="number"]:focus,
-        input[type="password"]:focus,
+        input[type="*"]:focus,
         textarea:focus
         {
             border-color: hsl(from var(--main-theme-color) h s calc(l - 5)) !important;
         }
 
-        *:disabled,
+        input[type="*"]:disabled,
         input[readonly],
         textarea[readonly]
         {
             background-color: light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
-            border: 1px solid light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
             cursor: not-allowed !important;
         }
+
 
 
         input[type="search"].search-highlight {

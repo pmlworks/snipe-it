@@ -71,7 +71,7 @@
                           {{-- Item Type --}}
                           <td>{{ $item->type }}</td>
                           {{-- Company name --}}
-                          <td>{{ $item->company }}</td>
+                          <td>{{ $item->plain_text_company }}</td>
 
                           {{-- Category --}}
                           <td>{{ $item->plain_text_category }}</td>
