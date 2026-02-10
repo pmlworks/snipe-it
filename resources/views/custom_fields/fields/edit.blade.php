@@ -11,7 +11,7 @@
 @stop
 
 @section('content')
-    
+
 
 
 {{-- Page content --}}
