@@ -29,6 +29,17 @@
                         />
                     @endcan
 
+                    @can('view', \App\Models\License::class)
+                        <x-tabs.nav-item
+                                name="licenses"
+                                icon="far fa-save"
+                                label="{{ trans('general.licenses') }}"
+                                count="{{ $supplier->licenses->count() }}"
+                                tooltip="{{ trans('general.licenses') }}"
+                        />
+                    @endcan
+
+
                     @can('view', \App\Models\Accessory::class)
                         <x-tabs.nav-item
                                 name="accessories"
@@ -109,6 +120,26 @@
                     @endcan
                     <!-- end assets tab pane -->
 
+                    <!-- start licenses tab pane -->
+                    @can('view', \App\Models\License::class)
+                        <x-tabs.pane name="licenses">
+                            <x-slot:header>
+                                {{ trans('general.licenses') }}
+                            </x-slot:header>
+
+                            <x-slot:content>
+                                <x-table
+                                        show_advanced_search="true"
+                                        buttons="licenseButtons"
+                                        api_url="{{ route('api.licenses.index', ['supplier_id' => $supplier->id]) }}"
+                                        :presenter="\App\Presenters\LicensePresenter::dataTableLayout()"
+                                        export_filename="export-{{ str_slug($supplier->name) }}-licenses-{{ date('Y-m-d') }}"
+                                />
+                            </x-slot:content>
+
+                        </x-tabs.pane>
+                    @endcan
+                    <!-- end licenses tab pane -->
 
                     <!-- start accessories tab pane -->
                     @can('view', \App\Models\Accessory::class)
@@ -131,26 +162,6 @@
                     @endcan
                     <!-- end accessories tab pane -->
 
-                    <!-- start licenses tab pane -->
-                    @can('view', \App\Models\License::class)
-                        <x-tabs.pane name="licenses">
-                            <x-slot:header>
-                                {{ trans('general.licenses') }}
-                            </x-slot:header>
-
-                            <x-slot:content>
-                                <x-table
-                                        show_advanced_search="true"
-                                        buttons="licenseButtons"
-                                        api_url="{{ route('api.licenses.index', ['supplier_id' => $supplier->id]) }}"
-                                        :presenter="\App\Presenters\LicensePresenter::dataTableLayout()"
-                                        export_filename="export-{{ str_slug($supplier->name) }}-licenses-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
-
-                        </x-tabs.pane>
-                    @endcan
-                    <!-- end licenses tab pane -->
 
                     <!-- start components tab pane -->
                     @can('view', \App\Models\Component::class)
@@ -231,6 +242,33 @@
 
             <x-box>
                 <x-box.info-panel :contact="$supplier" img_path="{{ app('suppliers_upload_url') }}">
+
+                    <x-slot:before_list>
+
+                        @can('update', \App\Models\Supplier::class)
+                            <a href="{{ ($supplier->deleted_at=='') ? route('suppliers.edit', $supplier->id) : '#' }}" class="btn btn-block btn-sm btn-warning btn-social hidden-print{{ ($supplier->deleted_at!='') ? ' disabled' : '' }}">
+                                <x-icon type="edit" />
+                                {{ trans('general.update') }}
+                            </a>
+                        @endcan
+
+                        @can('delete', \App\Models\Supplier::class)
+
+                            @if ($supplier->assets()->count() > 0)
+                                <button class="btn btn-block btn-sm btn-danger btn-social hidden-print disabled" data-tooltip="true"  data-placement="top" data-title="{{ trans('general.cannot_be_deleted') }}">
+                                    <x-icon type="delete" />
+                                    {{ trans('general.delete') }}
+                                </button>
+                            @else
+                                <button class="btn btn-block btn-sm btn-danger btn-social delete-asset" data-toggle="modal" title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $manufacturer->name]) }}" data-target="#dataConfirmModal" data-tooltip="true" data-icon="fa fa-trash" data-placement="top" data-title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" onClick="return false;">
+                                    <x-icon type="delete" />
+                                    {{ trans('general.delete') }}
+                                </button>
+                            @endif
+                        @endcan
+
+                    </x-slot:before_list>
+
                 </x-box.info-panel>
             </x-box>
         </x-page-column>

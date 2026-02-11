@@ -22,7 +22,7 @@
 
     @if (($contact->image) && ($img_path))
             <a href="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" data-toggle="lightbox" data-type="image">
-                <img src="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $contact->name }}">
+                <img src="{{ Storage::disk('public')->url($img_path.e($contact->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $contact->name }}" style="margin-bottom: 10px;">
             </a>
         <br>
     @endif
@@ -272,14 +272,14 @@
             </x-info-element>
         @endif
 
-        <x-info-element icon_type="external-link">
-            <x-info-element.url title="{{ trans('general.url') }}">
+        <x-info-element icon_type="external-link" title="{{ trans('general.url') }}">
+            <x-info-element.url>
                 {{ $contact->url }}
             </x-info-element.url>
         </x-info-element>
 
-        <x-info-element icon_type="external-link">
-            <x-info-element.url title="{{ trans('general.url') }}">
+        <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
+            <x-info-element.url>
                 {{ $contact->support_url }}
             </x-info-element.url>
         </x-info-element>
