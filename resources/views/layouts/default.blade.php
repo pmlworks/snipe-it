@@ -216,6 +216,7 @@
         {
             background-color: var(--table-stripe-bg) !important;
             color: var(--color-fg) !important;
+            border-color: var(--text-help);
 
         }
 
@@ -297,6 +298,8 @@
         }
 
         input[type="*"]:disabled,
+        input[type=checkbox]:disabled,
+        input[type=radio]:disabled,
         input[readonly],
         .select2-container--default.select2-container--disabled .select2-selection--single,
         .select2-container--default.select2-container--disabled .select2-selection__rendered,
