@@ -247,7 +247,7 @@ class IconHelper
             case 'square-left':
                 return 'fa-regular fa-square-caret-left';
             case 'square':
-                return 'fa-solid fa-square-full';
+                return 'fa-solid fa-square';
             case 'models':
             case 'model':
                 return 'fa-solid fa-boxes-stacked';

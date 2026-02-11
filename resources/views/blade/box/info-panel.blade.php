@@ -437,7 +437,7 @@
 
         @if ($contact->tag_color)
             <x-info-element>
-                <x-icon type="square" class="fa-fw" style="color: {{ $contact->tag_color }}" title="{{ trans('general.tag_color') }} }"/>
+                <x-icon type="square" class="fa-fw" style="color: {{ $contact->tag_color }}" title="{{ trans('general.tag_color') }}"/>
                 {{ $contact->tag_color }}
             </x-info-element>
         @endif
