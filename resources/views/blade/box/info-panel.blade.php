@@ -5,16 +5,10 @@
 
 
 
-<div class="box-header with-border">
-    <h3 class="box-title side-box-header">
+<div class="box-header with-border" style="padding-top: 0;">
+    <h3 class="box-title side-box-header" style="line-height: 20px">
         {{ $contact->display_name }}
     </h3>
-
-    <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool">
-
-        </button>
-    </div>
 </div>
 
 <div class="box-body box-profile side-box expanded">
@@ -154,7 +148,7 @@
 
 
         @if ($contact->fieldset)
-            <x-info-element icon_type="fieldset" title="{{ trans('general.fieldset') }}">
+            <x-info-element icon_type="fieldset" title="{{ trans('admin/custom_fields/general.fieldset_name') }}">
                 {!!  $contact->fieldset->present()->nameUrl !!}
             </x-info-element>
         @endif
