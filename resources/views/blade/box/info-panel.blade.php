@@ -59,6 +59,7 @@
             @endcan
         @endif
 
+
         @if ($contact->license_name)
             <x-info-element icon_type="contact-card" title="{{ trans('admin/licenses/form.to_name') }}">
                 {{ trans('admin/licenses/form.to_name') }}
@@ -129,6 +130,14 @@
                 {!!  $contact->category->present()->nameUrl !!}
             </x-info-element>
         @endif
+
+        @if ($contact->category_type)
+            <x-info-element icon_type="{{ $contact->category_type }}" title="{{ trans('general.type') }}">
+                {{ $contact->category_type }}
+            </x-info-element>
+        @endif
+
+
 
         @if ($contact->location)
             <x-info-element icon_type="location" icon_color="{{ $contact->location->tag_color }}" title="{{ trans('general.location') }}">
@@ -308,6 +317,7 @@
             </x-info-element>
         @endif
 
+
         @if ($contact->months)
             <x-info-element title="{{ trans('general.months') }}">
                 {{ $contact->months }}
@@ -342,7 +352,7 @@
         @endif
 
 
-        @if ($contact->maintained)
+        @if (isset($contact->maintained))
             <x-info-element title="{{ trans('general.maintained') }}">
             @if ($contact->maintained == 1)
                 <x-icon type="checkmark" class="fa-fw text-success" />
@@ -354,7 +364,7 @@
             </x-info-element>
         @endif
 
-        @if ($contact->reassignable)
+        @if (isset($contact->reassignable))
             <x-info-element title="{{ trans('admin/licenses/form.reassignable') }}">
             @if ($contact->reassignable == 1)
                 <x-icon type="checkmark" class="fa-fw text-success" />
@@ -366,7 +376,7 @@
             </x-info-element>
         @endif
 
-        @if ($contact->requestable)
+        @if (isset($contact->requestable))
             <x-info-element title="{{ trans('general.requestable') }}">
             @if ($contact->requestable == 1)
                 <x-icon type="checkmark" class="fa-fw text-success" />
@@ -378,7 +388,59 @@
             </x-info-element>
         @endif
 
+        @if (isset($contact->use_default_eula))
+            <x-info-element>
+                @if ($contact->eula_text=='')
+                    <x-icon type="checkmark" class="fa-fw text-success" title="{{ trans('general.yes') }}" />
+                    {{ trans('admin/settings/general.default_eula_text') }}
+                @else
+                    <x-icon type="checkmark" class="fa-fw text-success" title="{{ trans('general.yes') }}" />
+                    {{ trans('admin/categories/general.eula_text') }}
+                @endif
 
+            </x-info-element>
+        @endif
+
+        @if (isset($contact->require_acceptance))
+            <x-info-element>
+                @if ($contact->require_acceptance == 1)
+                    <x-icon type="checkmark" class="fa-fw text-success" title="{{ trans('general.yes') }}" />
+                @else
+                    <x-icon type="x" class="fa-fw text-danger" title="{{ trans('general.no') }}" />
+                @endif
+                    {{ trans('admin/categories/table.require_acceptance') }}
+            </x-info-element>
+        @endif
+
+        @if (isset($contact->checkin_email))
+            <x-info-element>
+                @if ($contact->checkin_email == 1)
+                    <x-icon type="checkmark" class="fa-fw text-success" title="{{ trans('general.yes') }}" />
+                @else
+                    <x-icon type="x" class="fa-fw text-danger" title="{{ trans('general.no') }}" />
+                @endif
+                {{ trans('admin/categories/general.email_to_user_upon_checkin') }}
+            </x-info-element>
+        @endif
+
+        @if (isset($contact->alert_on_response))
+            <x-info-element>
+                @if ($contact->require_acceptance == 1)
+                    <x-icon type="checkmark" class="fa-fw text-success"  title="{{ trans('general.yes') }}"/>
+                @else
+                    <x-icon type="x" class="fa-fw text-danger"  title="{{ trans('general.no') }}"/>
+                @endif
+                    {{ trans('admin/categories/general.email_to_initiator') }}
+            </x-info-element>
+        @endif
+
+
+        @if ($contact->tag_color)
+            <x-info-element>
+                <x-icon type="square" class="fa-fw" style="color: {{ $contact->tag_color }}" title="{{ trans('general.tag_color') }} }"/>
+                {{ $contact->tag_color }}
+            </x-info-element>
+        @endif
 
         @if ($contact->adminuser)
             <x-info-element title="{{ trans('general.created_by') }}">

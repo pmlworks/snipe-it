@@ -102,7 +102,7 @@
                             </x-slot:header>
 
                             <x-slot:bulkactions>
-                                <x-table.bulk-users />
+                                <x-table.bulk-assets />
                             </x-slot:bulkactions>
 
                             <x-slot:content>
