@@ -228,7 +228,7 @@
         </x-page-column>
         <x-page-column class="col-md-3">
             <x-box>
-                <x-box.info-panel :contact="$company" img_path="{{ app('companies_upload_url') }}">
+                <x-box.info-panel :infoPanelObj="$company" img_path="{{ app('companies_upload_url') }}">
 
                     <x-slot:before_list>
                         @can('update', $company)
