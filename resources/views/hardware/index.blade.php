@@ -54,7 +54,7 @@
 {{-- Page content --}}
 @section('content')
     <x-container>
-        <x-box.container>
+        <x-box>
 
                 @include('partials.asset-bulk-actions', ['status' => $requestStatus])
                    
@@ -66,6 +66,8 @@
                 data-show-footer="true"
                 data-sort-order="asc"
                 data-sort-name="name"
+                data-fixed-number="2"
+                data-fixed-right-number="2"
                 data-search-text="{{ session()->get('search') }}"
                 data-show-columns-search="true"
                 data-toolbar="#assetsBulkEditToolbar"
@@ -85,7 +87,7 @@
                 }'>
               </table>
 
-        </x-box.container>
+        </x-box>
     </x-container>
 @stop
 

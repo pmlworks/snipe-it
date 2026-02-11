@@ -299,12 +299,12 @@
 
                       <fieldset>
 
-                          <x-form-legend>
+                          <x-form.legend>
                               <h4 id="optional_user_details" class="remember-toggle">
                                   <x-icon type="caret-down" class="fa-fw" id="toggle-arrow-optional_user_details" />
                                   {{ trans('admin/hardware/form.optional_infos') }}
                               </h4>
-                          </x-form-legend>
+                          </x-form.legend>
 
                           <div class="col-md-12 toggle-content-optional_user_details">
 
@@ -600,6 +600,7 @@
                                                <div class="controls">
                                                 <select
                                                         name="groups[]"
+                                                        size="{{ ($groups->count() > 25) ? '25' : '10' }}"
                                                         aria-label="groups[]"
                                                         id="groups[]"
                                                         multiple="multiple"
