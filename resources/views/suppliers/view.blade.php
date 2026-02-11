@@ -260,7 +260,7 @@
                                     {{ trans('general.delete') }}
                                 </button>
                             @else
-                                <button class="btn btn-block btn-sm btn-danger btn-social delete-asset" data-toggle="modal" title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $manufacturer->name]) }}" data-target="#dataConfirmModal" data-tooltip="true" data-icon="fa fa-trash" data-placement="top" data-title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" onClick="return false;">
+                                <button class="btn btn-block btn-sm btn-danger btn-social delete-asset" data-toggle="modal" title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" data-content="{{ trans('general.sure_to_delete_var', ['item' => $supplier->name]) }}" data-target="#dataConfirmModal" data-tooltip="true" data-icon="fa fa-trash" data-placement="top" data-title="{{ trans('general.delete_what', ['item'=> trans('general.supplier')]) }}" onClick="return false;">
                                     <x-icon type="delete" />
                                     {{ trans('general.delete') }}
                                 </button>
