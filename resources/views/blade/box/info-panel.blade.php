@@ -88,6 +88,13 @@
             </x-info-element>
         @endif
 
+        @if ($infoPanelObj->min_amt)
+            <x-info-element>
+                <x-icon type="min-qty" class="fa-fw" title="{{ trans('general.min_amt') }}" />
+                {{ trans('general.min_amt') }} {{ $infoPanelObj->min_amt }}
+            </x-info-element>
+        @endif
+
         @if ($infoPanelObj->order_number)
             <x-info-element icon_type="order" title="{{ trans('general.order_number') }}">
                 {{ $infoPanelObj->order_number }}
@@ -319,6 +326,7 @@
             </x-info-element>
         @endif
 
+
         @if ($infoPanelObj->depreciation_type)
             <x-info-element title="{{ trans('general.depreciation_type') }}">
                 @if ($infoPanelObj->depreciation_type == 'amount')
@@ -406,16 +414,7 @@
             </x-info-element>
         @endif
 
-        @if (isset($infoPanelObj->checkin_email))
-            <x-info-element>
-                @if ($infoPanelObj->checkin_email == 1)
-                    <x-icon type="checkmark" class="fa-fw text-success" title="{{ trans('general.yes') }}" />
-                @else
-                    <x-icon type="x" class="fa-fw text-danger" title="{{ trans('general.no') }}" />
-                @endif
-                {{ trans('admin/categories/general.email_to_user_upon_checkin') }}
-            </x-info-element>
-        @endif
+
 
         @if (isset($infoPanelObj->alert_on_response))
             <x-info-element>

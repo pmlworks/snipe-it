@@ -251,6 +251,8 @@ class IconHelper
             case 'models':
             case 'model':
                 return 'fa-solid fa-boxes-stacked';
+            case 'min-qty':
+                return 'fa-solid fa-chart-pie';
 
         }
     }
