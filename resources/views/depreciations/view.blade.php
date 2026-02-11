@@ -128,7 +128,7 @@
         </x-page-column>
         <x-page-column class="col-md-3">
             <x-box>
-                <x-box.info-panel :contact="$depreciation">
+                <x-box.info-panel :infoPanelObj="$depreciation">
 
                     <x-slot:before_list>
 

@@ -191,7 +191,7 @@
         <x-page-column class="col-md-3">
 
             <x-box>
-                <x-box.info-panel :contact="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
+                <x-box.info-panel :infoPanelObj="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
 
                     <x-slot:before_list>
 

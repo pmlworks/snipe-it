@@ -124,7 +124,7 @@
 
         <x-page-column class="col-md-3">
             <x-box>
-                <x-box.info-panel :contact="$license" img_path="{{ app('licenses_upload_url') }}">
+                <x-box.info-panel :infoPanelObj="$license" img_path="{{ app('licenses_upload_url') }}">
 
                     <x-slot:before_list>
 
