@@ -298,6 +298,8 @@
 
         input[type="*"]:disabled,
         input[readonly],
+        .select2-container--default.select2-container--disabled .select2-selection--single,
+        .select2-container--default.select2-container--disabled .select2-selection__rendered,
         textarea[readonly]
         {
             background-color: light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
