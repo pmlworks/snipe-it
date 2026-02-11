@@ -1212,6 +1212,8 @@ class ReportsController extends Controller
         if (is_null($email) || $email === '') {
             return redirect()->route('reports/unaccepted_assets')->with('error', trans('general.no_email'));
         }
+
+        $acceptance->checkoutable->checkout_qty = 1;
         $mailable = $this->getCheckoutMailType($acceptance, $logItem);
         Mail::to($email)->send($mailable->locale($locale));
 
