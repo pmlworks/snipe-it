@@ -56,7 +56,7 @@ class EmailNotificationsToAdminAlertEmailUponCheckinTest extends TestCase
             return $mail->hasTo($this->user->email);
         });
         Mail::assertSent(CheckinAssetMail::class, function ($mail) {
-            return $mail->hasTo('cc@example.com');
+            return $mail->hasCc('cc@example.com');
         });
     }
 
