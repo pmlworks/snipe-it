@@ -39,7 +39,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
-
+use Symfony\Component\Mime\Email;
 class CheckoutableListener
 {
     private array $skipNotificationsFor = [
@@ -108,7 +108,7 @@ class CheckoutableListener
             if (!empty($cc)) {
                 try {
                     $ccMail = (clone $mailable)->locale(Setting::getSettings()->locale);
-                    Mail::to(array_flatten($cc))->send($ccMail);
+                    Mail::cc(array_flatten($cc))->send($ccMail);
                 } catch (ClientException $e) {
                     Log::debug("Exception caught during checkout email: " . $e->getMessage());
                 } catch (Exception $e) {
@@ -210,7 +210,7 @@ class CheckoutableListener
             if (!empty($cc)) {
                 try {
                     $ccMail = (clone $mailable)->locale(Setting::getSettings()->locale);
-                    Mail::to(array_flatten($cc))->send($ccMail);
+                    Mail::cc(array_flatten($cc))->send($ccMail);
                 } catch (ClientException $e) {
                     Log::debug("Exception caught during checkin email: " . $e->getMessage());
                 } catch (Exception $e) {
