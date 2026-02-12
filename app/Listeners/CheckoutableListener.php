@@ -39,7 +39,6 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
-use Symfony\Component\Mime\Email;
 class CheckoutableListener
 {
     private array $skipNotificationsFor = [
