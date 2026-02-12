@@ -91,12 +91,16 @@ class CheckoutAccessoryMail extends BaseMailable
             return trans_choice('mail.new_item_checked_location', $this->checkout_qty, ['location' => $this->target->name]);
         }
 
-        if ($this->requiresAcceptance()) {
+        if ($this->firstTimeSending && $this->requiresAcceptance()) {
             return trans_choice('mail.new_item_checked_with_acceptance', $this->checkout_qty);
         }
 
-        if (!$this->requiresAcceptance()) {
+        if ($this->firstTimeSending && !$this->requiresAcceptance()) {
             return trans_choice('mail.new_item_checked', $this->checkout_qty);
+        }
+
+        if (!$this->firstTimeSending && $this->requiresAcceptance()) {
+            return trans('mail.recent_item_checked');
         }
 
         // we shouldn't get here but let's send a default message just in case

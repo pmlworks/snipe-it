@@ -110,7 +110,7 @@ class AcceptanceReminderTest extends TestCase
 
     public function testReminderIsSentToUserForAccessory()
     {
-        $accessory = Accessory::factory()->create();
+        $accessory = Accessory::factory()->requiringAcceptance()->create();
 
         $acceptance = $this->createCheckoutAcceptance($accessory, $this->assignee);
 
@@ -137,11 +137,15 @@ class AcceptanceReminderTest extends TestCase
         Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) {
             return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
+
+        Mail::assertSent(CheckoutAccessoryMail::class, function (CheckoutAccessoryMail $mail) {
+            return str_contains($mail->render(), trans('mail.recent_item_checked'));
+        });
     }
 
     public function testReminderIsSentToUserForAsset()
     {
-        $asset = Asset::factory()->create();
+        $asset = Asset::factory()->requiresAcceptance()->create();
 
         $acceptance = $this->createCheckoutAcceptance($asset, $this->assignee);
 
@@ -162,11 +166,15 @@ class AcceptanceReminderTest extends TestCase
         Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
             return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
+
+        Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
+            return str_contains($mail->render(), trans('mail.recent_item_checked'));
+        });
     }
 
     public function testReminderIsSentToUserForConsumable()
     {
-        $consumable = Consumable::factory()->create();
+        $consumable = Consumable::factory()->requiringAcceptance()->create();
 
         $acceptance = $this->createCheckoutAcceptance($consumable, $this->assignee);
 
@@ -187,11 +195,15 @@ class AcceptanceReminderTest extends TestCase
         Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) {
             return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
         });
+
+        Mail::assertSent(CheckoutConsumableMail::class, function (CheckoutConsumableMail $mail) {
+            return str_contains($mail->render(), trans('mail.recent_item_checked'));
+        });
     }
 
     public function testReminderIsSentToUserForLicenseSeat()
     {
-        $licenseSeat = LicenseSeat::factory()->create();
+        $licenseSeat = LicenseSeat::factory()->requiringAcceptance()->create();
 
         $acceptance = $this->createCheckoutAcceptance($licenseSeat, $this->assignee);
 
@@ -211,6 +223,10 @@ class AcceptanceReminderTest extends TestCase
 
         Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) {
             return $mail->hasSubject(trans('mail.unaccepted_asset_reminder'));
+        });
+
+        Mail::assertSent(CheckoutLicenseMail::class, function (CheckoutLicenseMail $mail) {
+            return str_contains($mail->render(), trans('mail.recent_item_checked'));
         });
     }
 

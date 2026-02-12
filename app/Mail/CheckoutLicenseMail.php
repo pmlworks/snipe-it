@@ -72,6 +72,7 @@ class CheckoutLicenseMail extends BaseMailable
                 'eula'          => $eula,
                 'req_accept'    => $req_accept,
                 'accept_url'    => $accept_url,
+                'introduction_line' => $this->introductionLine(),
             ]
         );
     }
@@ -93,5 +94,28 @@ class CheckoutLicenseMail extends BaseMailable
         }
 
         return trans('mail.unaccepted_asset_reminder');
+    }
+
+    private function introductionLine(): string
+    {
+        if ($this->firstTimeSending && $this->requiresAcceptance()) {
+            return trans_choice('mail.new_item_checked_with_acceptance', 1);
+        }
+
+        if ($this->firstTimeSending && !$this->requiresAcceptance()) {
+            return trans_choice('mail.new_item_checked', 1);
+        }
+
+        if (!$this->firstTimeSending && $this->requiresAcceptance()) {
+            return trans('mail.recent_item_checked');
+        }
+
+        // we shouldn't get here but let's send a default message just in case
+        return trans('new_item_checked');
+    }
+
+    private function requiresAcceptance(): int|bool
+    {
+        return method_exists($this->item, 'requireAcceptance') ? $this->item->requireAcceptance() : 0;
     }
 }
