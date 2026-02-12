@@ -71,7 +71,6 @@ class MappedTable extends Attribute
 
     public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
     {
-        \Log::error("implementing custom patch for value: '$value' of attribute " . $this->scim_attribute_name); //FIXME
         $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
     }
 
