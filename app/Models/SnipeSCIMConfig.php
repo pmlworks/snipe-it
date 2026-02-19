@@ -60,7 +60,6 @@ class MappedTable extends Attribute
 
     public function add($value, Model &$object)
     {
-        \Log::error("Structure of 'value' is going to be weird - " . print_r($value, true));
         $object->{$this->relationship_id_field} = $value ? $this->relationship_class::firstOrCreate([$this->relationship_field => $value])->id : null;
     }
 
@@ -79,32 +78,29 @@ class MappedTable extends Attribute
 class UpdatableComplex extends Complex
 {
 
-    public function doWrite($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+    public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
     {
-        throw new \Exception("doWrite is not implemented yet for Operation: $operation on attribute " . $this->getFullKey());
+        throw new \Exception("doWrite is not implemented yet for Operation: $operation " . ($subop ? "($subop)" : "") . "on attribute " . $this->getFullKey());
     }
 
     public function add($value, Model &$object)
     {
-        $this->doWrite("add", $value, $object);
+        $this->doWrite("add", null, $value, $object);
     }
 
     public function replace($value, Model &$object, Path $path = null, $removeIfNotSet = false)
     {
-        $this->doWrite("replace", $value, $object, $path, $removeIfNotSet);
+        $this->doWrite("replace", null, $value, $object, $path, $removeIfNotSet);
     }
 
     public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
     {
-        //FIXME - what to do with $operation?!?!!?
-        // Also - we don't really have a good repeatable way to do this :/
-        // so we're probably going to end up just overriding this anyways :(
-        $this->doWrite("patch", $value, $object, $path, $removeIfNotSet);
+        $this->doWrite("patch", $operation, $value, $object, $path, $removeIfNotSet);
     }
 
     public function remove($value, Model &$object, Path $path = null)
     {
-        $this->doWrite("remove", null, $object, $path);
+        $this->doWrite("remove", null, null, $object, $path);
     }
 }
 
@@ -195,7 +191,7 @@ class SnipeSCIMConfig
                             })->toArray();
                         }
 
-                        public function doWrite($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+                        public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             if ($value) {
                                 $object->email = $value[0]['value'];
@@ -230,9 +226,23 @@ class SnipeSCIMConfig
                             return $phones;
                         }
 
-                        public function doWrite($operation, $value, Model &$object, Path $path = null)
+                        public function doWrite($operation, $subop, $value, Model &$object, Path $path = null)
                         {
-                            \Log::error("Phones 'value' is: " . print_r($value, true));
+                            \Log::debug("Phones 'value' is: " . print_r($value, true));
+                            if ($operation == "patch") {
+                                if ($path->getValuePathFilter() != null) {
+                                    if ((string)$path == 'phoneNumbers[type eq "mobile"].value') {
+                                        $object->mobile = $value; //I don't know why the value is the raw value, but it is?
+                                        return;
+                                    }
+                                    if ((string)$path == 'phoneNumbers[type eq "work"].value') {
+                                        $object->phone = $value; //similar, don't know why, but it is
+                                        return;
+                                    }
+                                }
+                                parent::patch($subop, $value, $object, $path, $removeIfNotSet);
+                                return;
+                            }
                             foreach ($value as $phone) {
                                 switch ($phone['type']) {
                                     case 'work':
@@ -249,32 +259,14 @@ class SnipeSCIMConfig
                             }
                         }
 
-                        public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
-                        {
-                            if ($path->getValuePathFilter() != null) {
-                                \Log::error("value object IS: " . print_r($value, true)); //FIXME
-                                if ((string)$path == 'phoneNumbers[type eq "mobile"].value') {
-                                    \Log::error("YAY!!!!! We are patching an mobile fone! We can do this!"); //FIXME
-                                    $object->mobile = $value; //I don't know why the value is the raw value, but it is?
-                                    return;
-                                }
-                                if ((string)$path == 'phoneNumbers[type eq "work"].value') {
-                                    \Log::error("Patching work number!");
-                                    $object->phone = $value; //similar, don't know why, but it is
-                                    return;
-                                }
-                                \Log::error("Uh-oh, maybe doing something weirder - path is: $path");
-                            }
-                            parent::patch($operation, $value, $object, $path, $removeIfNotSet);
-                        }
-                    })->withSubAttributes(
-                        new Constant('value', 'email')->ensure('string'), //FIXME - this is WRONG!!!!!!
-                        new Constant('type', 'other'), // FIXME uh, *also* wrong?!
+                    })->withSubAttributes( // TODO: I suspect these 'sub-attributes' aren't being checked at all
+                        new Constant('value', 'email')->ensure('string'), // TODO - this is WRONG, but it works somehow? Probably because it's ignored
+                        new Constant('type', 'other'), // TODO uh, *also* wrong? but, again, seems to be ignored
                     )->ensure('array')
                         ->setMultiValued(true),
 
                     // addresses chonk
-                    (new class ('addresses') extends Complex { //FIXME - swap this for UpdatableComplex
+                    (new class ('addresses') extends UpdatableComplex {
                         static $addressmap = [
                             'streetAddress' => 'address',
                             'locality' => 'city',
@@ -298,10 +290,11 @@ class SnipeSCIMConfig
                             return $address;
                         }
 
-                        public function patch($operation, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
+                        public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
+                            // TODO - this is validated *just* for 'patch' operations, so this may not work in other write contexts
                             if ($path->getValuePathFilter() != null) {
-                                \Log::error("path for update $path");
+                                \Log::debug("path for update $path");
                                 // get the part of the $path that we actually care about - something like:
                                 // addresses[type eq "work"]
                                 $matches = null;
@@ -341,7 +334,6 @@ class SnipeSCIMConfig
                         (new class ('$ref') extends Eloquent {
                             protected function doRead(&$object, $attributes = [])
                             {
-                                \Log::error("Checking to see if our 'doRead' even gets a chance to get called?");
                                 return route(
                                     'scim.resource',
                                     [
@@ -376,12 +368,12 @@ class SnipeSCIMConfig
                             ];
                         }
 
-                        public function doWrite($operation, $value, Model &$object, $path = null, $removeIfNotSet = false)
+                        public function doWrite($operation, $subop, $value, Model &$object, $path = null, $removeIfNotSet = false)
                         {
-                            \Log::error("What type of value is value? " . gettype($value));
+                            \Log::debug("What type of value is value? " . gettype($value));
                             $manager_id = null;
                             if (is_scalar($value)) {
-                                \Log::error("Weird Microsoft mode - set manager to the \$value and move on with life?"); //FIXME
+                                \Log::debug("Weird Microsoft mode - set manager to the \$value and move on with life?");
                                 $manager_id = $value;
                             } elseif (array_key_exists('$ref', $value)) {
                                 // Here's the spec: https://datatracker.ietf.org/doc/html/rfc7643#section-4.3
@@ -402,7 +394,7 @@ class SnipeSCIMConfig
                                 // that, at least, is the spec - but *what* ID is that?! It's supposed to be a Snipe-IT one!
                                 $manager_id = $value['value'];
                             }
-                            \Log::error("Non-Microsoft - Trying to '$operation' for maanger with value: " . print_r($value, true)); //FIXME
+                            \Log::debug("Non-Microsoft - Trying to '$operation' for manager with value: " . print_r($value, true));
                             if ($manager_id && User::find($manager_id)) {
                                 $object->manager_id = $manager_id;
                                 return;
