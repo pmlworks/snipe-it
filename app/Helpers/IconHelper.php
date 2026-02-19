@@ -36,6 +36,8 @@ class IconHelper
                 return 'fa-solid fa-user';
             case 'users':
                 return 'fas fa-users';
+            case 'supplier':
+                return 'fa-solid fa-store';
             case 'restore':
                 return 'fa-solid fa-trash-arrow-up';
             case 'external-link':

@@ -7,6 +7,7 @@
     'tooltip' => null,
     'icon_type' => null,
 ])
+
 <!-- start tab nav item -->
 <li {{ $attributes->merge(['class' => '']) }}>
 
