@@ -226,7 +226,7 @@ class SnipeSCIMConfig
                             return $phones;
                         }
 
-                        public function doWrite($operation, $subop, $value, Model &$object, Path $path = null)
+                        public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             \Log::debug("Phones 'value' is: " . print_r($value, true));
                             if ($operation == "patch") {
