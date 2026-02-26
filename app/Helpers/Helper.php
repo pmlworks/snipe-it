@@ -775,11 +775,11 @@ class Helper
     public static function checkLowInventory()
     {
         $alert_threshold = \App\Models\Setting::getSettings()->alert_threshold;
-        $consumables = Consumable::withCount('consumableAssignments as consumable_assignments_count')->whereNotNull('min_amt')->get();
+        $consumables = Consumable::withCount('consumableAssignments as consumables_users_count')->whereNotNull('min_amt')->get();
         $accessories = Accessory::withCount('checkouts as checkouts_count')->whereNotNull('min_amt')->get();
-        $components = Component::whereNotNull('min_amt')->get();
+        $components = Component::withCount('assets as sum_unconstrained_assets')->whereNotNull('min_amt')->get();
         $asset_models = AssetModel::where('min_amt', '>', 0)->withCount(['availableAssets', 'assets'])->get();
-        $licenses = License::where('min_amt', '>', 0)->get();
+        $licenses = License::withCount('availCount as licenses_available')->where('min_amt', '>', 0)->get();
 
         $items_array = [];
         $all_count = 0;

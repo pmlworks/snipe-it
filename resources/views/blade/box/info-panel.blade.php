@@ -43,13 +43,11 @@
 
         @if ($infoPanelObj->serial)
             @can('viewKeys', $infoPanelObj)
-                <x-info-element>
-                    <x-copy-to-clipboard copy_what="license_key">
+                <x-info-element icon_type="number">
+                    <x-copy-to-clipboard class="pull-right" copy_what="license_key">
                         <code>{{ $infoPanelObj->serial }}</code>
                     </x-copy-to-clipboard>
                 </x-info-element>
-            @else
-                ------------
             @endcan
         @endif
 
@@ -71,7 +69,7 @@
         @endif
 
         @if ($infoPanelObj->termination_date)
-            <x-info-element icon_type="terminates" title="{{ trans('general.termination_date') }}">
+            <x-info-element icon_type="terminates" title="{{ trans('admin/licenses/form.termination_date') }}">
                 {{ Helper::getFormattedDateObject($infoPanelObj->termination_date, 'date', false) }}
             </x-info-element>
         @endif
@@ -115,8 +113,8 @@
         @endif
 
         @if (method_exists($infoPanelObj, 'numRemaining'))
-            <x-info-element icon_type="available" title="{{ trans('general.remaining') }}">
-                {{ $infoPanelObj->numRemaining() }}
+            <x-info-element icon_type="available" class="{{ ($infoPanelObj->numRemaining()) <= $infoPanelObj->min_amt ? 'text-danger' : 'text-success' }}" title="{{ trans('general.remaining') }}">
+                 {{ $infoPanelObj->numRemaining() }}
                 {{ trans('general.remaining') }}
             </x-info-element>
         @endif
@@ -132,7 +130,9 @@
                     {{ $snipeSettings->default_currency }}
                 @endif
 
-                {{ Helper::formatCurrencyOutput($infoPanelObj->purchase_cost) }}
+                <x-copy-to-clipboard copy_what="purchase_cost" class="pull-right">
+                    {{ Helper::formatCurrencyOutput($infoPanelObj->purchase_cost) }}
+                </x-copy-to-clipboard>
             </x-info-element>
 
             @if (isset($infoPanelObj->qty))
@@ -177,7 +177,7 @@
 
         @if ($infoPanelObj->category)
             <x-info-element icon_type="category" icon_color="{{ $infoPanelObj->category->tag_color }}" title="{{ trans('general.category') }}">
-                {!!  $infoPanelObj->category->present()->nameUrl !!}
+                {!!  $infoPanelObj->category->present()->formattedNameLink !!}
             </x-info-element>
         @endif
 
@@ -483,11 +483,7 @@
                 <span class="text-muted">
                     <x-icon type="user" class="fa-fw" title="{{ trans('general.created_by') }}" />
                         {{ trans('general.created_by') }}
-                    @can('view', $infoPanelObj->adminuser)
-                        <a href="{{ route('users.show', $infoPanelObj->adminuser) }}"> {{ $infoPanelObj->adminuser->display_name }}</a>
-                    @else
-                        {{ $infoPanelObj->adminuser->display_name }}
-                    @endcan
+                    {!!  $infoPanelObj->adminuser->present()->formattedNameLink !!}
 
                 </span>
             </x-info-element>
