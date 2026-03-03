@@ -398,7 +398,7 @@
             @endforeach
         </table>
     @endif
-    @if ($indirectItemsCount> 0)
+{{--    @if ($indirectItemsCount > 0)--}}
         <div id="indirectAssignment-toolbar">
             <h4>{{ trans_choice('mail.assigned_to_assets', $indirectItemsCount, ['count' => $indirectItemsCount]) }}</h4>
         </div>
@@ -442,10 +442,22 @@
                     $indirectAssignmentsCounter ++
                     @endphp
                 @endforeach
+                @foreach ($asset->components as $component)
+                    @if($assetsLicense)
+                        <tr>
+                            <td>{{$indirectAssignmentsCounter}}</td>
+                            <td>{{ $asset->display_name ?? ''}}</td>
+                            <td>{{ $component->category?->name ?? '' }}</td>
+                            <td>{{ $component->name ?? '' }}</td>
+                            <td>{{ $component->pivot->assigned_qty }}</td>
+                        </tr>
+                    @endif
+                    @php
+                        $indirectAssignmentsCounter ++
+                    @endphp
+                @endforeach
             @endforeach
         </table>
-    @endif
-{{--    @endif--}}
     @php
         if (!empty($eulas)) $eulas = array_unique($eulas);
     @endphp
