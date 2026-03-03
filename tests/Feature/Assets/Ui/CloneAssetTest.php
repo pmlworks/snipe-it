@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class CloneAssetTest extends TestCase
 {
-    public function testPermissionRequiredToCreateAssetModel()
+    public function testPermissionRequiredToCreateCloneAsset()
     {
         $asset = Asset::factory()->create();
         $this->actingAs(User::factory()->create())

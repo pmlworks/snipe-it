@@ -8,11 +8,9 @@ use Tests\TestCase;
 
 class AuditAssetTest extends TestCase
 {
-    public function testPermissionRequiredToCreateAssetModel()
+    public function test_permission_required_to_see_audit_page()
     {
-        $this->actingAs(User::factory()->create())
-            ->get(route('clone/hardware', Asset::factory()->create()))
-            ->assertForbidden();
+        $this->markTestIncomplete();
     }
 
     public function testPageCanBeAccessed(): void
@@ -20,6 +18,11 @@ class AuditAssetTest extends TestCase
         $this->actingAs(User::factory()->auditAssets()->create())
             ->get(route('asset.audit.create', Asset::factory()->create()))
             ->assertStatus(200);
+    }
+
+    public function test_asset_can_be_audited()
+    {
+        $this->markTestIncomplete();
     }
 
     public function testAssetAuditPostIsRedirectedToAssetIndexIfRedirectSelectionIsIndex()
