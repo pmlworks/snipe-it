@@ -632,8 +632,11 @@ class UsersController extends Controller
                 'assets.assignedAssets.defaultLoc',
                 'assets.assignedAssets.location',
                 'assets.assignedAssets.model.category',
+                'assets.components',
+                'assets.assignedAccessories',
                 'assets.defaultLoc',
                 'assets.location',
+                'assets.licenses',
                 'assets.model.category',
                 'accessories.log' => fn($query) => $query->withTrashed()->where('target_type', User::class)->where('target_id', $id)->where('action_type', 'accepted'),
                 'accessories.category',
@@ -645,12 +648,14 @@ class UsersController extends Controller
             ])
             ->withTrashed()
             ->first();
-
+//        dd($user->assets->assignedAssets);
+        $indirectItemsCount = $user->assets->flatMap->assignedAssets->count() + $user->assets->flatMap->components->count() + $user->assets->flatMap->licenses->count() + $user->assets->flatMap->assignedAccessories->count();
         if ($user) {
             $this->authorize('view', $user);
 
             return view('users.print')
                 ->with('users', [$user])
+                ->with('indirectItemsCount', $indirectItemsCount)
                 ->with('settings', Setting::getSettings());
         }
 

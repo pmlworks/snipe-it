@@ -398,7 +398,54 @@
             @endforeach
         </table>
     @endif
+    @if ($indirectItemsCount> 0)
+        <div id="indirectAssignment-toolbar">
+            <h4>{{ trans_choice('mail.assigned_to_assets', $indirectItemsCount, ['count' => $indirectItemsCount]) }}</h4>
+        </div>
+        <table
+                class="snipe-table table table-striped inventory"
+                id="indirectAssignments"
+                data-pagination="false"
+                data-toolbar="#indirectAssignment-toolbar"
+                data-id-table="indirectAssignments"
+                data-search="false"
+                data-side-pagination="client"
+                data-sortable="true"
+                data-sort-order="desc"
+                data-sort-name="created_at"
+                data-show-columns="true"
+                data-cookie-id-table="indirectAssignments">
+            <thead>
+            @php
+                $indirectAssignmentsCounter = 1;
+            @endphp
+                <tr>
+                    <th style="width: 20px;" data-sortable="false" data-switchable="false"></th>
+                    <th style="width: 40%;" data-sortable="true" data-switchable="false">{{ trans('mail.assigned_to') }}</th>
+                    <th style="width: 50%;" data-sortable="true">{{ trans('general.category') }}</th>
+                    <th style="width: 10%;" data-sortable="true">{{ trans('mail.item') }}</th>
+                    <th style="width: 10%;" data-sortable="true">{{ trans('general.quantity') }}</th>
+                </tr>
+            </thead>
 
+            @foreach ($show_user->assets as $asset)
+                @foreach ($asset->licenses as $assetsLicense)
+                    @if($assetsLicense)
+                        <tr>
+                            <td>{{$indirectAssignmentsCounter}}</td>
+                            <td>{{ $asset->display_name ?? ''}}</td>
+                            <td>{{ $assetsLicense->category?->name ?? '' }}</td>
+                            <td>{{ $assetsLicense->name ?? '' }}</td>
+                        </tr>
+                    @endif
+                    @php
+                    $indirectAssignmentsCounter ++
+                    @endphp
+                @endforeach
+            @endforeach
+        </table>
+    @endif
+{{--    @endif--}}
     @php
         if (!empty($eulas)) $eulas = array_unique($eulas);
     @endphp
