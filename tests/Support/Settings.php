@@ -38,6 +38,14 @@ class Settings
             'audit_warning_days' => $days,
         ]);
     }
+
+    public function setAuditInterval(?int $months): Settings
+    {
+        return $this->update([
+            'audit_interval' => $months,
+        ]);
+    }
+
     public function disableAlertEmail(): Settings
     {
         return $this->update([

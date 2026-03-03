@@ -2,30 +2,52 @@
 
 namespace Tests\Feature\Assets\Ui;
 
+use App\Models\User;
+use Carbon\Carbon;
 use Tests\TestCase;
 
 class BulkAuditAssetsTest extends TestCase
 {
+    private User $actor;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->actor = User::factory()->auditAssets()->create();
+    }
+
     public function test_permission_required_to_view_page()
     {
-        $this->markTestIncomplete();
+        $this->actingAs(User::factory()->create())
+            ->get(route('assets.bulkaudit'))
+            ->assertStatus(403);
     }
 
-    public function test_permission_required_to_bulk_audit_assets()
+    public function test_can_view_audit_page()
     {
-        $this->markTestIncomplete();
+        $this->actingAs($this->actor)
+            ->get(route('assets.bulkaudit'))
+            ->assertViewIs('hardware.quickscan');
     }
 
-    public function test_can_bulk_audit_assets()
+    public function test_audit_page_is_given_todays_date_when_audit_interval_is_null()
     {
-        $this->markTestIncomplete();
+        $this->settings->setAuditInterval(null);
+
+        $this->actingAs($this->actor)
+            ->get(route('assets.bulkaudit'))
+            ->assertViewIs('hardware.quickscan')
+            ->assertViewHas('next_audit_date', Carbon::now()->toDateString());
     }
 
-    /**
-     * @link https://github.com/grokability/snipe-it/issues/18495
-     */
-    public function test_next_audit_date_is_correctly_updated()
+    public function test_audit_page_is_given_correct_date_when_audit_interval_is_set()
     {
-        $this->markTestIncomplete();
+        $this->settings->setAuditInterval(5);
+
+        $this->actingAs($this->actor)
+            ->get(route('assets.bulkaudit'))
+            ->assertViewIs('hardware.quickscan')
+            ->assertViewHas('next_audit_date', Carbon::now()->addMonths(5)->toDateString());
     }
 }

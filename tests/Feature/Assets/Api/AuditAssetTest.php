@@ -3,18 +3,18 @@
 namespace Tests\Feature\Assets\Api;
 
 use App\Models\Asset;
-use App\Models\AssetModel;
-use App\Models\Company;
-use App\Models\Location;
-use App\Models\Statuslabel;
-use App\Models\Supplier;
 use App\Models\User;
-use App\Models\CustomField;
-use Illuminate\Support\Facades\Crypt;
 use Tests\TestCase;
 
 class AuditAssetTest extends TestCase
 {
+    public function testPermissionRequiredToBulkAuditAssets()
+    {
+        $this->actingAsForApi(User::factory()->create())
+            ->postJson(route('api.asset.audit', Asset::factory()->create()))
+            ->assertForbidden();
+    }
+
     public function testThatANonExistentAssetIdReturnsError()
     {
         $this->actingAsForApi(User::factory()->auditAssets()->create())
@@ -33,9 +33,12 @@ class AuditAssetTest extends TestCase
     public function testLegacyAssetAuditIsSaved()
     {
         $asset = Asset::factory()->create();
+        $future = now()->addMonths(5)->toDateString();
+
         $this->actingAsForApi(User::factory()->auditAssets()->create())
             ->postJson(route('api.asset.audit.legacy'), [
                 'asset_tag' => $asset->asset_tag,
+                'next_audit_date' => $future,
                 'note' => 'test',
             ])
             ->assertStatusMessageIs('success')
@@ -50,8 +53,32 @@ class AuditAssetTest extends TestCase
                 ])
             ->assertStatus(200);
 
+        $asset->refresh();
+        $this->assertEquals($future, $asset->next_audit_date);
     }
 
+    /**
+     * @link https://github.com/grokability/snipe-it/issues/18495
+     */
+    public function testAuditDoesNotSetNextAuditDateIfGivenNull()
+    {
+        $this->settings->setAuditInterval(null);
+
+        $asset = Asset::factory()->create(['next_audit_date' => null]);
+
+        $this->actingAsForApi(User::factory()->auditAssets()->create())
+            ->postJson(route('api.asset.audit', $asset), [
+                'asset_tag' => $asset->asset_tag,
+                // this is the important part
+                'next_audit_date' => null,
+                'note' => null,
+            ])
+            ->assertStatusMessageIs('success')
+            ->assertStatus(200);
+
+        $asset->refresh();
+        $this->assertNull($asset->next_audit_date);
+    }
 
     public function testAssetAuditIsSaved()
     {
@@ -73,6 +100,4 @@ class AuditAssetTest extends TestCase
             ->assertStatus(200);
         $this->assertHasTheseActionLogs($asset, ['create', 'audit']);
     }
-
-
 }
