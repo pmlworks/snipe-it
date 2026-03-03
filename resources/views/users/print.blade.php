@@ -398,9 +398,9 @@
             @endforeach
         </table>
     @endif
-{{--    @if ($indirectItemsCount > 0)--}}
+    @if($indirectItemsCount > 0 && $settings->show_assigned_assets)
         <div id="indirectAssignment-toolbar">
-            <h4>{{ trans_choice('mail.assigned_to_assets', $indirectItemsCount, ['count' => $indirectItemsCount]) }}</h4>
+            <h4>{{ $indirectItemsCount.' '.trans('mail.assigned_to_assets') }}</h4>
         </div>
         <table
                 class="snipe-table table table-striped inventory"
@@ -429,6 +429,18 @@
             </thead>
 
             @foreach ($show_user->assets as $asset)
+                @foreach ($asset->assignedAssets as $indirectAsset)
+                    <tr>
+                        <td>{{ $indirectAssignmentsCounter }}</td>
+                        <td>{{ $indirectAsset->assignedTo->display_name }}</td>
+                        <td>{{ (($indirectAsset->model) && ($indirectAsset->model->category)) ? $indirectAsset->model->category->name : trans('general.invalid_category') }}</td>
+                        <td>{{ ($indirectAsset->model) ? $indirectAsset->model->name : trans('general.invalid_model') }}</td>
+
+                    </tr>
+                    @php
+                        $indirectAssignmentsCounter++
+                    @endphp
+                @endforeach
                 @foreach ($asset->licenses as $assetsLicense)
                     @if($assetsLicense)
                         <tr>
@@ -443,7 +455,7 @@
                     @endphp
                 @endforeach
                 @foreach ($asset->components as $component)
-                    @if($assetsLicense)
+                    @if($component)
                         <tr>
                             <td>{{$indirectAssignmentsCounter}}</td>
                             <td>{{ $asset->display_name ?? ''}}</td>
@@ -456,8 +468,22 @@
                         $indirectAssignmentsCounter ++
                     @endphp
                 @endforeach
+                @foreach ($asset->assignedAccessories as $accessory)
+                    @if($accessory)
+                        <tr>
+                            <td>{{$indirectAssignmentsCounter}}</td>
+                            <td>{{ $asset->display_name ?? '' }}</td>
+                            <td>{{ $accessory->accessory->category?->name ?? '' }}</td>
+                            <td>{{ $accessory->accessory->name ?? '' }}</td>
+                        </tr>
+                    @endif
+                    @php
+                        $indirectAssignmentsCounter ++
+                    @endphp
+                @endforeach
             @endforeach
         </table>
+    @endif
     @php
         if (!empty($eulas)) $eulas = array_unique($eulas);
     @endphp

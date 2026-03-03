@@ -648,7 +648,7 @@ class UsersController extends Controller
             ])
             ->withTrashed()
             ->first();
-//        dd($user->assets->flatMap->licenses->count(), "assets ".$user->assets->flatMap->components->count());
+
         $indirectItemsCount = $user->assets->flatMap->assignedAssets->count() + $user->assets->flatMap->components->count() + $user->assets->flatMap->licenses->count() + $user->assets->flatMap->assignedAccessories->count();
         if ($user) {
             $this->authorize('view', $user);
