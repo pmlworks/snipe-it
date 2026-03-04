@@ -168,39 +168,6 @@
                         @endif
                     </td>
                 </tr>
-                @if ($settings->show_assigned_assets)
-                    @php
-                        $assignedCounter = 1;
-                    @endphp
-                    @foreach ($asset->assignedAssets as $asset)
-                        <tr>
-                            <td>{{ $counter }}.{{ $assignedCounter }}</td>
-                            <td>
-                                @if ($asset->getImageUrl())
-                                    <img src="{{ $asset->getImageUrl() }}" class="thumbnail" style="max-height: 50px;">
-                                @endif
-                            </td>
-                            <td>{{ $asset->asset_tag }}</td>
-                            <td>{{ $asset->name }}</td>
-                            <td>{{ (($asset->model) && ($asset->model->category)) ? $asset->model->category->name : trans('general.invalid_category') }}</td>
-                            <td>{{ ($asset->model) ? $asset->model->name : trans('general.invalid_model') }}</td>
-                            <td>{{ ($asset->defaultLoc) ? $asset->defaultLoc->name : '' }}</td>
-                            <td>{{ ($asset->location) ? $asset->location->name : '' }}</td>
-                            <td>{{ $asset->serial }}</td>
-                            <td>
-                                {{ Helper::getFormattedDateObject($asset->last_checkout, 'datetime', false) }}
-                            </td>
-                            <td>
-                                @if ($asset->getLatestSignedAcceptance($show_user))
-                                    <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $asset->getLatestSignedAcceptance($show_user)->accept_signature }}">
-                                @endif
-                            </td>
-                        </tr>
-                        @php
-                            $assignedCounter++
-                        @endphp
-                    @endforeach
-                @endif
                 @php
                     $counter++
                 @endphp
@@ -240,7 +207,7 @@
                 $lcounter = 1;
             @endphp
 
-            @foreach ($show_user->licenses as $license)
+            @foreach ($show_user->directLicenses as $license)
                 @php
                     if (($license->category) && ($license->category->getEula())) $eulas[] = $license->category->getEula()
                 @endphp
@@ -399,28 +366,28 @@
         </table>
     @endif
     @if($indirectItemsCount > 0 && $settings->show_assigned_assets)
-        <div id="indirectAssignment-toolbar">
+        <div id="indirect-assignments-toolbar">
             <h4>{{ $indirectItemsCount.' '.trans('mail.assigned_to_assets') }}</h4>
         </div>
         <table
                 class="snipe-table table table-striped inventory"
-                id="indirectAssignments"
+                id="indirect-assignments"
                 data-pagination="false"
-                data-toolbar="#indirectAssignment-toolbar"
-                data-id-table="indirectAssignments"
+                data-toolbar="#indirect-assignments-toolbar"
+                data-id-table="indirect-assignments"
                 data-search="false"
                 data-side-pagination="client"
                 data-sortable="true"
                 data-sort-order="desc"
-                data-sort-name="created_at"
+                data-sort-name="name"
                 data-show-columns="true"
-                data-cookie-id-table="indirectAssignments">
+                data-cookie-id-table="indirect-assignments">
             <thead>
             @php
                 $indirectAssignmentsCounter = 1;
             @endphp
                 <tr>
-                    <th style="width: 20px;" data-sortable="false" data-switchable="false"></th>
+                    <th style="width: 20px;" data-sortable="false" data-switchable="false">#</th>
                     <th style="width: 40%;" data-sortable="true" data-switchable="false">{{ trans('mail.assigned_to') }}</th>
                     <th style="width: 50%;" data-sortable="true">{{ trans('general.category') }}</th>
                     <th style="width: 10%;" data-sortable="true">{{ trans('mail.item') }}</th>
@@ -441,13 +408,13 @@
                         $indirectAssignmentsCounter++
                     @endphp
                 @endforeach
-                @foreach ($asset->licenses as $assetsLicense)
-                    @if($assetsLicense)
+                @foreach ($asset->licenses as $indirectLicense)
+                    @if($indirectLicense)
                         <tr>
                             <td>{{$indirectAssignmentsCounter}}</td>
                             <td>{{ $asset->display_name ?? ''}}</td>
-                            <td>{{ $assetsLicense->category?->name ?? '' }}</td>
-                            <td>{{ $assetsLicense->name ?? '' }}</td>
+                            <td>{{ $indirectLicense->category?->name ?? '' }}</td>
+                            <td>{{ $indirectLicense->name ?? '' }}</td>
                         </tr>
                     @endif
                     @php
@@ -468,13 +435,13 @@
                         $indirectAssignmentsCounter ++
                     @endphp
                 @endforeach
-                @foreach ($asset->assignedAccessories as $accessory)
-                    @if($accessory)
+                @foreach ($asset->assignedAccessories as $indirectAccessory)
+                    @if($indirectAccessory)
                         <tr>
                             <td>{{$indirectAssignmentsCounter}}</td>
                             <td>{{ $asset->display_name ?? '' }}</td>
-                            <td>{{ $accessory->accessory->category?->name ?? '' }}</td>
-                            <td>{{ $accessory->accessory->name ?? '' }}</td>
+                            <td>{{ $indirectAccessory->accessory->category?->name ?? '' }}</td>
+                            <td>{{ $indirectAccessory->accessory->name ?? '' }}</td>
                         </tr>
                     @endif
                     @php
