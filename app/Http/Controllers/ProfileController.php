@@ -224,6 +224,7 @@ class ProfileController extends Controller
                     ->where('target_id', $userId)
                     ->where('action_type', 'accepted'),
 
+                'assets.assignedAssets.assignedTo',
                 'assets.assignedAssets.defaultLoc',
                 'assets.assignedAssets.location',
                 'assets.assignedAssets.model.category',
@@ -232,8 +233,11 @@ class ProfileController extends Controller
                 'assets.defaultLoc',
                 'assets.location',
                 'assets.licenses',
+                'assets.licenses.category',
+                'assets.licenses.category',
                 'assets.model.category',
-
+                'assets.components.category',
+                'assets.assignedAccessories.accessory.category',
                 'accessories.log' => fn ($query) => $query->withTrashed()
                     ->where('target_type', User::class)
                     ->where('target_id', $userId)

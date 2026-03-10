@@ -399,7 +399,7 @@
                 @foreach ($asset->assignedAssets as $indirectAsset)
                     <tr>
                         <td>{{ $indirectAssignmentsCounter }}</td>
-                        <td>{{ $indirectAsset->assignedTo?->display_name ?? ''}}</td>
+                        <td>{{ $indirectAsset->display_name ?? ''}}</td>
                         <td>{{ (($indirectAsset->model) && ($indirectAsset->model->category)) ? $indirectAsset->model->category->name : trans('general.invalid_category') }}</td>
                         <td>{{ $indirectAsset->display_name ?? '' }}</td>
 
