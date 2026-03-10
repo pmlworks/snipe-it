@@ -340,15 +340,6 @@ class LicensePresenter extends Presenter
     }
 
     /**
-     * Link to this licenses serial
-     * @return string
-     */
-    public function serialUrl()
-    {
-        return (string) link_to('/licenses/'.$this->id, mb_strimwidth($this->serial, 0, 50, '...'));
-    }
-
-    /**
      * Url to view this item.
      * @return string
      */
