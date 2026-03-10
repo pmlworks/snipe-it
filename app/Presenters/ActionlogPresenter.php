@@ -22,9 +22,6 @@ class ActionlogPresenter extends Presenter
 
     public function item()
     {
-        if ($this->action_type == 'uploaded') {
-            return '<a href="' . route('show/userfile', [$this->model->item->id, $this->model->id]) . '">' . e($this->model->filename) . '</a>';
-        }
         if ($item = $this->model->item) {
             if (empty($item->deleted_at)) {
                 return $this->model->item->present()->nameUrl();
