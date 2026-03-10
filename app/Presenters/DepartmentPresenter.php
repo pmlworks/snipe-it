@@ -125,8 +125,8 @@ class DepartmentPresenter extends Presenter
      */
     public function viewUrl()
     {
-        if (auth()->user()->can('view', ['\App\Models\Location', $this])) {
-            return '<a href="' . route('locations.show', $this->id) . '">' . e($this->display_name) . '</a>';
+        if (auth()->user()->can('view', ['\App\Models\Department', $this])) {
+            return '<a href="' . route('departments.show', $this->id) . '">' . e($this->display_name) . '</a>';
         } else {
             return $this->display_name;
         }
