@@ -266,7 +266,7 @@ class AssetModelPresenter extends Presenter
      */
     public function nameUrl()
     {
-        return  (string) link_to_route('models.show', $this->name, $this->id);
+        return '<a href="' . route('models.show', $this->id) . '">' . e($this->name) . '</a>';
     }
 
     /**

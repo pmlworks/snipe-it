@@ -265,7 +265,7 @@ class AccessoryPresenter extends Presenter
     public function nameUrl()
     {
         if (auth()->user()->can('view', ['\App\Models\Accessory', $this])) {
-            return (string)link_to_route('accessories.show', e($this->display_name), $this->id);
+            return '<a href="' . route('accessories.show', $this->id) . '">' . e($this->display_name) . '</a>';
         } else {
             return e($this->display_name);
         }
