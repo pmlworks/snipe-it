@@ -212,51 +212,7 @@ class ProfileController extends Controller
     {
         $userId = auth()->id();
 
-        $show_user = User::where('id', $userId)
-            ->with([
-                'assets.log' => fn ($query) => $query->withTrashed()
-                    ->where('target_type', User::class)
-                    ->where('target_id', $userId)
-                    ->where('action_type', 'accepted'),
-
-                'assets.assignedAssets.log' => fn ($query) => $query->withTrashed()
-                    ->where('target_type', User::class)
-                    ->where('target_id', $userId)
-                    ->where('action_type', 'accepted'),
-
-                'assets.assignedAssets.assignedTo',
-                'assets.assignedAssets.defaultLoc',
-                'assets.assignedAssets.location',
-                'assets.assignedAssets.model.category',
-                'assets.components',
-                'assets.assignedAccessories',
-                'assets.defaultLoc',
-                'assets.location',
-                'assets.licenses',
-                'assets.licenses.category',
-                'assets.licenses.category',
-                'assets.model.category',
-                'assets.components.category',
-                'assets.assignedAccessories.accessory.category',
-                'accessories.log' => fn ($query) => $query->withTrashed()
-                    ->where('target_type', User::class)
-                    ->where('target_id', $userId)
-                    ->where('action_type', 'accepted'),
-
-                'accessories.category',
-                'accessories.manufacturer',
-
-                'consumables.log' => fn ($query) => $query->withTrashed()
-                    ->where('target_type', User::class)
-                    ->where('target_id', $userId)
-                    ->where('action_type', 'accepted'),
-
-                'consumables.category',
-                'consumables.manufacturer',
-                'licenses.category',
-            ])
-            ->withTrashed()
-            ->firstOrFail();
+        $show_user = User::withInventoryRelations($userId)->first();
 
         $indirectItemsCount =
             $show_user->assets->flatMap->assignedAssets->count()

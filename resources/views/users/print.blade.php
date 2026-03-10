@@ -402,6 +402,7 @@
                         <td>{{ $indirectAsset->display_name ?? ''}}</td>
                         <td>{{ (($indirectAsset->model) && ($indirectAsset->model->category)) ? $indirectAsset->model->category->name : trans('general.invalid_category') }}</td>
                         <td>{{ $indirectAsset->display_name ?? '' }}</td>
+                        <td>1</td>
 
                     </tr>
                     @php
@@ -415,6 +416,7 @@
                             <td>{{ $asset->display_name ?? ''}}</td>
                             <td>{{ $indirectLicense->category?->name ?? '' }}</td>
                             <td>{{ $indirectLicense->name ?? '' }}</td>
+                            <td>1</td>
                         </tr>
                     @endif
                     @php
@@ -442,6 +444,7 @@
                             <td>{{ $asset->display_name ?? '' }}</td>
                             <td>{{ $indirectAccessory->accessory->category?->name ?? '' }}</td>
                             <td>{{ $indirectAccessory->accessory->name ?? '' }}</td>
+                            <td>1</td>
                         </tr>
                     @endif
                     @php
