@@ -330,7 +330,7 @@
 
                               <!-- Company -->
                               @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
-                                  @include ('partials.forms.edit.company-select', ['translated_name' => trans('general.select_company'), 'fieldname' => 'company_id'])
+                                  @include ('partials.forms.edit.company-select', ['translated_name' => trans('general.company'), 'fieldname' => 'company_id'])
                               @else
                                   @if ($user->company)
                                       <div class="form-group">
