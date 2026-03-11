@@ -553,7 +553,7 @@
                                                 {!! $asset->checkInvalidNextAuditDate() ? '<i class="fas fa-exclamation-triangle text-orange" aria-hidden="true"></i>' : '' !!}
                                                 {{ Helper::getFormattedDateObject($audit_log->created_at, 'datetime', false) }}
                                                 @if ($audit_log->user)
-                                                    ({{ link_to_route('users.show', $audit_log->user->display_name, [$audit_log->user->id]) }})
+                                                    (<a href="{{ route('users.show', $audit_log->user->id) }}">{{ $audit_log->user->display_name }}</a>)
                                                 @endif
 
                                             </div>

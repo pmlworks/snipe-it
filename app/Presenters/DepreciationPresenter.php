@@ -111,7 +111,7 @@ class DepreciationPresenter extends Presenter
     public function nameUrl()
     {
         if (auth()->user()->can('view', ['\App\Models\Depreciation', $this])) {
-            return (string)link_to_route('depreciations.show', e($this->display_name), $this->id);
+            return '<a href="' . route('depreciations.show', $this->id) . '">' . e($this->display_name) . '</a>';
         } else {
             return e($this->display_name);
         }

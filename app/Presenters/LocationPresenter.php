@@ -351,7 +351,7 @@ class LocationPresenter extends Presenter
     public function nameUrl()
     {
         if (auth()->user()->can('view', ['\App\Models\Location', $this])) {
-            return (string)link_to_route('locations.show', e($this->display_name), $this->id);
+            return '<a href="' . route('locations.show', $this->id) . '">' . e($this->display_name) . '</a>';
         } else {
             return e($this->display_name);
         }
