@@ -529,7 +529,7 @@ class UserPresenter extends Presenter
     public function nameUrl()
     {
         if (auth()->user()->can('view', ['\App\Models\User', $this])) {
-            return (string)link_to_route('users.show', $this->display_name, $this->id);
+            return '<a href="' . route('users.show', $this->id) . '">' . e($this->display_name) . '</a>';
         } else {
             return e($this->display_name);
         }

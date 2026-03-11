@@ -52,6 +52,7 @@ class ResetDemoSettings extends Command
         $settings->header_color = '#3c8dbc';
         $settings->link_dark_color = '#5fa4cc';
         $settings->link_light_color = '#296282;';
+        $settings->nav_link_color = '#FFFFFF';
         $settings->label2_2d_type = 'QRCODE';
         $settings->default_currency = 'USD';
         $settings->brand = 2;

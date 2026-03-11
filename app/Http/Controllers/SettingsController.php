@@ -191,9 +191,9 @@ class SettingsController extends Controller
                 $request->validate(['site_name' => 'required']);
             }
 
-            $setting->header_color = $request->input('header_color');
+            $setting->header_color = $request->input('header_color', '#3c8dbc');
             $setting->link_light_color = $request->input('link_light_color', '#296282');
-            $setting->link_dark_color = $request->input('link_dark_color', '#296282');
+            $setting->link_dark_color = $request->input('link_dark_color', '#5fa4cc');
             $setting->nav_link_color = $request->input('nav_link_color', '#FFFFFF');
             
             $setting->site_name = $request->input('site_name', 'Snipe-IT');
