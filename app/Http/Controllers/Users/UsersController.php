@@ -203,8 +203,8 @@ class UsersController extends Controller
     public function edit(User $user)
     {
 
-        $this->authorize('update', User::class);
-        session()->put('back_url', url()->previous());
+        $this->authorize('update', $user);
+        session()->put('url.intended', url()->previous());
         $user = User::with(['assets', 'assets.model', 'consumables', 'accessories', 'licenses', 'userloc'])->withTrashed()->find($user->id);
 
         if ($user) {
@@ -238,7 +238,7 @@ class UsersController extends Controller
      */
     public function update(SaveUserRequest $request, User $user)
     {
-        $this->authorize('update', User::class);
+        $this->authorize('update', $user);
 
         // This is a janky hack to prevent people from changing admin demo user data on the public demo.
         // The $ids 1 and 2 are special since they are seeded as superadmins in the demo seeder.
@@ -259,9 +259,16 @@ class UsersController extends Controller
         // Figure out of this user was an admin before this edit
         $orig_permissions_array = $user->decodePermissions();
         $orig_superuser = '0';
+        $orig_admin = '0';
         if (is_array($orig_permissions_array)) {
             if (array_key_exists('superuser', $orig_permissions_array)) {
                 $orig_superuser = $orig_permissions_array['superuser'];
+            }
+        }
+
+        if (is_array($orig_permissions_array)) {
+            if (array_key_exists('admin', $orig_permissions_array)) {
+                $orig_admin = $orig_permissions_array['admin'];
             }
         }
 
@@ -321,6 +328,11 @@ class UsersController extends Controller
             if (! auth()->user()->isSuperUser()) {
                 unset($permissions_array['superuser']);
                 $permissions_array['superuser'] = $orig_superuser;
+            }
+
+            if ((! auth()->user()->isSuperUser()) && (! auth()->user()->isAdmin())) {
+                unset($permissions_array['admin']);
+                $permissions_array['admin'] = $orig_admin;
             }
 
             $user->permissions = json_encode($permissions_array);
@@ -387,37 +399,35 @@ class UsersController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function getRestore($id = null)
+    public function getRestore(User $user)
     {
-        if ($user = User::withTrashed()->find($id)) {
-            $this->authorize('delete', $user);
 
-            if ($user->deleted_at == '') {
-                return redirect()->back()->with('error', trans('general.not_deleted', ['item_type' => trans('general.user')]));
-            }
+        $this->authorize('delete', $user);
 
-            if ($user->restore()) {
-                $logaction = new Actionlog();
-                $logaction->item_type = User::class;
-                $logaction->item_id = $user->id;
-                $logaction->created_at = date('Y-m-d H:i:s');
-                $logaction->created_by = auth()->id();
-                $logaction->logaction('restore');
-
-                // Redirect them to the deleted page if there are more, otherwise the section index
-                $deleted_users = User::onlyTrashed()->count();
-                if ($deleted_users > 0) {
-                    return redirect()->back()->with('success', trans('admin/users/message.success.restored'));
-                }
-                return redirect()->route('users.index')->with('success', trans('admin/users/message.success.restored'));
-
-            }
-
-            // Check validation to make sure we're not restoring a user with the same username as an existing user
-            return redirect()->back()->with('error', trans('general.could_not_restore', ['item_type' => trans('general.user'), 'error' => $user->getErrors()->first()]));
+        if ($user->deleted_at == '') {
+            return redirect()->back()->with('error', trans('general.not_deleted', ['item_type' => trans('general.user')]));
         }
 
-        return redirect()->route('users.index')->with('error', trans('admin/users/message.does_not_exist'));
+        if ($user->restore()) {
+            $logaction = new Actionlog();
+            $logaction->item_type = User::class;
+            $logaction->item_id = $user->id;
+            $logaction->created_at = date('Y-m-d H:i:s');
+            $logaction->created_by = auth()->id();
+            $logaction->logaction('restore');
+
+            // Redirect them to the deleted page if there are more, otherwise the section index
+            $deleted_users = User::onlyTrashed()->count();
+            if ($deleted_users > 0) {
+                return redirect()->back()->with('success', trans('admin/users/message.success.restored'));
+            }
+            return redirect()->route('users.index')->with('success', trans('admin/users/message.success.restored'));
+
+        }
+
+        // Check validation to make sure we're not restoring a user with the same username as an existing user
+        return redirect()->back()->with('error', trans('general.could_not_restore', ['item_type' => trans('general.user'), 'error' => $user->getErrors()->first()]));
+
     }
 
     /**
@@ -432,7 +442,7 @@ class UsersController extends Controller
     public function show(User $user)
     {
         // Make sure the user can view users at all
-        $this->authorize('view', User::class);
+        $this->authorize('view', $user);
 
         $user = User::with([
             'consumables',
@@ -465,7 +475,7 @@ class UsersController extends Controller
      */
     public function getClone(Request $request, User $user)
     {
-        $this->authorize('create', User::class);
+        $this->authorize('create', $user);
 
         // We need to reverse the UI specific logic for our
         // permissions here before we update the user.
@@ -634,9 +644,9 @@ class UsersController extends Controller
      * @since [v1.8]
      * @author Aladin Alaily
      */
-    public function printInventory($id)
+    public function printInventory(User $user, $id)
     {
-        $this->authorize('view', User::class);
+        $this->authorize('view', $user);
 
         $user = User::where('id', $id)
             ->with([

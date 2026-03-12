@@ -124,7 +124,7 @@ class ConsumablesController extends Controller
     public function edit(Consumable $consumable) : View | RedirectResponse
     {
             $this->authorize($consumable);
-            session()->put('back_url', url()->previous());
+            session()->put('url.intended', url()->previous());
             return view('consumables/edit')
                 ->with('item', $consumable)
                 ->with('category_type', 'consumable');

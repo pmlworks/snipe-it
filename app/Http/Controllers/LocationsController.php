@@ -326,31 +326,26 @@ class LocationsController extends Controller
      * @since [v1.0]
      * @param int $id
      */
-    public function postRestore($id) : RedirectResponse
+    public function postRestore(Location $location) : RedirectResponse
     {
-        $this->authorize('create', Location::class);
+        $this->authorize('delete', $location);
 
-        if ($location = Location::withTrashed()->find($id)) {
-
-            if ($location->deleted_at == '') {
-                return redirect()->back()->with('error', trans('general.not_deleted', ['item_type' => trans('general.location')]));
-            }
-
-            if ($location->restore()) {
-                $logaction = new Actionlog();
-                $logaction->item_type = Location::class;
-                $logaction->item_id = $location->id;
-                $logaction->created_at = date('Y-m-d H:i:s');
-                $logaction->created_by = auth()->id();
-                $logaction->logaction('restore');
-
-                return redirect()->route('locations.index')->with('success', trans('admin/locations/message.restore.success'));
-            }
-
-            return redirect()->back()->with('error', trans('general.could_not_restore', ['item_type' => trans('general.location'), 'error' => $location->getErrors()->first()]));
+        if ($location->deleted_at == '') {
+            return redirect()->back()->with('error', trans('general.not_deleted', ['item_type' => trans('general.location')]));
         }
 
-        return redirect()->back()->with('error', trans('admin/models/message.does_not_exist'));
+        if ($location->restore()) {
+            $logaction = new Actionlog();
+            $logaction->item_type = Location::class;
+            $logaction->item_id = $location->id;
+            $logaction->created_at = date('Y-m-d H:i:s');
+            $logaction->created_by = auth()->id();
+            $logaction->logaction('restore');
+
+            return redirect()->route('locations.index')->with('success', trans('admin/locations/message.restore.success'));
+        }
+
+        return redirect()->back()->with('error', trans('general.could_not_restore', ['item_type' => trans('general.location'), 'error' => $location->getErrors()->first()]));
 
     }
 

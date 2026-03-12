@@ -312,7 +312,7 @@ class AssetsController extends Controller
     public function edit(Asset $asset) : View | RedirectResponse
     {
         $this->authorize($asset);
-        session()->put('back_url', url()->previous());
+        session()->put('url.intended', url()->previous());
         return view('hardware/edit')
             ->with('item', $asset)
             ->with('statuslabel_list', Helper::statusLabelList())
@@ -508,16 +508,9 @@ class AssetsController extends Controller
      * @param int $assetId
      * @since [v1.0]
      */
-    public function destroy(Request $request, $assetId) : RedirectResponse
+    public function destroy(Request $request, Asset $asset) : RedirectResponse
     {
-        // Check if the asset exists
-        if (is_null($asset = Asset::find($assetId))) {
-            // Redirect to the asset management page with error
-            return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
-        }
-
         $this->authorize('delete', $asset);
-
         if ($asset->assignedTo) {
 
             $target = $asset->assignedTo;

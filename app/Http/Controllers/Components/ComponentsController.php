@@ -117,7 +117,7 @@ class ComponentsController extends Controller
     {
 
             $this->authorize('update', $component);
-            session()->put('back_url', url()->previous());
+            session()->put('url.intended', url()->previous());
             return view('components/edit')
                 ->with('item', $component)
                 ->with('category_type', 'component');
