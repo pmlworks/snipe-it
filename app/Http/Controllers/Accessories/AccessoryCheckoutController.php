@@ -27,31 +27,24 @@ class AccessoryCheckoutController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @param  int $id
      */
-    public function create($id) : View | RedirectResponse
+    public function create(Accessory $accessory) : View | RedirectResponse
     {
 
-        if ($accessory = Accessory::withCount('checkouts as checkouts_count')->find($id)) {
+        $this->authorize('checkout', $accessory);
 
-            $this->authorize('checkout', $accessory);
-
-            if ($accessory->category) {
-                // Make sure there is at least one available to checkout
-                if ($accessory->numRemaining() <= 0){
-                    return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.checkout.unavailable'));
-                }
-
-                // Return the checkout view
-                return view('accessories/checkout', compact('accessory'));
+        if ($accessory->category) {
+            // Make sure there is at least one available to checkout
+            if ($accessory->numRemaining() <= 0){
+                return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.checkout.unavailable'));
             }
 
-            // Invalid category
-            return redirect()->route('accessories.edit', ['accessory' => $accessory->id])
-                ->with('error', trans('general.invalid_item_category_single', ['type' => trans('general.accessory')]));
-
+            // Return the checkout view
+            return view('accessories/checkout', compact('accessory'));
         }
 
-        // Not found
-        return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.not_found'));
+        // Invalid category
+        return redirect()->route('accessories.edit', ['accessory' => $accessory->id])
+            ->with('error', trans('general.invalid_item_category_single', ['type' => trans('general.accessory')]));
 
     }
 
