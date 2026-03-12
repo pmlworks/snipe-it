@@ -306,7 +306,6 @@ return [
          */
 
         Intervention\Image\ImageServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
         PragmaRX\Google2FALaravel\ServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
@@ -332,7 +331,6 @@ return [
         */
         App\Providers\BladeServiceProvider::class,
         App\Providers\LivewireServiceProvider::class,
-        App\Providers\MacroServiceProvider::class,
         App\Providers\SamlServiceProvider::class,
         App\Providers\BreadcrumbsServiceProvider::class,
 
@@ -385,8 +383,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'Form'      => Collective\Html\FormFacade::class,
-        'Html'      => Collective\Html\HtmlFacade::class,
         'Google2FA' => PragmaRX\Google2FALaravel\Facade::class,
         'Image'     => Intervention\Image\ImageServiceProvider::class,
         'Carbon' => Carbon\Carbon::class,

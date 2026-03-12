@@ -1,4 +1,0 @@
-<?php
-/**
-* Macro helpers
-*/

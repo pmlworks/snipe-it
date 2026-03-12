@@ -114,7 +114,8 @@ class AccessoriesController extends Controller
      */
     public function edit(Accessory $accessory) : View | RedirectResponse
     {
-        $this->authorize('update', Accessory::class);
+        $this->authorize('update', $accessory);
+        session()->put('back_url', url()->previous());
         return view('accessories.edit')->with('item', $accessory)->with('category_type', 'accessory');
     }
 
@@ -128,7 +129,7 @@ class AccessoriesController extends Controller
     public function getClone(Accessory $accessory) : View | RedirectResponse
     {
 
-        $this->authorize('create', Accessory::class);
+        $this->authorize('create', $accessory);
         $cloned = clone $accessory;
         $accessory_to_clone = $accessory;
         $cloned->id = null;
@@ -149,9 +150,9 @@ class AccessoriesController extends Controller
      */
     public function update(ImageUploadRequest $request, Accessory $accessory) : RedirectResponse
     {
-        if ($accessory = Accessory::withCount('checkouts as checkouts_count')->find($accessory->id)) {
+        $this->authorize('update', $accessory);
 
-            $this->authorize($accessory);
+        if ($accessory = Accessory::withCount('checkouts as checkouts_count')->find($accessory->id)) {
 
             $validator = Validator::make($request->all(), [
                 "qty" => "required|numeric|min:$accessory->checkouts_count"
@@ -162,8 +163,6 @@ class AccessoriesController extends Controller
                     ->withErrors($validator)
                     ->withInput();
             }
-
-
 
             // Update the accessory data
             $accessory->name = request('name');
@@ -182,7 +181,7 @@ class AccessoriesController extends Controller
 
             $accessory = $request->handleImages($accessory);
 
-            if($request->input('redirect_option') === 'back'){
+            if ($request->input('redirect_option') === 'back'){
                 session()->put(['redirect_option' => 'index']);
             } else {
                 session()->put(['redirect_option' => $request->input('redirect_option')]);
@@ -211,7 +210,7 @@ class AccessoriesController extends Controller
             return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.not_found'));
         }
 
-        $this->authorize($accessory);
+        $this->authorize('delete', $accessory);
 
 
         if ($accessory->checkouts_count > 0) {
@@ -243,11 +242,9 @@ class AccessoriesController extends Controller
      */
     public function show(Accessory $accessory) : View | RedirectResponse
     {
-        $accessory->loadCount('checkouts as checkouts_count');
-
-        $accessory->load(['adminuser' => fn($query) => $query->withTrashed()]);
-
         $this->authorize('view', $accessory);
+        $accessory->loadCount('checkouts as checkouts_count');
+        $accessory->load(['adminuser' => fn($query) => $query->withTrashed()]);
         return view('accessories.view', compact('accessory'));
     }
 }
