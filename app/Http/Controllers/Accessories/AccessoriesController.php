@@ -207,22 +207,23 @@ class AccessoriesController extends Controller
     public function destroy(Accessory $accessory) : RedirectResponse
     {
         $this->authorize('delete', $accessory);
+        $accessory->loadCount('checkouts as checkouts_count');
 
-        if ($accessory->checkouts_count > 0) {
-            return redirect()->route('accessories.index')->with('error', trans('admin/accessories/general.delete_disabled'));
-        }
-
-        if ($accessory->image) {
-            try {
-                Storage::disk('public')->delete('accessories'.'/'.$accessory->image);
-            } catch (\Exception $e) {
-                Log::debug($e);
+        if ($accessory->isDeletable()) {
+            if ($accessory->image) {
+                try {
+                    Storage::disk('public')->delete('accessories'.'/'.$accessory->image);
+                } catch (\Exception $e) {
+                    Log::debug($e);
+                }
             }
+
+            $accessory->delete();
+
+            return redirect()->route('accessories.index')->with('success', trans('admin/accessories/message.delete.success'));
         }
 
-        $accessory->delete();
-
-        return redirect()->route('accessories.index')->with('success', trans('admin/accessories/message.delete.success'));
+        return redirect()->route('accessories.index')->with('error', trans('admin/accessories/general.delete_disabled'));
     }
 
 
