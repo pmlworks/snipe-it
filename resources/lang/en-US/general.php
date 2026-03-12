@@ -687,7 +687,6 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
