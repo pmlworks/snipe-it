@@ -462,7 +462,7 @@ class UsersController extends Controller
                 }
             }
 
-            $user->permissions = json_encode($permissions_array);
+            $user->permissions = $permissions_array;
         }
 
         // 
