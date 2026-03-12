@@ -130,7 +130,7 @@ class LicensesController extends Controller
     {
 
         $this->authorize('update', $license);
-        session()->put('back_url', url()->previous());
+        session()->put('url.intended', url()->previous());
         $maintained_list = [
             '' => 'Maintained',
             '1' => 'Yes',

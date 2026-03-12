@@ -1547,18 +1547,19 @@ class Helper
             ]) ? 'rtl' : 'ltr';
     }
 
+
     static public function getRedirectOption($request, $id, $table, $item_id = null) : RedirectResponse
     {
 
-        $redirect_option = Session::get('redirect_option') ?? $request->redirect_option;
-        $checkout_to_type = Session::get('checkout_to_type') ?? null;
-        $checkedInFrom = Session::get('checkedInFrom');
-        $other_redirect = Session::get('other_redirect');
-        $backUrl = Session::pull('back_url', route('home'));
-
+        $redirect_option = session('redirect_option') ?? $request->redirect_option;
+        $checkout_to_type = session('checkout_to_type') ?? null;
+        $checkedInFrom = session('checkedInFrom');
+        $other_redirect = session('other_redirect');
+        $backUrl = session()->pull('url.intended', 'home');
+        
        // return to previous page
-        if ($redirect_option === 'back') {
-            return redirect()->to($backUrl);
+        if ($redirect_option == 'back') {
+            return redirect()->intended($backUrl);
         }
 
         // return to index

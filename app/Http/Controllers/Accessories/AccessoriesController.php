@@ -115,7 +115,7 @@ class AccessoriesController extends Controller
     public function edit(Accessory $accessory) : View | RedirectResponse
     {
         $this->authorize('update', $accessory);
-        session()->put('back_url', url()->previous());
+        session()->put('url.intended', url()->previous());
         return view('accessories.edit')->with('item', $accessory)->with('category_type', 'accessory');
     }
 
@@ -204,14 +204,9 @@ class AccessoriesController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @param  int $accessoryId
      */
-    public function destroy($accessoryId) : RedirectResponse
+    public function destroy(Accessory $accessory) : RedirectResponse
     {
-        if (is_null($accessory = Accessory::withCount('checkouts as checkouts_count')->find($accessoryId))) {
-            return redirect()->route('accessories.index')->with('error', trans('admin/accessories/message.not_found'));
-        }
-
         $this->authorize('delete', $accessory);
-
 
         if ($accessory->checkouts_count > 0) {
             return redirect()->route('accessories.index')->with('error', trans('admin/accessories/general.delete_disabled'));
