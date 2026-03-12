@@ -945,9 +945,11 @@
         input[type="email"]:required,
         input[type="password"]:required,
         input[type="tel"]:required,
+        select:required,
+        input:required,
         textarea:required
         {
-            border-right: 5px solid var(--text-warning) !important;
+            border-right: 5px solid orange !important;
         }
 
         .bootstrap-table .fixed-table-container .table tbody tr.selected td {
