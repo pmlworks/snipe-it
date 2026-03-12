@@ -8,6 +8,23 @@ use Tests\TestCase;
 
 class ShowAssetTest extends TestCase
 {
+    public function testPermissionRequiredToViewAsset()
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('hardware.show', Asset::factory()->create()))
+            ->assertForbidden();
+    }
+
+    public function testCanViewAsset()
+    {
+        $asset = Asset::factory()->create();
+
+        $this->actingAs(User::factory()->viewAssets()->create())
+            ->get(route('hardware.show', $asset))
+            ->assertSeeText($asset->asset_tag)
+            ->assertOk();
+    }
+
     public function testPageForAssetWithMissingModelStillRenders()
     {
         $asset = Asset::factory()->create();
