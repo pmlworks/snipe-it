@@ -154,6 +154,9 @@
             color: var(--link-hover) !important;
         }
 
+        label.form-control {
+            color: var(--color-fg) !important;
+        }
 
         .footer-links a {
             color: var(--link-color) !important;
