@@ -259,9 +259,16 @@ class UsersController extends Controller
         // Figure out of this user was an admin before this edit
         $orig_permissions_array = $user->decodePermissions();
         $orig_superuser = '0';
+        $orig_admin = '0';
         if (is_array($orig_permissions_array)) {
             if (array_key_exists('superuser', $orig_permissions_array)) {
                 $orig_superuser = $orig_permissions_array['superuser'];
+            }
+        }
+
+        if (is_array($orig_permissions_array)) {
+            if (array_key_exists('admin', $orig_permissions_array)) {
+                $orig_admin = $orig_permissions_array['admin'];
             }
         }
 
@@ -321,6 +328,11 @@ class UsersController extends Controller
             if (! auth()->user()->isSuperUser()) {
                 unset($permissions_array['superuser']);
                 $permissions_array['superuser'] = $orig_superuser;
+            }
+
+            if ((! auth()->user()->isSuperUser()) && (! auth()->user()->isAdmin())) {
+                unset($permissions_array['admin']);
+                $permissions_array['admin'] = $orig_admin;
             }
 
             $user->permissions = json_encode($permissions_array);
