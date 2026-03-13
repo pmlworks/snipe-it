@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'info'   => 'Select the options you want for your asset report.',
+    'info' => 'Select the options you want for your asset report.',
     'deleted_user' => 'Deleted user',
     'send_reminder' => 'Send reminder',
     'cannot_send_reminder' => 'User has been deleted or does not have an email address so cannot receive a reminder',
@@ -18,7 +18,7 @@ return [
         'target_notes' => 'Notes',
     ],
     'open_saved_template' => 'Open Saved Template',
-    'save_template' =>  'Save Template',
+    'save_template' => 'Save Template',
     'select_a_template' => 'Select a Template',
     'template_name' => 'Template Name',
     'update_template' => 'Update Template',
