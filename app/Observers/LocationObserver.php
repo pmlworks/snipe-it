@@ -10,7 +10,6 @@ class LocationObserver
     /**
      * Listen to the User created event.
      *
-     * @param  Location  $location
      * @return void
      */
     public function updating(Location $location)
@@ -27,7 +26,7 @@ class LocationObserver
         }
 
         if (count($changed) > 0) {
-            $logAction = new Actionlog();
+            $logAction = new Actionlog;
             $logAction->item_type = Location::class;
             $logAction->item_id = $location->id;
             $logAction->created_at = date('Y-m-d H:i:s');
@@ -42,17 +41,16 @@ class LocationObserver
      * Listen to the Location created event when
      * a new location is created.
      *
-     * @param  Location  $location
      * @return void
      */
     public function created(Location $location)
     {
-        $logAction = new Actionlog();
+        $logAction = new Actionlog;
         $logAction->item_type = Location::class;
         $logAction->item_id = $location->id;
         $logAction->created_at = date('Y-m-d H:i:s');
         $logAction->created_by = auth()->id();
-        if($location->imported) {
+        if ($location->imported) {
             $logAction->setActionSource('importer');
         }
         $logAction->logaction('create');
@@ -61,12 +59,11 @@ class LocationObserver
     /**
      * Listen to the Location deleting event.
      *
-     * @param  Location  $location
      * @return void
      */
     public function deleting(Location $location)
     {
-        $logAction = new Actionlog();
+        $logAction = new Actionlog;
         $logAction->item_type = Location::class;
         $logAction->item_id = $location->id;
         $logAction->created_at = date('Y-m-d H:i:s');
@@ -76,7 +73,7 @@ class LocationObserver
 
     public function restoring(Location $location)
     {
-        $logAction = new Actionlog();
+        $logAction = new Actionlog;
         $logAction->item_type = Location::class;
         $logAction->item_id = $location->id;
         $logAction->created_at = date('Y-m-d H:i:s');
