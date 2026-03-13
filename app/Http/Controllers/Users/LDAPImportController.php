@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
- // Note that this is awful close to 'Users' the namespace above; be careful
+// Note that this is awful close to 'Users' the namespace above; be careful
 
 class LDAPImportController extends Controller
 {
