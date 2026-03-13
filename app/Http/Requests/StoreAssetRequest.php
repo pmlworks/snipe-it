@@ -21,7 +21,7 @@ class StoreAssetRequest extends ImageUploadRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows('create', new Asset);
+        return Gate::allows('create', Asset::class);
     }
 
     public function prepareForValidation(): void
