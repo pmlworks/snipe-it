@@ -3,7 +3,6 @@
 namespace App\Presenters;
 
 use App\Models\CustomField;
-use DateTime;
 
 /**
  * Class AssetPresenter
@@ -12,18 +11,19 @@ class AssetAuditPresenter extends Presenter
 {
     /**
      * Json Column Layout for bootstrap table
+     *
      * @return string
      */
     public static function dataTableLayout()
     {
         $layout = [
-             [
+            [
                 'field' => 'checkbox',
                 'checkbox' => true,
                 'titleTooltip' => trans('general.select_all_none'),
-                 'printIgnore' => true,
-             ],
-             [
+                'printIgnore' => true,
+            ],
+            [
                 'field' => 'id',
                 'searchable' => false,
                 'sortable' => true,

@@ -9,6 +9,7 @@ class MaintenancesPresenter extends Presenter
 {
     /**
      * Json Column Layout for bootstrap table
+     *
      * @return string
      */
     public static function dataTableLayout()
@@ -135,7 +136,7 @@ class MaintenancesPresenter extends Presenter
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('admin/maintenances/table.is_warranty'),
-                'formatter' => 'trueFalseFormatter'
+                'formatter' => 'trueFalseFormatter',
             ], [
                 'field' => 'cost',
                 'searchable' => true,
@@ -165,7 +166,7 @@ class MaintenancesPresenter extends Presenter
                 'title' => trans('general.updated_at'),
                 'visible' => false,
                 'formatter' => 'dateDisplayFormatter',
-            ],[
+            ], [
                 'field' => 'actions',
                 'searchable' => false,
                 'sortable' => false,

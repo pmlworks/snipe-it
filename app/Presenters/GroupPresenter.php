@@ -35,7 +35,7 @@ class GroupPresenter extends Presenter
                 'searchable' => false,
                 'sortable' => true,
                 'switchable' => true,
-                'title' =>  trans('admin/groups/table.users'),
+                'title' => trans('admin/groups/table.users'),
                 'visible' => true,
                 'class' => 'css-users',
             ],  [
@@ -75,5 +75,4 @@ class GroupPresenter extends Presenter
 
         return json_encode($layout);
     }
-    
 }

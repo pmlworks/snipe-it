@@ -13,6 +13,7 @@ class ActionlogPresenter extends Presenter
             if (empty($user->deleted_at)) {
                 return $user->present()->nameUrl();
             }
+
             // The user was deleted
             return '<del>'.$user->display_name.'</del> (deleted)';
         }
@@ -26,6 +27,7 @@ class ActionlogPresenter extends Presenter
             if (empty($item->deleted_at)) {
                 return $this->model->item->present()->nameUrl();
             }
+
             // The item was deleted
             return '<del>'.$item->name.'</del> (deleted)';
         }
@@ -67,7 +69,7 @@ class ActionlogPresenter extends Presenter
                 return 'fa-solid fa-user-pen';
             }
 
-             return 'fa-solid fa-user';
+            return 'fa-solid fa-user';
         }
 
         // Everything else
