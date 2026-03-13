@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('report_templates', function (Blueprint $table) {
-            $table->boolean('is_shared', )->nullable()->default(null);
+            $table->boolean('is_shared')->nullable()->default(null);
         });
     }
 

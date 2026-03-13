@@ -27,7 +27,7 @@ class ReportTemplateFactory extends Factory
     public function shared()
     {
         return $this->state(function () {
-            return['is_shared' => 1];
+            return ['is_shared' => 1];
         });
     }
 
