@@ -14,7 +14,7 @@ class StoreConsumableRequest extends ImageUploadRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows('create', new Consumable);
+        return Gate::allows('create', Consumable::class);
     }
 
     public function prepareForValidation(): void

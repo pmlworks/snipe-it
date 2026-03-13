@@ -13,7 +13,7 @@ class StoreDepartmentRequest extends ImageUploadRequest
      */
     public function authorize(): bool
     {
-        return Gate::allows('create', new Department);
+        return Gate::allows('create', Department::class);
     }
 
     /**
