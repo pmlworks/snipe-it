@@ -6,12 +6,13 @@ use App\Models\Traits\Acceptable;
 use App\Models\Traits\CompanyableChildTrait;
 use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
-use App\Notifications\CheckinLicenseNotification;
-use App\Notifications\CheckoutLicenseNotification;
+use App\Presenters\LicenseSeatPresenter;
 use App\Presenters\Presentable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query\Builder;
 
 class LicenseSeat extends SnipeModel implements ICompanyableChild
 {
@@ -23,10 +24,12 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
     use Searchable;
     use SoftDeletes;
 
-    protected $presenter = \App\Presenters\LicenseSeatPresenter::class;
+    protected $presenter = LicenseSeatPresenter::class;
 
     protected $guarded = 'id';
+
     protected $table = 'license_seats';
+
     protected $casts = [
         'unreassignable_seat' => 'boolean',
     ];
@@ -61,7 +64,6 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
         'asset' => ['name', 'asset_tag'],
     ];
 
-
     public function getCompanyableParents()
     {
         return ['asset', 'license'];
@@ -71,7 +73,9 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
      * Determine whether the user should be required to accept the license
      *
      * @author A. Gianotto <snipe@snipe.net>
+     *
      * @since  [v4.0]
+     *
      * @return bool
      */
     public function requireAcceptance()
@@ -79,6 +83,7 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
         if ($this->license && $this->license->category) {
             return $this->license->category->require_acceptance;
         }
+
         return false;
     }
 
@@ -89,53 +94,58 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
 
     protected function name(): Attribute
     {
-        return Attribute:: make(
-            get: fn(mixed $value) => $this->license?->name,
+        return Attribute::make(
+            get: fn (mixed $value) => $this->license?->name,
         );
     }
 
     protected function displayName(): Attribute
     {
-        return Attribute:: make(
-            get: fn(mixed $value) => $this->license?->name,
+        return Attribute::make(
+            get: fn (mixed $value) => $this->license?->name,
         );
     }
-
 
     /**
      * Establishes the seat -> license relationship
      *
      * @author A. Gianotto <snipe@snipe.net>
+     *
      * @since  [v1.0]
-     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     *
+     * @return Relation
      */
     public function license()
     {
-        return $this->belongsTo(\App\Models\License::class, 'license_id');
+        return $this->belongsTo(License::class, 'license_id');
     }
 
     /**
      * Establishes the seat -> assignee relationship
      *
      * @author A. Gianotto <snipe@snipe.net>
+     *
      * @since  [v1.0]
-     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     *
+     * @return Relation
      */
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class, 'assigned_to')->withTrashed();
+        return $this->belongsTo(User::class, 'assigned_to')->withTrashed();
     }
 
     /**
      * Establishes the seat -> asset relationship
      *
      * @author A. Gianotto <snipe@snipe.net>
+     *
      * @since  [v4.0]
-     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     *
+     * @return Relation
      */
     public function asset()
     {
-        return $this->belongsTo(\App\Models\Asset::class, 'asset_id')->withTrashed();
+        return $this->belongsTo(Asset::class, 'asset_id')->withTrashed();
     }
 
     /**
@@ -143,7 +153,9 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
      * or asset its assigned to
      *
      * @author A. Gianotto <snipe@snipe.net>
+     *
      * @since  [v4.0]
+     *
      * @return string
      */
     public function location()
@@ -156,12 +168,15 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
 
         return false;
     }
+
     /**
      * Get the list of checkouts for this License
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
+     *
      * @since  [v2.0]
-     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     *
+     * @return Relation
      */
     public function checkouts()
     {
@@ -174,20 +189,22 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
      * Establishes the license -> action logs relationship
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
+     *
      * @since  [v3.0]
-     * @return \Illuminate\Database\Eloquent\Relations\Relation
+     *
+     * @return Relation
      */
     public function assetlog()
     {
         return $this->hasMany(Actionlog::class, 'item_id')->where('item_type', self::class)->orderBy('created_at', 'desc')->withTrashed();
     }
+
     /**
      * Query builder scope to order on department
      *
-     * @param \Illuminate\Database\Query\Builder $query Query builder instance
-     * @param text                               $order Order
-     *
-     * @return \Illuminate\Database\Query\Builder          Modified query builder
+     * @param  Builder  $query  Query builder instance
+     * @param  text  $order  Order
+     * @return Builder Modified query builder
      */
     public function scopeOrderDepartments($query, $order)
     {
@@ -197,17 +214,14 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
             ->orderBy('license_user_dept.name', $order);
     }
 
-
     public function scopeOrderCompany($query, $order)
     {
-
 
         return $query->leftJoin('users as license_seat_users', 'license_seats.assigned_to', '=', 'license_seat_users.id')
             ->leftJoin('companies as license_user_company', 'license_user_company.id', '=', 'license_seat_users.company_id')
             ->whereNotNull('license_seats.assigned_to')
             ->orderBy('license_user_company.name', $order);
     }
-
 
     public function scopeByAssigned($query)
     {
@@ -220,5 +234,4 @@ class LicenseSeat extends SnipeModel implements ICompanyableChild
         );
 
     }
-
 }

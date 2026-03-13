@@ -101,5 +101,4 @@ class UploadedFilesPresenter extends Presenter
 
         return json_encode($layout);
     }
-
 }

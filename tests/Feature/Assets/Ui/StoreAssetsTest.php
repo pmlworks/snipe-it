@@ -4,12 +4,30 @@ namespace Tests\Feature\Assets\Ui;
 
 use App\Models\Asset;
 use App\Models\AssetModel;
+use App\Models\Statuslabel;
 use App\Models\User;
 use Tests\TestCase;
 
 class StoreAssetsTest extends TestCase
 {
-    public function testPageRenders()
+    public function testPermissionRequiredToViewCreateAssetPage()
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('hardware.create'))
+            ->assertForbidden();
+    }
+
+    public function testPermissionRequiredToStoreAsset()
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('hardware.store'), [
+                'model_id' => AssetModel::factory()->create()->id,
+                'status_id' => Statuslabel::factory()->create()->id,
+            ])
+            ->assertForbidden();
+    }
+
+    public function testCreateAssetPageRenders()
     {
         $this->actingAs(User::factory()->superuser()->create())
             ->get(route('hardware.create'))

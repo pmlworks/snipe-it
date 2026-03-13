@@ -15,7 +15,7 @@ use Tests\TestCase;
 class EditAssetTest extends TestCase
 {
 
-    public function testPermissionRequiredToViewAsset()
+    public function testPermissionRequiredToViewEditAssetPage()
     {
         $asset = Asset::factory()->create();
         $this->actingAs(User::factory()->create())

@@ -35,7 +35,7 @@ class MaintenanceFactory extends Factory
             'url' => $this->faker->url(),
             'cost' => $this->faker->randomFloat(),
             'created_by' => User::factory()->superuser(),
-            'image' => $this->faker->numberBetween(1,11).'.png',
+            'image' => $this->faker->numberBetween(1, 11).'.png',
         ];
     }
 }
