@@ -644,9 +644,9 @@ class UsersController extends Controller
      * @since [v1.8]
      * @author Aladin Alaily
      */
-    public function printInventory(User $user, $id)
+    public function printInventory($id)
     {
-        $this->authorize('view', $user);
+        $this->authorize('view', User::class);
 
         $user = User::where('id', $id)
             ->with([
@@ -679,6 +679,7 @@ class UsersController extends Controller
 
         return redirect()->route('users.index')->with('error', trans('admin/users/message.user_not_found', compact('id')));
     }
+
 
     /**
      * Emails user a list of assigned assets
