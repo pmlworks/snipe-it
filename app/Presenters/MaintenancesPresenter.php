@@ -88,6 +88,13 @@ class MaintenancesPresenter extends Presenter
                 'switchable' => true,
                 'title' => trans('general.model_no'),
                 'visible' => true,
+            ],[
+                'field' => 'assigned_to',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/form.checkedout_to'),
+                'visible' => true,
+                'formatter' => 'polymorphicItemFormatter',
             ],
             [
                 'field' => 'supplier',

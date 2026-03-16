@@ -48,7 +48,7 @@ class EmailNotificationsToAdminAlertEmailUponCheckoutTest extends TestCase
         $this->fireCheckoutEvent();
 
         Mail::assertSent(CheckoutAssetMail::class, function (CheckoutAssetMail $mail) {
-            return $mail->hasTo('cc@example.com');
+            return $mail->hasCc('cc@example.com');
         });
     }
 
