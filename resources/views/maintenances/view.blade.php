@@ -65,6 +65,38 @@ use Carbon\Carbon;
                                     </div>
                                 </div> <!-- /row -->
 
+                                @if ($maintenance->asset->assignedTo)
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            {{ trans('admin/hardware/form.checkedout_to') }}
+                                        </div>
+                                        <div class="col-md-9">
+                                            @if (($maintenance->asset?->assignedTo) && ($maintenance->asset?->deleted_at==''))
+                                                <x-icon type="circle-solid" class="text-blue" />
+                                                {{ $maintenance->asset?->assetstatus->name }}
+                                                <label class="label label-default">{{ trans('general.deployed') }}</label>
+
+
+                                                <x-icon type="long-arrow-right" />
+                                                <x-icon type="{{ $maintenance->asset?->assignedType() }}" class="fa-fw" />
+                                                {!!  $maintenance->asset?->assignedTo->present()->nameUrl() !!}
+                                            @else
+                                                @if (($maintenance->asset?->assetstatus) && ($maintenance->asset?->assetstatus->deployable=='1'))
+                                                    <x-icon type="circle-solid" class="text-green" />
+                                                @elseif (($maintenance->asset?->assetstatus) && ($maintenance->asset?->assetstatus->pending=='1'))
+                                                    <x-icon type="circle-solid" class="text-orange" />
+                                                @else
+                                                    <x-icon type="x" class="text-red" />
+                                                @endif
+                                                <a href="{{ route('statuslabels.show', $maintenance->asset?->assetstatus->id) }}">
+                                                    {{ $maintenance->asset?->assetstatus->name }}</a>
+                                                <label class="label label-default">{{ $asset->present()->statusMeta }}</label>
+
+                                            @endif
+                                        </div>
+                                    </div> <!-- /row -->
+                                @endif
+
                                 @if ($maintenance->asset->model)
                                     <div class="row">
                                         <div class="col-md-3">
