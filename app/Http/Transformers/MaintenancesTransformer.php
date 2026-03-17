@@ -17,7 +17,6 @@ class MaintenancesTransformer
         foreach ($maintenances as $assetmaintenance) {
             $array[] = self::transformMaintenance($assetmaintenance);
         }
-
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
 
@@ -72,7 +71,7 @@ class MaintenancesTransformer
             'cost' => Helper::formatCurrencyOutput($assetmaintenance->cost),
             'asset_maintenance_type' => e($assetmaintenance->asset_maintenance_type),
             'start_date' => Helper::getFormattedDateObject($assetmaintenance->start_date, 'date'),
-            'asset_maintenance_time' => $assetmaintenance->asset_maintenance_time,
+            'asset_maintenance_time' => (int) $assetmaintenance->asset_maintenance_time,
             'completion_date' => Helper::getFormattedDateObject($assetmaintenance->completion_date, 'date'),
             'user_id' => ($assetmaintenance->adminuser) ? [
                 'id' => $assetmaintenance->adminuser->id,
@@ -84,7 +83,57 @@ class MaintenancesTransformer
             ] : null,
             'created_at' => Helper::getFormattedDateObject($assetmaintenance->created_at, 'datetime'),
             'updated_at' => Helper::getFormattedDateObject($assetmaintenance->updated_at, 'datetime'),
-            'is_warranty' => $assetmaintenance->is_warranty,
+            'is_warranty' => (bool) $assetmaintenance->is_warranty,
+
+        ];
+
+        $permissions_array['available_actions'] = [
+            'update' => (Gate::allows('update', Asset::class) && ((($assetmaintenance->asset) && $assetmaintenance->asset->deleted_at == ''))) ? true : false,
+            'delete' => Gate::allows('delete', Asset::class),
+        ];
+
+        $array += $permissions_array;
+
+        return $array;
+    }
+
+    public function transformMaintenancesFlat(Collection $maintenances, $total)
+    {
+        $array = [];
+        foreach ($maintenances as $assetmaintenance) {
+            $array[] = self::transformMaintenanceForReport($assetmaintenance);
+        }
+        return (new DatatablesTransformer)->transformDatatables($array, $total);
+    }
+
+    public function transformMaintenanceForReport(Maintenance $assetmaintenance)
+    {
+        $array = [
+            'id' => (int) $assetmaintenance->id,
+            'asset_name' => ($assetmaintenance->asset->name) ? e($assetmaintenance->asset->name) : null,
+            'asset_tag' => ($assetmaintenance->asset->asset_tag) ? e($assetmaintenance->asset->asset_tag) : null,
+            'serial' => ($assetmaintenance->asset?->serial) ? e($assetmaintenance->asset->serial) : null,
+            'image' => ($assetmaintenance->image != '') ? Storage::disk('public')->url('maintenances/' . e($assetmaintenance->image)) : null,
+            'model' => ($assetmaintenance->asset?->model?->name) ? e($assetmaintenance->asset?->model?->name) : null,
+            'model_number' => ($assetmaintenance->asset?->model?->model_number) ? e($assetmaintenance->asset?->model?->model_number) : null,
+            'status_label' => ($assetmaintenance->asset?->assetstatus) ? e($assetmaintenance->asset?->assetstatus?->display_name) : null,
+            'assigned_to' => ($assetmaintenance->asset?->assigned) ? e($assetmaintenance->asset?->assigned?->display_name) : null,
+            'company' => ($assetmaintenance->asset?->company?->name) ? e($assetmaintenance->asset->company->name) : null,
+            'name' => ($assetmaintenance->name) ? e($assetmaintenance->name) : null,
+            'title' => ($assetmaintenance->name) ? e($assetmaintenance->name) : null, // legacy to not change the shape of the API
+            'location' => (($assetmaintenance->asset) && ($assetmaintenance->asset->location)) ? e($assetmaintenance->asset->location->name) : null,
+            'notes' => ($assetmaintenance->notes) ? Helper::parseEscapedMarkedownInline($assetmaintenance->notes) : null,
+            'supplier' => ($assetmaintenance->supplier) ? e($assetmaintenance->supplier?->name) : null,
+            'url' => ($assetmaintenance->url) ? e($assetmaintenance->url) : null,
+            'cost' => Helper::formatCurrencyOutput($assetmaintenance->cost),
+            'asset_maintenance_type' => e($assetmaintenance->asset_maintenance_type),
+            'start_date' => Helper::getFormattedDateObject($assetmaintenance->start_date, 'date'),
+            'asset_maintenance_time' => (int) $assetmaintenance->asset_maintenance_time,
+            'completion_date' => Helper::getFormattedDateObject($assetmaintenance->completion_date, 'date'),
+            'created_by' => ($assetmaintenance->adminuser) ? e($assetmaintenance->adminuser->display_name) : null,
+            'created_at' => Helper::getFormattedDateObject($assetmaintenance->created_at, 'datetime'),
+            'updated_at' => Helper::getFormattedDateObject($assetmaintenance->updated_at, 'datetime'),
+            'is_warranty' => (bool) $assetmaintenance->is_warranty,
 
         ];
 
