@@ -44,7 +44,7 @@ class ShowAccessoryTest extends TestCase implements TestsFullMultipleCompaniesSu
             ]);
     }
 
-    public function testCanGetSingleAccessory()
+    public function test_can_get_single_accessory()
     {
         $accessory = Accessory::factory()->checkedOutToUser()->create(['name' => 'My Accessory']);
 

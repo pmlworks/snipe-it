@@ -22,7 +22,7 @@ class DeleteReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertNotSoftDeleted($reportTemplate);
     }
 
-    public function testCannotDeleteAnotherUsersReportTemplate()
+    public function test_cannot_delete_another_users_report_template()
     {
         $reportTemplate = ReportTemplate::factory()->create();
 
@@ -34,7 +34,7 @@ class DeleteReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertNotSoftDeleted($reportTemplate);
     }
 
-    public function testCannotDeleteAnotherUsersSharedReportTemplate()
+    public function test_cannot_delete_another_users_shared_report_template()
     {
         $reportTemplate = ReportTemplate::factory()->shared()->create();
 
@@ -46,7 +46,7 @@ class DeleteReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertNotSoftDeleted($reportTemplate);
     }
 
-    public function testCanDeleteAReportTemplate()
+    public function test_can_delete_a_report_template()
     {
         $user = User::factory()->canViewReports()->create();
         $reportTemplate = ReportTemplate::factory()->for($user, 'creator')->create();

@@ -53,7 +53,7 @@ class DeleteConsumablesTest extends TestCase implements TestsFullMultipleCompani
         $this->assertSoftDeleted($consumableC);
     }
 
-    public function testCanDeleteConsumables()
+    public function test_can_delete_consumables()
     {
         $consumable = Consumable::factory()->create();
 

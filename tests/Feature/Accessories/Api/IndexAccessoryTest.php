@@ -54,7 +54,7 @@ class IndexAccessoryTest extends TestCase implements TestsFullMultipleCompaniesS
             ->assertResponseContainsInRows($accessoryC);
     }
 
-    public function testCanGetAccessories()
+    public function test_can_get_accessories()
     {
         $user = User::factory()->viewAccessories()->create();
 

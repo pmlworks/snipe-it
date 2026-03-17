@@ -18,7 +18,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
             ->assertStatus(302);
     }
 
-    public function testCannotUpdateAnotherUsersReportTemplate()
+    public function test_cannot_update_another_users_report_template()
     {
         $reportTemplate = ReportTemplate::factory()->create(['name' => 'Original']);
 
@@ -32,7 +32,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertEquals('Original', $reportTemplate->fresh()->name);
     }
 
-    public function testCannotUpdateAnotherUsersSharedReportTemplate()
+    public function test_cannot_update_another_users_shared_report_template()
     {
         $reportTemplate = ReportTemplate::factory()->shared()->create(['name' => 'Original']);
 
@@ -47,7 +47,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertEquals('Original', $reportTemplate->fresh()->name);
     }
 
-    public function testUpdatingReportTemplateRequiresValidFields()
+    public function test_updating_report_template_requires_valid_fields()
     {
         $user = User::factory()->canViewReports()->create();
 
@@ -62,7 +62,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
             ]);
     }
 
-    public function testCanUpdateAReportTemplate()
+    public function test_can_update_a_report_template()
     {
         $user = User::factory()->canViewReports()->create();
 
@@ -93,7 +93,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
         $this->assertEquals([3], $reportTemplate->selectValues('by_company_id'));
     }
 
-    public function testCanUpdateAReportTemplateWithTheSameName()
+    public function test_can_update_a_report_template_with_the_same_name()
     {
         $user = User::factory()->canViewReports()->create();
 
@@ -116,7 +116,7 @@ class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequi
             ->assertSessionDoesntHaveErrors();
     }
 
-    public function testCanShareAReportTemplate()
+    public function test_can_share_a_report_template()
     {
         $user = User::factory()->canViewReports()->create();
 

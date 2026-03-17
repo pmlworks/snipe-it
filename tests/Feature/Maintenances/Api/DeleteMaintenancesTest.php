@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Maintenances\Api;
 
-use App\Models\Maintenance;
 use App\Models\Company;
+use App\Models\Maintenance;
 use App\Models\User;
 use Tests\Concerns\TestsFullMultipleCompaniesSupport;
 use Tests\Concerns\TestsPermissionsRequirement;
@@ -58,7 +58,7 @@ class DeleteMaintenancesTest extends TestCase implements TestsFullMultipleCompan
         $this->assertHasTheseActionLogs($maintenanceC, ['create', 'delete']);
     }
 
-    public function testCanDeleteMaintenance()
+    public function test_can_delete_maintenance()
     {
         $maintenance = Maintenance::factory()->create();
 

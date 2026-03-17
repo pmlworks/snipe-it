@@ -22,7 +22,7 @@ class DeleteManufacturersTest extends TestCase implements TestsPermissionsRequir
         $this->assertNotSoftDeleted($manufacturer);
     }
 
-    public function testCannotDeleteManufacturerWithAssociatedData()
+    public function test_cannot_delete_manufacturer_with_associated_data()
     {
         $manufacturerWithAccessories = Manufacturer::factory()->hasAccessories()->create();
         $manufacturerWithConsumables = Manufacturer::factory()->hasConsumables()->create();
@@ -50,7 +50,7 @@ class DeleteManufacturersTest extends TestCase implements TestsPermissionsRequir
         $this->assertNotSoftDeleted($manufacturerWithLicenses);
     }
 
-    public function testCanDeleteManufacturer()
+    public function test_can_delete_manufacturer()
     {
         $manufacturer = Manufacturer::factory()->create();
 

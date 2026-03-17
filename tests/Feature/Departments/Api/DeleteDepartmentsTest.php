@@ -53,7 +53,7 @@ class DeleteDepartmentsTest extends TestCase implements TestsFullMultipleCompani
         $this->assertDatabaseMissing('departments', ['id' => $departmentC->id]);
     }
 
-    public function testCannotDeleteDepartmentThatStillHasUsers()
+    public function test_cannot_delete_department_that_still_has_users()
     {
         $department = Department::factory()->hasUsers()->create();
 
@@ -64,7 +64,7 @@ class DeleteDepartmentsTest extends TestCase implements TestsFullMultipleCompani
         $this->assertDatabaseHas('departments', ['id' => $department->id]);
     }
 
-    public function testCanDeleteDepartment()
+    public function test_can_delete_department()
     {
         $department = Department::factory()->create();
 

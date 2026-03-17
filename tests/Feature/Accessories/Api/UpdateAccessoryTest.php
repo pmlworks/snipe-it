@@ -55,7 +55,7 @@ class UpdateAccessoryTest extends TestCase implements TestsFullMultipleCompanies
         $this->assertEquals('New Name', $accessoryC->fresh()->name);
     }
 
-    public function testCanUpdateAccessoryViaPatch()
+    public function test_can_update_accessory_via_patch()
     {
         [$categoryA, $categoryB] = Category::factory()->count(2)->create();
         [$companyA, $companyB] = Company::factory()->count(2)->create();

@@ -20,7 +20,7 @@ class DeleteStatusLabelsTest extends TestCase implements TestsPermissionsRequire
         $this->assertNotSoftDeleted($statusLabel);
     }
 
-    public function testCannotDeleteStatusLabelWhileStillAssociatedToAssets()
+    public function test_cannot_delete_status_label_while_still_associated_to_assets()
     {
         $statusLabel = Statuslabel::factory()->hasAssets()->create();
 
@@ -33,7 +33,7 @@ class DeleteStatusLabelsTest extends TestCase implements TestsPermissionsRequire
         $this->assertNotSoftDeleted($statusLabel);
     }
 
-    public function testCanDeleteStatusLabel()
+    public function test_can_delete_status_label()
     {
         $statusLabel = Statuslabel::factory()->create();
 

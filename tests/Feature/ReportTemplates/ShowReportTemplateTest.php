@@ -18,7 +18,7 @@ class ShowReportTemplateTest extends TestCase implements TestsPermissionsRequire
             ->assertRedirectToRoute('reports/custom');
     }
 
-    public function testCanLoadASavedReportTemplate()
+    public function test_can_load_a_saved_report_template()
     {
         $user = User::factory()->canViewReports()->create();
         $reportTemplate = ReportTemplate::factory()->make(['name' => 'My Awesome Template']);
@@ -32,17 +32,17 @@ class ShowReportTemplateTest extends TestCase implements TestsPermissionsRequire
             }]);
     }
 
-    public function testCannotLoadAnotherUsersSavedReportTemplateIfNotShared()
+    public function test_cannot_load_another_users_saved_report_template_if_not_shared()
     {
         $reportTemplate = ReportTemplate::factory()->create();
 
         $this->actingAs(User::factory()->canViewReports()->create())
             ->get(route('report-templates.show', $reportTemplate))
             ->assertRedirectToRoute('reports/custom')
-            ->assertSessionHas('error', trans('general.generic_model_not_found', ['model' => 'report template']));;
+            ->assertSessionHas('error', trans('general.generic_model_not_found', ['model' => 'report template']));
     }
 
-    public function testCanLoadAnotherUsersSavedReportTemplateIfShared()
+    public function test_can_load_another_users_saved_report_template_if_shared()
     {
         $user = User::factory()->canViewReports()->create();
         $reportTemplate = ReportTemplate::factory()->shared()->make(['name' => 'My Awesome Template']);
@@ -54,7 +54,7 @@ class ShowReportTemplateTest extends TestCase implements TestsPermissionsRequire
             ->assertViewHas([
                 'template' => function (ReportTemplate $templatePassedToView) use ($reportTemplate) {
                     return $templatePassedToView->is($reportTemplate);
-                }
+                },
             ]);
     }
 }

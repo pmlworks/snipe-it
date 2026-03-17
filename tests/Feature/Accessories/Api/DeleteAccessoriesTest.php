@@ -56,13 +56,13 @@ class DeleteAccessoriesTest extends TestCase implements TestsFullMultipleCompani
 
     public static function checkedOutAccessories()
     {
-        yield 'checked out to user' => [fn() => Accessory::factory()->checkedOutToUser()->create()];
-        yield 'checked out to asset' => [fn() => Accessory::factory()->checkedOutToAsset()->create()];
-        yield 'checked out to location' => [fn() => Accessory::factory()->checkedOutToLocation()->create()];
+        yield 'checked out to user' => [fn () => Accessory::factory()->checkedOutToUser()->create()];
+        yield 'checked out to asset' => [fn () => Accessory::factory()->checkedOutToAsset()->create()];
+        yield 'checked out to location' => [fn () => Accessory::factory()->checkedOutToLocation()->create()];
     }
 
     #[DataProvider('checkedOutAccessories')]
-    public function testCannotDeleteAccessoryThatHasCheckouts($data)
+    public function test_cannot_delete_accessory_that_has_checkouts($data)
     {
         $accessory = $data();
 
@@ -73,7 +73,7 @@ class DeleteAccessoriesTest extends TestCase implements TestsFullMultipleCompani
         $this->assertNotSoftDeleted($accessory);
     }
 
-    public function testCanDeleteAccessory()
+    public function test_can_delete_accessory()
     {
         $accessory = Accessory::factory()->create();
 

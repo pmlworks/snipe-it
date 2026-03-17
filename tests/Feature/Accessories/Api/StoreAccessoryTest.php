@@ -44,7 +44,7 @@ class StoreAccessoryTest extends TestCase implements TestsFullMultipleCompaniesS
         ]);
     }
 
-    public function testValidation()
+    public function test_validation()
     {
         $this->actingAsForApi(User::factory()->createAccessories()->create())
             ->postJson(route('api.accessories.store'), [
@@ -58,7 +58,7 @@ class StoreAccessoryTest extends TestCase implements TestsFullMultipleCompaniesS
             ]);
     }
 
-    public function testCanStoreAccessory()
+    public function test_can_store_accessory()
     {
         $category = Category::factory()->forAccessories()->create();
         $company = Company::factory()->create();

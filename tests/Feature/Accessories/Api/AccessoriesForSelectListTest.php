@@ -45,7 +45,7 @@ class AccessoriesForSelectListTest extends TestCase implements TestsFullMultiple
             ->assertResponseContainsInResults($accessoryB);
     }
 
-    public function testCanGetAccessoriesForSelectList()
+    public function test_can_get_accessories_for_select_list()
     {
         [$accessoryA, $accessoryB] = Accessory::factory()->count(2)->create();
 

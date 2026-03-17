@@ -46,7 +46,7 @@ class IndexAccessoryCheckoutsTest extends TestCase implements TestsFullMultipleC
             ->assertOk();
     }
 
-    public function testCanGetAccessoryCheckouts()
+    public function test_can_get_accessory_checkouts()
     {
         [$userA, $userB] = User::factory()->count(2)->create();
 
@@ -62,7 +62,7 @@ class IndexAccessoryCheckoutsTest extends TestCase implements TestsFullMultipleC
             ->assertJsonPath('rows.1.assigned_to.id', $userB->id);
     }
 
-    public function testCanGetAccessoryCheckoutsWithOffsetAndLimitInQueryString()
+    public function test_can_get_accessory_checkouts_with_offset_and_limit_in_query_string()
     {
         [$userA, $userB, $userC] = User::factory()->count(3)->create();
 

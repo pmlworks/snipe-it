@@ -53,7 +53,7 @@ class DeleteComponentTest extends TestCase implements TestsFullMultipleCompanies
         $this->assertSoftDeleted($componentC);
     }
 
-    public function testCanDeleteComponents()
+    public function test_can_delete_components()
     {
         $component = Component::factory()->create();
 
@@ -64,7 +64,7 @@ class DeleteComponentTest extends TestCase implements TestsFullMultipleCompanies
         $this->assertSoftDeleted($component);
     }
 
-    public function testCannotDeleteComponentIfCheckedOut()
+    public function test_cannot_delete_component_if_checked_out()
     {
         $component = Component::factory()->checkedOutToAsset()->create();
 

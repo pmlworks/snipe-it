@@ -15,7 +15,7 @@ class CreateCompaniesTest extends TestCase implements TestsPermissionsRequiremen
             ->assertForbidden();
     }
 
-    public function testValidationForCreatingCompany()
+    public function test_validation_for_creating_company()
     {
         $this->actingAsForApi(User::factory()->createCompanies()->create())
             ->postJson(route('api.companies.store'))
@@ -28,7 +28,7 @@ class CreateCompaniesTest extends TestCase implements TestsPermissionsRequiremen
             ]);
     }
 
-    public function testCanCreateCompany()
+    public function test_can_create_company()
     {
         $this->actingAsForApi(User::factory()->createCompanies()->create())
             ->postJson(route('api.companies.store'), [

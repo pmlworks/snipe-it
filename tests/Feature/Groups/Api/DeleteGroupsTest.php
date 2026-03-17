@@ -20,7 +20,7 @@ class DeleteGroupsTest extends TestCase implements TestsPermissionsRequirement
         $this->assertDatabaseHas('permission_groups', ['id' => $group->id]);
     }
 
-    public function testCanDeleteGroup()
+    public function test_can_delete_group()
     {
         $group = Group::factory()->create();
 
