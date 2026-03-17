@@ -136,14 +136,7 @@ class MaintenancesTransformer
             'is_warranty' => (bool) $assetmaintenance->is_warranty,
 
         ];
-
-        $permissions_array['available_actions'] = [
-            'update' => (Gate::allows('update', Asset::class) && ((($assetmaintenance->asset) && $assetmaintenance->asset->deleted_at == ''))) ? true : false,
-            'delete' => Gate::allows('delete', Asset::class),
-        ];
-
-        $array += $permissions_array;
-
+        
         return $array;
     }
 }
