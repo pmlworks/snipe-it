@@ -29,7 +29,7 @@ class ImportLicenseTest extends ImportDataTestCase implements TestsPermissionsRe
     }
 
     #[Test]
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAsForApi(User::factory()->create());
 

@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class DeleteUsersTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $user = User::factory()->create();
 
@@ -100,7 +100,7 @@ class DeleteUsersTest extends TestCase implements TestsFullMultipleCompaniesSupp
 
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         $this->settings->enableMultipleFullCompanySupport();
 

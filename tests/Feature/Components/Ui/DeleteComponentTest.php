@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class DeleteComponentTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $component = Component::factory()->create();
 
@@ -80,7 +80,7 @@ class DeleteComponentTest extends TestCase implements TestsFullMultipleCompanies
         ]);
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         $this->settings->enableMultipleFullCompanySupport();
 

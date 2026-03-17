@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class DeleteGroupsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $group = Group::factory()->create();
 

@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DeleteLicensesTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $license = License::factory()->create();
 
@@ -22,7 +22,7 @@ class DeleteLicensesTest extends TestCase implements TestsFullMultipleCompaniesS
         $this->assertNotSoftDeleted($license);
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class BulkDeleteManufacturersTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAs(User::factory()->create())
             ->post(route('manufacturers.bulk.delete'), [

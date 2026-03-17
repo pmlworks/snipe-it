@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class DeleteCompaniesTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $company = Company::factory()->create();
 

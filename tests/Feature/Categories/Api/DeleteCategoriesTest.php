@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DeleteCategoriesTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $category = Category::factory()->create();
 

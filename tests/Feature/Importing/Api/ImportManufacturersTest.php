@@ -28,7 +28,7 @@ class ImportManufacturersTest extends ImportDataTestCase implements TestsPermiss
     }
 
     #[Test]
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAsForApi(User::factory()->create());
 

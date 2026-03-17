@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class DeleteStatusLabelsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $statusLabel = Statuslabel::factory()->create();
 

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class AccessoriesForSelectListTest extends TestCase implements TestsFullMultipleCompaniesSupport
 {
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 

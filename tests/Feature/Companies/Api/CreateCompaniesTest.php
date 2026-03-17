@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class CreateCompaniesTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAsForApi(User::factory()->create())
             ->postJson(route('api.companies.store'))

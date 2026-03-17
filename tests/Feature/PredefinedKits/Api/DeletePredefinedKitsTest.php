@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class DeletePredefinedKitsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $predefinedKit = PredefinedKit::factory()->create();
 

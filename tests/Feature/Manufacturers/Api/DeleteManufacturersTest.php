@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DeleteManufacturersTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $manufacturer = Manufacturer::factory()->create();
 

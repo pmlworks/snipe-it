@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class DeleteSuppliersTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $supplier = Supplier::factory()->create();
 

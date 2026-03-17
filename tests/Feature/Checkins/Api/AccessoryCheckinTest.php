@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class AccessoryCheckinTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $accessory = Accessory::factory()->checkedOutToUser()->create();
         $accessoryCheckout = $accessory->checkouts->first();
@@ -21,7 +21,7 @@ class AccessoryCheckinTest extends TestCase implements TestsFullMultipleCompanie
             ->assertForbidden();
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 

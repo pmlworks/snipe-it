@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class DeleteDepartmentsTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $department = Department::factory()->create();
 
@@ -22,7 +22,7 @@ class DeleteDepartmentsTest extends TestCase implements TestsFullMultipleCompani
         $this->assertDatabaseHas('departments', ['id' => $department->id]);
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 

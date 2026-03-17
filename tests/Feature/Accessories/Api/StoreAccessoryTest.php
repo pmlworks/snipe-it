@@ -14,14 +14,14 @@ use Tests\TestCase;
 
 class StoreAccessoryTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAsForApi(User::factory()->create())
             ->postJson(route('api.accessories.store'))
             ->assertForbidden();
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         $this->markTestSkipped('This behavior is not implemented');
 

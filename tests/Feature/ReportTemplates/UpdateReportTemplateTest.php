@@ -11,7 +11,7 @@ use Tests\TestCase;
 #[Group('custom-reporting')]
 class UpdateReportTemplateTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $this->actingAs(User::factory()->create())
             ->post(route('report-templates.update', ReportTemplate::factory()->create()))

@@ -10,7 +10,7 @@ use Tests\TestCase;
 
 class DeleteAssetModelsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $assetModel = AssetModel::factory()->create();
 

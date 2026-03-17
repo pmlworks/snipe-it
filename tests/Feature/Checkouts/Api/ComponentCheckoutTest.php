@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class ComponentCheckoutTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $component = Component::factory()->create();
 
@@ -124,7 +124,7 @@ class ComponentCheckoutTest extends TestCase implements TestsFullMultipleCompani
         ]);
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 

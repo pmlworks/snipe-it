@@ -13,7 +13,7 @@ use Tests\TestCase;
 
 class DeleteLocationsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $location = Location::factory()->create();
 

@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class DeleteDepreciationsTest extends TestCase implements TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $depreciation = Depreciation::factory()->create();
 

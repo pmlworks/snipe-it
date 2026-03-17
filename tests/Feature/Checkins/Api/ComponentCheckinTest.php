@@ -14,7 +14,7 @@ use Tests\TestCase;
 
 class ComponentCheckinTest extends TestCase implements TestsFullMultipleCompaniesSupport, TestsPermissionsRequirement
 {
-    public function testRequiresPermission()
+    public function test_requires_permission()
     {
         $component = Component::factory()->checkedOutToAsset()->create();
 
@@ -121,7 +121,7 @@ class ComponentCheckinTest extends TestCase implements TestsFullMultipleCompanie
         });
     }
 
-    public function testAdheresToFullMultipleCompaniesSupportScoping()
+    public function test_adheres_to_full_multiple_companies_support_scoping()
     {
         $this->settings->enableMultipleFullCompanySupport();
 
