@@ -554,21 +554,21 @@ class UsersController extends Controller
                 $user->password = bcrypt($request->input('password'));
             }
 
-            if ($request->filled('username')) {
-                $user->username = $request->input('username');
-            }
-
-            if ($request->filled('email')) {
-                $user->email = $request->input('email');
-            }
-
-            if ($request->filled('activated')) {
-                $user->activated = $request->input('activated');
-            }
-
             // We need to use has()  instead of filled()
             // here because we need to overwrite permissions
             // if someone needs to null them out
+
+            if ($request->has('username')) {
+                $user->username = $request->input('username');
+            }
+
+            if ($request->has('email')) {
+                $user->email = $request->input('email');
+            }
+
+            if ($request->has('activated')) {
+                $user->activated = $request->input('activated');
+            }
 
             if ($request->has('permissions')) {
 
