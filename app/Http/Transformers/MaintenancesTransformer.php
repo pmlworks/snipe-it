@@ -128,7 +128,7 @@ class MaintenancesTransformer
             'cost' => Helper::formatCurrencyOutput($assetmaintenance->cost),
             'asset_maintenance_type' => e($assetmaintenance->asset_maintenance_type),
             'start_date' => Helper::getFormattedDateObject($assetmaintenance->start_date, 'date'),
-            'asset_maintenance_time' => (int) $assetmaintenance->asset_maintenance_time,
+            'asset_maintenance_time' => $assetmaintenance->asset_maintenance_time,
             'completion_date' => Helper::getFormattedDateObject($assetmaintenance->completion_date, 'date'),
             'created_by' => ($assetmaintenance->adminuser) ? e($assetmaintenance->adminuser->display_name) : null,
             'created_at' => Helper::getFormattedDateObject($assetmaintenance->created_at, 'datetime'),
