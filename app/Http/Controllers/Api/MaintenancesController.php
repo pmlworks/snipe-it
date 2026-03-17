@@ -126,6 +126,10 @@ class MaintenancesController extends Controller
         $total = $maintenances->count();
         $maintenances = $maintenances->skip($offset)->take($limit)->get();
 
+        if (request()->input('format') == 'flat') {
+            return (new MaintenancesTransformer)->transformMaintenancesFlat($maintenances, $total);
+        }
+        
         return (new MaintenancesTransformer)->transformMaintenances($maintenances, $total);
 
     }

@@ -187,4 +187,161 @@ class MaintenancesPresenter extends Presenter
 
         return json_encode($layout);
     }
+
+    public static function reportLayout()
+    {
+        $layout = [
+            [
+                'field' => 'company',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/companies/table.title'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'asset_tag',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/table.asset_tag'),
+            ],
+            [
+                'field' => 'asset_name',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/table.asset_name'),
+            ],
+            [
+                'field' => 'name',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.name'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'image',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.image'),
+                'visible' => true,
+                'formatter' => 'imageFormatter',
+            ],
+            [
+                'field' => 'serial',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/table.serial'),
+            ], [
+                'field' => 'status_label',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/table.status'),
+                'visible' => true,
+            ], [
+                'field' => 'model',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('admin/hardware/form.model'),
+                'visible' => false,
+            ], [
+                'field' => 'model_number',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.model_no'),
+                'visible' => true,
+            ], [
+                'field' => 'assigned_to',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/hardware/form.checkedout_to'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'supplier',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.supplier'),
+                'visible' => false,
+            ], [
+                'field' => 'location',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.location'),
+            ], [
+                'field' => 'asset_maintenance_type',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.asset_maintenance_type'),
+            ], [
+                'field' => 'start_date',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.start_date'),
+                'formatter' => 'dateDisplayFormatter',
+            ], [
+                'field' => 'completion_date',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.completion_date'),
+                'formatter' => 'dateDisplayFormatter',
+            ], [
+                'field' => 'asset_maintenance_time',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.asset_maintenance_time'),
+            ], [
+                'field' => 'url',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('general.url'),
+                'formatter' => 'externalLinkFormatter',
+            ], [
+                'field' => 'notes',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.notes'),
+            ], [
+                'field' => 'is_warranty',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/table.is_warranty'),
+                'formatter' => 'trueFalseFormatter',
+            ], [
+                'field' => 'cost',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/maintenances/form.cost'),
+                'class' => 'text-right',
+            ], [
+                'field' => 'created_by',
+                'searchable' => false,
+                'sortable' => true,
+                'title' => trans('general.created_by'),
+                'visible' => false,
+            ], [
+                'field' => 'created_at',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.created_at'),
+                'visible' => false,
+                'formatter' => 'dateDisplayFormatter',
+            ], [
+                'field' => 'updated_at',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.updated_at'),
+                'visible' => false,
+                'formatter' => 'dateDisplayFormatter',
+            ],
+        ];
+
+        return json_encode($layout);
+    }
 }
