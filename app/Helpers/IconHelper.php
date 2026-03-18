@@ -149,7 +149,7 @@ class IconHelper
             case 'plus':
                 return 'fas fa-plus';
             case 'history':
-                return 'fas fa-history';
+                return 'fa-solid fa-timeline';
             case 'more-files':
                 return 'fa-solid fa-laptop-file';
             case 'maintenances':
