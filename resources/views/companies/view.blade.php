@@ -57,7 +57,7 @@
 
                     <!-- start users tab pane -->
                     <x-tabs.pane name="users">
-                        <x-table.components name="users" :route="route('api.users.index', ['company_id' => $company->id])"/>
+                        <x-table.users name="users" :route="route('api.users.index', ['company_id' => $company->id])"/>
                     </x-tabs.pane>
                     <!-- end users tab pane -->
 
