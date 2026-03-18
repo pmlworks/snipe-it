@@ -39,7 +39,7 @@
                 <x-slot:tabpanes>
 
                     <!-- start assets tab pane -->
-                    <x-tabs.pane name="assets" count="{{ $supplier->assets()->AssetsForShow()->count() }}">
+                    <x-tabs.pane name="assets">
                         <x-table.assets name="assets" :route="route('api.assets.index', ['supplier_id' => $supplier->id, 'itemtype' => 'assets'])"/>
                     </x-tabs.pane>
                     <!-- end assets tab pane -->
@@ -93,9 +93,9 @@
                         <x-slot:table_header>
                             {{ trans('general.files') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="suppliers" :object="$supplier" />
-                        </x-slot:content>
+
+                        <x-table.files object_type="suppliers" :object="$supplier"/>
+
                     </x-tabs.pane>
                     <!-- end files tab pane -->
 

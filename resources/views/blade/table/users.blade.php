@@ -17,18 +17,17 @@
         <x-table.bulk-users/>
     </x-slot:bulkactions>
 
-    <x-slot:content>
-        <x-table
-            :$presenter
-            :$fixed_right_number
-            :$fixed_number
-            show_column_search="true"
-            show_advanced_search="true"
-            buttons="userButtons"
-            api_url="{{ $route }}"
-            export_filename="export-users-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        :$fixed_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="userButtons"
+        api_url="{{ $route }}"
+        export_filename="export-users-{{ date('Y-m-d') }}"
+    />
+
 
 @endcan
 <!-- end assets tab pane -->

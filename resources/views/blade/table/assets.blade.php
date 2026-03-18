@@ -20,19 +20,17 @@
     <x-slot:bulkactions>
         <x-table.bulk-assets/>
     </x-slot:bulkactions>
-
-    <x-slot:content>
-        <x-table
-            :$presenter
-            :$fixed_right_number
-            :$fixed_number
-            show_column_search="true"
-            show_advanced_search="true"
-            buttons="assetButtons"
-            api_url="{{ $route }}"
-            export_filename="export-{{ str_slug($name) }}-assets-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
+    
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        :$fixed_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="assetButtons"
+        api_url="{{ $route }}"
+        export_filename="export-{{ str_slug($name) }}-assets-{{ date('Y-m-d') }}"
+    />
 
 @endcan
 <!-- end assets tab pane -->

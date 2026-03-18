@@ -42,12 +42,10 @@
 
                     <x-tabs.pane name="assigned" class="in active">
 
-                        <x-slot:content>
-                            <x-table
-                                    :presenter="\App\Presenters\ConsumablePresenter::checkedOut()"
-                                    :api_url="route('api.consumables.show.users', $consumable->id)"
-                            />
-                        </x-slot:content>
+                        <x-table
+                            :presenter="\App\Presenters\ConsumablePresenter::checkedOut()"
+                            :api_url="route('api.consumables.show.users', $consumable->id)"
+                        />
 
                     </x-tabs.pane>
 
@@ -55,9 +53,8 @@
                         <x-slot:table_header>
                             {{ trans('general.files') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="consumables" :object="$consumable" />
-                        </x-slot:content>
+
+                        <x-table.files object_type="consumables" :object="$consumable"/>
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->
@@ -65,14 +62,13 @@
                         <x-slot:table_header>
                             {{ trans('general.history') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table
-                                    name="consumableHistory"
-                                    api_url="{{ route('api.activity.index', ['item_id' => $consumable->id, 'item_type' => 'consumable']) }}"
-                                    :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                    export_filename="export-licenses-{{ str_slug($consumable->name) }}-{{ date('Y-m-d') }}"
-                            />
-                        </x-slot:content>
+
+                        <x-table
+                            name="consumableHistory"
+                            api_url="{{ route('api.activity.index', ['item_id' => $consumable->id, 'item_type' => 'consumable']) }}"
+                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                            export_filename="export-licenses-{{ str_slug($consumable->name) }}-{{ date('Y-m-d') }}"
+                        />
                     </x-tabs.pane>
                 </x-slot:tabpanes>
 

@@ -15,19 +15,17 @@
     <x-slot:table_header>
         {{ $table_header }}
     </x-slot:table_header>
-
-    <x-slot:content>
-        <x-table
-            :$presenter
-            :$fixed_right_number
-            :$fixed_number
-            show_column_search="true"
-            show_advanced_search="true"
-            buttons="accessoryButtons"
-            api_url="{{ $route }}"
-            export_filename="export-{{ str_slug($name) }}-accessories-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
+    
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        :$fixed_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="accessoryButtons"
+        api_url="{{ $route }}"
+        export_filename="export-{{ str_slug($name) }}-accessories-{{ date('Y-m-d') }}"
+    />
 
 @endcan
 <!-- end accessories tab pane -->

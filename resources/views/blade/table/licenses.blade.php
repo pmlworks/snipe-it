@@ -14,18 +14,18 @@
         {{ $table_header }}
     </x-slot:table_header>
 
-        <x-slot:content>
-            <x-table
-                :$presenter
-                :$fixed_right_number
-                :$fixed_number
-                show_column_search="true"
-                show_advanced_search="true"
-                buttons="licenseButtons"
-                api_url="{{ $route }}"
-                export_filename="export-{{ str_slug($name) }}-licenses-{{ date('Y-m-d') }}"
-            />
-        </x-slot:content>
+
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        :$fixed_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="licenseButtons"
+        api_url="{{ $route }}"
+        export_filename="export-{{ str_slug($name) }}-licenses-{{ date('Y-m-d') }}"
+    />
+
 
 @endcan
 <!-- end licenses tab pane -->

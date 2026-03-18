@@ -178,9 +178,9 @@ use Carbon\Carbon;
                         <x-slot:table_header>
                             {{ trans('general.files') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="maintenances" :object="$maintenance" />
-                        </x-slot:content>
+                        
+                        <x-table.files object_type="maintenances" :object="$maintenance"/>
+
                     </x-tabs.pane>
 
                 </x-slot:tabpanes>

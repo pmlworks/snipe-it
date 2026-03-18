@@ -59,17 +59,15 @@
                         <x-slot:table_header>
                             {{ trans('general.assigned') }}
                         </x-slot:table_header>
-                        <x-slot:content>
 
-                            <x-table
-                                fixed_right_number="1"
-                                fixed_number="1"
-                                api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
-                                :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
-                                export_filename="export-{{ str_slug($license->name) }}-assigned-{{ date('Y-m-d') }}"
-                            />
+                        <x-table
+                            fixed_right_number="1"
+                            fixed_number="1"
+                            api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
+                            :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                            export_filename="export-{{ str_slug($license->name) }}-assigned-{{ date('Y-m-d') }}"
+                        />
 
-                        </x-slot:content>
                     </x-tabs.pane>
 
 
@@ -77,16 +75,14 @@
                         <x-slot:table_header>
                             {{ trans('general.available') }}
                         </x-slot:table_header>
-                        <x-slot:content>
 
-                            <x-table
-                                show_search="false"
-                                api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
-                                :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
-                                export_filename="export-{{ str_slug($license->name) }}-available-{{ date('Y-m-d') }}"
-                            />
+                        <x-table
+                            show_search="false"
+                            api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
+                            :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                            export_filename="export-{{ str_slug($license->name) }}-available-{{ date('Y-m-d') }}"
+                        />
 
-                        </x-slot:content>
                     </x-tabs.pane>
 
 
@@ -95,14 +91,14 @@
                         <x-slot:table_header>
                             {{ trans('general.history') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table
-                                    name="locationHistory_{{ $license->id }}"
-                                    api_url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}"
-                                    :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                    export_filename="export-licenses-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}"
-                            />
-                        </x-slot:content>
+
+                        <x-table
+                            name="locationHistory_{{ $license->id }}"
+                            api_url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}"
+                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                            export_filename="export-licenses-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}"
+                        />
+
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 
@@ -113,9 +109,9 @@
                         <x-slot:table_header>
                             {{ trans('general.files') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="licenses" :object="$license" />
-                        </x-slot:content>
+
+                        <x-table.files object_type="licenses" :object="$license" />
+
                     </x-tabs.pane>
                     @endcan
                     <!-- end files tab pane -->

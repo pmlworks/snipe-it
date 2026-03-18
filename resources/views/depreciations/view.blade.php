@@ -54,48 +54,17 @@
                 <x-slot:tabpanes>
 
                     <!-- start assets tab pane -->
-                    @can('view', \App\Models\Asset::class)
-                        <x-tabs.pane name="assets" class="in active">
-                            <x-slot:table_header>
-                                {{ trans('general.assets') }}
-                            </x-slot:table_header>
+                    <x-tabs.pane name="assets">
+                        <x-table.assets name="assets" :route="route('api.assets.index', ['depreciation_id' => $depreciation->id])"/>
+                    </x-tabs.pane>
+                    <!-- end assets tab pane -->
 
-                            <x-slot:bulkactions>
-                                <x-table.bulk-assets />
-                            </x-slot:bulkactions>
-
-                            <x-slot:content>
-                                <x-table
-                                        show_column_search="true"
-                                        show_advanced_search="true"
-                                        buttons="assetButtons"
-                                        api_url="{{ route('api.assets.index', ['depreciation_id' => $depreciation->id]) }}"
-                                        :presenter="\App\Presenters\AssetPresenter::dataTableLayout()"
-                                        export_filename="export-depreciation-{{ str_slug($depreciation->name) }}-assets-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
-                        </x-tabs.pane>
-                        <!-- end assets tab pane -->
-                    @endcan
 
 
                     <!-- start licenses tab pane -->
-                    @can('view', \App\Models\License::class)
-                        <x-tabs.pane name="licenses">
-                            <x-slot:table_header>
-                                {{ trans('general.licenses') }}
-                            </x-slot:table_header>
-                            <x-slot:content>
-                                <x-table
-                                        name="licenses"
-                                        buttons="licenseButtons"
-                                        api_url="{{ route('api.licenses.index', ['depreciation_id' => $depreciation->id]) }}"
-                                        :presenter="\App\Presenters\LicensePresenter::dataTableLayout()"
-                                        export_filename="export-depreciation-{{ str_slug($depreciation->name) }}-licences-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
-                        </x-tabs.pane>
-                    @endcan
+                    <x-tabs.pane name="licenses">
+                        <x-table.licenses name="licenses" :route="route('api.licenses.index', ['depreciation_id' => $depreciation->id])"/>
+                    </x-tabs.pane>
                     <!-- end licenses tab pane -->
 
                     <!-- start models tab pane -->
@@ -104,15 +73,14 @@
                             <x-slot:table_header>
                                 {{ trans('general.models') }}
                             </x-slot:table_header>
-                            <x-slot:content>
-                                <x-table
-                                        name="models"
-                                        buttons="modelButtons"
-                                        api_url="{{ route('api.models.index', ['depreciation_id' => $depreciation->id]) }}"
-                                        :presenter="\App\Presenters\AssetModelPresenter::dataTableLayout()"
-                                        export_filename="export-depreciation-{{ str_slug($depreciation->name) }}-models-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
+                            <x-table
+                                name="models"
+                                buttons="modelButtons"
+                                api_url="{{ route('api.models.index', ['depreciation_id' => $depreciation->id]) }}"
+                                :presenter="\App\Presenters\AssetModelPresenter::dataTableLayout()"
+                                export_filename="export-depreciation-{{ str_slug($depreciation->name) }}-models-{{ date('Y-m-d') }}"
+                            />
+
                         </x-tabs.pane>
                     @endcan
                     <!-- end licenses tab pane -->
