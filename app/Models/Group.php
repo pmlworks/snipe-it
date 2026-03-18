@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use App\Models\Traits\Searchable;
+use App\Presenters\GroupPresenter;
+use App\Presenters\Presentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Gate;
 use Watson\Validating\ValidatingTrait;
 
 class Group extends SnipeModel
 {
     use HasFactory;
+    use Presentable;
 
     protected $table = 'permission_groups';
 
@@ -31,6 +35,7 @@ class Group extends SnipeModel
      * @var bool
      */
     protected $injectUniqueIdentifier = true;
+    protected $presenter = GroupPresenter::class;
 
     use Searchable;
     use ValidatingTrait;
@@ -48,6 +53,13 @@ class Group extends SnipeModel
      * @var array
      */
     protected $searchableRelations = [];
+
+
+    public function isDeletable()
+    {
+        return Gate::allows('delete', $this)
+            && (($this->users_count ?? $this->users()->count()) === 0);
+    }
 
     /**
      * Establishes the groups -> users relationship
