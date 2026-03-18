@@ -5,9 +5,9 @@
 <!-- tab-pane -->
 <div id="{{ $name }}" {{ $attributes->merge(['class' => 'snipetab-pane tab-pane fade']) }}>
 
-    @if (isset($header))
+    @if (isset($table_header))
         <h2 class="box-title{{ (!isset($bulkactions)) ? ' pull-left' : '' }}">
-            {{ $header }}
+            {{ $table_header }}
         </h2>
     @endif
 

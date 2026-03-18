@@ -23,11 +23,13 @@
 
                             <x-tabs.nav-item
                                     name="assets"
-                                    class="active"
                                     icon_type="asset"
                                     label="{{ trans('general.assets') }}"
                                     count="{{ $category->showableAssets()->count() }}"
                             />
+                        @endcan
+
+                            @can('view', \App\Models\AssetModel::class)
 
                             <x-tabs.nav-item
                                     name="models"
@@ -42,7 +44,6 @@
                         @can('view', \App\Models\Accessory::class)
                             <x-tabs.nav-item
                                     name="accessories"
-                                    class="active"
                                     icon_type="accessory"
                                     label="{{ trans('general.accessories') }}"
                                     count="{{ $category->accessories()->count() }}"
@@ -54,7 +55,6 @@
 
                             <x-tabs.nav-item
                                     name="licenses"
-                                    class="active"
                                     icon_type="license"
                                     label="{{ trans('general.licenses') }}"
                             />
@@ -65,7 +65,6 @@
                         @can('view', \App\Models\Consumable::class)
                             <x-tabs.nav-item
                                     name="consumables"
-                                    class="active"
                                     icon_type="consumable"
                                     label="{{ trans('general.consumables') }}"
                                     count="{{ $category->consumables()->count() }}"
@@ -77,7 +76,6 @@
                         @can('view', \App\Models\Component::class)
                             <x-tabs.nav-item
                                     name="components"
-                                    class="active"
                                     icon_type="component"
                                     label="{{ trans('general.components') }}"
                                     count="{{ $category->components()->count() }}"
@@ -98,25 +96,10 @@
                             <x-tabs.pane name="assets">
                                 <x-table.assets :route="route('api.assets.index', ['category_id' => $category->id, 'itemtype' => 'assets'])"/>
                             </x-tabs.pane>
-
+                        @endcan
+                            @can('view', \App\Models\AssetModel::class)
                             <x-tabs.pane name="models">
-                                <x-slot:header>
-                                    {{ trans('general.asset_models') }}
-                                </x-slot:header>
-
-                                <x-slot:bulkactions>
-                                    @include('partials.models-bulk-actions')
-                                </x-slot:bulkactions>
-
-                                <x-slot:content>
-                                    <x-table
-                                        buttons="modelButtons"
-                                        api_url="{{ route('api.models.index', ['status' => e(request('status')), 'category_id' => $category->id]) }}"
-                                        :presenter="\App\Presenters\AssetModelPresenter::dataTableLayout()"
-                                        export_filename="export-{{ str_slug($category->name) }}-models-{{ date('Y-m-d') }}"
-                                    />
-                                </x-slot:content>
-
+                                <x-table.models :route="route('api.models.index', ['status' => e(request('status')), 'category_id' => $category->id])"/>
                             </x-tabs.pane>
                         @endcan
 

@@ -32,16 +32,7 @@
           <x-tabs>
 
               <x-slot:tabnav>
-                  @can('view', \App\Models\User::class)
-                      <x-tabs.nav-item
-                              class="active"
-                              name="users"
-                              icon="fa-solid fa-house-user fa-fw"
-                              label="{{ trans('general.users') }}"
-                              count="{{ $location->users()->count() }}"
-                              tooltip="{{ trans('general.users') }}"
-                      />
-                  @endcan
+                  <x-tabs.asset-tab count="{{ $location->assets()->AssetsForShow()->count() }}"/>
 
                   @can('view', \App\Models\Asset::class)
 
@@ -92,29 +83,8 @@
                   @endcan
 
 
-                  @can('view', \App\Models\Consumable::class)
-
-                      <x-tabs.nav-item
-                              name="consumables"
-                              icon="fas fa-tint fa-fw"
-                              label="{{ trans('general.consumables') }}"
-                              count="{{ $location->consumables()->count() }}"
-                              tooltip="{{ trans('general.consumables') }}"
-                      />
-
-                  @endcan
-
-                  @can('view', \App\Models\Component::class)
-
-                      <x-tabs.nav-item
-                              name="components"
-                              icon="fas fa-hdd fa-fw"
-                              label="{{ trans('general.components') }}"
-                              count="{{ $location->components->count() }}"
-                              tooltip="{{ trans('general.components') }}"
-                      />
-
-                  @endcan
+                  <x-tabs.consumable-tab count="{{ $location->consumables->count() }}"/>
+                  <x-tabs.component-tab count="{{ $location->components->count() }}"/>
 
                   <x-tabs.nav-item
                           name="child_locations"
@@ -124,14 +94,8 @@
                           tooltip="{{ trans('general.child_locations') }}"
                   />
 
-                  <x-tabs.nav-item
-                          name="files"
-                          icon="fa-solid fa-file-contract fa-fw"
-                          label="{{ trans('general.files') }}"
-                          count="{{ $location->uploads()->count() }}"
-                          tooltip="{{ trans('general.files') }}"
-                  />
-
+                  <x-tabs.files-tab count="{{ $location->uploads->count() }}"/>
+                  
                   <x-tabs.nav-item
                           name="history"
                           icon="fa-solid fa-clock-rotate-left fa-fw"
@@ -149,7 +113,7 @@
 
                   <!-- start users tab pane -->
                   @can('view', \App\Models\User::class)
-                  <x-tabs.pane name="users" class="in active">
+                      <x-tabs.pane name="users">
                       <x-table.users :route="route('api.users.index',
                         [
                             'status' => e(request('status')),
@@ -168,19 +132,19 @@
                   <!-- start assets tab pane -->
                   @can('view', \App\Models\Asset::class)
                       <x-tabs.pane name="assets">
-                          <x-table.assets :header="trans('admin/locations/message.current_location')" :route="route('api.assets.index', ['location_id' => $location->id])"/>
+                          <x-table.assets :table_header="trans('admin/locations/message.current_location')" :route="route('api.assets.index', ['location_id' => $location->id])"/>
                       </x-tabs.pane>
                       <!-- end assets tab pane -->
 
                       <!-- start assigned assets tab pane -->
                       <x-tabs.pane name="assets_assigned">
-                          <x-table.assets :header="trans('admin/locations/message.assigned_assets')" :route="route('api.assets.index', ['assigned_to' => $location->id, 'assigned_type' => 'App\Models\Location'])"/>
+                          <x-table.assets :table_header="trans('admin/locations/message.assigned_assets')" :route="route('api.assets.index', ['assigned_to' => $location->id, 'assigned_type' => 'App\Models\Location'])"/>
                       </x-tabs.pane>
                       <!-- end assigned assets tab pane -->
 
                       <!-- start rtd assets tab pane -->
                       <x-tabs.pane name="rtd_assets">
-                          <x-table.assets :header="trans('admin/hardware/form.default_location')" :route="route('api.assets.index', ['rtd_location_id' => $location->id]) "/>
+                          <x-table.assets :table_header="trans('admin/hardware/form.default_location')" :route="route('api.assets.index', ['rtd_location_id' => $location->id]) "/>
                       </x-tabs.pane>
                   @endcan
                   <!-- end rtd assets tab pane -->
@@ -195,7 +159,7 @@
 
                   <!-- start assigned accessories tab pane -->
                   <x-tabs.pane name="accessories_assigned">
-                      <x-table.accessories :header="trans('general.accessories_assigned')" :route="route('api.locations.assigned_accessories', ['location' => $location])  "/>
+                      <x-table.accessories :table_header="trans('general.accessories_assigned')" :route="route('api.locations.assigned_accessories', ['location' => $location])  "/>
                   </x-tabs.pane>
                   @endcan
                   <!-- end assigned accessories tab pane -->
@@ -204,7 +168,7 @@
                   <!-- start consumables tab pane -->
                   @can('view', \App\Models\Consumable::class)
                   <x-tabs.pane name="consumables">
-                      <x-table.consumables :header="trans('general.accessories_assigned')" :route="route('api.consumables.index', ['location_id' => $location->id])  "/>
+                      <x-table.consumables :route="route('api.consumables.index', ['location_id' => $location->id])  "/>
                   </x-tabs.pane>
                   @endcan
                   <!-- end consumables tab pane -->
@@ -219,16 +183,16 @@
 
                   <!-- start child locations tab pane -->
                   <x-tabs.pane name="child_locations">
-                      <x-table.locations :header="trans('general.child_locations')" :route="route('api.locations.index', ['parent_id' => $location->id]) "/>
+                      <x-table.locations :table_header="trans('general.child_locations')" :route="route('api.locations.index', ['parent_id' => $location->id]) "/>
                   </x-tabs.pane>
                   <!-- end components tab pane -->
 
 
                   <!-- start files tab pane -->
                   <x-tabs.pane name="files">
-                      <x-slot:header>
+                      <x-slot:table_header>
                           {{ trans('general.files') }}
-                      </x-slot:header>
+                      </x-slot:table_header>
                       <x-slot:content>
                           <x-table.files object_type="locations" :object="$location" />
                       </x-slot:content>
@@ -237,9 +201,9 @@
 
                   <!-- start history tab pane -->
                   <x-tabs.pane name="history">
-                      <x-slot:header>
+                      <x-slot:table_header>
                           {{ trans('general.history') }}
-                      </x-slot:header>
+                      </x-slot:table_header>
                       <x-slot:content>
                           <x-table
                                   name="locationHistory"

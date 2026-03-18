@@ -1,14 +1,14 @@
 @props([
-    'route' => route('api.users.index'),
+    'route' => route('api.models.index'),
     'name' => 'default',
-    'presenter' => \App\Presenters\UserPresenter::dataTableLayout(),
+    'presenter' => \App\Presenters\AssetModelPresenter::dataTableLayout(),
     'fixed_right_number' => 1,
     'fixed_number' => 2,
-    'table_header' => trans('general.users'),
+    'table_header' => trans('general.asset_models'),
 ])
 
 <!-- start assets tab pane -->
-@can('view', \App\Models\User::class)
+@can('view', \App\Models\AssetModel::class)
     <x-slot:table_header>
         {{ $table_header }}
     </x-slot:table_header>
@@ -22,11 +22,9 @@
             :$presenter
             :$fixed_right_number
             :$fixed_number
-            show_column_search="true"
-            show_advanced_search="true"
-            buttons="userButtons"
+            buttons="modelButtons"
             api_url="{{ $route }}"
-            export_filename="export-users-{{ date('Y-m-d') }}"
+            export_filename="export-models-{{ date('Y-m-d') }}"
         />
     </x-slot:content>
 

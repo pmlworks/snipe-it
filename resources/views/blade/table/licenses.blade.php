@@ -1,5 +1,5 @@
 @props([
-    'route' => null,
+    'route' => route('api.licenses.index'),
     'name' => 'default',
     'presenter' => \App\Presenters\LicensePresenter::dataTableLayout(),
     'fixed_right_number' => 2,

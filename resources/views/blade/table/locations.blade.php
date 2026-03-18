@@ -1,5 +1,5 @@
 @props([
-    'route' => null,
+    'route' => route('api.locations.index'),
     'name' => 'default',
     'presenter' => \App\Presenters\LocationPresenter::dataTableLayout(),
     'fixed_right_number' => 1,
@@ -9,9 +9,9 @@
 <!-- start locations tab pane -->
 @can('view', \App\Models\Location::class)
 
-    <x-slot:header>
+    <x-slot:table_header>
         {{ $table_header }}
-    </x-slot:header>
+    </x-slot:table_header>
 
     <x-slot:bulkactions>
         @include('partials.locations-bulk-actions')

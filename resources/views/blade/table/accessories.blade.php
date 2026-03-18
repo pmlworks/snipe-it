@@ -1,5 +1,5 @@
 @props([
-    'route' => null,
+    'route' => route('api.accessories.index'),
     'name' => 'default',
     'presenter' => \App\Presenters\AccessoryPresenter::dataTableLayout(),
     'fixed_right_number' => 2,

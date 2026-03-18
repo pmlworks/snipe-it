@@ -1,5 +1,5 @@
 @props([
-    'route' => null,
+    'route' => route('api.assets.index'),
     'name' => 'default',
     'presenter' => \App\Presenters\AssetPresenter::dataTableLayout(),
     'fixed_right_number' => 2,
