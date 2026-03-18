@@ -33,20 +33,8 @@
                             count="{{ $license->availCount()->count() }}"
                     />
 
-                <x-tabs.nav-item
-                        name="files"
-                        icon_type="files"
-                        label="{{ trans('general.files') }}"
-                        count="{{ $license->uploads()->count() }}"
-                />
-
-                <x-tabs.nav-item
-                        name="history"
-                        icon_type="history"
-                        label="{{ trans('general.history') }}"
-                        tooltip="{{ trans('general.history') }}"
-                />
-
+                    <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
+                    <x-tabs.history-tab model="\App\Models\License::class"/>
 
                 @can('update', $license)
                     <x-tabs.nav-item-upload />

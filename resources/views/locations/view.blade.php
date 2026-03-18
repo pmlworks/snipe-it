@@ -95,13 +95,7 @@
                   />
 
                   <x-tabs.files-tab count="{{ $location->uploads->count() }}"/>
-
-                  <x-tabs.nav-item
-                          name="history"
-                          icon="fa-solid fa-clock-rotate-left fa-fw"
-                          label="{{ trans('general.history') }}"
-                          tooltip="{{ trans('general.history') }}"
-                  />
+                  <x-tabs.history-tab model="\App\Models\Location::class"/>
 
                   @can('update', $location)
                       <x-tabs.nav-item-upload />
