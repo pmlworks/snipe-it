@@ -150,26 +150,16 @@
                   <!-- start users tab pane -->
                   @can('view', \App\Models\User::class)
                   <x-tabs.pane name="users" class="in active">
-                      <x-slot:header>
-                          {{ trans('general.users') }}
-                      </x-slot:header>
-
-                      <x-slot:bulkactions>
-                          <x-table.bulk-users />
-                      </x-slot:bulkactions>
-
-                      <x-slot:content>
-                          <x-table
-                            show_column_search="true"
-                            show_advanced_search="true"
-                            name="users"
-                            buttons="userButtons"
-                            toolbar_id="userBulkEditToolbar"
-                            api_url="{{ route('api.users.index', ['location_id' => $location->id])}}"
-                            :presenter="\App\Presenters\UserPresenter::dataTableLayout()"
-                            export_filename="export-locations-{{ str_slug($location->name) }}-users-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
+                      <x-table.users :route="route('api.users.index',
+                        [
+                            'status' => e(request('status')),
+                            'deleted'=> (request('status')=='deleted') ? 'true' : 'false',
+                            'location_id' => $location->id,
+                            'manager_id' => e(request('manager_id')),
+                            'admins' => e(request('admins')),
+                            'superadmins' => e(request('superadmins')),
+                            'activated' => e(request('activated')),
+                       ])"/>
 
                   </x-tabs.pane>
                   @endcan
@@ -177,77 +167,21 @@
 
                   <!-- start assets tab pane -->
                   @can('view', \App\Models\Asset::class)
-                  <x-tabs.pane name="assets">
-                      <x-slot:header>
-                          {{ trans('admin/locations/message.current_location') }}
-                      </x-slot:header>
+                      <x-tabs.pane name="assets">
+                          <x-table.assets :header="trans('admin/locations/message.current_location')" :route="route('api.assets.index', ['location_id' => $location->id])"/>
+                      </x-tabs.pane>
+                      <!-- end assets tab pane -->
 
-                      <x-slot:bulkactions>
-                         <x-table.bulk-assets />
-                      </x-slot:bulkactions>
+                      <!-- start assigned assets tab pane -->
+                      <x-tabs.pane name="assets_assigned">
+                          <x-table.assets :header="trans('admin/locations/message.assigned_assets')" :route="route('api.assets.index', ['assigned_to' => $location->id, 'assigned_type' => 'App\Models\Location'])"/>
+                      </x-tabs.pane>
+                      <!-- end assigned assets tab pane -->
 
-                      <x-slot:content>
-                          <x-table
-                              show_column_search="true"
-                              show_advanced_search="true"
-                              buttons="assetButtons"
-                              api_url="{{ route('api.assets.index', ['location_id' => $location->id]) }}"
-                              :presenter="\App\Presenters\AssetPresenter::dataTableLayout()"
-                              export_filename="export-locations-{{ str_slug($location->name) }}-assets-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-
-                  </x-tabs.pane>
-                  <!-- end assets tab pane -->
-
-
-                  <!-- start assigned assets tab pane -->
-
-
-                  <x-tabs.pane name="assets_assigned">
-                      <x-slot:header>
-                          {{ trans('admin/locations/message.assigned_assets') }}
-                      </x-slot:header>
-
-                      <x-slot:bulkactions>
-                          <x-table.bulk-assets />
-                      </x-slot:bulkactions>
-
-                      <x-slot:content>
-                          <x-table
-                                  show_column_search="true"
-                                  show_advanced_search="true"
-                                  buttons="assetButtons"
-                                  :api_url="route('api.assets.index', ['assigned_to' => $location->id, 'assigned_type' => 'App\Models\Location'])"
-                                  :presenter="\App\Presenters\AssetPresenter::dataTableLayout()"
-                                  export_filename="export-locations-{{ str_slug($location->name) }}-assets-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-                  </x-tabs.pane>
-                 <!-- end assigned assets tab pane -->
-
-
-
-                  <!-- start rtd assets tab pane -->
-                  <x-tabs.pane name="rtd_assets">
-                      <x-slot:header>
-                          {{ trans('admin/hardware/form.default_location') }}
-                      </x-slot:header>
-
-                      <x-slot:bulkactions>
-                          <x-table.bulk-assets />
-                      </x-slot:bulkactions>
-
-                      <x-slot:content>
-                          <x-table
-                            buttons="assetButtons"
-                            api_url="{{ route('api.assets.index', ['rtd_location_id' => $location->id]) }}"
-                            :presenter="\App\Presenters\AssetPresenter::dataTableLayout()"
-                            export_filename="export-rtd-locations-{{ str_slug($location->name) }}-assets-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-
-                  </x-tabs.pane>
+                      <!-- start rtd assets tab pane -->
+                      <x-tabs.pane name="rtd_assets">
+                          <x-table.assets :header="trans('admin/hardware/form.default_location')" :route="route('api.assets.index', ['rtd_location_id' => $location->id]) "/>
+                      </x-tabs.pane>
                   @endcan
                   <!-- end rtd assets tab pane -->
 
@@ -255,39 +189,13 @@
                   <!-- start accessories tab pane -->
                   @can('view', \App\Models\Accessory::class)
                   <x-tabs.pane name="accessories">
-                      <x-slot:header>
-                          {{ trans('general.accessories') }}
-                      </x-slot:header>
-
-                      <x-slot:content>
-                          <x-table
-                            name="accessories"
-                            buttons="accessoryButtons"
-                            api_url="{{ route('api.accessories.index', ['location_id' => $location->id]) }}"
-                            :presenter="\App\Presenters\AccessoryPresenter::dataTableLayout()"
-                            export_filename="export-locations-{{ str_slug($location->name) }}-accessories-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-
+                      <x-table.accessories :route="route('api.accessories.index', ['location_id' => $location->id]) "/>
                   </x-tabs.pane>
                   <!-- end accessories tab pane -->
 
                   <!-- start assigned accessories tab pane -->
                   <x-tabs.pane name="accessories_assigned">
-                      <x-slot:header>
-                          {{ trans('general.accessories_assigned') }}
-                      </x-slot:header>
-
-                      <x-slot:content>
-                          <x-table
-                                  name="accessoriesAssigned"
-                                  buttons="accessoryButtons"
-                                  api_url="{{ route('api.locations.assigned_accessories', ['location' => $location]) }}"
-                                  :presenter="\App\Presenters\AccessoryPresenter::dataTableLayout()"
-                                  export_filename="export-locations-{{ str_slug($location->name) }}-accessories-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-
+                      <x-table.accessories :header="trans('general.accessories_assigned')" :route="route('api.locations.assigned_accessories', ['location' => $location])  "/>
                   </x-tabs.pane>
                   @endcan
                   <!-- end assigned accessories tab pane -->
@@ -296,20 +204,7 @@
                   <!-- start consumables tab pane -->
                   @can('view', \App\Models\Consumable::class)
                   <x-tabs.pane name="consumables">
-                      <x-slot:header>
-                          {{ trans('general.consumables') }}
-                      </x-slot:header>
-
-                      <x-slot:content>
-                          <x-table
-                                  name="consumables"
-                                  buttons="consumableButtons"
-                                  api_url="{{ route('api.consumables.index', ['location_id' => $location->id]) }}"
-                                  :presenter="\App\Presenters\ConsumablePresenter::dataTableLayout()"
-                                  export_filename="export-locations-{{ str_slug($location->name) }}-consumables-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
-
+                      <x-table.consumables :header="trans('general.accessories_assigned')" :route="route('api.consumables.index', ['location_id' => $location->id])  "/>
                   </x-tabs.pane>
                   @endcan
                   <!-- end consumables tab pane -->
@@ -317,36 +212,14 @@
                   <!-- start components tab pane -->
                   @can('view', \App\Models\Component::class)
                   <x-tabs.pane name="components">
-                      <x-slot:header>
-                          {{ trans('general.components') }}
-                      </x-slot:header>
-                      <x-slot:content>
-                          <x-table
-                                  name="components"
-                                  buttons="componentButtons"
-                                  api_url="{{ route('api.components.index', ['location_id' => $location->id]) }}"
-                                  :presenter="\App\Presenters\ComponentPresenter::dataTableLayout()"
-                                  export_filename="export-locations-{{ str_slug($location->name) }}-consumables-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
+                      <x-table.components :route="route('api.components.index', ['location_id' => $location->id]) "/>
                   </x-tabs.pane>
                   @endcan
                   <!-- end components tab pane -->
 
                   <!-- start child locations tab pane -->
                   <x-tabs.pane name="child_locations">
-                      <x-slot:header>
-                          {{ trans('general.child_locations') }}
-                      </x-slot:header>
-                      <x-slot:content>
-                          <x-table
-                                  name="childrenListingTable"
-                                  buttons="locationButtons"
-                                  api_url="{{ route('api.locations.index', ['parent_id' => $location->id]) }}"
-                                  :presenter="\App\Presenters\LocationPresenter::dataTableLayout()"
-                                  export_filename="export-children-locations-{{ str_slug($location->name) }}-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
+                      <x-table.locations :header="trans('general.child_locations')" :route="route('api.locations.index', ['parent_id' => $location->id]) "/>
                   </x-tabs.pane>
                   <!-- end components tab pane -->
 
@@ -357,7 +230,7 @@
                           {{ trans('general.files') }}
                       </x-slot:header>
                       <x-slot:content>
-                          <x-filestable object_type="locations" :object="$location" />
+                          <x-table.files object_type="locations" :object="$location" />
                       </x-slot:content>
                   </x-tabs.pane>
                   <!-- end files tab pane -->
