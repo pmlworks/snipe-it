@@ -207,12 +207,12 @@ class GroupsController extends Controller
     public function destroy($id): RedirectResponse
     {
         if (! config('app.lock_passwords')) {
-            
+
             if (! $group = Group::find($id)) {
                 return redirect()->route('groups.index')->with('error', trans('admin/groups/message.group_not_found', ['id' => $id]));
             }
 
-            if (!$group->isDeletable()) {
+            if (! $group->isDeletable()) {
                 return redirect()->route('groups.index')->with('error', trans('admin/groups/message.assoc_users'));
             }
 
