@@ -21,7 +21,6 @@
 
                     <x-tabs.nav-item
                             name="seats"
-                            class="active"
                             icon_type="checkedout"
                             label="{{ trans('general.assigned') }}"
                             count="{{ $license->assignedCount()->count() }}"
@@ -57,9 +56,9 @@
                 <x-slot:tabpanes>
 
                     <x-tabs.pane name="seats" class="in active">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.assigned') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
 
                             <x-table
@@ -75,9 +74,9 @@
 
 
                     <x-tabs.pane name="available">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.available') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
 
                             <x-table
@@ -93,9 +92,9 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.history') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table
                                     name="locationHistory_{{ $license->id }}"
@@ -111,9 +110,9 @@
                     <!-- start files tab pane -->
                     @can('licenses.files', $license)
                     <x-tabs.pane name="files">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.files') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table.files object_type="licenses" :object="$license" />
                         </x-slot:content>

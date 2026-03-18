@@ -19,14 +19,12 @@
 
                     <x-tabs.nav-item
                             name="assigned"
-                            class="active"
                             icon_type="checkedout"
                             label="{{ trans('general.assigned') }}"
                             count="{{ $snipe_component->numCheckedOut() }}"
                     />
 
                     <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
-
                     <x-tabs.history-tab model="\App\Models\Component::class"/>
 
                     @can('update', $snipe_component)
@@ -37,7 +35,11 @@
 
                 <x-slot:tabpanes>
 
-                    <x-tabs.pane name="assigned" class="in active">
+                    <x-tabs.pane name="assigned">
+
+                        <x-slot:table_header>
+                            {{ trans('general.assigned') }}
+                        </x-slot:table_header>
 
                         <x-slot:content>
                             <x-table
@@ -45,13 +47,12 @@
                                     :api_url="route('api.components.assets', $snipe_component)"
                             />
                         </x-slot:content>
-
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.files') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table.files object_type="components" :object="$snipe_component" />
                         </x-slot:content>
@@ -59,9 +60,9 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.history') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table
                                     name="componentHistory"
