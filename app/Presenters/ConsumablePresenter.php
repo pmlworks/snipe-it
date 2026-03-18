@@ -130,6 +130,7 @@ class ConsumablePresenter extends Presenter
                 'title' => trans('general.unit_cost'),
                 'visible' => true,
                 'class' => 'text-right text-padding-number-cell',
+                'footerFormatter' => 'sumFormatter',
             ], [
                 'field' => 'total_cost',
                 'searchable' => true,
