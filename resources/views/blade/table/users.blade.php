@@ -14,7 +14,7 @@
     </x-slot:table_header>
 
     <x-slot:bulkactions>
-        @include('partials.users-bulk-actions')
+        <x-table.bulk-users/>
     </x-slot:bulkactions>
 
     <x-slot:content>
