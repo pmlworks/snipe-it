@@ -140,7 +140,7 @@ class IconHelper
             case 'contact-card':
                 return 'fa-regular fa-id-card';
             case 'files':
-                return 'fa-regular fa-file';
+                return 'fa-solid fa-file-contract fa-fw';
             case 'more-info':
             case 'support':
                 return 'far fa-life-ring';
