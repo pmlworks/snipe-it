@@ -213,7 +213,7 @@ class GroupsController extends Controller
             }
 
             if (!$group->isDeletable()) {
-                return redirect()->route('groups.index')->with('error', trans('admin/locations/message.assoc_users'));
+                return redirect()->route('groups.index')->with('error', trans('admin/groups/message.assoc_users'));
             }
 
             $group->delete();

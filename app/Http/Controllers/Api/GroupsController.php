@@ -148,7 +148,7 @@ class GroupsController extends Controller
         $group = Group::findOrFail($id);
         if (!$group->isDeletable()) {
             return response()
-                ->json(Helper::formatStandardApiResponse('error', null, trans('admin/locations/message.assoc_users')));
+                ->json(Helper::formatStandardApiResponse('error', null, trans('admin/groups/message.assoc_users')));
         }
         $group->delete();
 
