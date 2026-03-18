@@ -1,28 +1,32 @@
 @props([
-    'route' => null,
+    'route' => route('api.locations.index'),
     'name' => 'default',
+    'presenter' => \App\Presenters\LocationPresenter::dataTableLayout(),
+    'fixed_right_number' => 1,
+    'table_header' => trans('general.locations'),
 ])
 
 <!-- start locations tab pane -->
 @can('view', \App\Models\Location::class)
 
-    <x-slot:header>
-        {{ trans('general.locations') }}
-    </x-slot:header>
+    <x-slot:table_header>
+        {{ $table_header }}
+    </x-slot:table_header>
 
-    @include('partials.locations-bulk-actions')
+    <x-slot:bulkactions>
+        @include('partials.locations-bulk-actions')
+    </x-slot:bulkactions>
+    
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="locationButtons"
+        api_url="{{ $route }}"
+        export_filename="export-{{ str_slug($name) }}-locations-{{ date('Y-m-d') }}"
+    />
 
-    <x-slot:content>
-        <x-table
-                show_column_search="true"
-                show_advanced_search="true"
-                fixed_right_number="2"
-                buttons="locationButtons"
-                api_url="{{ $route }}"
-                :presenter="\App\Presenters\LocationPresenter::dataTableLayout()"
-                export_filename="export-{{ str_slug($name) }}-locations-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
 
 @endcan
-<!-- end assets tab pane -->
+<!-- end locations tab pane -->

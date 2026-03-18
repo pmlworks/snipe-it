@@ -1001,7 +1001,7 @@
           <div class="row">
 
             <div class="col-md-12 col-sm-12">
-                <x-filestable object_type="users" :object="$user" />
+                <x-table.files object_type="users" :object="$user" />
             </div>
           </div> <!--/ROW-->
         </div><!--/FILES-->

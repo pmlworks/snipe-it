@@ -130,6 +130,7 @@ class ComponentPresenter extends Presenter
                 'title' => trans('general.unit_cost'),
                 'visible' => true,
                 'class' => 'text-right',
+                'footerFormatter' => 'sumFormatter',
             ], [
                 'field' => 'total_cost',
                 'searchable' => false,
