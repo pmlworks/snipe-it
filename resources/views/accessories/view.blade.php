@@ -68,10 +68,6 @@
                         <!-- start files tab pane -->
                         @can('accessories.files', $accessory)
                             <x-tabs.pane name="files">
-                                <x-slot:table_header>
-                                    {{ trans('general.files') }}
-                                </x-slot:table_header>
-                                
                                 <x-table.files object_type="accessories" :object="$accessory"/>
                             </x-tabs.pane>
                         @endcan

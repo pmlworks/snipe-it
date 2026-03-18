@@ -42,10 +42,6 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-                        
                         <x-table.files :object="$model" object_type="models" />
                     </x-tabs.pane>
                 </x-slot:tabpanes>

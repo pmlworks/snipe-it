@@ -49,12 +49,7 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-
                         <x-table.files object_type="components" :object="$snipe_component"/>
-
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->

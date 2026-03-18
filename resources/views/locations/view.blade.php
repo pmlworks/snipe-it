@@ -190,12 +190,7 @@
 
                   <!-- start files tab pane -->
                   <x-tabs.pane name="files">
-                      <x-slot:table_header>
-                          {{ trans('general.files') }}
-                      </x-slot:table_header>
-
                       <x-table.files object_type="locations" :object="$location"/>
-
                   </x-tabs.pane>
                   <!-- end files tab pane -->
 

@@ -106,12 +106,7 @@
                     <!-- start files tab pane -->
                     @can('licenses.files', $license)
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-
                         <x-table.files object_type="licenses" :object="$license" />
-
                     </x-tabs.pane>
                     @endcan
                     <!-- end files tab pane -->

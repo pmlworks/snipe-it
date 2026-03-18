@@ -21,12 +21,7 @@ use Carbon\Carbon;
             <x-tabs>
                 <x-slot:tabnav>
 
-                    <x-tabs.nav-item
-                            name="details"
-                            icon_type="info-circle"
-                            label="{{ trans('general.details') }}"
-                    />
-
+                    <x-tabs.details-tab/>
                     <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
 
                 @can('update', $maintenance)
@@ -36,10 +31,9 @@ use Carbon\Carbon;
                 </x-slot:tabnav>
                 <x-slot:tabpanes>
 
-                    <x-tabs.pane name="details" class="in active">
+                    <x-tabs.pane name="details">
 
-
-                        <div class="tab-pane active" id="info">
+                    <div class="tab-pane active" id="info">
                             <div class="row-new-striped">
                                 <div class="row">
 
@@ -175,12 +169,7 @@ use Carbon\Carbon;
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-                        
                         <x-table.files object_type="maintenances" :object="$maintenance"/>
-
                     </x-tabs.pane>
 
                 </x-slot:tabpanes>

@@ -90,12 +90,7 @@
 
                     <!-- start files tab pane -->
                     <x-tabs.pane name="files" class="{{ $supplier->uploads->count() == 0 ? 'hidden-print' : '' }}">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-
                         <x-table.files object_type="suppliers" :object="$supplier"/>
-
                     </x-tabs.pane>
                     <!-- end files tab pane -->
 

@@ -50,10 +50,6 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-
                         <x-table.files object_type="consumables" :object="$consumable"/>
                     </x-tabs.pane>
 
