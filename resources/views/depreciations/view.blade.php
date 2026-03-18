@@ -56,9 +56,9 @@
                     <!-- start assets tab pane -->
                     @can('view', \App\Models\Asset::class)
                         <x-tabs.pane name="assets" class="in active">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.assets') }}
-                            </x-slot:header>
+                            </x-slot:table_header>
 
                             <x-slot:bulkactions>
                                 <x-table.bulk-assets />
@@ -82,9 +82,9 @@
                     <!-- start licenses tab pane -->
                     @can('view', \App\Models\License::class)
                         <x-tabs.pane name="licenses">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.licenses') }}
-                            </x-slot:header>
+                            </x-slot:table_header>
                             <x-slot:content>
                                 <x-table
                                         name="licenses"
@@ -101,9 +101,9 @@
                     <!-- start models tab pane -->
                     @can('view', \App\Models\AssetModel::class)
                         <x-tabs.pane name="models">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.models') }}
-                            </x-slot:header>
+                            </x-slot:table_header>
                             <x-slot:content>
                                 <x-table
                                         name="models"

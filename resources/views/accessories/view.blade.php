@@ -36,9 +36,9 @@
 
                         <!-- start assigned tab pane -->
                         <x-tabs.pane name="assigned" class="in active">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.checked_out') }}
-                            </x-slot:header>
+                            </x-slot:table_header>
                             <x-slot:content>
                                 <x-table
                                         api_url="{{ route('api.accessories.checkedout', $accessory->id) }}"
@@ -51,9 +51,9 @@
 
                         <!-- start history tab pane -->
                         <x-tabs.pane name="history">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.history') }}
-                            </x-slot:header>
+                            </x-slot:table_header>
                             <x-slot:content>
                                 <x-table
                                         name="accessoryHistory"
@@ -68,9 +68,9 @@
                         <!-- start files tab pane -->
                         @can('accessories.files', $accessory)
                             <x-tabs.pane name="files">
-                                <x-slot:header>
+                                <x-slot:table_header>
                                     {{ trans('general.files') }}
-                                </x-slot:header>
+                                </x-slot:table_header>
                                 <x-slot:content>
                                     <x-table.files object_type="accessories" :object="$accessory"/>
                                 </x-slot:content>

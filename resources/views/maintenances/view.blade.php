@@ -23,15 +23,13 @@ use Carbon\Carbon;
 
                     <x-tabs.nav-item
                             name="details"
-                            class="active"
                             icon_type="info-circle"
                             label="{{ trans('general.details') }}"
                     />
 
                     <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
 
-
-                    @can('update', $maintenance)
+                @can('update', $maintenance)
                         <x-tabs.nav-item-upload />
                     @endcan
 
@@ -170,16 +168,16 @@ use Carbon\Carbon;
                                         </div>
                                     </div> <!-- /row -->
                                 @endif
-                                
+
                             </div>
                         </div><!-- /row-new-striped -->
 
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.files') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table.files object_type="maintenances" :object="$maintenance" />
                         </x-slot:content>

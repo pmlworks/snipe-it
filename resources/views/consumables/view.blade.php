@@ -52,9 +52,9 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.files') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table.files object_type="consumables" :object="$consumable" />
                         </x-slot:content>
@@ -62,9 +62,9 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.history') }}
-                        </x-slot:header>
+                        </x-slot:table_header>
                         <x-slot:content>
                             <x-table
                                     name="consumableHistory"
