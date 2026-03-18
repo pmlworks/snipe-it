@@ -10,5 +10,6 @@
     icon_type="maintenances"
     label="{{ trans('general.maintenances') }}"
     count="{{ $count }}"
+    tooltip="{{ trans('general.maintenances') }}"
 />
 @endcan
