@@ -33,20 +33,8 @@
                             count="{{ $license->availCount()->count() }}"
                     />
 
-                <x-tabs.nav-item
-                        name="files"
-                        icon_type="files"
-                        label="{{ trans('general.files') }}"
-                        count="{{ $license->uploads()->count() }}"
-                />
-
-                <x-tabs.nav-item
-                        name="history"
-                        icon_type="history"
-                        label="{{ trans('general.history') }}"
-                        tooltip="{{ trans('general.history') }}"
-                />
-
+                    <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
+                    <x-tabs.history-tab model="\App\Models\License::class"/>
 
                 @can('update', $license)
                     <x-tabs.nav-item-upload />
@@ -59,17 +47,15 @@
                         <x-slot:table_header>
                             {{ trans('general.assigned') }}
                         </x-slot:table_header>
-                        <x-slot:content>
 
-                            <x-table
-                                fixed_right_number="1"
-                                fixed_number="1"
-                                api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
-                                :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
-                                export_filename="export-{{ str_slug($license->name) }}-assigned-{{ date('Y-m-d') }}"
-                            />
+                        <x-table
+                            fixed_right_number="1"
+                            fixed_number="1"
+                            api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
+                            :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                            export_filename="export-{{ str_slug($license->name) }}-assigned-{{ date('Y-m-d') }}"
+                        />
 
-                        </x-slot:content>
                     </x-tabs.pane>
 
 
@@ -77,16 +63,14 @@
                         <x-slot:table_header>
                             {{ trans('general.available') }}
                         </x-slot:table_header>
-                        <x-slot:content>
 
-                            <x-table
-                                show_search="false"
-                                api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
-                                :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
-                                export_filename="export-{{ str_slug($license->name) }}-available-{{ date('Y-m-d') }}"
-                            />
+                        <x-table
+                            show_search="false"
+                            api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
+                            :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats()"
+                            export_filename="export-{{ str_slug($license->name) }}-available-{{ date('Y-m-d') }}"
+                        />
 
-                        </x-slot:content>
                     </x-tabs.pane>
 
 
@@ -95,14 +79,14 @@
                         <x-slot:table_header>
                             {{ trans('general.history') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table
-                                    name="locationHistory_{{ $license->id }}"
-                                    api_url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}"
-                                    :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                    export_filename="export-licenses-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}"
-                            />
-                        </x-slot:content>
+
+                        <x-table
+                            name="locationHistory_{{ $license->id }}"
+                            api_url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}"
+                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                            export_filename="export-licenses-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}"
+                        />
+
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 
@@ -110,12 +94,7 @@
                     <!-- start files tab pane -->
                     @can('licenses.files', $license)
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="licenses" :object="$license" />
-                        </x-slot:content>
+                        <x-table.files object_type="licenses" :object="$license" />
                     </x-tabs.pane>
                     @endcan
                     <!-- end files tab pane -->

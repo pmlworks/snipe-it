@@ -372,7 +372,7 @@
 
 
         @if ($infoPanelObj->months)
-            <x-info-element title="{{ trans('general.months') }}">
+            <x-info-element icon_type="eol" title="{{ trans('general.depreciation') }}">
                 {{ $infoPanelObj->months }}
                 {{ trans('general.months') }}
             </x-info-element>
@@ -380,7 +380,7 @@
 
 
         @if ($infoPanelObj->depreciation_type)
-            <x-info-element title="{{ trans('general.depreciation_type') }}">
+            <x-info-element icon="fa-solid fa-arrow-trend-down fa-fw" title="{{ trans('general.depreciation_type') }}">
                 @if ($infoPanelObj->depreciation_type == 'amount')
                     {{ trans('general.depreciation_options.amount') }}
                 @elseif ($infoPanelObj->depreciation_type == 'percent')

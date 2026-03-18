@@ -41,21 +41,15 @@
                             {{ trans('general.assigned') }}
                         </x-slot:table_header>
 
-                        <x-slot:content>
-                            <x-table
-                                    :presenter="\App\Presenters\ComponentPresenter::checkedOut()"
-                                    :api_url="route('api.components.assets', $snipe_component)"
-                            />
-                        </x-slot:content>
+                        <x-table
+                            :presenter="\App\Presenters\ComponentPresenter::checkedOut()"
+                            :api_url="route('api.components.assets', $snipe_component)"
+                        />
+
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="components" :object="$snipe_component" />
-                        </x-slot:content>
+                        <x-table.files object_type="components" :object="$snipe_component"/>
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->
@@ -63,14 +57,13 @@
                         <x-slot:table_header>
                             {{ trans('general.history') }}
                         </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table
-                                    name="componentHistory"
-                                    api_url="{{ route('api.activity.index', ['item_id' => $snipe_component->id, 'item_type' => 'component']) }}"
-                                    :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                    export_filename="export-licenses-{{ str_slug($snipe_component->name) }}-{{ date('Y-m-d') }}"
-                            />
-                        </x-slot:content>
+
+                        <x-table
+                            name="componentHistory"
+                            api_url="{{ route('api.activity.index', ['item_id' => $snipe_component->id, 'item_type' => 'component']) }}"
+                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                            export_filename="export-licenses-{{ str_slug($snipe_component->name) }}-{{ date('Y-m-d') }}"
+                        />
                     </x-tabs.pane>
                 </x-slot:tabpanes>
             </x-tabs>

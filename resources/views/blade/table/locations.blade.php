@@ -16,18 +16,17 @@
     <x-slot:bulkactions>
         @include('partials.locations-bulk-actions')
     </x-slot:bulkactions>
+    
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        show_column_search="true"
+        show_advanced_search="true"
+        buttons="locationButtons"
+        api_url="{{ $route }}"
+        export_filename="export-{{ str_slug($name) }}-locations-{{ date('Y-m-d') }}"
+    />
 
-    <x-slot:content>
-        <x-table
-            :$presenter
-            :$fixed_right_number
-            show_column_search="true"
-            show_advanced_search="true"
-            buttons="locationButtons"
-            api_url="{{ $route }}"
-            export_filename="export-{{ str_slug($name) }}-locations-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
 
 @endcan
 <!-- end locations tab pane -->

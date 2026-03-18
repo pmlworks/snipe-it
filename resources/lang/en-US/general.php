@@ -130,6 +130,7 @@ return [
     'department' => 'Department',
     'deployed' => 'Deployed',
     'depreciation' => 'Depreciation',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Depreciations',
     'depreciation_report' => 'Depreciation Report',
     'details' => 'Details',

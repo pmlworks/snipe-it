@@ -39,13 +39,13 @@
                             <x-slot:table_header>
                                 {{ trans('general.checked_out') }}
                             </x-slot:table_header>
-                            <x-slot:content>
-                                <x-table
-                                        api_url="{{ route('api.accessories.checkedout', $accessory->id) }}"
-                                        :presenter="\App\Presenters\AccessoryPresenter::assignedDataTableLayout()"
-                                        export_filename="export-{{ str_slug($accessory->name) }}-assets-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
+
+                            <x-table
+                                api_url="{{ route('api.accessories.checkedout', $accessory->id) }}"
+                                :presenter="\App\Presenters\AccessoryPresenter::assignedDataTableLayout()"
+                                export_filename="export-{{ str_slug($accessory->name) }}-assets-{{ date('Y-m-d') }}"
+                            />
+
                         </x-tabs.pane>
                         <!-- end assigned tab pane -->
 
@@ -54,26 +54,21 @@
                             <x-slot:table_header>
                                 {{ trans('general.history') }}
                             </x-slot:table_header>
-                            <x-slot:content>
-                                <x-table
-                                        name="accessoryHistory"
-                                        api_url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}"
-                                        :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                        export_filename="export-accessory-{{ str_slug($accessory->name) }}-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
+
+                            <x-table
+                                name="accessoryHistory"
+                                api_url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}"
+                                :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                                export_filename="export-accessory-{{ str_slug($accessory->name) }}-{{ date('Y-m-d') }}"
+                            />
+
                         </x-tabs.pane>
                         <!-- end history tab pane -->
 
                         <!-- start files tab pane -->
                         @can('accessories.files', $accessory)
                             <x-tabs.pane name="files">
-                                <x-slot:table_header>
-                                    {{ trans('general.files') }}
-                                </x-slot:table_header>
-                                <x-slot:content>
-                                    <x-table.files object_type="accessories" :object="$accessory"/>
-                                </x-slot:content>
+                                <x-table.files object_type="accessories" :object="$accessory"/>
                             </x-tabs.pane>
                         @endcan
                         <!-- end files tab pane -->

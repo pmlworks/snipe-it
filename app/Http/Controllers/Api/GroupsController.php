@@ -146,6 +146,10 @@ class GroupsController extends Controller
     {
         $this->authorize('superadmin');
         $group = Group::findOrFail($id);
+        if (!$group->isDeletable()) {
+            return response()
+                ->json(Helper::formatStandardApiResponse('error', null, trans('admin/locations/message.assoc_users')));
+        }
         $group->delete();
 
         return response()->json(Helper::formatStandardApiResponse('success', null, trans('admin/groups/message.delete.success')));
