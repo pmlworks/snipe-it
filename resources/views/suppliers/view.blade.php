@@ -130,7 +130,7 @@
                             {{ trans('general.files') }}
                         </x-slot:header>
                         <x-slot:content>
-                            <x-filestable object_type="suppliers" :object="$supplier" />
+                            <x-table.files object_type="suppliers" :object="$supplier" />
                         </x-slot:content>
                     </x-tabs.pane>
                     <!-- end files tab pane -->

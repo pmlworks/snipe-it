@@ -170,8 +170,7 @@ use Carbon\Carbon;
                                         </div>
                                     </div> <!-- /row -->
                                 @endif
-
-
+                                
                             </div>
                         </div><!-- /row-new-striped -->
 
@@ -182,7 +181,7 @@ use Carbon\Carbon;
                             {{ trans('general.files') }}
                         </x-slot:header>
                         <x-slot:content>
-                            <x-filestable object_type="maintenances" :object="$maintenance" />
+                            <x-table.files object_type="maintenances" :object="$maintenance" />
                         </x-slot:content>
                     </x-tabs.pane>
 

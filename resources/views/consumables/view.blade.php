@@ -56,7 +56,7 @@
                             {{ trans('general.files') }}
                         </x-slot:header>
                         <x-slot:content>
-                            <x-filestable object_type="consumables" :object="$consumable" />
+                            <x-table.files object_type="consumables" :object="$consumable" />
                         </x-slot:content>
                     </x-tabs.pane>
 

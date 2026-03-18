@@ -42,7 +42,7 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-filestable :object="$model" object_type="models" />
+                        <x-table.files :object="$model" object_type="models" />
                     </x-tabs.pane>
                 </x-slot:tabpanes>
             </x-tabs>
