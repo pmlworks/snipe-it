@@ -20,4 +20,5 @@ class SCIMUser extends User
     {
         return $this->belongsToMany(\App\Models\Group::class, 'users_groups', 'user_id', 'group_id');
     }
+
 }

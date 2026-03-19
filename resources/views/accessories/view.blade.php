@@ -34,46 +34,41 @@
 
                     <x-slot:tabpanes>
 
-                        <!-- start history tab pane -->
+                        <!-- start assigned tab pane -->
                         <x-tabs.pane name="assigned" class="in active">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.checked_out') }}
-                            </x-slot:header>
-                            <x-slot:content>
-                                <x-table
-                                        api_url="{{ route('api.accessories.checkedout', $accessory->id) }}"
-                                        :presenter="\App\Presenters\AccessoryPresenter::assignedDataTableLayout()"
-                                        export_filename="export-{{ str_slug($accessory->name) }}-assets-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
+                            </x-slot:table_header>
+
+                            <x-table
+                                api_url="{{ route('api.accessories.checkedout', $accessory->id) }}"
+                                :presenter="\App\Presenters\AccessoryPresenter::assignedDataTableLayout()"
+                                export_filename="export-{{ str_slug($accessory->name) }}-assets-{{ date('Y-m-d') }}"
+                            />
+
                         </x-tabs.pane>
-                        <!-- end history tab pane -->
+                        <!-- end assigned tab pane -->
 
                         <!-- start history tab pane -->
                         <x-tabs.pane name="history">
-                            <x-slot:header>
+                            <x-slot:table_header>
                                 {{ trans('general.history') }}
-                            </x-slot:header>
-                            <x-slot:content>
-                                <x-table
-                                        name="accessoryHistory"
-                                        api_url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}"
-                                        :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                        export_filename="export-accessory-{{ str_slug($accessory->name) }}-{{ date('Y-m-d') }}"
-                                />
-                            </x-slot:content>
+                            </x-slot:table_header>
+
+                            <x-table
+                                name="accessoryHistory"
+                                api_url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}"
+                                :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                                export_filename="export-accessory-{{ str_slug($accessory->name) }}-{{ date('Y-m-d') }}"
+                            />
+
                         </x-tabs.pane>
                         <!-- end history tab pane -->
 
                         <!-- start files tab pane -->
                         @can('accessories.files', $accessory)
                             <x-tabs.pane name="files">
-                                <x-slot:header>
-                                    {{ trans('general.files') }}
-                                </x-slot:header>
-                                <x-slot:content>
-                                    <x-filestable object_type="accessories" :object="$accessory" />
-                                </x-slot:content>
+                                <x-table.files object_type="accessories" :object="$accessory"/>
                             </x-tabs.pane>
                         @endcan
                         <!-- end files tab pane -->
@@ -88,17 +83,14 @@
         </x-page-column>
 
         <x-page-column class="col-md-3">
-            <x-box>
+            <x-box class="side-box expanded">
                 <x-box.info-panel :infoPanelObj="$accessory" img_path="{{ app('accessories_upload_url') }}">
-
-                    <x-slot:before_list>
-
-                        <x-button.wide-checkout :item="$accessory" :route="route('accessories.checkout.show', $accessory->id)" />
-                        <x-button.wide-edit :item="$accessory" :route="route('accessories.edit', $accessory->id)" />
-                        <x-button.wide-clone :item="$accessory" :route="route('clone/accessories', $accessory->id)" />
-                        <x-button.wide-delete :item="$accessory" />
-
-                    </x-slot:before_list>
+                    <x-slot:buttons>
+                        <x-button.checkout permission="checkout" :item="$accessory" :route="route('accessories.checkout.show', $accessory->id)" />
+                        <x-button.edit :item="$accessory" :route="route('accessories.edit', $accessory->id)" />
+                        <x-button.clone :item="$accessory" :route="route('clone/accessories', $accessory->id)" />
+                        <x-button.delete :item="$accessory" />
+                    </x-slot:buttons>
                 </x-box.info-panel>
             </x-box>
 

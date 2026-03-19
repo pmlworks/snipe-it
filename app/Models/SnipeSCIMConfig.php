@@ -16,6 +16,8 @@ use ArieTimmerman\Laravel\SCIMServer\Attribute\Meta;
 use ArieTimmerman\Laravel\SCIMServer\Attribute\MutableCollection;
 use ArieTimmerman\Laravel\SCIMServer\Attribute\Schema as AttributeSchema;
 use Illuminate\Database\Eloquent\Model;
+use ArieTimmerman\Laravel\SCIMServer\Attribute\AttributeMapping;
+use ArieTimmerman\Laravel\SCIMServer\SCIMConfig;
 
 function a($name = null): Attribute
 {
@@ -133,7 +135,7 @@ class SnipeSCIMConfig
             'class' => ScimUser::class,
             'singular' => 'User',
 
-            //eager loading
+            // eager loading
             'withRelations' => [],
             'description' => 'User Account',
 
@@ -216,6 +218,7 @@ class SnipeSCIMConfig
                                     'value' => $object->phone,
                                     'type' => 'work'
                                 ];
+
                             }
                             if ($object->mobile) {
                                 $phones[] = [

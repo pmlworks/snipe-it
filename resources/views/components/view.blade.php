@@ -19,14 +19,12 @@
 
                     <x-tabs.nav-item
                             name="assigned"
-                            class="active"
                             icon_type="checkedout"
                             label="{{ trans('general.assigned') }}"
                             count="{{ $snipe_component->numCheckedOut() }}"
                     />
 
                     <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
-
                     <x-tabs.history-tab model="\App\Models\Component::class"/>
 
                     @can('update', $snipe_component)
@@ -37,56 +35,50 @@
 
                 <x-slot:tabpanes>
 
-                    <x-tabs.pane name="assigned" class="in active">
+                    <x-tabs.pane name="assigned">
 
-                        <x-slot:content>
-                            <x-table
-                                    :presenter="\App\Presenters\ComponentPresenter::checkedOut()"
-                                    :api_url="route('api.components.assets', $snipe_component)"
-                            />
-                        </x-slot:content>
+                        <x-slot:table_header>
+                            {{ trans('general.assigned') }}
+                        </x-slot:table_header>
+
+                        <x-table
+                            :presenter="\App\Presenters\ComponentPresenter::checkedOut()"
+                            :api_url="route('api.components.assets', $snipe_component)"
+                        />
 
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:header>
-                            {{ trans('general.files') }}
-                        </x-slot:header>
-                        <x-slot:content>
-                            <x-filestable object_type="components" :object="$snipe_component" />
-                        </x-slot:content>
+                        <x-table.files object_type="components" :object="$snipe_component"/>
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:header>
+                        <x-slot:table_header>
                             {{ trans('general.history') }}
-                        </x-slot:header>
-                        <x-slot:content>
-                            <x-table
-                                    name="componentHistory"
-                                    api_url="{{ route('api.activity.index', ['item_id' => $snipe_component->id, 'item_type' => 'component']) }}"
-                                    :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                    export_filename="export-licenses-{{ str_slug($snipe_component->name) }}-{{ date('Y-m-d') }}"
-                            />
-                        </x-slot:content>
+                        </x-slot:table_header>
+
+                        <x-table
+                            name="componentHistory"
+                            api_url="{{ route('api.activity.index', ['item_id' => $snipe_component->id, 'item_type' => 'component']) }}"
+                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                            export_filename="export-licenses-{{ str_slug($snipe_component->name) }}-{{ date('Y-m-d') }}"
+                        />
                     </x-tabs.pane>
                 </x-slot:tabpanes>
             </x-tabs>
         </x-page-column>
         <x-page-column class="col-md-3">
 
-            <x-box>
+            <x-box class="side-box expanded">
                 <x-box.info-panel :infoPanelObj="$snipe_component" img_path="{{ app('components_upload_url') }}">
 
-                    <x-slot:before_list>
-
-                        <x-button.wide-checkout :item="$snipe_component" :route="route('components.checkout.show', $snipe_component->id)" />
-                        <x-button.wide-edit :item="$snipe_component" :route="route('components.edit', $snipe_component->id)" />
-                        <x-button.wide-clone :item="$snipe_component" :route="route('components.clone.create', $snipe_component->id)" />
-                        <x-button.wide-delete :item="$snipe_component" />
-
-                    </x-slot:before_list>
+                    <x-slot:buttons>
+                        <x-button.checkout :item="$snipe_component" :route="route('components.checkout.show', $snipe_component->id)" />
+                        <x-button.edit :item="$snipe_component" :route="route('components.edit', $snipe_component->id)" />
+                        <x-button.clone :item="$snipe_component" :route="route('components.clone.create', $snipe_component->id)" />
+                        <x-button.delete :item="$snipe_component" />
+                    </x-slot:buttons>
 
                 </x-box.info-panel>
             </x-box>

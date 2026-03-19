@@ -3,12 +3,12 @@
 ])
 
 <!-- tab-pane -->
-<div id="{{ $name }}" {{ $attributes->merge(['class' => 'snipetab-pane tab-pane fade']) }}  style="min-height: 400px !important;">
+<div id="{{ $name }}" {{ $attributes->merge(['class' => 'snipetab-pane tab-pane fade']) }}>
 
-    @if (isset($header))
-        <h2 class="box-title{{ (!isset($bulkactions)) ? ' pull-left' : '' }}">
-            {{ $header }}
-        </h2>
+    @if (isset($table_header))
+        <h3 class="box-title{{ (!isset($bulkactions)) ? ' pull-left' : '' }}">
+            {{ $table_header }}
+        </h3>
     @endif
 
     @if (isset($bulkactions))
@@ -17,14 +17,13 @@
         </div>
     @endif
 
-        @if ((isset($content)) && (!$content->isEmpty()))
-            {{ $content }}
-        @endif
+    @if ((isset($content)) && (!$content->isEmpty()))
+        {{ $content }}
+    @endif
 
-        @if (($slot) && (!$slot->isEmpty()))
-            {{ $slot }}
-        @endif
-
+    @if (($slot) && (!$slot->isEmpty()))
+        {{ $slot }}
+    @endif
 
 </div>
 <!-- /.tab-pane -->
