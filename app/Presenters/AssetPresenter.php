@@ -6,6 +6,7 @@ use App\Models\CustomField;
 use App\Models\Setting;
 use Carbon\CarbonImmutable;
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AssetPresenter
@@ -477,6 +478,7 @@ class AssetPresenter extends Presenter
     public function imageUrl()
     {
         $imagePath = '';
+        $imageAlt = '';
         if ($this->image && ! empty($this->image)) {
             $imagePath = $this->image;
             $imageAlt = $this->name;
@@ -484,9 +486,9 @@ class AssetPresenter extends Presenter
             $imagePath = $this->model->image;
             $imageAlt = $this->model->name;
         }
-        $url = config('app.url');
         if (! empty($imagePath)) {
-            $imagePath = '<img src="'.$url.'/uploads/assets/'.$imagePath.' height="50" width="50" alt="'.$imageAlt.'">';
+            $url = Storage::disk('public')->url(app('assets_upload_path') . e($imagePath));
+            $imagePath = '<img src="' . $url . '" height="50" width="50" alt="' . e($imageAlt) . '">';
         }
 
         return $imagePath;
@@ -506,7 +508,7 @@ class AssetPresenter extends Presenter
             $imagePath = $this->model->image;
         }
         if (! empty($imagePath)) {
-            return config('app.url').'/uploads/assets/'.$imagePath;
+            return Storage::disk('public')->url(app('assets_upload_path') . e($imagePath));
         }
 
         return $imagePath;

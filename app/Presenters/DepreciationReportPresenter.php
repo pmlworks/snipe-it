@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use DateTime;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class DepreciationReportPresenter
@@ -232,7 +233,7 @@ class DepreciationReportPresenter extends Presenter
             $imagePath = $this->model->image;
         }
         if (! empty($imagePath)) {
-            return config('app.url').'/uploads/assets/'.$imagePath;
+            return Storage::disk('public')->url(app('assets_upload_path') . e($imagePath));
         }
 
         return $imagePath;
