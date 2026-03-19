@@ -20,15 +20,11 @@ use Carbon\Carbon;
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
-
                     <x-tabs.details-tab/>
                     <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
-
-                @can('update', $maintenance)
-                        <x-tabs.nav-item-upload />
-                    @endcan
-
+                    <x-tabs.upload-tab :item="$maintenance"/>
                 </x-slot:tabnav>
+                
                 <x-slot:tabpanes>
 
                     <x-tabs.pane name="details">

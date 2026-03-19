@@ -228,7 +228,7 @@ class AssetModel extends SnipeModel
      *
      * @return Relation
      */
-    public function getImageUrl()
+    public function getImageUrl($path = null)
     {
         if ($this->image) {
             return Storage::disk('public')->url(app('models_upload_path').$this->image);

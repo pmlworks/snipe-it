@@ -26,10 +26,7 @@
 
                     <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
                     <x-tabs.history-tab model="\App\Models\Component::class"/>
-
-                    @can('update', $snipe_component)
-                        <x-tabs.nav-item-upload />
-                    @endcan
+                    <x-tabs.upload-tab :item="$snipe_component"/>
 
                 </x-slot:tabnav>
 

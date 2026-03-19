@@ -11,7 +11,7 @@
 <!-- start tab nav item -->
 <li {{ $attributes->merge(['class' => 'snipetab']) }}>
 
-    <a href="#{{ $name ?? 'info' }}" data-toggle="tab" data-tooltip="true" title="{{ $tooltip ?? $label }}">
+    <a href="#{{ $name ?? 'details' }}" data-toggle="tab" data-tooltip="true" title="{{ $tooltip ?? $label }}">
 
         @if ($icon_type || $icon)
 

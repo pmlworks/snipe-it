@@ -16,6 +16,8 @@ class IconHelper
                 return 'fas fa-pencil-alt';
             case 'clone':
                 return 'far fa-clone';
+            case 'upload':
+                return 'fa-solid fa-file-circle-plus';
             case 'delete':
             case 'upload deleted':
                 return 'fas fa-trash';

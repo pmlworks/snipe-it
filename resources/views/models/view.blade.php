@@ -29,15 +29,12 @@
                 <x-slot:tabnav>
                     <x-tabs.asset-tab count="{{ $model->assets()->AssetsForShow()->count() }}" />
                     <x-tabs.files-tab name="files" count="{{ $model->uploads()->count() }}" />
-
-                    @can('update', $model)
-                        <x-tabs.nav-item-upload />
-                    @endcan
+                    <x-tabs.upload-tab :item="$model"/>
                 </x-slot:tabnav>
 
 
                 <x-slot:tabpanes>
-                    <x-tabs.pane name="assets" class="in active">
+                    <x-tabs.pane name="assets">
                         <x-table.assets :route="route('api.assets.index', ['model_id' => $model->id, 'status' => $model->deleted_at!='' ? 'Deleted' : ''])" />
                     </x-tabs.pane>
 

@@ -96,10 +96,7 @@
 
                   <x-tabs.files-tab count="{{ $location->uploads->count() }}"/>
                   <x-tabs.history-tab model="\App\Models\Location::class"/>
-
-                  @can('update', $location)
-                      <x-tabs.nav-item-upload />
-                  @endcan
+                  <x-tabs.upload-tab :item="$location"/>
 
               </x-slot:tabnav>
 

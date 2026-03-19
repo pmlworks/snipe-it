@@ -35,10 +35,7 @@
 
                     <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
                     <x-tabs.history-tab model="\App\Models\License::class"/>
-
-                @can('update', $license)
-                    <x-tabs.nav-item-upload />
-                @endcan
+                    <x-tabs.upload-tab :item="$license"/>
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>

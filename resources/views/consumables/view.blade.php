@@ -29,12 +29,8 @@
                     />
 
                     <x-tabs.files-tab count="{{ $consumable->uploads()->count() }}" />
-
                     <x-tabs.history-tab model="\App\Models\Consumable::class"/>
-
-                    @can('update', $consumable)
-                        <x-tabs.nav-item-upload />
-                    @endcan
+                    <x-tabs.upload-tab :item="$consumable"/>
 
                 </x-slot:tabnav>
 

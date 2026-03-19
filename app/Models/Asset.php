@@ -410,6 +410,15 @@ class Asset extends Depreciable
         );
     }
 
+
+    public function isDeletable()
+    {
+
+        return Gate::allows('delete', $this)
+            && ($this->deleted_at == '');
+    }
+
+
     /**
      * Establishes the asset -> company relationship
      *
@@ -819,7 +828,7 @@ class Asset extends Depreciable
      *
      * @return string | false
      */
-    public function getImageUrl()
+    public function getImageUrl($path = null)
     {
         if ($this->image && ! empty($this->image)) {
             return Storage::disk('public')->url(app('assets_upload_path').e($this->image));

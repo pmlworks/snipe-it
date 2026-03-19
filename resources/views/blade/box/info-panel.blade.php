@@ -17,9 +17,9 @@
 
 <div class="box-body box-profile">
 
-    @if (($infoPanelObj->image) && ($img_path))
-            <a href="{{ Storage::disk('public')->url($img_path.e($infoPanelObj->image)) }}" data-toggle="lightbox" data-type="image">
-                <img src="{{ Storage::disk('public')->url($img_path.e($infoPanelObj->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style="margin-bottom: 10px;">
+    @if (($img_path) && ($infoPanelObj->getImageUrl($img_path)))
+        <a href="{{ $infoPanelObj->getImageUrl() }}" data-toggle="lightbox" data-type="image">
+            <img src="{{ $infoPanelObj->getImageUrl() }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style=" width: 100% !important; margin-bottom: 10px;">
             </a>
         <br>
     @endif
@@ -300,8 +300,10 @@
                 ({{ $infoPanelObj->depreciation->months.' '.trans('general.months')}})
             </x-info-element>
 
-            <x-info-element icon_type="depreciation-calendar" title="{{ trans('general.depreciates') }}">
+            <x-info-element icon_type="depreciation-calendar" title="{{ trans('admin/hardware/form.fully_depreciated') }}">
                 {{ Helper::getFormattedDateObject($infoPanelObj->depreciated_date(), 'date', false) }}
+                -
+                <span class="text-muted">{{ Carbon::parse($infoPanelObj->depreciated_date())->diffForHumans(['parts' => 2]) }}</span>
             </x-info-element>
         @endif
 
@@ -395,7 +397,8 @@
             <x-info-element>
                 <x-icon type="calendar" class="fa-fw" title="{{ trans('general.purchase_date') }}" />
                 {{ trans('general.purchased_plain') }}
-                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'datetime', false) }}
+                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'datetime', false) }} -
+                <span class="text-muted">{{ Carbon::parse($infoPanelObj->purchase_date)->diffForHumans(['parts' => 2]) }}</span>
             </x-info-element>
         @endif
 

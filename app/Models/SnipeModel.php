@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SnipeModel extends Model
 {
@@ -225,5 +226,27 @@ class SnipeModel extends Model
         }
 
         return null;
+    }
+
+    public function getImageUrl($path = null)
+    {
+        // If there is a consumable image, use that
+        if ($this->image) {
+            return Storage::disk('public')->url($path . $this->image);
+        }
+        return false;
+    }
+
+    public function showCheckoutButton($item)
+    {
+        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() > 0)) {
+            return true;
+        }
+
+        if ((method_exists($item, 'availableForCheckout')) && ($item->deleted_at == '')) {
+            return true;
+        }
+
+        return false;
     }
 }
