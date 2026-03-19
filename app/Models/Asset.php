@@ -410,14 +410,12 @@ class Asset extends Depreciable
         );
     }
 
-
     public function isDeletable()
     {
 
         return Gate::allows('delete', $this)
             && ($this->deleted_at == '');
     }
-
 
     /**
      * Establishes the asset -> company relationship

@@ -232,8 +232,9 @@ class SnipeModel extends Model
     {
         // If there is a consumable image, use that
         if ($this->image) {
-            return Storage::disk('public')->url($path . $this->image);
+            return Storage::disk('public')->url($path.$this->image);
         }
+
         return false;
     }
 

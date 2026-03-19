@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Watson\Validating\ValidatingTrait;
 
 /**
@@ -162,7 +161,6 @@ class Maintenance extends SnipeModel implements ICompanyableChild
         }
         $this->attributes['completion_date'] = $value;
     }
-    
 
     /**
      * asset
