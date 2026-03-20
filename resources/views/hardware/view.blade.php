@@ -174,7 +174,7 @@
 
                                 <x-page-column class="col-md-4">
                                     <x-well>
-                                        <x-icon type="calendar" class="fa-fw"/>
+                                        <x-icon type="expected_checkin" class="fa-fw"/>
                                         <strong>{{ trans('general.expected_checkin') }}</strong>
                                         @if ($asset->expected_checkin!='')
                                             {{ Helper::getFormattedDateObject($asset->expected_checkin, 'date', false) }}
