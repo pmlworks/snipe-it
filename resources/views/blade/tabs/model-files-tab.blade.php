@@ -5,7 +5,7 @@
 
 <x-tabs.nav-item
     :$class
-    name="files"
+    name="model-files"
     icon_type="more-files"
     label="{{ trans('general.additional_files') }}"
     count="{{ $count }}"
