@@ -39,8 +39,8 @@
             /*text-align: right;*/
             width: 20%;
             margin: 0;
-            padding: 10px;
-            /*border-top: var(--tab-bottom-border);*/
+            padding: 8px;
+            border-top: var(--tab-bottom-border);
             font-weight: bold;
         }
 
@@ -50,7 +50,7 @@
             width: 80%;
             margin: 0;
             padding: 10px;
-            /*border-top: var(--tab-bottom-border);*/
+            border-top: var(--tab-bottom-border);
         }
 
         .well-display dt {
@@ -60,8 +60,8 @@
             /*text-align: right;*/
             width: 70%;
             margin: 0;
-            padding: 10px;
-            /*border-top: var(--tab-bottom-border);*/
+            padding: 6px;
+            border-top: 0;
             font-weight: bold;
         }
 
@@ -70,8 +70,8 @@
             float: left;
             width: 30%;
             margin: 0;
-            padding: 10px;
-            /*border-top: var(--tab-bottom-border);*/
+            padding: 6px;
+            border-top: 0;
         }
 
 
@@ -90,8 +90,53 @@
             }
         }
 
+        @media print {
+            /* All your print styles go here */
+            .box-profile {
+                display: block !important;
+                width: 100% !important;
+            }
+        }
+
     </style>
     <x-container columns="2">
+
+        @if (!$asset->model)
+            <div class="col-md-12">
+                <div class="callout callout-danger">
+                    <p>
+                        <strong>{{ trans('admin/models/message.no_association') }}</strong> {{ trans('admin/models/message.no_association_fix') }}
+                    </p>
+                </div>
+            </div>
+        @endif
+
+        @if ($asset->checkInvalidNextAuditDate())
+            <div class="col-md-12">
+                <div class="callout callout-warning">
+                    <p><strong>{{ trans('general.warning',
+                        [
+                            'warning' => trans('admin/hardware/message.warning_audit_date_mismatch',
+                                    [
+                                        'last_audit_date' => Helper::getFormattedDateObject($asset->last_audit_date, 'datetime', false),
+                                        'next_audit_date' => Helper::getFormattedDateObject($asset->next_audit_date, 'date', false)
+                                    ]
+                                    )
+                        ]
+                        ) }}</strong></p>
+                </div>
+            </div>
+        @endif
+
+        @if ($asset->deleted_at!='')
+            <div class="col-md-12">
+                <div class="callout callout-warning">
+                    <x-icon type="warning"/>
+                    {{ trans('general.asset_deleted_warning') }}
+                </div>
+            </div>
+        @endif
+
         <x-page-column class="col-md-9 main-panel">
 
             <x-tabs>
@@ -111,7 +156,6 @@
                 <x-slot:tabpanes>
                     <x-tabs.pane name="details">
                         <x-page-data>
-
 
                             <x-page-column class="col-md-4">
                                     <x-well>
@@ -136,7 +180,7 @@
                                             {{ Helper::getFormattedDateObject($asset->expected_checkin, 'date', false) }}
                                             <span class="text-muted hidden-sm hidden-md">{{ Carbon::parse($asset->expected_checkin)->diffForHumans(['parts' => 2]) }}</span>
                                         @else
-                                            N/A
+                                            {{ trans('general.na') }}
                                         @endif
                                     </x-well>
                                 </x-page-column>
@@ -161,7 +205,7 @@
                                     @endif
                                     {{ Helper::formatCurrencyOutput($asset->getDepreciatedValue() )}}
                                 </x-data-row>
-                                
+
                                 <x-data-row :label="trans('general.last_audit')" copy_what="audit_date">
                                     @if ((isset($audit_log)) && ($audit_log->created_at))
                                         {!! $asset->checkInvalidNextAuditDate() ? '<i class="fas fa-exclamation-triangle text-orange" aria-hidden="true"></i>' : '' !!}
@@ -177,7 +221,10 @@
                                 <x-data-row :label="trans('general.next_audit_date')" copy_what="next_audit_date">
                                     {!! $asset->checkInvalidNextAuditDate() ? '<i class="fas fa-exclamation-triangle text-orange" aria-hidden="true"></i>' : '' !!}
                                     {{ Helper::getFormattedDateObject($asset->next_audit_date, 'date', false) }}
-                                    <span class="text-muted">{{ Carbon::parse($asset->next_audit_date)->diffForHumans(['parts' => 2]) }}</span>
+
+                                    @if ($asset->next_audit_date)
+                                        <span class="text-muted">{{ Carbon::parse($asset->next_audit_date)->diffForHumans(['parts' => 2]) }}</span>
+                                    @endif
                                 </x-data-row>
 
 
@@ -195,20 +242,9 @@
                                     </x-data-row>
                                 @endif
 
-                                @if($asset->assetlog->where('action_type', 'note added')->last()->note!='')
-                                    <x-data-row :label="trans('general.last_note')" copy_what="last_note">
-                                        {{ $asset->assetlog->where('action_type', 'note added')->last()->note }}
-                                        <span class="text-muted">
-                                            {!!  $asset->assetlog->where('action_type', 'note added')->last()->adminuser->present()->formattedNameLink !!}
-                                            ({{ Helper::getFormattedDateObject($asset->assetlog->where('action_type', 'note added')->last()->created_at, 'datetime', false) }})
-                                        </span>
-                                    </x-data-row>
-                                @endif
-
-
 
                             @if ($asset->asset_eol_date)
-                                    <x-data-row :label="trans('admin/hardware/form.eol_date')" copy_what="eol_date">
+                                    <x-data-row :label="trans('general.device_eol')" copy_what="eol_date">
                                         @if ($asset->asset_eol_date)
                                             {{ Helper::getFormattedDateObject($asset->asset_eol_date, 'date', false) }}
                                             -
@@ -224,6 +260,19 @@
                                     </x-data-row>
                                 @endif
 
+                                @if($asset->journal->last())
+                                    <x-data-row :label="trans('general.last_note')" copy_what="last_note">
+                                        <i class="fa-solid fa-quote-left"></i>
+                                        {{ $asset->journal->last()->note }}
+                                        <i class="fa-solid fa-quote-right"></i>
+                                        <span class="text-muted">
+                                            - {!!  $asset->journal->last()->adminuser->present()->formattedNameLink !!}
+                                            ({{ Helper::getFormattedDateObject($asset->journal->last()->created_at, 'datetime', false) }})
+                                        </span>
+                                    </x-data-row>
+                                @endif
+
+
                                 <div class="clearfix"></div>
 
                             </x-page-column>
@@ -231,12 +280,15 @@
                             <x-page-column class="col-md-4 col-sm-12">
 
                                 <x-well class="well-sm">
-                                    <x-progressbar use_well="false" columns="12" text="Device EOL" :percent="Carbon::parse($asset->asset_eol_date)->diffInMonths($asset->purchase_date, true)">
-                                        <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>/{{ $asset->model->eol }} {{ trans('general.months') }}
+
+                                    <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="Carbon::parse($asset->asset_eol_date)->diffInMonths($asset->purchase_date, true)">
+                                        <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>/{{ $asset->model?->eol }} {{ trans('general.months') }}
                                     </x-progressbar>
 
-                                    <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="Carbon::now()->diffInMonths($asset->depreciated_date()->format('Y-m-d'), true)">
-                                        {{ Helper::getFormattedDateObject($asset->depreciated_date()->format('Y-m-d'), 'date', false) }}
+                                    <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="($asset->depreciated_date() ? Carbon::now()->diffInMonths($asset->depreciated_date()->format('Y-m-d'), true) : 0)">
+                                        @if($asset->depreciated_date())
+                                            {{ Helper::getFormattedDateObject($asset->depreciated_date()->format('Y-m-d'), 'date', false) }}
+                                        @endif
                                     </x-progressbar>
 
                                     <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="Carbon::now()->diffInMonths($asset->warranty_expires, true)">
@@ -244,7 +296,6 @@
                                     </x-progressbar>
 
                                 </x-well>
-
 
                                 <x-well class="well-sm">
                                         <x-page-data class="well-display">
@@ -265,9 +316,19 @@
                                                 {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
                                             </x-data-row>
 
-
                                         </x-page-data>
                                     </x-well>
+
+
+                                @if (($snipeSettings->qr_code=='1') || $snipeSettings->label2_2d_type!='none')
+                                    <div class="col-md-12 text-center asset-qr-img" style="padding-top: 15px;">
+                                        <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail" style="height: 150px; width: 150px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}">
+                                    </div>
+                                @endif
+
+
+
+
 
                             </x-page-column>
 
@@ -275,17 +336,19 @@
                         </x-page-data>
                     </x-tabs.pane>
 
-                    <x-tabs.pane name="licenses">
-                        Licenses
-                    </x-tabs.pane>
-                    <x-tabs.pane name="components">
-                        Components
-                    </x-tabs.pane>
-                    <x-tabs.pane name="assets">
-                        Assets
+                    <x-tabs.pane name="licenses" :count="$asset->licenses->count()">
+                        <x-table.licenses show_search="false" :route="route('api.assets.licenselist', $asset)" :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeatsCheckedOutToAssets()"/>
                     </x-tabs.pane>
 
-                    <x-tabs.pane name="accessories">
+                    <x-tabs.pane name="components" :count="$asset->components->count()">
+                        <x-table.components :table_header="trans('general.components')" :presenter="\App\Presenters\ComponentPresenter::checkedOut()" :route="route('api.assets.assigned_components', $asset)"/>
+                    </x-tabs.pane>
+
+                    <x-tabs.pane name="assets" :count="$asset->assignedAssets()->AssetsForShow()->count()">
+                        <x-table.assets :route="route('api.assets.index',['assigned_to' => $asset->id, 'assigned_type' => 'App\Models\Asset'])"/>
+                    </x-tabs.pane>
+
+                    <x-tabs.pane name="accessories" :count="$asset->assignedAccessories->count()">
                         <x-slot:table_header>
                             {{ trans('general.accessories_assigned') }}
                         </x-slot:table_header>
@@ -296,9 +359,6 @@
                             :presenter="\App\Presenters\AssetPresenter::assignedAccessoriesDataTableLayout()"
                             export_filename="export-maintenances-{{ str_slug($asset->name) }}-{{ date('Y-m-d') }}"
                         />
-                    </x-tabs.pane>
-                    <x-tabs.pane name="audits">
-                        Audits
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->
@@ -339,7 +399,7 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="model-files">
-                        Model Files
+                        <x-table.files object_type="models" :object="$asset->model"/>
                     </x-tabs.pane>
 
 
@@ -354,11 +414,12 @@
                 <x-info-panel :infoPanelObj="$asset" img_path="{{ app('assets_upload_url') }}">
                     <x-slot:buttons>
                         <x-button.checkout permission="checkout" :item="$asset" :route="route('hardware.checkout.create', $asset->id)"/>
+                        <x-button.checkin permission="checkin" :item="$asset" :route="route('hardware.checkin.create', $asset->id)"/>
                         <x-button.edit :item="$asset" :route="route('hardware.edit', $asset->id)"/>
                         <x-button.clone :item="$asset" :route="route('clone/hardware', $asset->id)"/>
                         <x-button.note :item="$asset" :route="route('clone/hardware', $asset->id)"/>
                         <x-button.audit :item="$asset" :route="route('asset.audit.create', $asset->id)"/>
-                        <x-button.label :item="$asset" :route="route('restore/hardware', ['asset' => $asset->id])"/>
+                        <x-button.label :item="$asset" :route="route('hardware.bulkedit.show')"/>
                         <x-button.delete :item="$asset"/>
                         <x-button.restore :item="$asset" :route="route('restore/hardware', ['asset' => $asset->id])"/>
                     </x-slot:buttons>
