@@ -79,7 +79,6 @@ class SnipeModel extends Model
             $value = null;
         }
         $this->attributes['category_id'] = $value;
-        // dd($this->attributes);
     }
 
     public function setSupplierIdAttribute($value)
@@ -193,9 +192,8 @@ class SnipeModel extends Model
      */
     public function scopeApplyOffsetAndLimit(Builder $query, int $total)
     {
-        $offset = (Request::input('offset') > $total) ? $total : app('api_offset_value');
+        $offset = (request()->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
-
         $query->skip($offset)->take($limit);
     }
 
