@@ -461,6 +461,17 @@ class Asset extends Depreciable
         return false;
     }
 
+    public function availableForCheckIn()
+    {
+
+        // This asset is currently assigned to anyone and is not deleted...
+        if ($this->assigned_to) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Checks the asset out to the target
      *
@@ -627,7 +638,7 @@ class Asset extends Depreciable
      */
     public function components()
     {
-        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')->withPivot('id', 'assigned_qty', 'created_at');
+        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')->withPivot('id', 'assigned_qty', 'created_at', 'note');
     }
 
     /**
@@ -1035,7 +1046,7 @@ class Asset extends Depreciable
      */
     public function licenses()
     {
-        return $this->belongsToMany(License::class, 'license_seats', 'asset_id', 'license_id');
+        return $this->belongsToMany(License::class, 'license_seats', 'asset_id', 'license_id')->withPivot('notes', 'created_at', 'created_by');
     }
 
     /**
@@ -1293,6 +1304,13 @@ class Asset extends Depreciable
             get: fn ($value) => (int) filter_var($value, FILTER_VALIDATE_BOOLEAN),
             set: fn ($value) => (int) filter_var($value, FILTER_VALIDATE_BOOLEAN),
         );
+    }
+
+    public function journal()
+    {
+        return $this->assetlog()->where('action_type', '=', 'note added')
+            ->orderBy('created_at', 'desc')
+            ->withTrashed();
     }
 
     /**

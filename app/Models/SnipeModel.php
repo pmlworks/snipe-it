@@ -248,4 +248,17 @@ class SnipeModel extends Model
 
         return false;
     }
+
+    public function showCheckinButton($item)
+    {
+        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() <= 0)) {
+            return true;
+        }
+
+        if ((method_exists($item, 'availableForCheckIn')) && ($item->assigned_to != '') && ($item->deleted_at == '')) {
+            return true;
+        }
+
+        return false;
+    }
 }
