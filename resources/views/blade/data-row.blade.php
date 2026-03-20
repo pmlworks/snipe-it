@@ -1,6 +1,6 @@
 @props([
     'label',
-    'copy_what',
+    'copy_what' => null,
 ])
 
 @if (!$slot->isEmpty())
@@ -8,6 +8,10 @@
         {{ $label }}
     </dt>
     <dd>
-        <x-copy-to-clipboard copy_what="{{ $copy_what }}" class="pull-right">{{ $slot  }}</x-copy-to-clipboard>
+        @if ($copy_what!='')
+            <x-copy-to-clipboard copy_what="{{ $copy_what }}">{{ $slot }}</x-copy-to-clipboard>
+        @else
+            {{ $slot }}
+        @endif
     </dd>
 @endif
