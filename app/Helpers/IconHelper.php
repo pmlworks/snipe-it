@@ -146,8 +146,6 @@ class IconHelper
             case 'more-info':
             case 'support':
                 return 'far fa-life-ring';
-            case 'calendar':
-                return 'fas fa-calendar';
             case 'plus':
                 return 'fas fa-plus';
             case 'history':
@@ -224,18 +222,22 @@ class IconHelper
                 return 'fa-solid fa-hashtag';
             case 'depreciation':
                 return 'fa-solid fa-arrows-down-to-line';
+            case 'calendar':
+                return 'fas fa-calendar';
             case 'depreciation-calendar':
             case 'expiration':
             case 'terminates':
                 return 'fa-regular fa-calendar-xmark';
+            case 'deleted-date':
+                return 'fa-solid fa-calendar-xmark';
+            case 'expected_checkin':
+                return 'fa-solid fa-calendar-check';
+            case 'eol':
+                return 'fa-regular fa-calendar-days';
             case 'manufacturer':
                 return 'fa-solid fa-industry';
             case 'fieldset':
                 return 'fa-regular fa-rectangle-list';
-            case 'deleted-date':
-                return 'fa-solid fa-calendar-xmark';
-            case 'eol':
-                return 'fa-regular fa-calendar-days';
             case 'category':
                 return 'fa-solid fa-icons';
             case 'cost':
