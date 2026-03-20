@@ -27,10 +27,7 @@
                     <x-tabs.component-tab count="{{ $supplier->components->count() }}" />
                     <x-tabs.maintenance-tab count="{{ $supplier->maintenances->count() }}"/>
                     <x-tabs.files-tab count="{{ $supplier->uploads->count() }}"/>
-
-                    @can('update', $supplier)
-                        <x-tabs.nav-item-upload/>
-                    @endcan
+                    <x-tabs.upload-tab :item="$supplier"/>
 
                 </x-slot:tabnav>
 
