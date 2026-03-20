@@ -8,7 +8,7 @@
 <div class="box-header with-border" style="padding-top: 0;">
 
     @if (isset($buttons))
-        <div class="row" style="padding-left: 10px">
+        <div class="row hidden-print" style="padding-left: 10px">
             {{ $buttons }}
         </div>
     @endif
@@ -224,41 +224,10 @@
             </x-info-element>
         @endif
 
-        @if ($infoPanelObj->manufacturer)
-            <x-info-element icon_type="manufacturer" title="{{ trans('general.manufacturer') }}">
-                <strong>{{ trans('general.manufacturer') }}</strong>
-            </x-info-element>
 
-            <x-info-element class="subitem">
-                {!!  $infoPanelObj->manufacturer->present()->formattedNameLink !!}
-            </x-info-element>
-
-            <x-info-element icon_type="phone" class="subitem" title="{{ trans('general.phone') }}">
-                <x-info-element.phone>
-                    {{ $infoPanelObj->manufacturer->support_phone }}
-                </x-info-element.phone>
-            </x-info-element>
-
-            <x-info-element icon_type="email" class="subitem" title="{{ trans('general.email') }}">
-                <x-info-element.email>
-                    {{ $infoPanelObj->manufacturer->support_email }}
-                </x-info-element.email>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('general.url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->manufacturer->url }}
-                </x-info-element.url>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('admin/manufacturers/table.support_url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->manufacturer->support_url }}
-                </x-info-element.url>
-            </x-info-element>
-        @endif
 
         <x-info-panel.supplier :infoPanelObj="$infoPanelObj"/>
+        <x-info-panel.manufacturer :asset="$infoPanelObj" :manufacturer="($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)"/>
 
         @if ((isset($infoPanelObj->parent)) && ($infoPanelObj->parent))
             <x-info-element icon_type="parent" title="{{ trans('admin/locations/table.parent') }}">
@@ -399,15 +368,25 @@
             </x-info-element>
         @endif
 
-        @if (isset($infoPanelObj->requestable))
-            <x-info-element title="{{ trans('general.requestable') }}">
-            @if ($infoPanelObj->requestable == 1)
+        @if (isset($infoPanelObj->byod))
+            <x-info-element title="{{ trans('general.byod') }}">
+                @if ($infoPanelObj->byod == 1)
                 <x-icon type="checkmark" class="fa-fw text-success" />
-               {{ trans('admin/hardware/general.requestable') }}
             @else
                 <x-icon type="x" class="fa-fw text-danger" />
-                {{ trans('admin/hardware/general.requestable') }}
             @endif
+                {{ trans('general.byod') }}
+            </x-info-element>
+        @endif
+
+        @if (isset($infoPanelObj->requestable))
+            <x-info-element title="{{ trans('general.requestable') }}">
+                @if ($infoPanelObj->requestable == 1)
+                    <x-icon type="checkmark" class="fa-fw text-success"/>
+                @else
+                    <x-icon type="x" class="fa-fw text-danger"/>
+                @endif
+                {{ trans('admin/hardware/general.requestable') }}
             </x-info-element>
         @endif
 
