@@ -83,6 +83,14 @@
             </x-info-element>
         @endif
 
+        @if ($infoPanelObj->model)
+            <x-info-element icon_type="model" title="{{ trans('general.asset_model') }}">
+                <x-copy-to-clipboard copy_what="asset_model" class="pull-right">
+                    {!!  $infoPanelObj->model->present()->formattedNameLink !!}
+                </x-copy-to-clipboard>
+            </x-info-element>
+        @endif
+
         @if ($infoPanelObj->model_number)
             <x-info-element icon_type="number" title="{{ trans('general.model_no') }}">
                 {{ trans('general.model_no') }}
