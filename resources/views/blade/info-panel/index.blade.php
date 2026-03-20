@@ -18,6 +18,10 @@
 <div class="box-body box-profile">
 
     @if (($img_path) && ($infoPanelObj->getImageUrl($img_path)))
+
+        {{--<x-info-panel.image />--}}
+
+
         <a href="{{ $infoPanelObj->getImageUrl() }}" data-toggle="lightbox" data-type="image">
             <img src="{{ $infoPanelObj->getImageUrl() }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style=" width: 100% !important; margin-bottom: 10px;">
             </a>
@@ -46,7 +50,7 @@
 
         @if ($infoPanelObj->serial)
             @can('viewKeys', $infoPanelObj)
-                <x-info-element icon_type="number">
+                <x-info-element icon_type="number" title="{{ trans('general.serial_number') }}">
                     <x-copy-to-clipboard class="pull-right" copy_what="license_key">
                         <code>{{ $infoPanelObj->serial }}</code>
                     </x-copy-to-clipboard>
@@ -254,47 +258,7 @@
             </x-info-element>
         @endif
 
-
-        @if ($infoPanelObj->supplier)
-            <x-info-element icon_type="supplier" title="{{ trans('general.supplier') }}">
-                <strong>{{ trans('general.supplier') }}</strong>
-            </x-info-element>
-
-            <x-info-element class="subitem">
-                {!!  $infoPanelObj->supplier->present()->formattedNameLink !!}
-            </x-info-element>
-
-            <x-info-element icon_type="contact-card" class="subitem" title="{{ trans('admin/suppliers/table.contact') }}">
-                {{ $infoPanelObj->supplier->contact }}
-            </x-info-element>
-
-            @if ($infoPanelObj->supplier->present()->displayAddress)
-                <x-info-element class="subitem">
-                    {!! nl2br($infoPanelObj->supplier->present()->displayAddress) !!}
-                </x-info-element>
-            @endif
-
-            <x-info-element icon_type="phone" class="subitem" title="{{ trans('general.phone') }}">
-                <x-info-element.phone title="{{ trans('general.phone') }}">
-                    {{ $infoPanelObj->supplier->phone }}
-                </x-info-element.phone>
-            </x-info-element>
-
-            <x-info-element icon_type="email" class="subitem" title="{{ trans('general.email') }}">
-                <x-info-element.email>
-                    {{ $infoPanelObj->supplier->email }}
-                </x-info-element.email>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('general.url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->supplier->url }}
-                </x-info-element.url>
-            </x-info-element>
-
-        @endif
-
-
+        <x-info-panel.supplier :infoPanelObj="$infoPanelObj"/>
 
         @if ((isset($infoPanelObj->parent)) && ($infoPanelObj->parent))
             <x-info-element icon_type="parent" title="{{ trans('admin/locations/table.parent') }}">
@@ -536,9 +500,9 @@
 
 
     </ul>
-    @if (isset($after_list))
-        {{ $after_list }}
-    @endif
+        @if (isset($after_list))
+            {{ $after_list }}
+        @endif
 
 </div>
 

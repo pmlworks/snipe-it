@@ -69,7 +69,7 @@
 
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$consumable" img_path="{{ app('consumables_upload_url') }}">
+                <x-info-panel :infoPanelObj="$consumable" img_path="{{ app('consumables_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.checkout :item="$consumable" :route="route('consumables.checkout.show', $consumable->id)" />
@@ -78,7 +78,7 @@
                         <x-button.delete :item="$consumable" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
     </x-container>

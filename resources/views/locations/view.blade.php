@@ -208,7 +208,7 @@
         <x-page-column class="col-md-3">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$location" img_path="{{ app('locations_upload_url') }}">
+                <x-info-panel :infoPanelObj="$location" img_path="{{ app('locations_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$location" :route="route('locations.edit', $location->id)" />
@@ -224,7 +224,7 @@
                     @endif
 
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
 
         </x-page-column>

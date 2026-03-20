@@ -24,7 +24,7 @@ use Carbon\Carbon;
                     <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
                     <x-tabs.upload-tab :item="$maintenance"/>
                 </x-slot:tabnav>
-                
+
                 <x-slot:tabpanes>
 
                     <x-tabs.pane name="details">
@@ -175,14 +175,14 @@ use Carbon\Carbon;
 
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$maintenance" img_path="{{ app('maintenances_upload_url') }}">
+                <x-info-panel :infoPanelObj="$maintenance" img_path="{{ app('maintenances_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$maintenance" :route="route('maintenances.edit', $maintenance->id)" />
                         <x-button.delete :item="$maintenance" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
     </x-container>

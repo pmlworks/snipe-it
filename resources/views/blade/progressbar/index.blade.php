@@ -4,7 +4,7 @@
     'columns' => 4,
     'size' => 'sm',
     'positive' => false,
-    'use_well' => true,
+    'use_well' => 'true',
 ])
 
 <?php
@@ -19,9 +19,10 @@ if ($percent < 25) {
 ?>
 
 
-    <!-- start progres bar -->
+    <!-- start progress bar -->
+<div class="row">
 <div class="col-md-{{ $columns }}">
-    {!! ($use_well) ? '<div class="well well-sm">' : '' !!}
+    {!! ($use_well=='true') ? '<div class="well well-sm">' : '' !!}
     <div class="progress-group">
         <span class="progress-text">{{ $text }}</span>
         <span class="progress-number">
@@ -32,6 +33,7 @@ if ($percent < 25) {
             <div class="progress-bar progress-bar-{{ $color_class }}" style="width: {{ round($percent) }}%"></div>
         </div>
     </div>
-    {!! ($use_well) ? '</div>' : '' !!}
+    {!! ($use_well=='true') ? '</div>' : '' !!}
+</div>
 </div>
 <!-- end progress bar -->

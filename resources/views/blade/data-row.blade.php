@@ -1,10 +1,14 @@
 @props([
     'label',
     'copy_what' => null,
+    'icon_type' => null,
 ])
 
 @if (!$slot->isEmpty())
     <dt>
+        @if (isset($icon_type))
+            <x-icon type="{{ $icon_type }}" class="fa-fw"/>
+        @endif
         {{ $label }}
     </dt>
     <dd>
