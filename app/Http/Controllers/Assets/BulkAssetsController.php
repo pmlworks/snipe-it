@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetCheckoutRequest;
 use App\Models\Asset;
 use App\Models\AssetModel;
+use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\Setting;
 use App\Models\Statuslabel;
@@ -371,7 +372,7 @@ class BulkAssetsController extends Controller
                 }
 
                 if ($request->filled('company_id')) {
-                    $this->update_array['company_id'] = $request->input('company_id');
+                    $this->update_array['company_id'] = Company::getIdForCurrentUser($request->input('company_id'));
                     if ($request->input('company_id') == 'clear') {
                         $this->update_array['company_id'] = null;
                     }
