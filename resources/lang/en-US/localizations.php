@@ -7,7 +7,6 @@ return [
         'en-US' => 'English, US',
         'en-GB' => 'English, UK',
         'am-ET' => 'Amharic',
-        'hy-AM' => 'Armenian',
         'af-ZA' => 'Afrikaans',
         'ar-SA' => 'Arabic',
         'bg-BG' => 'Bulgarian',
