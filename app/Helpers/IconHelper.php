@@ -142,7 +142,13 @@ class IconHelper
             case 'contact-card':
                 return 'fa-regular fa-id-card';
             case 'files':
+            case 'eula':
                 return 'fa-solid fa-file-contract fa-fw';
+            case 'star':
+            case 'vip':
+                return 'fa-solid fa-star';
+            case 'remote':
+                return 'fa-solid fa-house-laptop';
             case 'more-info':
             case 'support':
                 return 'far fa-life-ring';
@@ -213,7 +219,7 @@ class IconHelper
             case 'highlight':
                 return 'fa-solid fa-highlighter';
             case 'manager':
-                return 'fa-solid fa-building-user';
+                return 'fa-solid fa-user-tie';
             case 'company':
                 return 'fa-regular fa-building';
             case 'parent':
