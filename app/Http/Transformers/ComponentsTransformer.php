@@ -55,6 +55,7 @@ class ComponentsTransformer
             'purchase_cost' => Helper::formatCurrencyOutput($component->purchase_cost),
             'total_cost' => Helper::formatCurrencyOutput($component->totalCostSum()),
             'remaining' => (int) $component->numRemaining(),
+            'percent_remaining' => round($component->percentRemaining()),
             'company' => ($component->company) ? [
                 'id' => (int) $component->company->id,
                 'name' => e($component->company->name),
