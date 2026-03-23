@@ -169,6 +169,14 @@ class Consumable extends SnipeModel
         return $this->hasMany(ConsumableAssignment::class);
     }
 
+    public function percentRemaining()
+    {
+        if ($this->consumables_users_count == 0) {
+            return 100;
+        }
+        return ($this->qty - $this->consumables_users_count) / $this->qty * 100;
+    }
+
     /**
      * Establishes the component -> company relationship
      *
@@ -178,6 +186,7 @@ class Consumable extends SnipeModel
      *
      * @return Relation
      */
+
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');

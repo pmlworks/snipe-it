@@ -111,6 +111,15 @@ class AccessoryPresenter extends Presenter
                 'footerFormatter' => 'qtySumFormatter',
                 'class' => 'text-right text-padding-number-cell',
             ], [
+                'field' => 'percent_remaining',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => true,
+                'title' => '% ' . trans('general.remaining'),
+                'visible' => true,
+                'formatter' => 'progressBarFormatter',
+            ],
+            [
                 'field' => 'purchase_date',
                 'searchable' => true,
                 'sortable' => true,

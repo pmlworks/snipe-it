@@ -268,6 +268,14 @@ class Accessory extends SnipeModel
             ->with('assignedTo');
     }
 
+    public function percentRemaining()
+    {
+        if ($this->checkouts_count == 0) {
+            return 100;
+        }
+        return ($this->qty - $this->checkouts_count) / $this->qty * 100;
+    }
+
     /**
      * Establishes the accessory -> users relationship
      *
