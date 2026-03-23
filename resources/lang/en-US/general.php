@@ -563,7 +563,7 @@ return [
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
     'upload_files' => 'Upload Files',
-    'Uploaded Files' => 'Uploaded Files',
+    'uploaded_files' => 'Uploaded Files',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
