@@ -6,7 +6,7 @@
 
 <x-tabs.nav-item
     :$class
-    name="files"
+    name="locations"
     icon_type="location"
     label="{{ trans('general.locations') }}"
     count="{{ $count }}"
