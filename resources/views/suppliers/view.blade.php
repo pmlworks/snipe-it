@@ -27,10 +27,7 @@
                     <x-tabs.component-tab count="{{ $supplier->components->count() }}" />
                     <x-tabs.maintenance-tab count="{{ $supplier->maintenances->count() }}"/>
                     <x-tabs.files-tab count="{{ $supplier->uploads->count() }}"/>
-
-                    @can('update', $supplier)
-                        <x-tabs.nav-item-upload/>
-                    @endcan
+                    <x-tabs.upload-tab :item="$supplier"/>
 
                 </x-slot:tabnav>
 
@@ -101,7 +98,7 @@
         <x-page-column class="col-md-3 hidden-print">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$supplier" img_path="{{ app('suppliers_upload_url') }}">
+                <x-info-panel :infoPanelObj="$supplier" img_path="{{ app('suppliers_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button :item="$supplier" permission="update" :route="route('suppliers.edit', $supplier->id)" class="btn-warning"  />
@@ -109,7 +106,7 @@
                     </x-slot:buttons>
 
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
 

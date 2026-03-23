@@ -316,7 +316,7 @@
                         {{ trans('admin/users/table.manager') }}
                       </div>
                       <div class="col-md-9">
-                        <x-full-user-name :user="$user->manager" />
+                          {!!  $user->manager?->present()->formattedNameLink !!}
                       </div>
 
                     </div>

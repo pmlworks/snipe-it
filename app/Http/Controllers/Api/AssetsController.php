@@ -12,8 +12,6 @@ use App\Http\Requests\StoreAssetRequest;
 use App\Http\Requests\UpdateAssetRequest;
 use App\Http\Traits\MigratesLegacyAssetLocations;
 use App\Http\Transformers\AssetsTransformer;
-use App\Http\Transformers\ComponentsTransformer;
-use App\Http\Transformers\LicensesTransformer;
 use App\Http\Transformers\SelectlistTransformer;
 use App\Models\AccessoryCheckout;
 use App\Models\Actionlog;
@@ -585,14 +583,13 @@ class AssetsController extends Controller
         return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.does_not_exist')), 200);
     }
 
-    public function licenses(Request $request, $id): array
+    public function licenses(Asset $asset): array
     {
-        $this->authorize('view', Asset::class);
+        $this->authorize('view', $asset);
         $this->authorize('view', License::class);
-        $asset = Asset::where('id', $id)->withTrashed()->firstorfail();
-        $licenses = $asset->licenses()->get();
+        $licenses = $asset->licenseseats()->get();
 
-        return (new LicensesTransformer)->transformLicenses($licenses, $licenses->count());
+        return (new AssetsTransformer)->transformLicensesCheckedToAsset($licenses, $licenses->count());
     }
 
     /**
@@ -1356,17 +1353,14 @@ class AssetsController extends Controller
         return (new AssetsTransformer)->transformCheckedoutAccessories($accessory_checkouts, $total);
     }
 
-    public function assignedComponents(Request $request, Asset $asset): JsonResponse|array
+    public function assignedComponents(Asset $asset): JsonResponse|array
     {
-        $this->authorize('view', Asset::class);
         $this->authorize('view', $asset);
-
         $asset->loadCount('components');
         $total = $asset->components_count;
-
         $components = $asset->load(['components' => fn ($query) => $query->applyOffsetAndLimit($total)])->components;
 
-        return (new ComponentsTransformer)->transformComponents($components, $total);
+        return (new AssetsTransformer)->transformCheckedoutComponents($components, $total);
     }
 
     /**

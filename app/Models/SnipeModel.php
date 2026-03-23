@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SnipeModel extends Model
 {
@@ -78,7 +78,6 @@ class SnipeModel extends Model
             $value = null;
         }
         $this->attributes['category_id'] = $value;
-        // dd($this->attributes);
     }
 
     public function setSupplierIdAttribute($value)
@@ -192,9 +191,8 @@ class SnipeModel extends Model
      */
     public function scopeApplyOffsetAndLimit(Builder $query, int $total)
     {
-        $offset = (Request::input('offset') > $total) ? $total : app('api_offset_value');
+        $offset = (request()->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
-
         $query->skip($offset)->take($limit);
     }
 
@@ -225,5 +223,41 @@ class SnipeModel extends Model
         }
 
         return null;
+    }
+
+    public function getImageUrl($path = null)
+    {
+        // If there is a consumable image, use that
+        if ($this->image) {
+            return Storage::disk('public')->url($path.$this->image);
+        }
+
+        return false;
+    }
+
+    public function showCheckoutButton($item)
+    {
+        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() > 0)) {
+            return true;
+        }
+
+        if ((method_exists($item, 'availableForCheckout')) && ($item->availableForCheckout())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function showCheckinButton($item)
+    {
+        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() <= 0)) {
+            return true;
+        }
+
+        if ((method_exists($item, 'availableForCheckIn')) && ($item->availableForCheckIn())) {
+            return true;
+        }
+
+        return false;
     }
 }
