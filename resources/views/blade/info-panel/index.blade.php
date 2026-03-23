@@ -231,7 +231,7 @@
 
         @if ($infoPanelObj->manager)
             <x-info-element icon_type="manager" title="{{ trans('admin/users/table.manager') }}">
-                {!!  $infoPanelObj->manager->present()->nameUrl !!}
+                <x-copy-to-clipboard class="pull-right" copy_what="manager">{!!  $infoPanelObj->manager->present()->nameUrl !!}</x-copy-to-clipboard>
             </x-info-element>
         @endif
 
