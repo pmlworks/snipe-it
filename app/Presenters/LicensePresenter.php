@@ -318,6 +318,64 @@ class LicensePresenter extends Presenter
         return json_encode($layout);
     }
 
+    public static function dataTableLayoutSeatsCheckedOutToAssets()
+    {
+        $layout = [
+            [
+                'field' => 'id',
+                'searchable' => false,
+                'sortable' => true,
+                'switchable' => true,
+                'title' => trans('general.id'),
+                'visible' => false,
+            ],
+            [
+                'field' => 'license',
+                'searchable' => true,
+                'sortable' => true,
+                'switchable' => false,
+                'title' => trans('general.name'),
+                'formatter' => 'licensesLinkObjFormatter',
+            ],
+            [
+                'field' => 'license.serial',
+                'searchable' => true,
+                'sortable' => true,
+                'title' => trans('admin/licenses/form.license_key'),
+                'formatter' => 'licenseKeyFormatter',
+            ],
+            [
+                'field' => 'expiration_date',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => true,
+                'title' => trans('admin/licenses/form.expiration'),
+                'visible' => true,
+            ],
+            [
+                'field' => 'notes',
+                'searchable' => false,
+                'sortable' => false,
+                'visible' => false,
+                'title' => trans('general.notes'),
+                'formatter' => 'notesFormatter',
+            ],
+            [
+                'field' => 'checkincheckout',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => false,
+                'title' => trans('general.checkin'),
+                'visible' => true,
+                'formatter' => 'licenseSeatInOutFormatter',
+                'printIgnore' => true,
+                'class' => 'hidden-print',
+            ],
+        ];
+
+        return json_encode($layout);
+    }
+
     /**
      * Link to this licenses Name
      *

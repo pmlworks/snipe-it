@@ -248,7 +248,7 @@ class Consumable extends SnipeModel
      *
      * @return string | false
      */
-    public function getImageUrl()
+    public function getImageUrl($path = null)
     {
         // If there is a consumable image, use that
         if ($this->image) {

@@ -57,14 +57,14 @@
         </x-page-column>
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$depreciation">
+                <x-info-panel :infoPanelObj="$depreciation">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$depreciation" :route="route('depreciations.edit', $depreciation->id)" />
                         <x-button.delete :item="$depreciation" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
 
         </x-page-column>

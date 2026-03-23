@@ -52,14 +52,14 @@
         <x-page-column class="col-md-3">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
+                <x-info-panel :infoPanelObj="$manufacturer" img_path="{{ app('manufacturers_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$manufacturer" :route="route('manufacturers.edit', $manufacturer->id)" />
                         <x-button.delete :item="$manufacturer" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
     </x-container>

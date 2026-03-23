@@ -10,6 +10,7 @@
     {{ $table_header }}
 </x-slot:table_header>
 
+@if(isset($object))
 <table
     data-columns="{{ \App\Presenters\UploadedFilesPresenter::dataTableLayout() }}"
     data-cookie-id-table="{{ $object_type }}-FileUploadsTable"
@@ -32,3 +33,4 @@
 </table>
 
 <x-gallery-card/>
+@endif

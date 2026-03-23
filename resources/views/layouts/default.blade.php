@@ -687,9 +687,6 @@
             background-color: #1e282c;
         }
 
-        .list-group-item.subitem {
-            padding-left:20px !important;
-        }
 
         .sidebar-menu>li.active > a,
         .sidebar-menu>li:hover>a,
@@ -1008,6 +1005,20 @@
                 width: 100% !important;
             }
 
+        }
+
+        .list-group-item.subitem {
+            padding-left: 20px !important;
+            border-left: 0 !important;
+            border-right: 0 !important;
+        }
+
+        .list-group-item.subitem:first-child {
+            border: var(--tab-bottom-border);
+        }
+
+        .list-group-item.subitem:last-child {
+            border: 0 !important;
         }
 
     </style>

@@ -26,10 +26,7 @@
 
                     <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
                     <x-tabs.history-tab model="\App\Models\Component::class"/>
-
-                    @can('update', $snipe_component)
-                        <x-tabs.nav-item-upload />
-                    @endcan
+                    <x-tabs.upload-tab :item="$snipe_component"/>
 
                 </x-slot:tabnav>
 
@@ -71,7 +68,7 @@
         <x-page-column class="col-md-3">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$snipe_component" img_path="{{ app('components_upload_url') }}">
+                <x-info-panel :infoPanelObj="$snipe_component" img_path="{{ app('components_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.checkout :item="$snipe_component" :route="route('components.checkout.show', $snipe_component->id)" />
@@ -80,7 +77,7 @@
                         <x-button.delete :item="$snipe_component" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
     </x-container>

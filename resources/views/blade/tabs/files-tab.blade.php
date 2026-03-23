@@ -9,4 +9,5 @@
         icon_type="files"
         label="{{ trans('general.files') }}"
         count="{{ $count }}"
+        tooltip="{{ trans('general.files') }}"
 />

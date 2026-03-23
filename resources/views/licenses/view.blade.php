@@ -35,10 +35,7 @@
 
                     <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
                     <x-tabs.history-tab model="\App\Models\License::class"/>
-
-                @can('update', $license)
-                    <x-tabs.nav-item-upload />
-                @endcan
+                    <x-tabs.upload-tab :item="$license"/>
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
@@ -105,7 +102,7 @@
 
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$license" img_path="{{ app('licenses_upload_url') }}">
+                <x-info-panel :infoPanelObj="$license" img_path="{{ app('licenses_upload_url') }}">
 
 
                     <x-slot:buttons>
@@ -160,7 +157,7 @@
 
 
                     </x-slot:before_list>
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
 
         </x-page-column>
