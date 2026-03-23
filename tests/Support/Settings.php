@@ -41,6 +41,13 @@ class Settings
         ]);
     }
 
+    public function setAuditInterval(?int $months): Settings
+    {
+        return $this->update([
+            'audit_interval' => $months,
+        ]);
+    }
+
     public function disableAlertEmail(): Settings
     {
         return $this->update([
