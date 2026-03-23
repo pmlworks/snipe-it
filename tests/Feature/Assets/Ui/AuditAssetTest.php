@@ -10,9 +10,11 @@ use Tests\TestCase;
 #[Group('auditing')]
 class AuditAssetTest extends TestCase
 {
-    public function test_permission_required_to_see_audit_page()
+    public function test_permission_required_to_view_audit_create_page()
     {
-        $this->markTestIncomplete();
+        $this->actingAs(User::factory()->create())
+            ->get(route('asset.audit.create', Asset::factory()->create()))
+            ->assertForbidden();
     }
 
     public function test_page_can_be_accessed(): void
@@ -20,6 +22,13 @@ class AuditAssetTest extends TestCase
         $this->actingAs(User::factory()->auditAssets()->create())
             ->get(route('asset.audit.create', Asset::factory()->create()))
             ->assertStatus(200);
+    }
+
+    public function test_permission_required_to_audit_asset()
+    {
+        $this->actingAs(User::factory()->create())
+            ->post(route('asset.audit.store', Asset::factory()->create()))
+            ->assertForbidden();
     }
 
     public function test_asset_can_be_audited()
