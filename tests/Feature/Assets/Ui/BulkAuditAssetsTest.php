@@ -33,7 +33,7 @@ class BulkAuditAssetsTest extends TestCase
             ->assertViewIs('hardware.quickscan');
     }
 
-    public function test_audit_page_is_given_todays_date_when_audit_interval_is_null()
+    public function test_bulk_audit_page_is_given_todays_date_when_audit_interval_is_null()
     {
         $this->settings->setAuditInterval(null);
 
@@ -43,7 +43,7 @@ class BulkAuditAssetsTest extends TestCase
             ->assertViewHas('next_audit_date', Carbon::now()->toDateString());
     }
 
-    public function test_audit_page_is_given_correct_date_when_audit_interval_is_set()
+    public function test_bulk_audit_page_is_given_correct_date_when_audit_interval_is_set()
     {
         $this->settings->setAuditInterval(5);
 
