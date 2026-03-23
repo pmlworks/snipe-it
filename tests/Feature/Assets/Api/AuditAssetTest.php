@@ -84,9 +84,13 @@ class AuditAssetTest extends TestCase
 
     public function test_asset_audit_is_saved()
     {
-        $asset = Asset::factory()->create();
+        $asset = Asset::factory()->create(['next_audit_date' => now()->subMonth()->toDateString()]);
+        $now = now();
+        $future = now()->addMonths(3)->toDateString();
+
         $this->actingAsForApi(User::factory()->auditAssets()->create())
             ->postJson(route('api.asset.audit', $asset), [
+                'next_audit_date' => $future,
                 'note' => 'test',
             ])
             ->assertStatusMessageIs('success')
@@ -100,6 +104,11 @@ class AuditAssetTest extends TestCase
                     ],
                 ])
             ->assertStatus(200);
+
         $this->assertHasTheseActionLogs($asset, ['create', 'audit']);
+
+        $asset->refresh();
+        $this->assertEquals($now, $asset->last_audit_date);
+        $this->assertEquals($future, $asset->next_audit_date);
     }
 }
