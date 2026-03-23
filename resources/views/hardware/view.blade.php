@@ -198,8 +198,6 @@
                                 <x-data-row :label="trans('admin/hardware/table.current_value')" copy_what="current_value">
                                     @if (($asset->id) && ($asset->location))
                                         {{ $asset->location->currency }}
-                                    @elseif (($asset->id) && ($asset->location))
-                                        {{ $asset->location->currency }}
                                     @else
                                         {{ $snipeSettings->default_currency }}
                                     @endif
