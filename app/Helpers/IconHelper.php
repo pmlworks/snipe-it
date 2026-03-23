@@ -139,11 +139,13 @@ class IconHelper
                 return 'fa-regular fa-clipboard';
             case 'paperclip':
                 return 'fas fa-paperclip';
+            case 'files':
+                return 'fa-solid fa-file-contract';
             case 'contact-card':
                 return 'fa-regular fa-id-card';
-            case 'files':
             case 'eula':
-                return 'fa-solid fa-file-contract fa-fw';
+            case 'eulas':
+                return 'fa-regular fa-handshake';
             case 'star':
             case 'vip':
                 return 'fa-solid fa-star';
