@@ -111,6 +111,15 @@ class AssetModelPresenter extends Presenter
                 'footerFormatter' => 'qtySumFormatter',
             ],
             [
+                'field' => 'percent_remaining',
+                'searchable' => false,
+                'sortable' => false,
+                'switchable' => true,
+                'title' => '% ' . trans('general.remaining'),
+                'visible' => true,
+                'formatter' => 'progressBarFormatter',
+            ],
+            [
                 'field' => 'assets_archived_count',
                 'searchable' => false,
                 'sortable' => true,

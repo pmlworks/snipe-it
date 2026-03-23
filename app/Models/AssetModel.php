@@ -142,6 +142,14 @@ class AssetModel extends SnipeModel
         return $this->hasMany(Asset::class, 'model_id')->Archived();
     }
 
+    public function percentRemaining()
+    {
+        if ($this->availableAssets()->count() == 0) {
+            return 0;
+        }
+        return $this->availableAssets()->count() / $this->assets()->count() * 100;
+    }
+
     /**
      * Establishes the model -> category relationship
      *
