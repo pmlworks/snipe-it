@@ -53,7 +53,8 @@ class LicenseTest extends TestCase
 
     public function test_percent_remaining_returns_zero_when_seats_are_zero()
     {
-        $license = new class extends License {
+        $license = new class extends License
+        {
             public int $remaining = 8;
 
             public function remaincount(): int
@@ -68,7 +69,8 @@ class LicenseTest extends TestCase
 
     public function test_percent_remaining_returns_expected_available_ratio()
     {
-        $license = new class extends License {
+        $license = new class extends License
+        {
             public int $remaining = 6;
 
             public function remaincount(): int
@@ -83,7 +85,8 @@ class LicenseTest extends TestCase
 
     public function test_percent_remaining_clamps_remaining_to_valid_bounds()
     {
-        $license = new class extends License {
+        $license = new class extends License
+        {
             public int $remaining = -3;
 
             public function remaincount(): int

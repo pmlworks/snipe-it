@@ -100,7 +100,8 @@ class ComponentTest extends TestCase
 
     public function test_percent_remaining_returns_zero_when_quantity_is_zero()
     {
-        $component = new class extends Component {
+        $component = new class extends Component
+        {
             public int $remaining = 99;
 
             public function numRemaining()
@@ -115,7 +116,8 @@ class ComponentTest extends TestCase
 
     public function test_percent_remaining_returns_expected_available_ratio()
     {
-        $component = new class extends Component {
+        $component = new class extends Component
+        {
             public int $remaining = 3;
 
             public function numRemaining()
@@ -130,7 +132,8 @@ class ComponentTest extends TestCase
 
     public function test_percent_remaining_clamps_to_bounds()
     {
-        $component = new class extends Component {
+        $component = new class extends Component
+        {
             public int $remaining = -5;
 
             public function numRemaining()
