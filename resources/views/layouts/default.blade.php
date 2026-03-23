@@ -1021,6 +1021,89 @@
             border: 0 !important;
         }
 
+        .main-panel-content {
+            line-height: 20px;
+            border-bottom: var(--tab-bottom-border);
+            padding: 10px 15px;
+        }
+
+
+        /* table */
+
+        dl.table-display {
+            float: left;
+            width: 100%;
+            margin: 1em 0;
+            padding: 0;
+        }
+
+        .table-display dt {
+            line-height: 25px;
+            clear: left;
+            float: left;
+            /*text-align: right;*/
+            width: 20%;
+            margin: 0;
+            padding: 8px;
+            border-top: var(--tab-bottom-border);
+            font-weight: bold;
+        }
+
+        .table-display dd {
+            line-height: 20px;
+            float: left;
+            width: 80%;
+            margin: 0;
+            padding: 10px;
+            border-top: var(--tab-bottom-border);
+        }
+
+        .well-display dt {
+            line-height: 20px;
+            clear: left;
+            float: left;
+            /*text-align: right;*/
+            width: 70%;
+            margin: 0;
+            padding: 6px;
+            border-top: 0;
+            font-weight: bold;
+        }
+
+        .well-display dd {
+            line-height: 20px;
+            float: left;
+            width: 30%;
+            margin: 0;
+            padding: 6px;
+            border-top: 0;
+        }
+
+
+        .table-display dd:first-of-type, .table-display dt:first-of-type {
+            border-top: 0 !important;
+        }
+
+
+        @media (max-width: 750px) {
+            .table-display dd {
+                width: 100% !important;
+            }
+
+            .table-display dt {
+                width: 100% !important;
+            }
+        }
+
+        @media print {
+            /* All your print styles go here */
+            .box-profile {
+                display: block !important;
+                width: 100% !important;
+            }
+        }
+
+
     </style>
 
     {{-- Custom CSS --}}
@@ -1244,7 +1327,7 @@
                             @if (Auth::check())
                                 <li class="dropdown user user-menu">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                        @if (Auth::user()->present()->gravatar())
+                                        @if (auth()->user()->present()->gravatar())
                                             <img src="{{ Auth::user()->present()->gravatar() }}" class="user-image"
                                                  alt="">
                                         @else
