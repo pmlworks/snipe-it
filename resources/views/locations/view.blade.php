@@ -95,17 +95,8 @@
                   />
 
                   <x-tabs.files-tab count="{{ $location->uploads->count() }}"/>
-                  
-                  <x-tabs.nav-item
-                          name="history"
-                          icon="fa-solid fa-clock-rotate-left fa-fw"
-                          label="{{ trans('general.history') }}"
-                          tooltip="{{ trans('general.history') }}"
-                  />
-
-                  @can('update', $location)
-                      <x-tabs.nav-item-upload />
-                  @endcan
+                  <x-tabs.history-tab model="\App\Models\Location::class"/>
+                  <x-tabs.upload-tab :item="$location"/>
 
               </x-slot:tabnav>
 
@@ -190,12 +181,7 @@
 
                   <!-- start files tab pane -->
                   <x-tabs.pane name="files">
-                      <x-slot:table_header>
-                          {{ trans('general.files') }}
-                      </x-slot:table_header>
-                      <x-slot:content>
-                          <x-table.files object_type="locations" :object="$location" />
-                      </x-slot:content>
+                      <x-table.files object_type="locations" :object="$location"/>
                   </x-tabs.pane>
                   <!-- end files tab pane -->
 
@@ -204,14 +190,14 @@
                       <x-slot:table_header>
                           {{ trans('general.history') }}
                       </x-slot:table_header>
-                      <x-slot:content>
-                          <x-table
-                                  name="locationHistory"
-                                  api_url="{{ route('api.activity.index', ['item_id' => $location->id, 'item_type' => 'location']) }}"
-                                  :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                                  export_filename="export-locations-history-{{ str_slug($location->name) }}-{{ date('Y-m-d') }}"
-                          />
-                      </x-slot:content>
+
+                      <x-table
+                          name="locationHistory"
+                          api_url="{{ route('api.activity.index', ['item_id' => $location->id, 'item_type' => 'location']) }}"
+                          :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
+                          export_filename="export-locations-history-{{ str_slug($location->name) }}-{{ date('Y-m-d') }}"
+                      />
+
                   </x-tabs.pane>
                   <!-- end history tab pane -->
 
@@ -222,7 +208,7 @@
         <x-page-column class="col-md-3">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$location" img_path="{{ app('locations_upload_url') }}">
+                <x-info-panel :infoPanelObj="$location" img_path="{{ app('locations_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$location" :route="route('locations.edit', $location->id)" />
@@ -238,7 +224,7 @@
                     @endif
 
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
 
         </x-page-column>

@@ -20,26 +20,16 @@ use Carbon\Carbon;
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
-
-                    <x-tabs.nav-item
-                            name="details"
-                            icon_type="info-circle"
-                            label="{{ trans('general.details') }}"
-                    />
-
+                    <x-tabs.details-tab/>
                     <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
-
-                @can('update', $maintenance)
-                        <x-tabs.nav-item-upload />
-                    @endcan
-
+                    <x-tabs.upload-tab :item="$maintenance"/>
                 </x-slot:tabnav>
+
                 <x-slot:tabpanes>
 
-                    <x-tabs.pane name="details" class="in active">
+                    <x-tabs.pane name="details">
 
-
-                        <div class="tab-pane active" id="info">
+                    <div class="tab-pane active" id="info">
                             <div class="row-new-striped">
                                 <div class="row">
 
@@ -175,12 +165,7 @@ use Carbon\Carbon;
                     </x-tabs.pane>
 
                     <x-tabs.pane name="files">
-                        <x-slot:table_header>
-                            {{ trans('general.files') }}
-                        </x-slot:table_header>
-                        <x-slot:content>
-                            <x-table.files object_type="maintenances" :object="$maintenance" />
-                        </x-slot:content>
+                        <x-table.files object_type="maintenances" :object="$maintenance"/>
                     </x-tabs.pane>
 
                 </x-slot:tabpanes>
@@ -190,14 +175,14 @@ use Carbon\Carbon;
 
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$maintenance" img_path="{{ app('maintenances_upload_url') }}">
+                <x-info-panel :infoPanelObj="$maintenance" img_path="{{ app('maintenances_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$maintenance" :route="route('maintenances.edit', $maintenance->id)" />
                         <x-button.delete :item="$maintenance" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
     </x-container>

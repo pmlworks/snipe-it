@@ -16,17 +16,16 @@
     <x-slot:bulkactions>
         <x-table.bulk-users/>
     </x-slot:bulkactions>
+    
+    <x-table
+        :$presenter
+        :$fixed_right_number
+        :$fixed_number
+        buttons="modelButtons"
+        api_url="{{ $route }}"
+        export_filename="export-models-{{ date('Y-m-d') }}"
+    />
 
-    <x-slot:content>
-        <x-table
-            :$presenter
-            :$fixed_right_number
-            :$fixed_number
-            buttons="modelButtons"
-            api_url="{{ $route }}"
-            export_filename="export-models-{{ date('Y-m-d') }}"
-        />
-    </x-slot:content>
 
 @endcan
 <!-- end assets tab pane -->

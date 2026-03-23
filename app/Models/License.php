@@ -459,6 +459,19 @@ class License extends Depreciable
             ->withTrashed();
     }
 
+    public function percentRemaining()
+    {
+        $totalSeats = (int) $this->seats;
+
+        if ($totalSeats <= 0) {
+            return 0;
+        }
+
+        $availableSeats = max(0, min($this->remaincount(), $totalSeats));
+
+        return ($availableSeats / $totalSeats) * 100;
+    }
+
     /**
      * Determine whether the user should be required to accept the license
      *

@@ -55,6 +55,7 @@ class ComponentsTransformer
             'purchase_cost' => Helper::formatCurrencyOutput($component->purchase_cost),
             'total_cost' => Helper::formatCurrencyOutput($component->totalCostSum()),
             'remaining' => (int) $component->numRemaining(),
+            'percent_remaining' => round($component->percentRemaining()),
             'company' => ($component->company) ? [
                 'id' => (int) $component->company->id,
                 'name' => e($component->company->name),
@@ -89,9 +90,9 @@ class ComponentsTransformer
             $array[] = [
                 'assigned_pivot_id' => $asset->pivot->id,
                 'id' => (int) $asset->id,
-                'name' => e($asset->model->display_name).' '.e($asset->display_name),
+                'name' => e($asset->display_name),
                 'qty' => $asset->pivot->assigned_qty,
-                'note' => e($asset->pivot->note),
+                'note' => ($asset->pivot->note) ? e($asset->pivot->note) : null,
                 'type' => 'asset',
                 'created_at' => Helper::getFormattedDateObject($asset->pivot->created_at, 'datetime'),
                 'available_actions' => ['checkin' => true],

@@ -6,6 +6,8 @@ use App\Helpers\Helper;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
 use App\Models\Asset;
+use App\Models\License;
+use App\Models\LicenseSeat;
 use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -340,5 +342,69 @@ class AssetsTransformer
 
             return $array;
         }
+    }
+
+    public function transformLicensesCheckedToAsset($license_checkouts, $total)
+    {
+
+        $array = [];
+        foreach ($license_checkouts as $checkout) {
+            $array[] = self::transformLicenseCheckedToAsset($checkout);
+        }
+
+        return (new DatatablesTransformer)->transformDatatables($array, $total);
+    }
+
+    public function transformLicenseCheckedToAsset(LicenseSeat $licenseseat)
+    {
+
+        if (Gate::allows('viewKeys', $licenseseat->license)) {
+            $product_key = $licenseseat->license->serial ?? null;
+        } else {
+            $product_key = '------------';
+        }
+
+        $array = [
+            'id' => $licenseseat->id,
+            'license' => [
+                'id' => $licenseseat->license?->id,
+                'name' => e($licenseseat->license?->display_name),
+                'serial' => $product_key ? e($product_key) : null,
+                'note' => $licenseseat->license?->note ? e($licenseseat->license?->note) : null,
+
+            ],
+            'assigned_asset' => $licenseseat->asset_id,
+            'expiration_date' => $licenseseat->license?->expiration_date ? Helper::getFormattedDateObject($licenseseat->license?->expiration_date, 'date') : null,
+            'notes' => $licenseseat->notes ? e($licenseseat->notes) : null,
+        ];
+
+        $permissions_array['available_actions'] = [
+            'checkout' => false,
+            'checkin' => Gate::allows('checkin', License::class),
+        ];
+
+        $array += $permissions_array;
+
+        return $array;
+
+    }
+
+    public function transformCheckedoutComponents(Collection $components_assets, $total)
+    {
+        $array = [];
+        foreach ($components_assets as $component) {
+            $array[] = [
+                'assigned_pivot_id' => $component->pivot->id,
+                'id' => (int) $component->id,
+                'name' => e($component->display_name),
+                'qty' => $component->pivot->assigned_qty,
+                'note' => ($component->pivot->note) ? e($component->pivot->note) : null,
+                'type' => 'asset',
+                'created_at' => Helper::getFormattedDateObject($component->pivot->created_at, 'datetime'),
+                'available_actions' => ['checkin' => true],
+            ];
+        }
+
+        return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
 }

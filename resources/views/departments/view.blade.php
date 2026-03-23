@@ -38,14 +38,14 @@
 
         <x-page-column class="col-md-3">
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$department" img_path="{{ app('users_upload_url') }}">
+                <x-info-panel :infoPanelObj="$department" img_path="{{ app('users_upload_url') }}">
 
                     <x-slot:buttons>
                         <x-button.edit :item="$department" :route="route('departments.edit', $department->id)" />
                         <x-button.delete :item="$department" />
                     </x-slot:buttons>
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
 

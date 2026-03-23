@@ -19,72 +19,17 @@
             <x-tabs>
                 <x-slot:tabnav>
                     @if ($category->category_type=='asset')
-                        @can('view', \App\Models\Asset::class)
-
-                            <x-tabs.nav-item
-                                    name="assets"
-                                    icon_type="asset"
-                                    label="{{ trans('general.assets') }}"
-                                    count="{{ $category->showableAssets()->count() }}"
-                            />
-                        @endcan
-
-                            @can('view', \App\Models\AssetModel::class)
-
-                            <x-tabs.nav-item
-                                    name="models"
-                                    icon_type="models"
-                                    label="{{ trans('general.asset_models') }}"
-                                    count="{{ $category->models->count() }}"
-                            />
-                        @endcan
-
+                        <x-tabs.asset-tab count="{{ $category->showableAssets()->count() }}"/>
+                        <x-tabs.model-tab count="{{ $category->models->count() }}"/>
                     @elseif ($category->category_type=='accessory')
-
-                        @can('view', \App\Models\Accessory::class)
-                            <x-tabs.nav-item
-                                    name="accessories"
-                                    icon_type="accessory"
-                                    label="{{ trans('general.accessories') }}"
-                                    count="{{ $category->accessories()->count() }}"
-                            />
-                        @endcan
-
+                        <x-tabs.accessory-tab count="{{ $category->accessories->count() }}"/>
                     @elseif ($category->category_type=='license')
-                        @can('view', \App\Models\License::class)
-
-                            <x-tabs.nav-item
-                                    name="licenses"
-                                    icon_type="license"
-                                    label="{{ trans('general.licenses') }}"
-                            />
-                        @endcan
-
+                        <x-tabs.license-tab count="{{ $category->licenses->count() }}"/>
                     @elseif ($category->category_type=='consumable')
-
-                        @can('view', \App\Models\Consumable::class)
-                            <x-tabs.nav-item
-                                    name="consumables"
-                                    icon_type="consumable"
-                                    label="{{ trans('general.consumables') }}"
-                                    count="{{ $category->consumables()->count() }}"
-                            />
-                        @endcan
-
+                        <x-tabs.consumable-tab count="{{ $category->consumables->count() }}"/>
                     @elseif ($category->category_type=='component')
-
-                        @can('view', \App\Models\Component::class)
-                            <x-tabs.nav-item
-                                    name="components"
-                                    icon_type="component"
-                                    label="{{ trans('general.components') }}"
-                                    count="{{ $category->components()->count() }}"
-                            />
-                        @endcan
+                        <x-tabs.component-tab count="{{ $category->components->count() }}"/>
                     @endif
-
-
-
 
                 </x-slot:tabnav>
 
@@ -97,6 +42,7 @@
                                 <x-table.assets :route="route('api.assets.index', ['category_id' => $category->id, 'itemtype' => 'assets'])"/>
                             </x-tabs.pane>
                         @endcan
+
                             @can('view', \App\Models\AssetModel::class)
                             <x-tabs.pane name="models">
                                 <x-table.models :route="route('api.models.index', ['status' => e(request('status')), 'category_id' => $category->id])"/>
@@ -142,19 +88,19 @@
     <x-page-column class="col-md-3">
 
         <x-box class="side-box expanded">
-            <x-box.info-panel :infoPanelObj="$category" img_path="{{ app('categories_upload_url') }}">
+            <x-info-panel :infoPanelObj="$category" img_path="{{ app('categories_upload_url') }}">
 
                 <x-slot:buttons>
                     <x-button.edit :item="$category" :route="route('categories.edit', $category->id)" />
                     <x-button.delete :item="$category" />
                 </x-slot:buttons>
 
-            </x-box.info-panel>
+            </x-info-panel>
         </x-box>
     </x-page-column>
-</x-container>
+    </x-container>
 
 @endsection
 @section('moar_scripts')
-@include ('partials.bootstrap-table')
+    @include ('partials.bootstrap-table')
 @stop

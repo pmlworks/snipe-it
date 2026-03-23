@@ -8,7 +8,7 @@
 <div class="box-header with-border" style="padding-top: 0;">
 
     @if (isset($buttons))
-        <div class="row" style="padding-left: 10px">
+        <div class="row hidden-print" style="padding-left: 10px">
             {{ $buttons }}
         </div>
     @endif
@@ -17,9 +17,13 @@
 
 <div class="box-body box-profile">
 
-    @if (($infoPanelObj->image) && ($img_path))
-            <a href="{{ Storage::disk('public')->url($img_path.e($infoPanelObj->image)) }}" data-toggle="lightbox" data-type="image">
-                <img src="{{ Storage::disk('public')->url($img_path.e($infoPanelObj->image)) }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style="margin-bottom: 10px;">
+    @if (($img_path) && ($infoPanelObj->getImageUrl($img_path)))
+
+        {{--<x-info-panel.image />--}}
+
+
+        <a href="{{ $infoPanelObj->getImageUrl() }}" data-toggle="lightbox" data-type="image">
+            <img src="{{ $infoPanelObj->getImageUrl() }}" class="profile-user-img img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style=" width: 100% !important; margin-bottom: 10px;">
             </a>
         <br>
     @endif
@@ -46,7 +50,7 @@
 
         @if ($infoPanelObj->serial)
             @can('viewKeys', $infoPanelObj)
-                <x-info-element icon_type="number">
+                <x-info-element icon_type="number" title="{{ trans('general.serial_number') }}">
                     <x-copy-to-clipboard class="pull-right" copy_what="license_key">
                         <code>{{ $infoPanelObj->serial }}</code>
                     </x-copy-to-clipboard>
@@ -80,6 +84,14 @@
         @if ($infoPanelObj->expiration_date)
             <x-info-element icon_type="expiration" title="{{ trans('general.expires') }}">
                 {{ Helper::getFormattedDateObject($infoPanelObj->expiration_date, 'date', false) }}
+            </x-info-element>
+        @endif
+
+        @if ($infoPanelObj->model)
+            <x-info-element icon_type="model" title="{{ trans('general.asset_model') }}">
+                <x-copy-to-clipboard copy_what="asset_model" class="pull-right">
+                    {!!  $infoPanelObj->model->present()->formattedNameLink !!}
+                </x-copy-to-clipboard>
             </x-info-element>
         @endif
 
@@ -212,81 +224,10 @@
             </x-info-element>
         @endif
 
-        @if ($infoPanelObj->manufacturer)
-            <x-info-element icon_type="manufacturer" title="{{ trans('general.manufacturer') }}">
-                <strong>{{ trans('general.manufacturer') }}</strong>
-            </x-info-element>
-
-            <x-info-element class="subitem">
-                {!!  $infoPanelObj->manufacturer->present()->formattedNameLink !!}
-            </x-info-element>
-
-            <x-info-element icon_type="phone" class="subitem" title="{{ trans('general.phone') }}">
-                <x-info-element.phone>
-                    {{ $infoPanelObj->manufacturer->support_phone }}
-                </x-info-element.phone>
-            </x-info-element>
-
-            <x-info-element icon_type="email" class="subitem" title="{{ trans('general.email') }}">
-                <x-info-element.email>
-                    {{ $infoPanelObj->manufacturer->support_email }}
-                </x-info-element.email>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('general.url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->manufacturer->url }}
-                </x-info-element.url>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('admin/manufacturers/table.support_url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->manufacturer->support_url }}
-                </x-info-element.url>
-            </x-info-element>
-        @endif
 
 
-        @if ($infoPanelObj->supplier)
-            <x-info-element icon_type="supplier" title="{{ trans('general.supplier') }}">
-                <strong>{{ trans('general.supplier') }}</strong>
-            </x-info-element>
-
-            <x-info-element class="subitem">
-                {!!  $infoPanelObj->supplier->present()->formattedNameLink !!}
-            </x-info-element>
-
-            <x-info-element icon_type="contact-card" class="subitem" title="{{ trans('admin/suppliers/table.contact') }}">
-                {{ $infoPanelObj->supplier->contact }}
-            </x-info-element>
-
-            @if ($infoPanelObj->supplier->present()->displayAddress)
-                <x-info-element class="subitem">
-                    {!! nl2br($infoPanelObj->supplier->present()->displayAddress) !!}
-                </x-info-element>
-            @endif
-
-            <x-info-element icon_type="phone" class="subitem" title="{{ trans('general.phone') }}">
-                <x-info-element.phone title="{{ trans('general.phone') }}">
-                    {{ $infoPanelObj->supplier->phone }}
-                </x-info-element.phone>
-            </x-info-element>
-
-            <x-info-element icon_type="email" class="subitem" title="{{ trans('general.email') }}">
-                <x-info-element.email>
-                    {{ $infoPanelObj->supplier->email }}
-                </x-info-element.email>
-            </x-info-element>
-
-            <x-info-element icon_type="external-link" class="subitem" title="{{ trans('general.url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->supplier->url }}
-                </x-info-element.url>
-            </x-info-element>
-
-        @endif
-
-
+        <x-info-panel.supplier :infoPanelObj="$infoPanelObj"/>
+        <x-info-panel.manufacturer :asset="$infoPanelObj" :manufacturer="($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)"/>
 
         @if ((isset($infoPanelObj->parent)) && ($infoPanelObj->parent))
             <x-info-element icon_type="parent" title="{{ trans('admin/locations/table.parent') }}">
@@ -300,8 +241,10 @@
                 ({{ $infoPanelObj->depreciation->months.' '.trans('general.months')}})
             </x-info-element>
 
-            <x-info-element icon_type="depreciation-calendar" title="{{ trans('general.depreciates') }}">
+            <x-info-element icon_type="depreciation-calendar" title="{{ trans('admin/hardware/form.fully_depreciated') }}">
                 {{ Helper::getFormattedDateObject($infoPanelObj->depreciated_date(), 'date', false) }}
+                -
+                <span class="text-muted">{{ Carbon::parse($infoPanelObj->depreciated_date())->diffForHumans(['parts' => 2]) }}</span>
             </x-info-element>
         @endif
 
@@ -372,7 +315,7 @@
 
 
         @if ($infoPanelObj->months)
-            <x-info-element title="{{ trans('general.months') }}">
+            <x-info-element icon_type="eol" title="{{ trans('general.depreciation') }}">
                 {{ $infoPanelObj->months }}
                 {{ trans('general.months') }}
             </x-info-element>
@@ -380,7 +323,7 @@
 
 
         @if ($infoPanelObj->depreciation_type)
-            <x-info-element title="{{ trans('general.depreciation_type') }}">
+            <x-info-element icon="fa-solid fa-arrow-trend-down fa-fw" title="{{ trans('general.depreciation_type') }}">
                 @if ($infoPanelObj->depreciation_type == 'amount')
                     {{ trans('general.depreciation_options.amount') }}
                 @elseif ($infoPanelObj->depreciation_type == 'percent')
@@ -395,7 +338,8 @@
             <x-info-element>
                 <x-icon type="calendar" class="fa-fw" title="{{ trans('general.purchase_date') }}" />
                 {{ trans('general.purchased_plain') }}
-                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'datetime', false) }}
+                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'datetime', false) }} -
+                <span class="text-muted">{{ Carbon::parse($infoPanelObj->purchase_date)->diffForHumans(['parts' => 2]) }}</span>
             </x-info-element>
         @endif
 
@@ -424,15 +368,25 @@
             </x-info-element>
         @endif
 
-        @if (isset($infoPanelObj->requestable))
-            <x-info-element title="{{ trans('general.requestable') }}">
-            @if ($infoPanelObj->requestable == 1)
+        @if (isset($infoPanelObj->byod))
+            <x-info-element title="{{ trans('general.byod') }}">
+                @if ($infoPanelObj->byod == 1)
                 <x-icon type="checkmark" class="fa-fw text-success" />
-               {{ trans('admin/hardware/general.requestable') }}
             @else
                 <x-icon type="x" class="fa-fw text-danger" />
-                {{ trans('admin/hardware/general.requestable') }}
             @endif
+                {{ trans('general.byod') }}
+            </x-info-element>
+        @endif
+
+        @if (isset($infoPanelObj->requestable))
+            <x-info-element title="{{ trans('general.requestable') }}">
+                @if ($infoPanelObj->requestable == 1)
+                    <x-icon type="checkmark" class="fa-fw text-success"/>
+                @else
+                    <x-icon type="x" class="fa-fw text-danger"/>
+                @endif
+                {{ trans('admin/hardware/general.requestable') }}
             </x-info-element>
         @endif
 
@@ -525,9 +479,9 @@
 
 
     </ul>
-    @if (isset($after_list))
-        {{ $after_list }}
-    @endif
+        @if (isset($after_list))
+            {{ $after_list }}
+        @endif
 
 </div>
 

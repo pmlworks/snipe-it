@@ -243,7 +243,7 @@ class Accessory extends SnipeModel
      *
      * @return string
      */
-    public function getImageUrl()
+    public function getImageUrl($path = null)
     {
         if ($this->image) {
             return Storage::disk('public')->url(app('accessories_upload_path').$this->image);
@@ -266,6 +266,14 @@ class Accessory extends SnipeModel
     {
         return $this->hasMany(AccessoryCheckout::class, 'accessory_id')
             ->with('assignedTo');
+    }
+
+    public function percentRemaining()
+    {
+        if ($this->checkouts_count == 0) {
+            return 100;
+        }
+        return ($this->qty - $this->checkouts_count) / $this->qty * 100;
     }
 
     /**
