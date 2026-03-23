@@ -53,6 +53,7 @@
                 <x-box.info-panel :infoPanelObj="$model" img_path="{{ app('models_upload_url') }}">
                     <x-slot:buttons>
                         <x-button.edit :item="$model" :route="route('models.edit', $model->id)" />
+                        <x-button.add :item="\App\Models\Asset::class" :tooltip="trans('general.new_asset')" :route="route('hardware.create', ['model_id' => $model->id])"/>
                         <x-button.restore :item="$model" :route="route('models.restore.store', $model->id)" />
                         <x-button.clone :item="$model" :route="route('models.clone.create', $model->id)" />
                         <x-button.delete :item="$model" />
