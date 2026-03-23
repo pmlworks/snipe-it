@@ -52,4 +52,17 @@ class BulkAuditAssetsTest extends TestCase
             ->assertViewIs('hardware.quickscan')
             ->assertViewHas('next_audit_date', Carbon::now()->addMonths(5)->toDateString());
     }
+
+    /**
+     * @link https://github.com/grokability/snipe-it/issues/18495
+     */
+    public function test_audit_does_not_set_next_audit_date_if_given_null()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_can_audit_asset_from_bulk_audit_page()
+    {
+        $this->markTestIncomplete();
+    }
 }
