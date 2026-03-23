@@ -3,6 +3,7 @@
 namespace Tests\Feature\Assets\Ui;
 
 use App\Models\Asset;
+use App\Models\Location;
 use App\Models\User;
 use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Group;
@@ -54,7 +55,61 @@ class AuditAssetTest extends TestCase
 
     public function test_asset_can_be_audited()
     {
-        $this->markTestIncomplete();
+        $this->settings->setAuditInterval(2);
+
+        [$originalLocation, $anotherLocation] = Location::factory()->count(2)->create();
+
+        $asset = Asset::factory()->create([
+            'location_id' => $originalLocation->id,
+            'next_audit_date' => null,
+        ]);
+
+        $future = now()->addMonths(3)->toDateString();
+
+        $this->actingAs(User::factory()->auditAssets()->create())
+            ->post(route('asset.audit.store', $asset), [
+                'location_id' => $anotherLocation->id,
+                'next_audit_date' => $future,
+                'note' => 'A note about the asset',
+                'redirect_option' => 'index',
+            ])
+            ->assertRedirectToRoute('hardware.index');
+
+        $this->assertHasTheseActionLogs($asset, ['create', 'audit']);
+
+        $asset->refresh();
+        $auditEntry = $asset->log->firstWhere('action_type', 'audit');
+
+        $this->assertEquals($anotherLocation->id, $auditEntry?->location_id);
+        $this->assertEquals('A note about the asset', $auditEntry?->note);
+        $this->assertEquals($future, $asset->next_audit_date);
+    }
+
+    public function test_asset_location_can_be_updated_when_auditing()
+    {
+        [$originalLocation, $anotherLocation] = Location::factory()->count(2)->create();
+
+        $asset = Asset::factory()->create([
+            'location_id' => $originalLocation->id,
+            'next_audit_date' => null,
+        ]);
+
+        $future = now()->addMonths(3)->toDateString();
+
+        $this->actingAs(User::factory()->auditAssets()->create())
+            ->post(route('asset.audit.store', $asset), [
+                'location_id' => $anotherLocation->id,
+                'update_location' => '1',
+                'next_audit_date' => $future,
+                'note' => 'A note about the asset',
+                'redirect_option' => 'index',
+            ])
+            ->assertRedirectToRoute('hardware.index');
+
+        $this->assertHasTheseActionLogs($asset, ['create', 'audit']);
+
+        $asset->refresh();
+        $this->assertEquals($anotherLocation->id, $asset->location_id);
     }
 
     public function test_asset_audit_post_is_redirected_to_asset_index_if_redirect_selection_is_index()
