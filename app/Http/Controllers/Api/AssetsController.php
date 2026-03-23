@@ -1124,7 +1124,11 @@ class AssetsController extends Controller
         $this->authorize('audit', Asset::class);
 
         $settings = Setting::getSettings();
-        $dt = Carbon::now()->addMonths($settings->audit_interval)->toDateString();
+
+        $dt = null;
+        if (! is_null($settings->audit_interval)) {
+            $dt = Carbon::now()->addMonths($settings->audit_interval)->toDateString();
+        }
 
         // Allow the asset tag to be passed in the payload (legacy method)
         if ($request->filled('asset_tag')) {
