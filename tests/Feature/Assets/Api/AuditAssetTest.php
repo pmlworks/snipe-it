@@ -10,21 +10,21 @@ use Tests\TestCase;
 #[Group('auditing')]
 class AuditAssetTest extends TestCase
 {
-    public function testPermissionRequiredToBulkAuditAssets()
+    public function test_permission_required_to_bulk_audit_assets()
     {
         $this->actingAsForApi(User::factory()->create())
             ->postJson(route('api.asset.audit', Asset::factory()->create()))
             ->assertForbidden();
     }
 
-    public function testThatANonExistentAssetIdReturnsError()
+    public function test_that_a_non_existent_asset_id_returns_error()
     {
         $this->actingAsForApi(User::factory()->auditAssets()->create())
             ->postJson(route('api.asset.audit', 123456789))
             ->assertStatusMessageIs('error');
     }
 
-    public function testRequiresPermissionToAuditAsset()
+    public function test_requires_permission_to_audit_asset()
     {
         $asset = Asset::factory()->create();
         $this->actingAsForApi(User::factory()->create())
@@ -32,7 +32,7 @@ class AuditAssetTest extends TestCase
             ->assertForbidden();
     }
 
-    public function testLegacyAssetAuditIsSaved()
+    public function test_legacy_asset_audit_is_saved()
     {
         $asset = Asset::factory()->create();
         $future = now()->addMonths(5)->toDateString();
@@ -46,11 +46,11 @@ class AuditAssetTest extends TestCase
             ->assertStatusMessageIs('success')
             ->assertJson(
                 [
-                    'messages' =>trans('admin/hardware/message.audit.success'),
+                    'messages' => trans('admin/hardware/message.audit.success'),
                     'payload' => [
                         'id' => $asset->id,
                         'asset_tag' => $asset->asset_tag,
-                        'note' => 'test'
+                        'note' => 'test',
                     ],
                 ])
             ->assertStatus(200);
@@ -62,7 +62,7 @@ class AuditAssetTest extends TestCase
     /**
      * @link https://github.com/grokability/snipe-it/issues/18495
      */
-    public function testAuditDoesNotSetNextAuditDateIfGivenNull()
+    public function test_audit_does_not_set_next_audit_date_if_given_null()
     {
         $this->settings->setAuditInterval(null);
 
@@ -82,21 +82,21 @@ class AuditAssetTest extends TestCase
         $this->assertNull($asset->next_audit_date);
     }
 
-    public function testAssetAuditIsSaved()
+    public function test_asset_audit_is_saved()
     {
         $asset = Asset::factory()->create();
         $this->actingAsForApi(User::factory()->auditAssets()->create())
             ->postJson(route('api.asset.audit', $asset), [
-                'note' => 'test'
+                'note' => 'test',
             ])
             ->assertStatusMessageIs('success')
             ->assertJson(
                 [
-                    'messages' =>trans('admin/hardware/message.audit.success'),
+                    'messages' => trans('admin/hardware/message.audit.success'),
                     'payload' => [
                         'id' => $asset->id,
                         'asset_tag' => $asset->asset_tag,
-                        'note' => 'test'
+                        'note' => 'test',
                     ],
                 ])
             ->assertStatus(200);
