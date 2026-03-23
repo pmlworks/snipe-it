@@ -35,7 +35,7 @@
                 @endif
 
 
-                @if(($asset) && ($manufacturer->warranty_lookup_url))
+                    @if(($asset) && ($asset->model) && ($manufacturer->warranty_lookup_url))
                     <x-icon type="external-link" class="fa-fw"/>
                     <x-info-element.url>
                     {{ $asset->present()->dynamicUrl($asset->model->manufacturer->warranty_lookup_url) }}
