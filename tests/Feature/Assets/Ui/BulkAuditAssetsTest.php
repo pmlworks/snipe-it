@@ -4,8 +4,10 @@ namespace Tests\Feature\Assets\Ui;
 
 use App\Models\User;
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
+#[Group('auditing')]
 class BulkAuditAssetsTest extends TestCase
 {
     private User $actor;

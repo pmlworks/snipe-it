@@ -4,8 +4,10 @@ namespace Tests\Feature\Assets\Ui;
 
 use App\Models\Asset;
 use App\Models\User;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
+#[Group('auditing')]
 class AuditAssetTest extends TestCase
 {
     public function test_permission_required_to_see_audit_page()
