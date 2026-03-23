@@ -241,7 +241,7 @@ class SnipeModel extends Model
             return true;
         }
 
-        if ((method_exists($item, 'availableForCheckout')) && ($item->deleted_at == '')) {
+        if ((method_exists($item, 'availableForCheckout')) && ($item->availableForCheckout())) {
             return true;
         }
 
@@ -254,7 +254,7 @@ class SnipeModel extends Model
             return true;
         }
 
-        if ((method_exists($item, 'availableForCheckIn')) && ($item->assigned_to != '') && ($item->deleted_at == '')) {
+        if ((method_exists($item, 'availableForCheckIn')) && ($item->availableForCheckIn())) {
             return true;
         }
 
