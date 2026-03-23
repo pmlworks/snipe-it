@@ -167,8 +167,12 @@
                                     <x-well>
                                         <x-icon type="calendar" class="fa-fw"/>
                                         <strong>{{ trans('general.last_checkout') }}</strong>
-                                        {{ Helper::getFormattedDateObject($asset->last_checkout, 'date', false) }}
-                                        <span class="text-muted">{{ Carbon::parse($asset->last_checkout)->diffForHumans(['parts' => 2]) }}</span>
+                                        @if ($asset->last_checkout != '')
+                                            {{ Helper::getFormattedDateObject($asset->last_checkout, 'date', false) }}
+                                            <span class="text-muted">{{ Carbon::parse($asset->last_checkout)->diffForHumans(['parts' => 2]) }}</span>
+                                        @else
+                                            {{ trans('general.na') }}
+                                        @endif
                                     </x-well>
                                 </x-page-column>
 
