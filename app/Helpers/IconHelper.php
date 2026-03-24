@@ -116,7 +116,7 @@ class IconHelper
             case 'password':
                 return 'fa-solid fa-key';
             case 'api-key':
-                return 'fa-solid fa-user-secret';
+                return 'fas fa-user-secret';
             case 'nav-toggle':
                 return 'fas fa-bars';
             case 'dashboard':
@@ -139,10 +139,18 @@ class IconHelper
                 return 'fa-regular fa-clipboard';
             case 'paperclip':
                 return 'fas fa-paperclip';
+            case 'files':
+                return 'fa-solid fa-file-contract';
             case 'contact-card':
                 return 'fa-regular fa-id-card';
-            case 'files':
-                return 'fa-solid fa-file-contract fa-fw';
+            case 'eula':
+            case 'eulas':
+                return 'fa-regular fa-handshake';
+            case 'star':
+            case 'vip':
+                return 'fa-solid fa-star';
+            case 'remote':
+                return 'fa-solid fa-house-laptop';
             case 'more-info':
             case 'support':
                 return 'far fa-life-ring';
@@ -213,7 +221,7 @@ class IconHelper
             case 'highlight':
                 return 'fa-solid fa-highlighter';
             case 'manager':
-                return 'fa-solid fa-building-user';
+                return 'fa-solid fa-user-tie';
             case 'company':
                 return 'fa-regular fa-building';
             case 'parent':
