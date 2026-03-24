@@ -55,7 +55,7 @@
             $(this).closest('ul').toggleClass("open");
         });
 
-        /** End handling the responsive tab UI on v iew detail pages **/
+        /** End handling the responsive tab UI on view detail pages **/
 
         $('.snipe-table').bootstrapTable('destroy').each(function () {
 
