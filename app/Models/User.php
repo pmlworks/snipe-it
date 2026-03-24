@@ -526,6 +526,12 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         return $this->hasMany(ReportTemplate::class, 'created_by');
     }
 
+    public function getImageUrl($path = null)
+    {
+        return $this->present()->gravatar();
+
+    }
+
     /**
      * Establishes a count of all items assigned
      *

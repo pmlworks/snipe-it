@@ -25,6 +25,38 @@
             return false;
         }
 
+        /** This handles the responsive tab UI on v iew detail pages **/
+        function resize() {
+            if ($(window).width() < 767) {
+                $('.nav-tabs-dropdown').addClass('nav-justified');
+                $('.uploadtab').removeClass('pull-right');
+
+            }
+            else {
+                $('.nav-tabs-dropdown').removeClass('nav-justified');
+                $('.uploadtab').addClass('pull-right');
+            }
+        }
+
+        // Run the function on page load
+        $(document).ready(function () {
+            resize();
+        });
+
+        // Watch for window resize events
+        $(window).on('resize', function () {
+            resize();
+        });
+
+        //open and close tab menu
+        $('.nav-tabs-dropdown').on("click", "li:not('.active') a", function (event) {
+            $(this).closest('ul').removeClass("open");
+        }).on("click", "li.active a", function (event) {
+            $(this).closest('ul').toggleClass("open");
+        });
+
+        /** End handling the responsive tab UI on view detail pages **/
+
         $('.snipe-table').bootstrapTable('destroy').each(function () {
 
             data_export_options = $(this).attr('data-export-options');

@@ -106,54 +106,49 @@
 
 
                     <x-slot:buttons>
+                        <x-button.edit :item="$license" :route="route('licenses.edit', $license->id)"/>
+                        <x-button.clone :item="$license" :route="route('clone/license', $license->id)"/>
                         <x-button.checkout permission="checkout" :item="$license" :route="route('licenses.checkout', $license->id)" />
-                        <x-button.edit :item="$license" :route="route('licenses.edit', $license->id)" />
-                        <x-button.clone :item="$license" :route="route('clone/license', $license->id)" />
+
+                        @can('checkout', $license)
+
+                            @if (($license->availCount()->count() > 0) && (!$license->isInactive()))
+
+                                <a href="#" class="btn bg-maroon btn-sm hidden-print" data-toggle="modal" data-tooltip="true" title="{{ trans('admin/licenses/general.bulk.checkout_all.enabled_tooltip') }}" data-target="#checkoutFromAllModal">
+                                    <x-icon type="checkout-all" class="fa-fw"/>
+                                </a>
+
+                            @else
+                                <span data-tooltip="true" title="{{ ($license->availCount()->count() == 0) ? trans('admin/licenses/general.bulk.checkout_all.disabled_tooltip') : trans('admin/licenses/message.checkout.license_is_inactive') }}" class="btn bg-maroon btn-sm hidden-print disabled" title="{{ trans('general.checkout') }}">
+                                      <x-icon type="checkout-all" class="fa-fw"/>
+                                  </span>
+                            @endif
+                        @endcan
+
+
+                        @can('checkin', $license)
+
+                            @if (($license->seats - $license->availCount()->count()) <= 0 )
+                                <span data-tooltip="true" title=" {{ trans('admin/licenses/general.bulk.checkin_all.disabled_tooltip') }}">
+                                        <a href="#" class="btn btn-primary bg-purple btn-sm hidden-print disabled"><x-icon type="checkin-all" class="fa-fw"/></a>
+                                    </span>
+                            @else
+                                <a href="#" class="btn bg-purple btn-sm hidden-print" data-toggle="modal" data-tooltip="true" data-target="#checkinFromAllModal" data-content="{{ trans('general.sure_to_delete') }} title=" {{ trans('admin/licenses/general.bulk.checkin_all.button') }} data-title=" {{ trans('admin/licenses/general.bulk.checkin_all.button') }}">
+                                    <x-icon type="checkin-all" class="fa-fw"/>
+                                </a>
+                            @endif
+                        @endcan
+
+
                         <x-button.delete :item="$license" />
+
+
                     </x-slot:buttons>
 
 
                     <x-slot:before_list>
 
 
-
-                        @can('checkout', $license)
-
-                            @if (($license->availCount()->count() > 0) && (!$license->isInactive()))
-
-                                <a href="#" class="btn bg-maroon btn-sm btn-social btn-block hidden-print" style="margin-bottom: 5px;" data-toggle="modal" data-tooltip="true" title="{{ trans('admin/licenses/general.bulk.checkout_all.enabled_tooltip') }}" data-target="#checkoutFromAllModal">
-                                    <x-icon type="checkout-all" />
-                                    {{ trans('admin/licenses/general.bulk.checkout_all.button') }}
-                                </a>
-
-                            @else
-                                <span data-tooltip="true" title="{{ ($license->availCount()->count() == 0) ? trans('admin/licenses/general.bulk.checkout_all.disabled_tooltip') : trans('admin/licenses/message.checkout.license_is_inactive') }}" class="btn bg-maroon btn-sm btn-social btn-block hidden-print disabled" style="margin-bottom: 5px;" data-tooltip="true" title="{{ trans('general.checkout') }}">
-                                    <x-icon type="checkout" />
-                                    {{ trans('general.checkout') }}
-                                  </span>
-                                                        <span data-tooltip="true" title="{{ ($license->availCount()->count() == 0) ? trans('admin/licenses/general.bulk.checkout_all.disabled_tooltip') : trans('admin/licenses/message.checkout.license_is_inactive') }}" class="btn bg-maroon btn-sm btn-social btn-block hidden-print disabled" style="margin-bottom: 5px;" data-tooltip="true" title="{{ trans('general.checkout') }}">
-                                      <x-icon type="checkout" />
-                                      {{ trans('admin/licenses/general.bulk.checkout_all.button') }}
-                                  </span>
-                            @endif
-                        @endcan
-
-                            @can('checkin', $license)
-
-                                @if (($license->seats - $license->availCount()->count()) <= 0 )
-                                    <span data-tooltip="true" title=" {{ trans('admin/licenses/general.bulk.checkin_all.disabled_tooltip') }}">
-                                        <a href="#"  class="btn btn-primary bg-purple btn-sm btn-social btn-block hidden-print disabled"  style="margin-bottom: 25px;">
-                                          <x-icon type="checkin" />
-                                         {{ trans('admin/licenses/general.bulk.checkin_all.button') }}
-                                        </a>
-                                    </span>
-                                @else
-                                    <a href="#"  class="btn btn-primary bg-purple btn-sm btn-social btn-block hidden-print" style="margin-bottom: 25px;" data-toggle="modal" data-tooltip="true"  data-target="#checkinFromAllModal" data-content="{{ trans('general.sure_to_delete') }} data-title="{{  trans('general.delete') }}" onClick="return false;">
-                                    <x-icon type="checkin" />
-                                    {{ trans('admin/licenses/general.bulk.checkin_all.button') }}
-                                    </a>
-                                @endif
-                            @endcan
 
 
                     </x-slot:before_list>

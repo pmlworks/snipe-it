@@ -67,7 +67,6 @@ class Accessory extends SnipeModel
      */
     public $rules = [
         'name' => 'required|max:255',
-        'qty' => 'required|integer|min:1',
         'category_id' => 'required|integer|exists:categories,id',
         'company_id' => 'integer|nullable',
         'location_id' => 'exists:locations,id|nullable|fmcs_location',
@@ -266,6 +265,14 @@ class Accessory extends SnipeModel
     {
         return $this->hasMany(AccessoryCheckout::class, 'accessory_id')
             ->with('assignedTo');
+    }
+
+    public function percentRemaining()
+    {
+        if ($this->checkouts_count == 0) {
+            return 100;
+        }
+        return ($this->qty - $this->checkouts_count) / $this->qty * 100;
     }
 
     /**

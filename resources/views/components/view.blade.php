@@ -71,9 +71,9 @@
                 <x-info-panel :infoPanelObj="$snipe_component" img_path="{{ app('components_upload_url') }}">
 
                     <x-slot:buttons>
+                        <x-button.edit :item="$snipe_component" :route="route('components.edit', $snipe_component->id)"/>
+                        <x-button.clone :item="$snipe_component" :route="route('components.clone.create', $snipe_component->id)"/>
                         <x-button.checkout :item="$snipe_component" :route="route('components.checkout.show', $snipe_component->id)" />
-                        <x-button.edit :item="$snipe_component" :route="route('components.edit', $snipe_component->id)" />
-                        <x-button.clone :item="$snipe_component" :route="route('components.clone.create', $snipe_component->id)" />
                         <x-button.delete :item="$snipe_component" />
                     </x-slot:buttons>
 

@@ -317,6 +317,19 @@ class Component extends SnipeModel
 
     }
 
+    public function percentRemaining()
+    {
+        $totalQuantity = (int) $this->qty;
+
+        if ($totalQuantity <= 0) {
+            return 0;
+        }
+
+        $availableQuantity = max(0, min($this->numRemaining(), $totalQuantity));
+
+        return ($availableQuantity / $totalQuantity) * 100;
+    }
+
     /**
      * Determine whether to send a checkin/checkout email based on
      * asset model category

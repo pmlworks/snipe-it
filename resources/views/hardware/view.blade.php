@@ -13,92 +13,7 @@
 {{-- Page content --}}
 @section('content')
 
-    <style>
-        .main-panel-content {
-            line-height: 20px;
-            border-bottom: var(--tab-bottom-border);
-            padding: 10px 15px;
-        }
 
-
-
-
-        /* table */
-
-        dl.table-display {
-            float: left;
-            width: 100%;
-            margin: 1em 0;
-            padding: 0;
-        }
-
-        .table-display dt {
-            line-height: 25px;
-            clear: left;
-            float: left;
-            /*text-align: right;*/
-            width: 20%;
-            margin: 0;
-            padding: 8px;
-            border-top: var(--tab-bottom-border);
-            font-weight: bold;
-        }
-
-        .table-display dd {
-            line-height: 20px;
-            float: left;
-            width: 80%;
-            margin: 0;
-            padding: 10px;
-            border-top: var(--tab-bottom-border);
-        }
-
-        .well-display dt {
-            line-height: 20px;
-            clear: left;
-            float: left;
-            /*text-align: right;*/
-            width: 70%;
-            margin: 0;
-            padding: 6px;
-            border-top: 0;
-            font-weight: bold;
-        }
-
-        .well-display dd {
-            line-height: 20px;
-            float: left;
-            width: 30%;
-            margin: 0;
-            padding: 6px;
-            border-top: 0;
-        }
-
-
-        .table-display dd:first-of-type, .table-display dt:first-of-type {
-            border-top: 0 !important;
-        }
-
-
-        @media (max-width: 750px) {
-            .table-display dd {
-                width: 100% !important;
-            }
-
-            .table-display dt {
-                width: 100% !important;
-            }
-        }
-
-        @media print {
-            /* All your print styles go here */
-            .box-profile {
-                display: block !important;
-                width: 100% !important;
-            }
-        }
-
-    </style>
     <x-container columns="2">
 
         @if (!$asset->model)
@@ -158,13 +73,13 @@
                         <x-page-data>
 
                             <x-page-column class="col-md-4">
-                                    <x-well>
+                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-info-element.status :infoObject="$asset"/>
                                     </x-well>
                                 </x-page-column>
 
                                 <x-page-column class="col-md-4">
-                                    <x-well>
+                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-icon type="calendar" class="fa-fw"/>
                                         <strong>{{ trans('general.last_checkout') }}</strong>
                                         @if ($asset->last_checkout != '')
@@ -177,7 +92,7 @@
                                 </x-page-column>
 
                                 <x-page-column class="col-md-4">
-                                    <x-well>
+                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-icon type="expected_checkin" class="fa-fw"/>
                                         <strong>{{ trans('general.expected_checkin') }}</strong>
                                         @if ($asset->expected_checkin!='')
@@ -341,7 +256,7 @@
                                 </x-well>
 
                                 <x-well class="well-sm">
-                                        <x-page-data class="well-display">
+                                    <div class="well-display">
 
                                             <x-data-row icon_type="maintenances" label="Active Maintenances">
                                                 {{ $asset->maintenances->whereNull('completion_date')->count() }}
@@ -359,7 +274,7 @@
                                                 {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
                                             </x-data-row>
 
-                                        </x-page-data>
+                                    </div>
                                     </x-well>
 
 
