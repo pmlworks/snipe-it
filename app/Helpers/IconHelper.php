@@ -116,7 +116,7 @@ class IconHelper
             case 'password':
                 return 'fa-solid fa-key';
             case 'api-key':
-                return 'fa-solid fa-user-secret';
+                return 'fa-regular fa-user-secret';
             case 'nav-toggle':
                 return 'fas fa-bars';
             case 'dashboard':
