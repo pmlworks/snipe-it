@@ -9,7 +9,6 @@
 <!-- start locations tab pane -->
 @can('view', \App\Models\Location::class)
 
-    @include('partials.locations-bulk-actions')
 
     <x-slot:bulkactions>
         <x-table.bulk-actions

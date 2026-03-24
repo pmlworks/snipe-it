@@ -24,8 +24,20 @@
         <div class="text-center">
 
             @if (method_exists($infoPanelObj, 'isSuperUser'))
-                <x-icon type="superadmin" class="fa-2x {{  ($infoPanelObj->isSuperUser()) ? 'text-danger' : 'text-warning'}}"/>
-                <div class="{{  ($infoPanelObj->isSuperUser()) ? 'text-danger' : ' text-warning'}}" style="font-weight: bold">{{  ($infoPanelObj->isSuperUser()) ? strtolower(trans('general.superuser')) : strtolower(trans('general.admin_user')) }}</div>
+
+                @if (($infoPanelObj->isSuperUser()))
+                    <x-icon type="superadmin" class="fa-2x text-danger"/>
+                    <div class="text-danger" style="font-weight: bold">
+                        {{ strtolower(trans('general.superuser')) }}
+                    </div>
+
+                @elseif ($infoPanelObj->isAdmin())
+                    <x-icon type="admin" class="fa-2x text-warning"/>
+                    <div class="text-warning" style="font-weight: bold">
+                        {{ strtolower(trans('general.admin_user')) }}
+                    </div>
+                @endif
+
             @endif
 
                 <a href="{{ $infoPanelObj->getImageUrl($img_path) }}" data-toggle="lightbox" data-type="image">

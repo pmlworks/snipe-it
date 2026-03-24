@@ -58,8 +58,8 @@
                                 </x-well>
                             </x-page-column>
 
-                            <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                <x-well>
+                            <x-page-column class="col-md-4">
+                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                     <x-icon type="calendar" class="fa-fw"/>
                                     <strong>{{ trans('general.start_date') }}</strong>
                                     @if ($user->start_date != '')
@@ -72,7 +72,7 @@
                             </x-page-column>
 
                             <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                <x-well>
+                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                     <x-icon type="calendar" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
                                     <strong>{{ trans('general.end_date') }}</strong>
                                     @if ($user->end_date != '')
@@ -100,6 +100,8 @@
                                         <span class="label label-danger" data-tooltip="true" title="{{ trans('general.superuser_tooltip') }}"><x-icon type="superadmin" style="padding-right: 5px;"/>{{ $user->username }}</span>
                                     @elseif ($user->hasAccess('admin'))
                                         <span class="label label-warning" data-tooltip="true" title="{{ trans('general.admin_tooltip') }}"><x-icon type="superadmin" style="padding-right: 5px;"/>{{ $user->username }}</span>
+                                    @else
+                                        {{ $user->username }}
                                     @endif
                                 </x-data-row>
 
@@ -185,7 +187,6 @@
                                         <br>
                                     @endif
 
-                                    @if($user->autoassign_licenses == '1')
                                         @if ($user->autoassign_licenses == '1')
                                             <x-icon type="checkmark" class="fa-fw text-success"/>
                                         @else
@@ -193,7 +194,6 @@
                                         @endif
                                         {{ trans('general.autoassign_licenses') }}
                                         <br>
-                                    @endif
 
                                 </x-well>
 
@@ -425,7 +425,7 @@
                     </x-tabs.pane>
 
 
-                    <x-tabs.pane name="files" :count="$user->accessories()->count()">
+                    <x-tabs.pane name="files" :count="$user->uploads()->count()">
                         <x-table.files object_type="users" :object="$user"/>
                     </x-tabs.pane>
 
@@ -489,7 +489,7 @@
 
                         <x-table
                             name="userHistory_{{ $user->id }}"
-                            api_url="{{ route('api.activity.index', ['item_id' => $user->id, 'item_type' => 'asset']) }}"
+                            api_url="{{ route('api.activity.index', ['item_id' => $user->id, 'item_type' => User::class]) }}"
                             :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
                             export_filename="export-history-{{ str_slug($user->name) }}-{{ date('Y-m-d') }}"
                         />
