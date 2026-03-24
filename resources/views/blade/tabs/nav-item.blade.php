@@ -17,27 +17,25 @@
         @if ($icon_type || $icon)
 
             @if ($icon)
-                <span class="hidden-lg hidden-md">
+                <span class="hidden-lg hidden-md hidden-sm">
                     <i class="{{ $icon }}" style="font-size: 18px" aria-hidden="true"></i>
                     {{ $tooltip ?? $label }}
                 </span>
 
-                <span class="hidden-xs hidden-sm">
+                <span class="hidden-xs">
                     <i class="{{ $icon }}" style="font-size: 16px" aria-hidden="true"></i>
                 </span>
 
             @elseif ($icon_type)
 
-                <span class="hidden-lg hidden-md">
+                <span class="hidden-lg hidden-md hidden-sm">
                     <x-icon type="{{ $icon_type }}" class="fa-fw" style="font-size: 18px;" />
                     {{ $tooltip ?? $label }}
                 </span>
 
-                <span class="hidden-xs hidden-sm">
+                <span class="hidden-xs">
                     <x-icon type="{{ $icon_type }}" class="fa-fw" style="font-size: 16px;" />
                 </span>
-
-
 
             @endif
 
