@@ -28,8 +28,8 @@
                 <div class="{{  ($infoPanelObj->isSuperUser()) ? 'text-danger' : ' text-warning'}}" style="font-weight: bold">{{  ($infoPanelObj->isSuperUser()) ? strtolower(trans('general.superuser')) : strtolower(trans('general.admin_user')) }}</div>
             @endif
 
-            <a href="{{ $infoPanelObj->getImageUrl() }}" data-toggle="lightbox" data-type="image">
-                <img src="{{ $infoPanelObj->getImageUrl() }}" class="img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style="max-width: 300px !important; width: 100% !important; margin-bottom: 10px;">
+                <a href="{{ $infoPanelObj->getImageUrl($img_path) }}" data-toggle="lightbox" data-type="image">
+                    <img src="{{ $infoPanelObj->getImageUrl($img_path) }}" class="img-responsive img-thumbnail" alt="{{ $infoPanelObj->name }}" style="max-width: 300px !important; width: 100% !important; margin-bottom: 10px;">
             </a>
         </div>
         <br>
