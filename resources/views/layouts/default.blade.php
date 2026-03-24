@@ -1059,10 +1059,8 @@
         }
 
         .well-display dt {
-            line-height: 20px;
             clear: left;
             float: left;
-            /*text-align: right;*/
             width: 70%;
             margin: 0;
             padding: 6px;
@@ -1071,7 +1069,6 @@
         }
 
         .well-display dd {
-            line-height: 20px;
             float: left;
             width: 30%;
             margin: 0;
@@ -1079,6 +1076,9 @@
             border-top: 0;
         }
 
+        .well-sm {
+            line-height: 30px;
+        }
 
         .table-display dd:first-of-type, .table-display dt:first-of-type {
             border-top: 0 !important;
