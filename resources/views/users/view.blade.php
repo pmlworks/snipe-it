@@ -161,6 +161,10 @@
                                         <br>
                                     @endif
 
+                                        <x-icon type="api-key" class="fa-fw"/>{{ $user->tokens()->count() }}
+                                        API Tokens
+                                        <br>
+
                                     @if($user->remote == '1')
                                         <x-icon type="remote" class="fa-fw"/>
                                         {{ trans('admin/users/general.remote') }}
@@ -293,7 +297,7 @@
                                         </td>
                                         <td class="hidden-print">
                                             @can('checkin', $accessory)
-                                                <a href="{{ route('accessories.checkin.show', array('accessoryID'=> $accessory->pivot->id, 'backto'=>'user')) }}" class="btn btn-primary btn-sm hidden-print">{{ trans('general.checkin') }}</a>
+                                                <a href="{{ route('accessories.checkin.show', array('accessoryID'=> $accessory->pivot->id, 'backto'=>'user')) }}" class="btn bg-purple btn-sm hidden-print">{{ trans('general.checkin') }}</a>
                                             @endcan
                                         </td>
                                     </tr>
@@ -445,8 +449,50 @@
                     <x-slot:buttons>
                         <x-button.edit :item="$user" :route="route('users.edit', $user->id)"/>
                         <x-button.clone :item="$user" :route="route('users.clone.show', $user)"/>
-                        <x-button.delete :item="$user"/>
+
                         <x-button.restore :item="$user" :route="route('users.restore.store',  $user)"/>
+
+                        <a href="{{ route('users.print', $user->id) }}" class="btn btn-sm btn-theme hidden-print" target="_blank" rel="noopener" data-tooltip="true" data-title="{{ trans('admin/users/general.print_assigned') }}">
+                            <x-icon type="print" class="fa-fw"/>
+
+                        </a>
+
+
+                        @if(!empty($user->email) && ($user->allAssignedCount() != '0'))
+                            <form class="form-inline" style="display: inline" action="{{ route('users.email',['userId'=> $user->id]) }}" method="POST">
+                                {{ csrf_field() }}
+                                <button class="btn btn-sm btn-theme hidden-print" rel="noopener" data-tooltip="true" data-title="{{ trans('admin/users/general.email_assigned') }}">
+                                    <x-icon type="email" class="fa-fw"/>
+                                </button>
+                            </form>
+                        @endif
+
+                        @if (($user->email != '') && ($user->activated=='1'))
+                            <form action="{{ route('users.password',['userId'=> $user->id]) }}" method="POST" class="form-inline" style="display: inline">
+                                {{ csrf_field() }}
+                                <button class="btn btn-sm btn-primary hidden-print" data-tooltip="true" data-title="{{ trans('button.send_password_link') }}">
+                                    <x-icon type="password" class="fa-fw"/>
+                                </button>
+                            </form>
+                        @else
+                            <button class="btn btn-block btn-sm btn-primary btn-social hidden-print" rel="noopener" disabled title="{{ trans('admin/users/message.user_has_no_email') }}">
+                                <x-icon class="fa-solid fa-key"/>
+                                {{ trans('button.send_password_link') }}
+                            </button>
+                        @endif
+
+                        <x-button.delete :item="$user"/>
+                        
+                        <form action="{{ route('users/bulkedit') }}" method="POST" class="form-inline" style="display: inline; padding-right: 5px;">
+                            <!-- CSRF Token -->
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                            <input type="hidden" name="bulk_actions" value="delete"/>
+
+                            <input type="hidden" name="ids[{{ $user->id }}]" value="{{ $user->id }}"/>
+                            <button class="btn btn-sm btn-danger hidden-print pull-right" style="margin-right: 3px;" data-tooltip="true" data-title="{{ trans('tooltips.checkin_all.user') }}">
+                                <x-icon type="checkin-and-delete" class="fa-fw"/>
+                            </button>
+                        </form>
                     </x-slot:buttons>
                 </x-info-panel>
             </x-box>
