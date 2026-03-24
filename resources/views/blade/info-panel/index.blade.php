@@ -308,7 +308,7 @@
         @endif
 
         @if ($infoPanelObj->mobile)
-            <x-info-element icon_type="mobile" title="{{ trans('general.mobile') }}">
+            <x-info-element icon_type="mobile" title="{{ trans('admin/users/table.mobile') }}">
                 <x-copy-to-clipboard class="pull-right" copy_what="mobile">
                     <x-info-element.phone>
                         {{ $infoPanelObj->mobile }}
