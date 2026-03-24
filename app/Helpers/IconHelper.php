@@ -260,6 +260,8 @@ class IconHelper
                 return 'fa-solid fa-file-invoice';
             case 'checkout-all':
                 return 'fa-solid fa-arrows-down-to-people';
+            case 'checkin-all':
+                return 'fa-solid fa-arrows-turn-right';
             case 'square-right':
                 return 'fa-regular fa-square-caret-right';
             case 'square-left':

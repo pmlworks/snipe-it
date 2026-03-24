@@ -65,9 +65,11 @@
 
         {{ $slot }}
 
-        <x-info-element icon_type="notes" title="{{ trans('general.notes') }}">
-            <x-copy-to-clipboard class="pull-right" copy_what="notes">{!! nl2br(Helper::parseEscapedMarkedownInline($infoPanelObj->notes)) !!}</x-copy-to-clipboard>
-        </x-info-element>
+        @if ($infoPanelObj->notes)
+            <x-info-element icon_type="notes" title="{{ trans('general.notes') }}">
+                <x-copy-to-clipboard class="pull-right" copy_what="notes">{!! nl2br(Helper::parseEscapedMarkedownInline($infoPanelObj->notes)) !!}</x-copy-to-clipboard>
+            </x-info-element>
+        @endif
 
         @if ($infoPanelObj->serial)
             @can('viewKeys', $infoPanelObj)
@@ -223,7 +225,7 @@
 
         @if ($infoPanelObj->category)
             <x-info-element icon_type="category" icon_color="{{ $infoPanelObj->category->tag_color }}" title="{{ trans('general.category') }}">
-                <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->category->present()->formattedNameLink !!}</x-copy-to-clipboard>
+                <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->category->present()->nameUrl !!}</x-copy-to-clipboard>
             </x-info-element>
         @endif
 
@@ -384,7 +386,7 @@
             <x-info-element>
                 <x-icon type="calendar" class="fa-fw" title="{{ trans('general.purchase_date') }}" />
                 {{ trans('general.purchased_plain') }}
-                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'datetime', false) }} -
+                {{ Helper::getFormattedDateObject($infoPanelObj->purchase_date, 'date', false) }} -
                 <span class="text-muted">{{ Carbon::parse($infoPanelObj->purchase_date)->diffForHumans(['parts' => 2]) }}</span>
             </x-info-element>
         @endif

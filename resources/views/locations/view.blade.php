@@ -83,8 +83,8 @@
                   @endcan
 
 
-                  <x-tabs.consumable-tab count="{{ $location->consumables->count() }}"/>
-                  <x-tabs.component-tab count="{{ $location->components->count() }}"/>
+                  <x-tabs.consumable-tab count="{{ $location->consumables()->count() }}"/>
+                  <x-tabs.component-tab count="{{ $location->components()->count() }}"/>
 
                   <x-tabs.nav-item
                           name="child_locations"
@@ -94,9 +94,9 @@
                           tooltip="{{ trans('general.child_locations') }}"
                   />
 
-                  <x-tabs.files-tab count="{{ $location->uploads->count() }}"/>
-                  <x-tabs.history-tab model="\App\Models\Location::class"/>
-                  <x-tabs.upload-tab :item="$location"/>
+                  <x-tabs.files-tab count="{{ $location->uploads()->count() }}"/>
+                  <x-tabs.history-tab count="{{ $location->actionlog()->count() }}" model="\App\Models\Location::class"/>
+                  <x-tabs.upload-tab count="{{ $location->uploads()->count() }}" :item="$location"/>
 
               </x-slot:tabnav>
 

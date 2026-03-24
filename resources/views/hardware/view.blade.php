@@ -73,13 +73,13 @@
                         <x-page-data>
 
                             <x-page-column class="col-md-4">
-                                    <x-well>
+                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-info-element.status :infoObject="$asset"/>
                                     </x-well>
                                 </x-page-column>
 
                                 <x-page-column class="col-md-4">
-                                    <x-well>
+                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-icon type="calendar" class="fa-fw"/>
                                         <strong>{{ trans('general.last_checkout') }}</strong>
                                         @if ($asset->last_checkout != '')
@@ -92,7 +92,7 @@
                                 </x-page-column>
 
                                 <x-page-column class="col-md-4">
-                                    <x-well>
+                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                                         <x-icon type="expected_checkin" class="fa-fw"/>
                                         <strong>{{ trans('general.expected_checkin') }}</strong>
                                         @if ($asset->expected_checkin!='')

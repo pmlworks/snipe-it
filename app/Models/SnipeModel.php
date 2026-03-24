@@ -235,29 +235,50 @@ class SnipeModel extends Model
         return false;
     }
 
+    public function actionlog()
+    {
+        return $this->hasMany(Actionlog::class, 'target_id')->where('target_type', '=', self::class)->orderBy('created_at', 'DESC')->withTrashed();
+    }
+
     public function showCheckoutButton($item)
     {
-        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() > 0)) {
-            return true;
+
+        if (method_exists($item, 'numRemaining')) {
+            if ($item->numRemaining() > 0) {
+                return 'show-active';
+            }
+            return 'show-disabled';
         }
 
-        if ((method_exists($item, 'availableForCheckout')) && ($item->availableForCheckout())) {
-            return true;
+        if (method_exists($item, 'availableForCheckout')) {
+            if ($item->availableForCheckout() > 0) {
+                return 'show-active';
+            }
+            return 'show-disabled';
         }
 
         return false;
+
+
     }
 
     public function showCheckinButton($item)
     {
-        if ((method_exists($item, 'numRemaining')) && ($item->numRemaining() <= 0)) {
-            return true;
+        if (method_exists($item, 'numRemaining')) {
+            if ($item->numRemaining() <= 0) {
+                return 'show-active';
+            }
+            return 'show-disabled';
         }
 
-        if ((method_exists($item, 'availableForCheckIn')) && ($item->availableForCheckIn())) {
-            return true;
+        if (method_exists($item, 'availableForCheckout')) {
+            if ($item->availableForCheckIn()) {
+                return 'show-active';
+            }
+            return 'show-disabled';
         }
 
         return false;
+
     }
 }

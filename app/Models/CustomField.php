@@ -57,6 +57,7 @@ class CustomField extends Model
         'show_in_listview' => 'boolean',
         'show_in_requestable_list' => 'boolean',
         'show_in_email' => 'boolean',
+        'format' => 'nullable|string|max:191',
     ];
 
     protected $casts = [
