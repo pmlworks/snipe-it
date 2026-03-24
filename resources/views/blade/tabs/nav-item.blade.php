@@ -9,7 +9,8 @@
 ])
 
 <!-- start tab nav item -->
-<li {{ $attributes->merge(['class' => 'snipetab']) }}>
+<li {{ $attributes->merge(['class' => 'snipetab']) }} role="presentation">
+
 
     <a href="#{{ $name ?? 'details' }}" data-toggle="tab" data-tooltip="true" title="{{ $tooltip ?? $label }}">
 
@@ -18,6 +19,7 @@
             @if ($icon)
                 <span class="hidden-lg hidden-md">
                     <i class="{{ $icon }}" style="font-size: 18px" aria-hidden="true"></i>
+                    {{ $tooltip ?? $label }}
                 </span>
 
                 <span class="hidden-xs hidden-sm">
@@ -28,6 +30,7 @@
 
                 <span class="hidden-lg hidden-md">
                     <x-icon type="{{ $icon_type }}" class="fa-fw" style="font-size: 18px;" />
+                    {{ $tooltip ?? $label }}
                 </span>
 
                 <span class="hidden-xs hidden-sm">

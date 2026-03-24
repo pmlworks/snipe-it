@@ -256,7 +256,7 @@
                                 </x-well>
 
                                 <x-well class="well-sm">
-                                        <x-page-data class="well-display">
+                                    <div class="well-display">
 
                                             <x-data-row icon_type="maintenances" label="Active Maintenances">
                                                 {{ $asset->maintenances->whereNull('completion_date')->count() }}
@@ -274,7 +274,7 @@
                                                 {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
                                             </x-data-row>
 
-                                        </x-page-data>
+                                    </div>
                                     </x-well>
 
 
