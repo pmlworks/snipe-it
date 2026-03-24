@@ -270,8 +270,8 @@
 
 
                         <!-- End Date -->
-                        <div class="form-group{{ $errors->has('start_dateend_date') ? ' has-error' : '' }}">
-                            <label for="start_date" class="col-md-3 control-label">{{ trans('general.end_date') }}</label>
+                        <div class="form-group{{ $errors->has('end_date') ? ' has-error' : '' }}">
+                            <label for="end_date" class="col-md-3 control-label">{{ trans('general.end_date') }}</label>
                             <div class="col-md-4">
                                 <x-input.datepicker
                                     name="end_date"
