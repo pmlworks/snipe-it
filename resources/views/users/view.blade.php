@@ -134,7 +134,7 @@
                             <!-- begin side stats well column-->
                             <x-page-column class="col-md-4 col-sm-12">
 
-                                <x-well class="well-sm" style="line-height: 35px;">
+                                <x-well class="well-sm" style="padding-left: 15px;">
 
                                     @if($user->activated == '1')
                                         <x-icon type="checkmark" class="fa-fw text-success"/>
@@ -147,6 +147,14 @@
                                             <x-icon type="x" class="fa-fw text-danger"/>
                                         @endif
                                         {{ trans('admin/users/general.two_factor_active') }}
+
+                                        <br>
+                                        @if ($user->two_factor_active_and_enrolled())
+                                            <x-icon type="checkmark" class="fa-fw text-success"/>
+                                        @else
+                                            <x-icon type="x" class="fa-fw text-danger"/>
+                                        @endif
+                                        {{ trans('admin/users/general.two_factor_enrolled') }}
 
                                     @else
                                         <x-icon type="x" class="fa-fw text-danger"/>
@@ -161,8 +169,8 @@
                                         <br>
                                     @endif
 
-                                        <x-icon type="api-key" class="fa-fw"/>{{ $user->tokens()->count() }}
-                                        API Tokens
+                                    <x-icon type="api-key" class="fa-fw"/>
+                                    {{ $user->tokens()->count() }} API Tokens
                                         <br>
 
                                     @if($user->remote == '1')
@@ -187,8 +195,57 @@
                                         <br>
                                     @endif
 
-
                                 </x-well>
+
+                                @if($user->getUserTotalCost()->total_user_cost > 0)
+                                    <x-well class="well-sm">
+
+                                        <div class="well-display">
+
+                                            <x-data-row icon_type="asset" label="{{ trans('general.assets') }}" align="right">
+                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->asset_cost) }}
+                                            </x-data-row>
+
+                                            <x-data-row icon_type="licenses" label="{{ trans('general.licenses') }}" align="right">
+                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->license_cost)}}
+                                            </x-data-row>
+
+                                            <x-data-row icon_type="accessories" label="{{ trans('general.accessories') }}" align="right">
+                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->accessory_cost)}}
+                                            </x-data-row>
+
+                                            <x-data-row icon_type="cost" label=" {{ trans('admin/users/table.total_assets_cost') }}" align="right">
+                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->total_user_cost) }}
+                                            </x-data-row>
+
+                                        </div>
+
+                                    </x-well>
+                                @endif
+
+
+
+                                @if ( ($user->activated == '1') && (auth()->user()->isSuperUser()) && ($user->two_factor_active_and_enrolled()) && ($snipeSettings->two_factor_enabled!='0') && ($snipeSettings->two_factor_enabled!=''))
+
+                                    <!-- 2FA reset -->
+
+                                    <a class="btn btn-theme btn-sm" id="two_factor_reset" style="margin-right: 10px; margin-top: 10px;">
+                                        {{ trans('admin/settings/general.two_factor_reset') }}
+                                    </a>
+                                    <span id="two_factor_reseticon">
+                                    </span>
+                                    <span id="two_factor_resetresult">
+                                    </span>
+                                    <span id="two_factor_resetstatus">
+                                    </span>
+                                    <br>
+                                    <p class="help-block" style="line-height: 1.6;">
+                                        {{ trans('admin/settings/general.two_factor_reset_help') }}
+                                    </p>
+
+                                @endif
+
+
                             </x-page-column>
                             <!-- end side stats well column-->
 
@@ -449,13 +506,13 @@
                     <x-slot:buttons>
                         <x-button.edit :item="$user" :route="route('users.edit', $user->id)"/>
                         <x-button.clone :item="$user" :route="route('users.clone.show', $user)"/>
-
                         <x-button.restore :item="$user" :route="route('users.restore.store',  $user)"/>
 
+                        @if($user->allAssignedCount() != '0')
                         <a href="{{ route('users.print', $user->id) }}" class="btn btn-sm btn-theme hidden-print" target="_blank" rel="noopener" data-tooltip="true" data-title="{{ trans('admin/users/general.print_assigned') }}">
                             <x-icon type="print" class="fa-fw"/>
-
                         </a>
+                        @endif
 
 
                         @if(!empty($user->email) && ($user->allAssignedCount() != '0'))
@@ -467,7 +524,7 @@
                             </form>
                         @endif
 
-                        @if (($user->email != '') && ($user->activated=='1'))
+                        @if (!empty($user->email) && ($user->activated=='1'))
                             <form action="{{ route('users.password',['userId'=> $user->id]) }}" method="POST" class="form-inline" style="display: inline">
                                 {{ csrf_field() }}
                                 <button class="btn btn-sm btn-primary hidden-print" data-tooltip="true" data-title="{{ trans('button.send_password_link') }}">
@@ -475,24 +532,24 @@
                                 </button>
                             </form>
                         @else
-                            <button class="btn btn-block btn-sm btn-primary btn-social hidden-print" rel="noopener" disabled title="{{ trans('admin/users/message.user_has_no_email') }}">
+                            <button class="btn btn-sm btn-primary hidden-print" rel="noopener" disabled title="{{ trans('admin/users/message.user_has_no_email') }}">
                                 <x-icon class="fa-solid fa-key"/>
-                                {{ trans('button.send_password_link') }}
                             </button>
                         @endif
 
                         <x-button.delete :item="$user"/>
-                        
-                        <form action="{{ route('users/bulkedit') }}" method="POST" class="form-inline" style="display: inline; padding-right: 5px;">
-                            <!-- CSRF Token -->
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
-                            <input type="hidden" name="bulk_actions" value="delete"/>
 
-                            <input type="hidden" name="ids[{{ $user->id }}]" value="{{ $user->id }}"/>
-                            <button class="btn btn-sm btn-danger hidden-print pull-right" style="margin-right: 3px;" data-tooltip="true" data-title="{{ trans('tooltips.checkin_all.user') }}">
-                                <x-icon type="checkin-and-delete" class="fa-fw"/>
-                            </button>
-                        </form>
+                        @can('delete', $user)
+                            <form action="{{ route('users/bulkedit') }}" method="POST" class="form-inline" style="display: inline; padding-right: 5px;">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
+                                <input type="hidden" name="bulk_actions" value="delete"/>
+                                <input type="hidden" name="ids[{{ $user->id }}]" value="{{ $user->id }}"/>
+                                <button class="btn btn-sm btn-danger hidden-print pull-right" style="margin-right: 3px;" data-tooltip="true" data-title="{{ trans('tooltips.checkin_all.user') }}">
+                                    <x-icon type="checkin-and-delete" class="fa-fw"/>
+                                </button>
+                            </form>
+                        @endcan
                     </x-slot:buttons>
                 </x-info-panel>
             </x-box>
@@ -513,8 +570,6 @@
 <script nonce="{{ csrf_token() }}">
 $(function () {
 
-
-
   $("#two_factor_reset").click(function(){
     $("#two_factor_resetrow").removeClass('success');
     $("#two_factor_resetrow").removeClass('danger');
@@ -533,7 +588,7 @@ $(function () {
       success: function (data) {
         $("#two_factor_reset_toggle").html('').html('<span class="text-danger"><x-icon type="x" /> {{ trans('general.no') }}</span>');
         $("#two_factor_reseticon").html('');
-        $("#two_factor_resetstatus").html('<span class="text-success"><x-icon type="checkmark" class="fa-2x" /> ' + data.message + '</span>');
+          $("#two_factor_resetstatus").html('<span class="text-success"><x-icon type="checkmark" /> ' + data.message + '</span>');
 
       },
 
@@ -543,60 +598,9 @@ $(function () {
         $('#two_factor_resetstatus').text(data.message);
       }
 
-
     });
   });
 
-
-    // binds to onchange event of your input field
-    var uploadedFileSize = 0;
-    $('#fileupload').bind('change', function() {
-      uploadedFileSize = this.files[0].size;
-      $('#progress-container').css('visibility', 'visible');
-    });
-
-    $('#fileupload').fileupload({
-        //maxChunkSize: 100000,
-        dataType: 'json',
-        formData:{
-        _token:'{{ csrf_token() }}',
-        notes: $('#notes').val(),
-        },
-
-        progress: function (e, data) {
-            //var overallProgress = $('#fileupload').fileupload('progress');
-            //var activeUploads = $('#fileupload').fileupload('active');
-            var progress = parseInt((data.loaded / uploadedFileSize) * 100, 10);
-            $('.progress-bar').addClass('progress-bar-warning').css('width',progress + '%');
-            $('#progress-bar-text').html(progress + '%');
-            //console.dir(overallProgress);
-        },
-
-        done: function (e, data) {
-            console.dir(data);
-            // We use this instead of the fail option, since our API
-            // returns a 200 OK status which always shows as "success"
-
-            if (data && data.jqXHR && data.jqXHR.responseJSON && data.jqXHR.responseJSON.status === "error") {
-                var errorMessage = data.jqXHR.responseJSON.messages["file.0"];
-                $('#progress-bar-text').html(errorMessage[0]);
-                $('.progress-bar').removeClass('progress-bar-warning').addClass('progress-bar-danger').css('width','100%');
-                $('.progress-checkmark').fadeIn('fast').html('<x-icon type="xt" class="fa-3x text-danger" />');
-            } else {
-                $('.progress-bar').removeClass('progress-bar-warning').addClass('progress-bar-success').css('width','100%');
-                $('.progress-checkmark').fadeIn('fast');
-                $('#progress-container').delay(950).css('visibility', 'visible');
-                $('.progress-bar-text').html('Finished!');
-                $('.progress-checkmark').fadeIn('fast').html('<x-icon type="checkmark" class="fa-3x text-success" />');
-                $.each(data.result, function (index, file) {
-                    $('<tr><td>' + file.note + '</td><td>' + file.filename + '</td></tr>').prependTo("#files-table > tbody");
-                });
-            }
-            $('#progress').removeClass('active');
-
-
-        }
-    });
     $("#optional_info").on("click",function(){
         $('#optional_details').fadeToggle(100);
         $('#optional_info_icon').toggleClass('fa-caret-right fa-caret-down');
