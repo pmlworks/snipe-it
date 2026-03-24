@@ -880,8 +880,33 @@
         {
             background-color: var(--box-bg) !important;
             /*color: var(--color-fg) !important;*/
-            color: contrast-color(var(--box-bg)) !important;
+            color: var(--color-fg) !important;
         }
+
+        /** this handles the arrows for the datepicker widget **/
+
+        /** arrow on the bottom - bg color **/
+        .datepicker-dropdown.datepicker-orient-top:after {
+            border-top: 6px solid var(--box-bg);
+        }
+
+        /** arrow on the bottom - border color **/
+        .datepicker-dropdown.datepicker-orient-top:before {
+            border-top: 6px solid var(--color-bg);
+        }
+
+        /** arrow on the top - bg color **/
+        .datepicker-dropdown:after {
+            border-bottom: 6px solid var(--box-bg);
+        }
+
+        /** arrow on the top - border color **/
+        .datepicker-dropdown:before {
+            border-bottom: 7px solid var(--color-bg);
+        }
+
+        /** end handling arrows for the datepicker widget **/
+
 
         .treeview-menu > li {
             background-color: #2c3b41;
