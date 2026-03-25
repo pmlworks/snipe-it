@@ -150,7 +150,12 @@
 
                   <!-- start assigned accessories tab pane -->
                   <x-tabs.pane name="accessories_assigned">
-                      <x-table.accessories :table_header="trans('general.accessories_assigned')" :route="route('api.locations.assigned_accessories', ['location' => $location])  "/>
+
+                      <x-table.accessories
+                          :table_header="trans('general.accessories_assigned')"
+                          :presenter="\App\Presenters\AccessoryPresenter::assignedDataTableLayoutForObject()"
+                          :route="route('api.locations.assigned_accessories', ['location' => $location])  "/>
+
                   </x-tabs.pane>
                   @endcan
                   <!-- end assigned accessories tab pane -->
