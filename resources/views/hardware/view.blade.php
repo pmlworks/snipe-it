@@ -69,57 +69,72 @@
                 </x-slot:tabnav>
 
                 <x-slot:tabpanes>
+
+                    <!-- start details tab content -->
                     <x-tabs.pane name="details">
-                        <x-page-data>
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                        <x-info-element.status :infoObject="$asset"/>
-                                    </x-well>
-                                </x-page-column>
+                        <!-- this just adds a little top space -->
+                        <div class="clearfix visible-lg-block" style="padding: 6px;"></div>
 
-                                <x-page-column class="col-md-4">
-                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                        <x-icon type="calendar" class="fa-fw"/>
-                                        <strong>{{ trans('general.last_checkout') }}</strong>
-                                        @if ($asset->last_checkout != '')
-                                            {{ Helper::getFormattedDateObject($asset->last_checkout, 'date', false) }}
-                                            <span class="text-muted">{{ Carbon::parse($asset->last_checkout)->diffForHumans(['parts' => 2]) }}</span>
-                                        @else
-                                            {{ trans('general.na') }}
-                                        @endif
-                                    </x-well>
-                                </x-page-column>
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well>
+                                <x-info-element.status :infoObject="$asset"/>
+                            </x-well>
+                        </x-page-column>
+                        <!-- ./ well column -->
 
-                                <x-page-column class="col-md-4">
-                                    <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                        <x-icon type="expected_checkin" class="fa-fw"/>
-                                        <strong>{{ trans('general.expected_checkin') }}</strong>
-                                        @if ($asset->expected_checkin!='')
-                                            {{ Helper::getFormattedDateObject($asset->expected_checkin, 'date', false) }}
-                                            <span class="text-muted hidden-sm hidden-md">{{ Carbon::parse($asset->expected_checkin)->diffForHumans(['parts' => 2]) }}</span>
-                                        @else
-                                            {{ trans('general.na') }}
-                                        @endif
-                                    </x-well>
-                                </x-page-column>
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well>
+                                <x-icon type="calendar" class="fa-fw"/>
+                                <strong>{{ trans('general.last_checkout') }}</strong>
+                                @if ($asset->last_checkout != '')
+                                    {{ Helper::getFormattedDateObject($asset->last_checkout, 'date', false) }}
+                                    <span class="text-muted">{{ Carbon::parse($asset->last_checkout)->diffForHumans(['parts' => 2]) }}</span>
+                                @else
+                                    {{ trans('general.na') }}
+                                @endif
+                            </x-well>
+                        </x-page-column>
+                        <!--  ./ well column -->
 
-                            <x-page-column class="col-md-8 col-sm-12">
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well>
+                                <x-icon type="expected_checkin" class="fa-fw"/>
+                                <strong>{{ trans('general.expected_checkin') }}</strong>
+                                @if ($asset->expected_checkin!='')
+                                    {{ Helper::getFormattedDateObject($asset->expected_checkin, 'date', false) }}
+                                    <span class="text-muted hidden-sm hidden-md">{{ Carbon::parse($asset->expected_checkin)->diffForHumans(['parts' => 2]) }}</span>
+                                @else
+                                    {{ trans('general.na') }}
+                                @endif
+                            </x-well>
+
+                        </x-page-column>
+                        <!--  ./ well column -->
+
+                        <!-- set clearfix for responsive design -->
+                        <div class="clearfix"></div>
+
+
+                        <!--  definition list column -->
+                        <x-page-column class="col-md-8">
+
+                            <!-- definition list content -->
+                            <x-page-data>
+
                                 <x-data-row :label="trans('admin/hardware/form.tag')" copy_what="asset_tag">
                                     {{ $asset->asset_tag }}
                                 </x-data-row>
-
 
                                 <x-data-row :label="trans('admin/hardware/form.name')" copy_what="asset_name">
                                     {{ $asset->name }}
                                 </x-data-row>
 
                                 <x-data-row :label="trans('admin/hardware/table.current_value')" copy_what="current_value">
-                                    @if (($asset->id) && ($asset->location))
-                                        {{ $asset->location->currency }}
-                                    @else
-                                        {{ $snipeSettings->default_currency }}
-                                    @endif
+                                    {{ (($asset->id) && ($asset->location) ? $asset->location->currency : $snipeSettings->default_currency) }}
                                     {{ Helper::formatCurrencyOutput($asset->getDepreciatedValue() )}}
                                 </x-data-row>
 
@@ -144,7 +159,6 @@
                                     @endif
                                 </x-data-row>
 
-
                                 @if (($asset->model) && ($asset->model->fieldset))
                                     @foreach($asset->model->fieldset->fields as $field)
                                         <x-data-row :label="$field->name">
@@ -153,14 +167,11 @@
                                     @endforeach
                                 @endif
 
-                                @if ($asset->defaultLoc)
-                                    <x-data-row :label="trans('admin/hardware/form.default_location')" copy_what="default_location">
-                                        {!!  $asset->defaultLoc->present()->formattedNameLink !!}
-                                    </x-data-row>
-                                @endif
+                                <x-data-row :label="trans('admin/hardware/form.default_location')" copy_what="default_location">
+                                    {!!  $asset->defaultLoc?->present()->formattedNameLink !!}
+                                </x-data-row>
 
-
-                            @if ($asset->asset_eol_date)
+                                @if ($asset->asset_eol_date)
                                     <x-data-row :label="trans('general.device_eol')" copy_what="eol_date">
                                         @if ($asset->asset_eol_date)
                                             {{ Helper::getFormattedDateObject($asset->asset_eol_date, 'date', false) }}
@@ -189,109 +200,105 @@
                                     </x-data-row>
                                 @endif
 
+                            </x-page-data>
+                            <!-- ./ definition list content -->
 
-                                <div class="clearfix"></div>
+                        </x-page-column>
+                        <!-- ./ definition list column -->
 
-                            </x-page-column>
+                        <!-- start side stats column -->
+                        <x-page-column class="col-md-4 col-sm-12">
 
-                            <x-page-column class="col-md-4 col-sm-12">
+                            @php
+                                // Compute elapsed/total percentage clamped to 0–100
+                                $clampedPercent = fn (float $elapsed, float $total): float =>
+                                    $total > 0 ? min(100, max(0, ($elapsed / $total) * 100)) : 0;
 
-                                @php
-                                    // Compute elapsed/total percentage clamped to 0–100
-                                    $clampedPercent = fn (float $elapsed, float $total): float =>
-                                        $total > 0 ? min(100, max(0, ($elapsed / $total) * 100)) : 0;
+                                $now = Carbon::now();
+                                $purchaseCarbon = $asset->purchase_date ? Carbon::parse($asset->purchase_date) : null;
 
-                                    $now = Carbon::now();
-                                    $purchaseCarbon = $asset->purchase_date ? Carbon::parse($asset->purchase_date) : null;
+                                // EOL percentage: elapsed since purchase / total EOL period
+                                $eolPercent = 0;
+                                if ($purchaseCarbon && $asset->asset_eol_date) {
+                                    $eolPercent = $clampedPercent(
+                                        $purchaseCarbon->diffInMonths($now),
+                                        $purchaseCarbon->diffInMonths($asset->asset_eol_date)
+                                    );
+                                }
 
-                                    // EOL percentage: elapsed since purchase / total EOL period
-                                    $eolPercent = 0;
-                                    if ($purchaseCarbon && $asset->asset_eol_date) {
-                                        $eolPercent = $clampedPercent(
-                                            $purchaseCarbon->diffInMonths($now),
-                                            $purchaseCarbon->diffInMonths($asset->asset_eol_date)
-                                        );
-                                    }
+                                // Depreciation percentage: elapsed since purchase / total depreciation period
+                                $deprPercent = 0;
+                                $deprDate = $asset->depreciated_date();
+                                if ($purchaseCarbon && $deprDate) {
+                                    $deprPercent = $clampedPercent(
+                                        $purchaseCarbon->diffInMonths($now),
+                                        $purchaseCarbon->diffInMonths(Carbon::instance($deprDate))
+                                    );
+                                }
 
-                                    // Depreciation percentage: elapsed since purchase / total depreciation period
-                                    $deprPercent = 0;
-                                    $deprDate = $asset->depreciated_date();
-                                    if ($purchaseCarbon && $deprDate) {
-                                        $deprPercent = $clampedPercent(
-                                            $purchaseCarbon->diffInMonths($now),
-                                            $purchaseCarbon->diffInMonths(Carbon::instance($deprDate))
-                                        );
-                                    }
+                                // Warranty percentage: elapsed since purchase / total warranty period
+                                $warrantyPercent = 0;
+                                if ($purchaseCarbon && $asset->warranty_expires) {
+                                    $warrantyPercent = $clampedPercent(
+                                        $purchaseCarbon->diffInMonths($now),
+                                        $purchaseCarbon->diffInMonths($asset->warranty_expires)
+                                    );
+                                }
+                            @endphp
 
-                                    // Warranty percentage: elapsed since purchase / total warranty period
-                                    $warrantyPercent = 0;
-                                    if ($purchaseCarbon && $asset->warranty_expires) {
-                                        $warrantyPercent = $clampedPercent(
-                                            $purchaseCarbon->diffInMonths($now),
-                                            $purchaseCarbon->diffInMonths($asset->warranty_expires)
-                                        );
-                                    }
-                                @endphp
+                            <x-well class="well-sm">
 
-                                <x-well class="well-sm">
+                                <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$eolPercent">
+                                    @if($asset->purchase_date && $asset->asset_eol_date)
+                                        <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>
+                                        /{{ $asset->model?->eol }} {{ trans('general.months') }}
+                                    @endif
+                                </x-progressbar>
 
-                                    <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$eolPercent">
-                                        @if($asset->purchase_date && $asset->asset_eol_date)
-                                            <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>/{{ $asset->model?->eol }} {{ trans('general.months') }}
-                                        @endif
-                                    </x-progressbar>
+                                <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$deprPercent">
+                                    @if($deprDate)
+                                        {{ Helper::getFormattedDateObject($deprDate->format('Y-m-d'), 'date', false) }}
+                                    @endif
+                                </x-progressbar>
 
-                                    <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$deprPercent">
-                                        @if($deprDate)
-                                            {{ Helper::getFormattedDateObject($deprDate->format('Y-m-d'), 'date', false) }}
-                                        @endif
-                                    </x-progressbar>
+                                <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$warrantyPercent">
+                                    @if($asset->warranty_expires)
+                                        {{ Helper::getFormattedDateObject($asset->warranty_expires, 'date', false) }}
+                                    @endif
+                                </x-progressbar>
 
-                                    <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$warrantyPercent">
-                                        @if($asset->warranty_expires)
-                                            {{ Helper::getFormattedDateObject($asset->warranty_expires, 'date', false) }}
-                                        @endif
-                                    </x-progressbar>
+                            </x-well>
 
-                                </x-well>
+                            <x-well class="well-sm">
+                                <div class="well-display">
+                                    <x-data-row icon_type="maintenances" label="Active Maintenances">
+                                        {{ $asset->maintenances->whereNull('completion_date')->count() }}
+                                    </x-data-row>
 
-                                <x-well class="well-sm">
-                                    <div class="well-display">
+                                    <x-data-row icon_type="checkout" :label="trans('general.checkouts_count')">
+                                        {{ ($asset->checkouts) ? (int) $asset->checkouts->count() : '0' }}
+                                    </x-data-row>
 
-                                            <x-data-row icon_type="maintenances" label="Active Maintenances">
-                                                {{ $asset->maintenances->whereNull('completion_date')->count() }}
-                                            </x-data-row>
+                                    <x-data-row icon_type="checkin" :label="trans('general.checkins_count')">
+                                        {{ ($asset->checkins) ? (int) $asset->checkins->count() : '0' }}
+                                    </x-data-row>
 
-                                            <x-data-row icon_type="checkout" :label="trans('general.checkouts_count')">
-                                                {{ ($asset->checkouts) ? (int) $asset->checkouts->count() : '0' }}
-                                            </x-data-row>
-
-                                            <x-data-row icon_type="checkin" :label="trans('general.checkins_count')">
-                                                {{ ($asset->checkins) ? (int) $asset->checkins->count() : '0' }}
-                                            </x-data-row>
-
-                                            <x-data-row icon_type="request" :label="trans('general.user_requests_count')">
-                                                {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
-                                            </x-data-row>
-
-                                    </div>
-                                    </x-well>
-
-
-                                @if (($snipeSettings->qr_code=='1') || $snipeSettings->label2_2d_type!='none')
-                                    <div class="col-md-12 text-center asset-qr-img" style="padding-top: 15px;">
-                                        <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail" style="height: 150px; width: 150px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}">
-                                    </div>
-                                @endif
+                                    <x-data-row icon_type="request" :label="trans('general.user_requests_count')">
+                                        {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
+                                    </x-data-row>
+                                </div>
+                            </x-well>
 
 
+                            @if (($snipeSettings->qr_code=='1') || $snipeSettings->label2_2d_type!='none')
+                                <div class="col-md-12 text-center asset-qr-img" style="padding-top: 15px;">
+                                    <img src="{{ config('app.url') }}/hardware/{{ $asset->id }}/qr_code" class="img-thumbnail" style="height: 150px; width: 150px; margin-right: 10px;" alt="QR code for {{ $asset->getDisplayNameAttribute() }}">
+                                </div>
+                            @endif
 
+                        </x-page-column>
+                        <!-- end side stats  column -->
 
-
-                            </x-page-column>
-
-
-                        </x-page-data>
                     </x-tabs.pane>
 
                     <x-tabs.pane name="licenses" :count="$asset->licenses->count()">

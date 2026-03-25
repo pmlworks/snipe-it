@@ -61,7 +61,7 @@ class AssetPresenter extends Presenter
                 'searchable' => false,
                 'sortable' => true,
                 'switchable' => true,
-                'title' => trans('admin/hardware/table.image'),
+                'title' => trans('general.image'),
                 'visible' => true,
                 'formatter' => 'imageFormatter',
             ], [

@@ -270,6 +270,9 @@ class Accessory extends SnipeModel
 
     public function percentRemaining()
     {
+        if (($this->qty == '' || $this->qty == 0)) {
+            return 0;
+        }
         if ($this->checkouts_count == 0) {
             return 100;
         }

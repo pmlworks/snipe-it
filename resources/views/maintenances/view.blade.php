@@ -27,34 +27,47 @@ use Carbon\Carbon;
 
                 <x-slot:tabpanes>
 
+                    <!-- start details tab content -->
                     <x-tabs.pane name="details">
 
-                        <x-page-data>
+                        <!-- this just adds a little top space -->
+                        <div class="clearfix visible-lg-block" style="padding: 6px;"></div>
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-info-element.status :infoObject="$maintenance->asset"/>
-                                </x-well>
-                            </x-page-column>
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well>
+                                <x-info-element.status :infoObject="$maintenance->asset"/>
+                            </x-well>
+                        </x-page-column>
+                        <!--  ./ well column -->
 
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                                <x-icon type="asset" class="fa-fw"/>
+                                {!! $maintenance->asset?->present()->nameUrl !!}
+                            </x-well>
+                        </x-page-column>
+                        <!--  ./ well column -->
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-icon type="asset" class="fa-fw"/>
-                                    {!! $maintenance->asset?->present()->nameUrl !!}
-                                </x-well>
-                            </x-page-column>
+                        <!--  well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                                <x-icon type="maintenances" class="fa-fw"/>
+                                <strong>{{ trans('admin/maintenances/form.asset_maintenance_type') }}</strong>
+                                {{ $maintenance->asset_maintenance_type }}
+                            </x-well>
+                        </x-page-column>
+                        <!--  ./ well column -->
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-icon type="maintenances" class="fa-fw"/>
-                                    <strong>{{ trans('admin/maintenances/form.asset_maintenance_type') }}</strong>
-                                    {{ $maintenance->asset_maintenance_type }}
-                                </x-well>
-                            </x-page-column>
+                        <!-- set clearfix for responsive design -->
+                        <div class="clearfix"></div>
 
-                            <x-page-column class="col-md-8 col-sm-12">
+                        <!-- definition list column -->
+                        <x-page-column class="col-md-8 col-sm-12">
 
+                            <!-- definition list content -->
+                            <x-page-data>
                                 <x-data-row :label="trans('admin/hardware/form.tag')" copy_what="asset_tag">
                                     {{ $maintenance->asset?->asset_tag }}
                                 </x-data-row>
@@ -80,7 +93,9 @@ use Carbon\Carbon;
                                 </x-data-row>
 
                                 <x-data-row :label="trans('admin/maintenances/form.asset_maintenance_time')" copy_what="time">
-                                    {{ $maintenance->asset_maintenance_time }} {{ trans('general.days') }}
+                                    @if ($maintenance->asset_maintenance_time)
+                                        {{ $maintenance->asset_maintenance_time }} {{ trans('general.days') }}
+                                    @endif
                                 </x-data-row>
 
                                 <x-data-row :label="trans('admin/maintenances/form.cost')" copy_what="cost">
@@ -97,9 +112,11 @@ use Carbon\Carbon;
                                     @endif
 
                                 </x-data-row>
-
-                                <div class="clearfix"></div>
-                            </x-page-column>
+                            </x-page-data>
+                            <!-- ./ definition list content -->
+                            <div class="clearfix"></div>
+                        </x-page-column>
+                        <!-- ./ definition list column -->
 
                             <!-- begin side stats well column-->
                             <x-page-column class="col-md-4 col-sm-12">
@@ -136,7 +153,7 @@ use Carbon\Carbon;
                                 </x-well>
                             </x-page-column>
                             <div class="clearfix"></div>
-                        </x-page-data>
+
 
                     </x-tabs.pane>
 
