@@ -36,8 +36,8 @@
                     <x-tabs.files-tab count="{{ $user->uploads()->count() }}"/>
                     <x-tabs.eula-tab count="{{ $user->eulas()->count() }}"/>
                     <x-tabs.location-tab count="{{ $user->managedLocations()->count() }}"/>
-                    <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users"/>
-                    <x-tabs.history-tab count="{{ $user->assetlog()->count() }}" model="\App\Models\User::class"/>
+                    <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users" icon_type="manager" :label="trans('admin/users/table.managed_users')"/>
+                    <x-tabs.history-tab count="{{ $user->userlog()->count() }}" model="\App\Models\User::class"/>
                     <x-tabs.upload-tab :item="$user"/>
                 </x-slot:tabnav>
 
@@ -68,7 +68,7 @@
                         <!-- well column -->
                         <x-page-column class="col-md-4">
                             <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                <x-icon type="calendar" class="fa-fw"/>
+                                <x-icon type="start_date" class="fa-fw"/>
                                 <strong>{{ trans('general.start_date') }}</strong>
                                 @if ($user->start_date != '')
                                     {{ Helper::getFormattedDateObject($user->start_date, 'date', false) }}
@@ -83,7 +83,7 @@
                         <!-- well column -->
                         <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
                             <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                <x-icon type="calendar" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
+                                <x-icon type="end_date" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
                                 <strong>{{ trans('general.end_date') }}</strong>
                                 @if ($user->end_date != '')
                                     {{ Helper::getFormattedDateObject($user->end_date, 'date', false) }}
@@ -508,7 +508,7 @@
 
                         <x-table
                             name="userHistory_{{ $user->id }}"
-                            api_url="{{ route('api.activity.index', ['item_id' => $user->id, 'item_type' => User::class]) }}"
+                            api_url="{{ route('api.activity.index', ['target_id' => $user->id, 'target_type' => User::class]) }}"
                             :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
                             export_filename="export-history-{{ str_slug($user->name) }}-{{ date('Y-m-d') }}"
                         />
