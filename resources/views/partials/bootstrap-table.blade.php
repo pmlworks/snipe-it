@@ -1993,6 +1993,20 @@
             });
         };
 
+        $("[name='clearSearch']").click(function () {
+
+            // This hacks around a stupid issue in BS tables where the search text would get remembered for way too long even after it was cleared
+            for (storedSearch in localStorage) {
+                if (storedSearch.endsWith('.bs.table.searchText')) {
+                    localStorage.removeItem(storedSearch);
+                }
+            }
+
+            $('.search-input').each(function (index, element) {
+                $(element).val('');
+            });
+        });
+
         $('.search button[name=clearSearch]').click(searchboxHighlighter);
         searchboxHighlighter({ name:'pageload'});
         $('.search-input').keyup(searchboxHighlighter);
