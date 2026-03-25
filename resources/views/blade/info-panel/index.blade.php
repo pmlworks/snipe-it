@@ -350,12 +350,12 @@
         @if ((($infoPanelObj->address!='') && ($infoPanelObj->city!='')) || ($infoPanelObj->state!='') || ($infoPanelObj->country!=''))
             <x-info-element>
                 <a class="btn btn-sm btn-theme" href="https://maps.google.com/?q={{ urlencode($infoPanelObj->address.','. $infoPanelObj->city.','.$infoPanelObj->state.','.$infoPanelObj->country.','.$infoPanelObj->zip) }}" target="_blank">
-                    {!! trans('admin/locations/message.open_map', ['map_provider_icon' => '<i class="fa-brands fa-google hidden-print" aria-hidden="true"></i>']) !!}
+                    <x-icon type="google" class="hidden-print"/>
                     <x-icon type="external-link"/>
                 </a>
 
                 <a class="btn btn-sm btn-theme"  href="https://maps.apple.com/?q={{ urlencode($infoPanelObj->address.','. $infoPanelObj->city.','.$infoPanelObj->state.','.$infoPanelObj->country.','.$infoPanelObj->zip) }}" target="_blank">
-                    {!! trans('admin/locations/message.open_map', ['map_provider_icon' => '<i class="fa-brands fa-apple hidden-print" aria-hidden="true"></i>']) !!}
+                    <x-icon type="apple" class="hidden-print"/>
                     <x-icon type="external-link"/>
                 </a>
             </x-info-element>
