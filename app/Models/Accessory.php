@@ -276,6 +276,7 @@ class Accessory extends SnipeModel
         if ($this->checkouts_count == 0) {
             return 100;
         }
+
         return ($this->qty - $this->checkouts_count) / $this->qty * 100;
     }
 
