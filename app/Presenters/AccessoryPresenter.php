@@ -35,7 +35,7 @@ class AccessoryPresenter extends Presenter
                 'searchable' => false,
                 'sortable' => true,
                 'switchable' => true,
-                'title' => trans('admin/hardware/table.image'),
+                'title' => trans('general.image'),
                 'visible' => true,
                 'formatter' => 'imageFormatter',
             ], [
@@ -115,7 +115,7 @@ class AccessoryPresenter extends Presenter
                 'searchable' => false,
                 'sortable' => false,
                 'switchable' => true,
-                'title' => '% ' . trans('general.remaining'),
+                'title' => '% '.trans('general.remaining'),
                 'visible' => true,
                 'formatter' => 'progressBarFormatter',
             ],

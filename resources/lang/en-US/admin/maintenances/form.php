@@ -2,7 +2,7 @@
 
 return [
     'select_type' => 'Select Maintenance Type',
-    'asset_maintenance_type' => 'Asset Maintenance Type',
+    'asset_maintenance_type' => 'Type',
     'title' => 'Title',
     'start_date' => 'Start Date',
     'completion_date' => 'Completion Date',

@@ -1004,7 +1004,7 @@
         else if (value <= 100) {
             bar_color = 'success';
         }
-        return '<div class="progress progress-sm" data-tooltip="true" title="' + value + '%"><div class="progress-bar progress-bar-' + bar_color + '" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + value + '%; min-width: 1em;"></div></div>';
+        return '<div class="progress progress-sm" data-tooltip="true" title="' + value + '%"><div class="progress-bar progress-bar-' + bar_color + '" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + value + '%; min-width: 0em;"></div></div>';
     }
 
     // Use this when we're introspecting into a column object and need to link
@@ -1992,6 +1992,20 @@
                 }
             });
         };
+
+        $("[name='clearSearch']").click(function () {
+
+            // This hacks around a stupid issue in BS tables where the search text would get remembered for way too long even after it was cleared
+            for (storedSearch in localStorage) {
+                if (storedSearch.endsWith('.bs.table.searchText')) {
+                    localStorage.removeItem(storedSearch);
+                }
+            }
+
+            $('.search-input').each(function (index, element) {
+                $(element).val('');
+            });
+        });
 
         $('.search button[name=clearSearch]').click(searchboxHighlighter);
         searchboxHighlighter({ name:'pageload'});

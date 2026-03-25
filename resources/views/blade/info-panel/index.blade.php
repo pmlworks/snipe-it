@@ -8,7 +8,7 @@
 <div class="box-header with-border" style="padding-top: 0;">
 
     @if (isset($buttons))
-        <div class="row hidden-print" style="padding-left: 10px">
+        <div class="row hidden-print" style="padding-left: 5px">
             {{ $buttons }}
         </div>
     @endif

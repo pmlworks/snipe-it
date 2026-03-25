@@ -40,52 +40,70 @@
                     <x-tabs.history-tab count="{{ $user->assetlog()->count() }}" model="\App\Models\User::class"/>
                     <x-tabs.upload-tab :item="$user"/>
                 </x-slot:tabnav>
+
+
                 <x-slot:tabpanes>
+
+                    <!-- start details tab content -->
                     <x-tabs.pane name="details">
-                        <x-page-data>
 
+                        <!-- this just adds a little top space -->
+                        <div class="clearfix visible-lg-block" style="padding: 6px;"></div>
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-icon type="calendar" class="fa-fw"/>
-                                    <strong>{{ trans('general.last_login') }}</strong>
-                                    @if ($user->last_login != '')
-                                        {{ Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}
-                                        <span class="text-muted">{{ Carbon::parse($user->last_login)->diffForHumans(['parts' => 2]) }}</span>
-                                    @else
-                                        {{ trans('general.na') }}
-                                    @endif
-                                </x-well>
-                            </x-page-column>
+                        <!-- well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well>
+                                <x-icon type="calendar" class="fa-fw"/>
+                                <strong>{{ trans('general.last_login') }}</strong>
+                                @if ($user->last_login != '')
+                                    {{ Helper::getFormattedDateObject($user->last_login, 'datetime', false) }}
+                                    <span class="text-muted">{{ Carbon::parse($user->last_login)->diffForHumans(['parts' => 2]) }}</span>
+                                @else
+                                    {{ trans('general.na') }}
+                                @endif
+                            </x-well>
+                        </x-page-column>
+                        <!--  ./ well column -->
 
-                            <x-page-column class="col-md-4">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-icon type="calendar" class="fa-fw"/>
-                                    <strong>{{ trans('general.start_date') }}</strong>
-                                    @if ($user->start_date != '')
-                                        {{ Helper::getFormattedDateObject($user->start_date, 'date', false) }}
-                                        <span class="text-muted">{{ Carbon::parse($user->start_date)->diffForHumans(['parts' => 2]) }}</span>
-                                    @else
-                                        {{ trans('general.na') }}
-                                    @endif
-                                </x-well>
-                            </x-page-column>
+                        <!-- well column -->
+                        <x-page-column class="col-md-4">
+                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                                <x-icon type="calendar" class="fa-fw"/>
+                                <strong>{{ trans('general.start_date') }}</strong>
+                                @if ($user->start_date != '')
+                                    {{ Helper::getFormattedDateObject($user->start_date, 'date', false) }}
+                                    <span class="text-muted">{{ Carbon::parse($user->start_date)->diffForHumans(['parts' => 2]) }}</span>
+                                @else
+                                    {{ trans('general.na') }}
+                                @endif
+                            </x-well>
+                        </x-page-column>
+                        <!-- ./ well column -->
 
-                            <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                                    <x-icon type="calendar" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
-                                    <strong>{{ trans('general.end_date') }}</strong>
-                                    @if ($user->end_date != '')
-                                        {{ Helper::getFormattedDateObject($user->end_date, 'date', false) }}
-                                        <span class="text-muted">{{ Carbon::parse($user->end_date)->diffForHumans(['parts' => 2]) }}</span>
-                                    @else
-                                        {{ trans('general.na') }}
-                                    @endif
-                                </x-well>
-                                <div class="clearfix"></div>
-                            </x-page-column>
+                        <!-- well column -->
+                        <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                                <x-icon type="calendar" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
+                                <strong>{{ trans('general.end_date') }}</strong>
+                                @if ($user->end_date != '')
+                                    {{ Helper::getFormattedDateObject($user->end_date, 'date', false) }}
+                                    <span class="text-muted">{{ Carbon::parse($user->end_date)->diffForHumans(['parts' => 2]) }}</span>
+                                @else
+                                    {{ trans('general.na') }}
+                                @endif
+                            </x-well>
 
-                            <x-page-column class="col-md-8 col-sm-12">
+                        </x-page-column>
+                        <!-- ./ well column -->
+
+                        <!-- set clearfix for responsive design -->
+                        <div class="clearfix"></div>
+
+                        <!-- definition list column -->
+                        <x-page-column class="col-md-8 col-sm-12">
+
+                            <!-- definition list content -->
+                            <x-page-data>
 
                                 <x-data-row :label="trans('general.name')" copy_what="name">
                                     {{ $user->first_name }} {{ $user->last_name }}
@@ -113,14 +131,13 @@
                                     {{ $user->jobtitle }}
                                 </x-data-row>
 
-
                                 <x-data-row :label="trans('general.groups')" copy_what="groups">
                                     @if ($user->groups->count() > 0)
                                         @foreach ($user->groups as $group)
                                             @can('superadmin')
                                                 <a href="{{ route('groups.show', $group->id) }}" class="label label-default">{{ $group->name }}</a>
                                             @else
-                                                {{ $group->name }}
+                                                <span class="label label-default">{{ $group->name }}</span>
                                             @endcan
                                         @endforeach
                                     @endif
@@ -129,127 +146,129 @@
                                         <span class="text-warning"><x-icon type="warning"/> {{ trans('admin/users/general.individual_override') }}</span>
                                     @endif
                                 </x-data-row>
+                            </x-page-data>
 
-                                <div class="clearfix"></div>
-                            </x-page-column>
+                            <!-- ./ definition list column -->
 
-                            <!-- begin side stats well column-->
-                            <x-page-column class="col-md-4 col-sm-12">
+                        </x-page-column>
+                        <!-- ./ definition list content -->
 
-                                <x-well class="well-sm" style="padding-left: 15px;">
+                        <!-- begin side stats well column-->
+                        <x-page-column class="col-md-4 col-sm-12">
 
-                                    @if($user->activated == '1')
+                            <x-well class="well-sm" style="padding-left: 15px;">
+
+                                @if($user->activated == '1')
+                                    <x-icon type="checkmark" class="fa-fw text-success"/>
+                                    {{ trans('general.login_enabled') }}
+
+                                    <br>
+                                    @if ($user->two_factor_active())
                                         <x-icon type="checkmark" class="fa-fw text-success"/>
-                                        {{ trans('general.login_enabled') }}
-
-                                        <br>
-                                        @if ($user->two_factor_active())
-                                            <x-icon type="checkmark" class="fa-fw text-success"/>
-                                        @else
-                                            <x-icon type="x" class="fa-fw text-danger"/>
-                                        @endif
-                                        {{ trans('admin/users/general.two_factor_active') }}
-
-                                        <br>
-                                        @if ($user->two_factor_active_and_enrolled())
-                                            <x-icon type="checkmark" class="fa-fw text-success"/>
-                                        @else
-                                            <x-icon type="x" class="fa-fw text-danger"/>
-                                        @endif
-                                        {{ trans('admin/users/general.two_factor_enrolled') }}
-
                                     @else
                                         <x-icon type="x" class="fa-fw text-danger"/>
-                                        {{ trans('general.login_enabled') }}
                                     @endif
+                                    {{ trans('admin/users/general.two_factor_active') }}
 
                                     <br>
-
-                                    @if($user->vip == '1')
-                                        <x-icon type="vip" class="fa-fw text-warning"/>
-                                        {{ trans('admin/users/general.vip_label') }}
-                                        <br>
+                                    @if ($user->two_factor_active_and_enrolled())
+                                        <x-icon type="checkmark" class="fa-fw text-success"/>
+                                    @else
+                                        <x-icon type="x" class="fa-fw text-danger"/>
                                     @endif
+                                    {{ trans('admin/users/general.two_factor_enrolled') }}
 
-                                    <x-icon type="api-key" class="fa-fw"/>
-                                    {{ $user->tokens()->count() }} API Tokens
-                                        <br>
+                                @else
+                                    <x-icon type="x" class="fa-fw text-danger"/>
+                                    {{ trans('general.login_enabled') }}
+                                @endif
 
-                                    @if($user->remote == '1')
-                                        <x-icon type="remote" class="fa-fw"/>
-                                        {{ trans('admin/users/general.remote') }}
-                                        <br>
-                                    @endif
+                                <br>
 
-                                    @if($user->ldap_import == '1')
-                                        <x-icon type="ldap" class="fa-fw"/>
-                                        {{ trans('admin/settings/general.ldap_enabled') }}
-                                        <br>
-                                    @endif
+                                @if($user->vip == '1')
+                                    <x-icon type="vip" class="fa-fw text-warning"/>
+                                    {{ trans('admin/users/general.vip_label') }}
+                                    <br>
+                                @endif
 
-                                        @if ($user->autoassign_licenses == '1')
-                                            <x-icon type="checkmark" class="fa-fw text-success"/>
-                                        @else
-                                            <x-icon type="x" class="fa-fw text-danger"/>
-                                        @endif
-                                        {{ trans('general.autoassign_licenses') }}
-                                        <br>
+                                <x-icon type="api-key" class="fa-fw"/>
+                                {{ $user->tokens()->count() }} API Tokens
+                                <br>
+
+                                @if($user->remote == '1')
+                                    <x-icon type="remote" class="fa-fw"/>
+                                    {{ trans('admin/users/general.remote') }}
+                                    <br>
+                                @endif
+
+                                @if($user->ldap_import == '1')
+                                    <x-icon type="ldap" class="fa-fw"/>
+                                    {{ trans('admin/settings/general.ldap_enabled') }}
+                                    <br>
+                                @endif
+
+                                @if ($user->autoassign_licenses == '1')
+                                    <x-icon type="checkmark" class="fa-fw text-success"/>
+                                @else
+                                    <x-icon type="x" class="fa-fw text-danger"/>
+                                @endif
+                                {{ trans('general.autoassign_licenses') }}
+                                <br>
+
+                            </x-well>
+
+                            @if($user->getUserTotalCost()->total_user_cost > 0)
+                                <x-well class="well-sm">
+
+                                    <div class="well-display">
+
+                                        <x-data-row icon_type="asset" label="{{ trans('general.assets') }}" align="right">
+                                            {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->asset_cost) }}
+                                        </x-data-row>
+
+                                        <x-data-row icon_type="licenses" label="{{ trans('general.licenses') }}" align="right">
+                                            {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->license_cost)}}
+                                        </x-data-row>
+
+                                        <x-data-row icon_type="accessories" label="{{ trans('general.accessories') }}" align="right">
+                                            {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->accessory_cost)}}
+                                        </x-data-row>
+
+                                        <x-data-row icon_type="cost" label=" {{ trans('admin/users/table.total_assets_cost') }}" align="right">
+                                            {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->total_user_cost) }}
+                                        </x-data-row>
+
+                                    </div>
 
                                 </x-well>
-
-                                @if($user->getUserTotalCost()->total_user_cost > 0)
-                                    <x-well class="well-sm">
-
-                                        <div class="well-display">
-
-                                            <x-data-row icon_type="asset" label="{{ trans('general.assets') }}" align="right">
-                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->asset_cost) }}
-                                            </x-data-row>
-
-                                            <x-data-row icon_type="licenses" label="{{ trans('general.licenses') }}" align="right">
-                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->license_cost)}}
-                                            </x-data-row>
-
-                                            <x-data-row icon_type="accessories" label="{{ trans('general.accessories') }}" align="right">
-                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->accessory_cost)}}
-                                            </x-data-row>
-
-                                            <x-data-row icon_type="cost" label=" {{ trans('admin/users/table.total_assets_cost') }}" align="right">
-                                                {{ Helper::formatCurrencyOutput($user->getUserTotalCost()->total_user_cost) }}
-                                            </x-data-row>
-
-                                        </div>
-
-                                    </x-well>
-                                @endif
+                            @endif
 
 
 
-                                @if ( ($user->activated == '1') && (auth()->user()->isSuperUser()) && ($user->two_factor_active_and_enrolled()) && ($snipeSettings->two_factor_enabled!='0') && ($snipeSettings->two_factor_enabled!=''))
+                            @if ( ($user->activated == '1') && (auth()->user()->isSuperUser()) && ($user->two_factor_active_and_enrolled()) && ($snipeSettings->two_factor_enabled!='0') && ($snipeSettings->two_factor_enabled!=''))
 
-                                    <!-- 2FA reset -->
+                                <!-- 2FA reset -->
 
-                                    <a class="btn btn-theme btn-sm" id="two_factor_reset" style="margin-right: 10px; margin-top: 10px;">
-                                        {{ trans('admin/settings/general.two_factor_reset') }}
-                                    </a>
-                                    <span id="two_factor_reseticon">
-                                    </span>
-                                    <span id="two_factor_resetresult">
-                                    </span>
-                                    <span id="two_factor_resetstatus">
-                                    </span>
-                                    <br>
-                                    <p class="help-block" style="line-height: 1.6;">
-                                        {{ trans('admin/settings/general.two_factor_reset_help') }}
-                                    </p>
+                                <a class="btn btn-theme btn-sm" id="two_factor_reset" style="margin-right: 10px; margin-top: 10px;">
+                                    {{ trans('admin/settings/general.two_factor_reset') }}
+                                </a>
+                                <span id="two_factor_reseticon">
+                                </span>
+                                <span id="two_factor_resetresult">
+                                </span>
+                                <span id="two_factor_resetstatus">
+                                </span>
+                                <br>
+                                <p class="help-block" style="line-height: 1.6;">
+                                    {{ trans('admin/settings/general.two_factor_reset_help') }}
+                                </p>
 
-                                @endif
+                            @endif
 
 
-                            </x-page-column>
-                            <!-- end side stats well column-->
+                        </x-page-column>
+                        <!-- end side stats well column-->
 
-                        </x-page-data>
                     </x-tabs.pane>
 
                     <x-tabs.pane name="licenses" :count="$user->licenses()->count()">
