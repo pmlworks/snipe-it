@@ -7,6 +7,10 @@ class IconHelper
     public static function icon($type)
     {
         switch ($type) {
+            case 'apple':
+                return 'fa-brands fa-apple';
+            case 'google':
+                return 'fa-brands fa-google';
             case 'checkout':
                 return 'fa-solid fa-rotate-left';
             case 'checkin':
