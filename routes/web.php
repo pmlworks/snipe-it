@@ -27,6 +27,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\StatuslabelsController;
+use App\Http\Controllers\StorageProxyController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\ViewAssetsController;
 use App\Livewire\Importer;
@@ -758,6 +759,20 @@ Route::group(['middleware' => 'web'], function () {
         ->where(['object_type' => 'assets|maintenances|hardware|models|users|locations|accessories|consumables|licenses|suppliers|components']);
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Storage Proxy Route
+|--------------------------------------------------------------------------
+|
+| When PUBLIC_S3_PROXY=true, public uploads (images, logos, avatars) are
+| served through the application instead of directly from S3. This allows
+| using a fully private S3 bucket for all storage.
+|
+*/
+Route::get('storage-proxy/{path}', [StorageProxyController::class, 'show'])
+    ->where('path', '.*')
+    ->name('storage-proxy');
 
 /**
  * Health check route - skip middleware

@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Helpers\Helper;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class AssetModelPresenter
@@ -289,7 +290,8 @@ class AssetModelPresenter extends Presenter
     public function imageUrl()
     {
         if (! empty($this->image)) {
-            return '<img src="'.config('app.url').'/uploads/models/'.$this->image.'" alt="'.$this->name.'" height="50" width="50">';
+            $url = Storage::disk('public')->url(app('models_upload_path') . e($this->image));
+            return '<img src="' . $url . '" alt="' . e($this->name) . '" height="50" width="50">';
         }
 
         return '';
@@ -303,7 +305,7 @@ class AssetModelPresenter extends Presenter
     public function imageSrc()
     {
         if (! empty($this->image)) {
-            return config('app.url').'/uploads/models/'.$this->image;
+            return Storage::disk('public')->url(app('models_upload_path') . e($this->image));
         }
 
         return '';
