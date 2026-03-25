@@ -241,8 +241,10 @@ class IconHelper
             case 'terminates':
                 return 'fa-regular fa-calendar-xmark';
             case 'deleted-date':
+            case 'end_date':
                 return 'fa-solid fa-calendar-xmark';
             case 'expected_checkin':
+            case 'start_date':
                 return 'fa-solid fa-calendar-check';
             case 'eol':
                 return 'fa-regular fa-calendar-days';
