@@ -33,7 +33,7 @@
                     <x-tabs.license-tab count="{{ $user->licenses()->count() }}"/>
                     <x-tabs.accessory-tab count="{{ $user->accessories()->count() }}"/>
                     <x-tabs.consumable-tab count="{{ $user->consumables()->count() }}"/>
-                    <x-tabs.files-tab :item="$user" count="{{ $supplier->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$user" count="{{ $user->uploads()->count() }}"/>
                     <x-tabs.eula-tab count="{{ $user->eulas()->count() }}"/>
                     <x-tabs.location-tab count="{{ $user->managedLocations()->count() }}"/>
                     <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users" icon_type="manager" :label="trans('admin/users/table.managed_users')"/>
