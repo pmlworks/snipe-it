@@ -72,13 +72,13 @@
         @endif
 
         @if ($infoPanelObj->serial)
-            @can('viewKeys', $infoPanelObj)
+            @if(($infoPanelObj::class != "App\Models\License") || (Gate::allows('viewKeys', $infoPanelObj)))
                 <x-info-element icon_type="number" title="{{ trans('general.serial_number') }}">
                     <x-copy-to-clipboard class="pull-right" copy_what="license_key">
                         <code>{{ $infoPanelObj->serial }}</code>
                     </x-copy-to-clipboard>
                 </x-info-element>
-            @endcan
+            @endif
         @endif
 
 
