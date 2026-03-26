@@ -109,7 +109,7 @@
 
                   <x-tabs.files-tab count="{{ $location->uploads()->count() }}"/>
                   <x-tabs.history-tab count="{{ $location->history()->count() }}" :model="$location"/>
-                  <x-tabs.upload-tab count="{{ $location->uploads()->count() }}" :item="$location"/>
+                      <x-tabs.upload-tab :item="$location"/>
 
               </x-slot:tabnav>
 
