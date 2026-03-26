@@ -324,7 +324,7 @@ class Location extends SnipeModel
      */
     public function assignedAssets()
     {
-        return $this->morphMany(Asset::class, 'assigned', 'assigned_type', 'assigned_to')->withTrashed();
+        return $this->morphMany(Asset::class, 'assigned', 'assigned_type', 'assigned_to')->AssetsForShow()->withTrashed();
     }
 
     /**
@@ -363,7 +363,7 @@ class Location extends SnipeModel
 
         foreach ($locations_with_children[$parent_id] as $location) {
             $location->use_text = $prefix.' '.$location->name;
-            $location->use_image = ($location->image) ? Storage::disk('public')->url('locations/' . $location->image) : null;
+            $location->use_image = ($location->image) ? Storage::disk('public')->url('locations/'.$location->image) : null;
             $results[] = $location;
             // now append the children. (if we have any)
             if (array_key_exists($location->id, $locations_with_children)) {
