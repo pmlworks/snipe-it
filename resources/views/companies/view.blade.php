@@ -22,7 +22,7 @@
                     <x-tabs.accessory-tab count="{{ $company->accessories->count() }}"/>
                     <x-tabs.consumable-tab count="{{ $company->consumables->count() }}"/>
                     <x-tabs.component-tab count="{{ $company->components->count() }}"/>
-                    <x-tabs.files-tab count="{{ $company->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$company" count="{{ $company->uploads()->count() }}"/>
                     <x-tabs.upload-tab :item="$company"/>
                 </x-slot:tabnav>
 
@@ -87,16 +87,12 @@
         </x-page-column>
     </x-container>
 
+@endsection
 
-    @can('update', Company::class)
-        @section('moar_scripts')
-            @include ('modals.upload-file', ['item_type' => 'companies', 'item_id' => $company->id])
-        @endsection
-    @endcan
-
-@stop
 @section('moar_scripts')
+    @can('files', $company)
+        @include ('modals.upload-file', ['item_type' => 'companies', 'item_id' => $company->id])
+    @endcan
     @include ('partials.bootstrap-table')
-
-@stop
+@endsection
 

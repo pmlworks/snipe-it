@@ -32,7 +32,7 @@
                             count="{{ $license->availCount()->count() }}"
                     />
 
-                    <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$license" count="{{ $license->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $license->history()->count() }}" :model="$license"/>
                     <x-tabs.upload-tab :item="$license"/>
                 </x-slot:tabnav>
@@ -166,15 +166,13 @@
               'body' => trans_choice('admin/licenses/general.bulk.checkout_all.modal', 2, ['available_seats_count' => $available_seats_count])
           ])
 @endcan
-    
 
-  @can('update', \App\Models\License::class)
-    @include ('modals.upload-file', ['item_type' => 'license', 'item_id' => $license->id])
-  @endcan
-
-@stop
-
+@endsection
 
 @section('moar_scripts')
-  @include ('partials.bootstrap-table')
-@stop
+    @can('files', $license)
+        @include ('modals.upload-file', ['item_type' => 'licenses', 'item_id' => $license->id])
+    @endcan
+
+    @include ('partials.bootstrap-table')
+@endsection

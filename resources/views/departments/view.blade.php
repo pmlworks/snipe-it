@@ -19,7 +19,7 @@
             <x-tabs>
                 <x-slot:tabnav>
                     <x-tabs.user-tab count="{{ $department->users->count() }}"/>
-                    <x-tabs.files-tab count="{{ $department->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$department" count="{{ $department->uploads()->count() }}"/>
                     <x-tabs.upload-tab :item="$department"/>
                 </x-slot:tabnav>
 
@@ -55,19 +55,13 @@
         </x-page-column>
     </x-container>
 
-    @can('update', Department::class)
-        @section('moar_scripts')
-            @include ('modals.upload-file', ['item_type' => 'departments', 'item_id' => $department->id])
-        @endsection
-    @endcan
-
-@stop
+@endsection
 
 @section('moar_scripts')
-    @include ('partials.bootstrap-table',
-    ['exportFile' => 'departments-users-export',
-    'search' => true,
-    'columns' => \App\Presenters\UserPresenter::dataTableLayout()
-])
+    @can('files', $department)
+        @include ('modals.upload-file', ['item_type' => 'departments', 'item_id' => $department->id])
+    @endcan
 
-@stop
+    @include ('partials.bootstrap-table', ['exportFile' => 'department-' . $department->name . '-export', 'search' => false])
+@endsection
+

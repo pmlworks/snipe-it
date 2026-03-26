@@ -23,9 +23,8 @@
 
             <x-tabs>
                 <x-slot:tabnav>
-
                     <x-tabs.checkedout-tab :item="$accessory" count="{{ $accessory->checkouts_count }}" />
-                    <x-tabs.files-tab count="{{ $accessory->uploads()->count() }}" />
+                    <x-tabs.files-tab :item="$accessory" count="{{ $accessory->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $user->history()->count() }}" :model="$accessory"/>
                     <x-tabs.upload-tab :item="$accessory"/>
                 </x-slot:tabnav>
@@ -54,11 +53,9 @@
                     <!-- end history tab pane -->
 
                     <!-- start files tab pane -->
-                    @can('accessories.files', $accessory)
-                        <x-tabs.pane name="files">
-                            <x-table.files object_type="accessories" :object="$accessory"/>
-                        </x-tabs.pane>
-                    @endcan
+                    <x-tabs.pane name="files">
+                        <x-table.files object_type="accessories" :object="$accessory"/>
+                    </x-tabs.pane>
                     <!-- end files tab pane -->
                 </x-slot:tabpanes>
 
@@ -81,13 +78,14 @@
         </x-page-column>
     </x-container>
 
+@endsection
 
 
-@can('accessories.files', Accessory::class)
-    @include ('modals.upload-file', ['item_type' => 'accessory', 'item_id' => $accessory->id])
-@endcan
-@stop
 
 @section('moar_scripts')
+    @can('files', $accessory)
+        @include ('modals.upload-file', ['item_type' => 'accessories', 'item_id' => $accessory->id])
+    @endcan
+
 @include ('partials.bootstrap-table')
-@stop
+@endsection

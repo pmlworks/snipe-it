@@ -24,7 +24,7 @@
                             count="{{ $snipe_component->numCheckedOut() }}"
                     />
 
-                    <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
+                    <x-tabs.files-tab :item="$snipe_component" count="{{ $snipe_component->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $snipe_component->history()->count() }}" :model="$snipe_component"/>
                     <x-tabs.upload-tab :item="$snipe_component"/>
 
@@ -75,12 +75,13 @@
         </x-page-column>
     </x-container>
 
-
-@can('components.files', Component::class)
-  @include ('modals.upload-file', ['item_type' => 'component', 'item_id' => $component->id])
-@endcan
 @endsection
 
+
+
 @section('moar_scripts')
-@include ('partials.bootstrap-table', ['exportFile' => 'component' . $component->name . '-export', 'search' => false])
-@stop
+    @can('files', $snipe_component)
+        @include ('modals.upload-file', ['item_type' => 'components', 'item_id' => $snipe_component->id])
+    @endcan
+    @include ('partials.bootstrap-table', ['exportFile' => 'component' . $snipe_component->name . '-export', 'search' => false])
+@endsection
