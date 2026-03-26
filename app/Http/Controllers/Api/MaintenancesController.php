@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\MaintenancesTransformer;
 use App\Models\Asset;
 use App\Models\Company;
@@ -250,5 +251,14 @@ class MaintenancesController extends Controller
 
         return (new MaintenancesTransformer)->transformMaintenance($maintenance);
 
+    }
+
+    public function history(Request $request, Maintenance $maintenance): JsonResponse|array
+    {
+        $this->authorize('view', Asset::class);
+        $asset = $maintenance->asset;
+        $this->authorize('history', $asset);
+        $history = $maintenance->getHistory($request);
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

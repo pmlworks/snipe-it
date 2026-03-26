@@ -10,6 +10,7 @@ use App\Http\Requests\AccessoryCheckoutRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\StoreAccessoryRequest;
 use App\Http\Transformers\AccessoriesTransformer;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
@@ -410,5 +411,12 @@ class AccessoriesController extends Controller
         $accessories = $accessories->orderBy('name', 'ASC')->paginate(50);
 
         return (new SelectlistTransformer)->transformSelectlist($accessories);
+    }
+
+    public function history(Request $request, Accessory $accessory): JsonResponse|array
+    {
+        $this->authorize('history', $accessory);
+        $history = $accessory->getHistory($request);
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

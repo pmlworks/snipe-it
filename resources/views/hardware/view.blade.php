@@ -64,7 +64,7 @@
                     <x-tabs.maintenance-tab count="{{ $asset->maintenances->count() }}"/>
                     <x-tabs.files-tab count="{{ $asset->uploads()->count() }}"/>
                     <x-tabs.model-files-tab count="{{ $asset->model?->uploads()->count() }}"/>
-                    <x-tabs.history-tab count="{{ $asset->assetlog()->count() }}" model=" \App\Models\Asset::class"/>
+                    <x-tabs.history-tab count="{{ $asset->history()->count() }}" :model="$asset"/>
                     <x-tabs.upload-tab :item="$asset"/>
                 </x-slot:tabnav>
 
@@ -159,14 +159,6 @@
                                     @endif
                                 </x-data-row>
 
-                                @if (($asset->model) && ($asset->model->fieldset))
-                                    @foreach($asset->model->fieldset->fields as $field)
-                                        <x-data-row :label="$field->name">
-                                            <x-info-element.customfield :item="$asset" :field="$field"/>
-                                        </x-data-row>
-                                    @endforeach
-                                @endif
-
                                 <x-data-row :label="trans('admin/hardware/form.default_location')" copy_what="default_location">
                                     {!!  $asset->defaultLoc?->present()->formattedNameLink !!}
                                 </x-data-row>
@@ -187,6 +179,17 @@
                                         @endif
                                     </x-data-row>
                                 @endif
+
+
+                                @if (($asset->model) && ($asset->model->fieldset))
+                                    @foreach($asset->model->fieldset->fields as $field)
+                                        <x-data-row :label="$field->name">
+                                            <x-info-element.customfield :item="$asset" :field="$field"/>
+                                        </x-data-row>
+                                    @endforeach
+                                @endif
+
+
 
                                 @if($asset->journal->last())
                                     <x-data-row :label="trans('general.last_note')" copy_what="last_note">
@@ -246,28 +249,30 @@
                                 }
                             @endphp
 
-                            <x-well class="well-sm">
 
-                                <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$eolPercent">
+                            @if($asset->purchase_date || $asset->asset_eol_date || $deprDate || $asset->warranty_expires)
+                                <x-well class="well-sm">
                                     @if($asset->purchase_date && $asset->asset_eol_date)
+                                        <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$eolPercent">
                                         <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>
-                                        /{{ $asset->model?->eol }} {{ trans('general.months') }}
+                                            /{{ $asset->model?->eol }} {{ trans('general.months') }}
+                                        </x-progressbar>
                                     @endif
-                                </x-progressbar>
 
-                                <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$deprPercent">
                                     @if($deprDate)
-                                        {{ Helper::getFormattedDateObject($deprDate->format('Y-m-d'), 'date', false) }}
+                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$deprPercent">
+                                            {{ Helper::getFormattedDateObject($deprDate->format('Y-m-d'), 'date', false) }}
+                                        </x-progressbar>
                                     @endif
-                                </x-progressbar>
 
-                                <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$warrantyPercent">
                                     @if($asset->warranty_expires)
+                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$warrantyPercent">
                                         {{ Helper::getFormattedDateObject($asset->warranty_expires, 'date', false) }}
+                                        </x-progressbar>
                                     @endif
-                                </x-progressbar>
 
-                            </x-well>
+                                </x-well>
+                            @endif
 
                             <x-well class="well-sm">
                                 <div class="well-display">
@@ -328,18 +333,7 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-
-                        <x-slot:table_header>
-                            {{ trans('general.history') }}
-                        </x-slot:table_header>
-
-                        <x-table
-                            name="assetHistory_{{ $asset->id }}"
-                            api_url="{{ route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset']) }}"
-                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                            export_filename="export-history-{{ str_slug($asset->name) }}-{{ date('Y-m-d') }}"
-                        />
-
+                        <x-table.history :model="$asset" :route="route('api.assets.history', $asset)"/>
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 

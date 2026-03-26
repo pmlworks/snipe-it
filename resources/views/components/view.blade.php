@@ -25,7 +25,7 @@
                     />
 
                     <x-tabs.files-tab count="{{ $snipe_component->uploads()->count() }}" />
-                    <x-tabs.history-tab model="\App\Models\Component::class"/>
+                    <x-tabs.history-tab count="{{ $snipe_component->history()->count() }}" :model="$snipe_component"/>
                     <x-tabs.upload-tab :item="$snipe_component"/>
 
                 </x-slot:tabnav>
@@ -45,23 +45,16 @@
 
                     </x-tabs.pane>
 
+                    <!-- start files tab pane -->
                     <x-tabs.pane name="files">
                         <x-table.files object_type="components" :object="$snipe_component"/>
                     </x-tabs.pane>
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:table_header>
-                            {{ trans('general.history') }}
-                        </x-slot:table_header>
-
-                        <x-table
-                            name="componentHistory"
-                            api_url="{{ route('api.activity.index', ['item_id' => $snipe_component->id, 'item_type' => 'component']) }}"
-                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                            export_filename="export-licenses-{{ str_slug($snipe_component->name) }}-{{ date('Y-m-d') }}"
-                        />
+                        <x-table.history :model="$snipe_component" :route="route('api.components.history', $snipe_component)"/>
                     </x-tabs.pane>
+
                 </x-slot:tabpanes>
             </x-tabs>
         </x-page-column>

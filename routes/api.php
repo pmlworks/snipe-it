@@ -82,6 +82,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
      */
     Route::group(['prefix' => 'accessories'], function () {
 
+        Route::get('{accessory}/history',
+            [
+                Api\AccessoriesController::class,
+                'history',
+            ]
+        )->name('api.accessories.history');
+
         Route::get('{accessory}/checkedout',
             [
                 Api\AccessoriesController::class,
@@ -215,6 +222,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
      */
     Route::group(['prefix' => 'components'], function () {
 
+        Route::get('{component}/history',
+            [
+                Api\ComponentsController::class,
+                'history',
+            ]
+        )->name('api.components.history');
+
+
         Route::get('selectlist',
             [
                 Api\ComponentsController::class,
@@ -262,6 +277,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
      * Consumables API routes
      */
     Route::group(['prefix' => 'consumables'], function () {
+
+        Route::get('{consumable}/history',
+            [
+                Api\ConsumablesController::class,
+                'history',
+            ]
+        )->name('api.consumables.history');
 
         Route::get('selectlist',
             [
@@ -436,6 +458,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
             ]
         )->name('api.assets.licenselist');
 
+        Route::get('{asset}/history',
+            [
+                Api\AssetsController::class,
+                'history',
+            ]
+        )->name('api.assets.history');
+
         Route::get('bytag/{tag}',
             [
                 Api\AssetsController::class,
@@ -572,6 +601,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
     /**
      * Asset maintenances API routes
      */
+
+    Route::get('/maintenances/{maintenance}/history',
+        [
+            Api\MaintenancesController::class,
+            'history',
+        ]
+    )->name('api.maintenances.history');
+
     Route::resource('maintenances',
         Api\MaintenancesController::class,
         ['names' => [
@@ -636,6 +673,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
                 'selectlist',
             ]
         )->name('api.licenses.selectlist');
+
+        Route::get('{license}/history',
+            [
+                Api\LicensesController::class,
+                'history',
+            ]
+        )->name('api.licenses.history');
 
     });
 
@@ -708,6 +752,14 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
                 'assignedAccessories',
             ]
         )->name('api.locations.assigned_accessories');
+
+        Route::get('{location}/history',
+            [
+                Api\LocationsController::class,
+                'history',
+            ]
+        )->name('api.locations.history');
+
         /** End assigned routes */
     });
 
@@ -764,6 +816,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
      * Asset models API routes
      */
     Route::group(['prefix' => 'models'], function () {
+
+        Route::get('{model}/history',
+            [
+                Api\AssetModelsController::class,
+                'history',
+            ]
+        )->name('api.models.history');
 
         Route::get('selectlist',
             [
@@ -1001,6 +1060,13 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
      * Users API routes
      */
     Route::group(['prefix' => 'users'], function () {
+
+        Route::get('{user}/history',
+            [
+                Api\UsersController::class,
+                'history',
+            ]
+        )->name('api.users.history');
 
         Route::get('selectlist',
             [
