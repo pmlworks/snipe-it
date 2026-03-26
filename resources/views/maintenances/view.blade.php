@@ -21,7 +21,7 @@ use Carbon\Carbon;
             <x-tabs>
                 <x-slot:tabnav>
                     <x-tabs.details-tab/>
-                    <x-tabs.files-tab count="{{ $maintenance->uploads()->count() }}" />
+                    <x-tabs.files-tab :item="$maintenance" count="{{ $maintenance->uploads()->count() }}"/>
                     <x-tabs.upload-tab :item="$maintenance"/>
                 </x-slot:tabnav>
 
@@ -181,16 +181,14 @@ use Carbon\Carbon;
         </x-page-column>
     </x-container>
 
+@endsection
 
-
-
-
-  @can('assets.files', Asset::class)
-    @include ('modals.upload-file', ['item_type' => 'maintenance', 'item_id' => $maintenance->id])
-  @endcan
-@stop
 
 @section('moar_scripts')
-  @include ('partials.bootstrap-table')
-@stop
+    @can('files', $maintenance->asset)
+        @include ('modals.upload-file', ['item_type' => 'maintenances', 'item_id' => $maintenance->id])
+    @endcan
+
+    @include ('partials.bootstrap-table')
+@endsection
 

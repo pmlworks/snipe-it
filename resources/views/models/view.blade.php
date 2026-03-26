@@ -28,7 +28,7 @@
             <x-tabs>
                 <x-slot:tabnav>
                     <x-tabs.asset-tab count="{{ $model->assets()->AssetsForShow()->count() }}" />
-                    <x-tabs.files-tab name="files" count="{{ $model->uploads()->count() }}" />
+                    <x-tabs.files-tab :item="$model" count="{{ $model->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $model->history()->count() }}" :model="$model"/>
                     <x-tabs.upload-tab :item="$model"/>
                 </x-slot:tabnav>
@@ -68,15 +68,12 @@
         </x-page-column>
     </x-container>
 
-
-
-@can('update', \App\Models\AssetModel::class)
-    @include ('modals.upload-file', ['item_type' => 'models', 'item_id' => $model->id])
-@endcan
-@stop
+@endsection
 
 @section('moar_scripts')
+    @can('files', $model)
+        @include ('modals.upload-file', ['item_type' => 'models', 'item_id' => $model->id])
+    @endcan
 
-    @include ('partials.bootstrap-table', ['exportFile' => 'manufacturer' . $model->name . '-export', 'search' => false])
-
-@stop
+    @include ('partials.bootstrap-table', ['exportFile' => 'models-' . $model->name . '-export', 'search' => false])
+@endsection

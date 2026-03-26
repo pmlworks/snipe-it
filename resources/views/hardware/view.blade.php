@@ -390,13 +390,14 @@
     </x-container>
 
 
-
-    @can('update', \App\Models\Asset::class)
+    @section('moar_scripts')
+        @can('files', $asset)
+            @include ('modals.upload-file', ['item_type' => 'asset', 'item_id' => $asset->id])
+        @endcan
+        @can('update', $asset)
         @include ('modals.add-note', ['type' => 'asset', 'id' => $asset->id])
-        @include ('modals.upload-file', ['item_type' => 'asset', 'item_id' => $asset->id])
     @endcan
-    @stop
-                @section('moar_scripts')
         @include ('partials.bootstrap-table')
+    @endsection
 
-    @stop
+@stop

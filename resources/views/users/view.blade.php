@@ -33,7 +33,7 @@
                     <x-tabs.license-tab count="{{ $user->licenses()->count() }}"/>
                     <x-tabs.accessory-tab count="{{ $user->accessories()->count() }}"/>
                     <x-tabs.consumable-tab count="{{ $user->consumables()->count() }}"/>
-                    <x-tabs.files-tab count="{{ $user->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$user" count="{{ $supplier->uploads()->count() }}"/>
                     <x-tabs.eula-tab count="{{ $user->eulas()->count() }}"/>
                     <x-tabs.location-tab count="{{ $user->managedLocations()->count() }}"/>
                     <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users" icon_type="manager" :label="trans('admin/users/table.managed_users')"/>
@@ -565,16 +565,15 @@
         </x-page-column>
     </x-container>
 
-    @can('update', $user)
-        @include ('modals.upload-file', ['item_type' => 'user', 'item_id' => $user->id])
-    @endcan
-
-  @stop
-
+@endsection
 
 
 @section('moar_scripts')
-  @include ('partials.bootstrap-table', ['simple_view' => true])
+    @can('files', $user)
+        @include ('modals.upload-file', ['item_type' => 'users', 'item_id' => $user->id])
+    @endcan
+
+    @include ('partials.bootstrap-table', ['simple_view' => true])
 <script nonce="{{ csrf_token() }}">
 $(function () {
 
@@ -618,5 +617,4 @@ $(function () {
 });
 </script>
 
-
-@stop
+@endsection
