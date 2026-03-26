@@ -116,6 +116,10 @@
                     {!!  $infoPanelObj->model->present()->formattedNameLink !!}
                 </x-copy-to-clipboard>
             </x-info-element>
+
+            <x-info-element icon_type="category" icon_color="{{ $infoPanelObj->model->category->tag_color }}" title="{{ trans('general.category') }}">
+                <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->model->category->present()->nameUrl !!}</x-copy-to-clipboard>
+            </x-info-element>
         @endif
 
         @if ($infoPanelObj->model_number)
@@ -228,6 +232,7 @@
                 <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->category->present()->nameUrl !!}</x-copy-to-clipboard>
             </x-info-element>
         @endif
+
 
         @if ($infoPanelObj->category_type)
             <x-info-element icon_type="{{ $infoPanelObj->category_type }}" title="{{ trans('general.type') }}">
