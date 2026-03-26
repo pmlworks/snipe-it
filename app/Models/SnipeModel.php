@@ -247,18 +247,20 @@ class SnipeModel extends Model
             if ($item->numRemaining() > 0) {
                 return 'show-active';
             }
+
             return 'show-disabled';
         }
 
         if (method_exists($item, 'availableForCheckout')) {
-            if ($item->availableForCheckout() > 0) {
+
+            if ($item->availableForCheckout()) {
                 return 'show-active';
             }
+
             return 'show-disabled';
         }
 
         return false;
-
 
     }
 
@@ -268,6 +270,7 @@ class SnipeModel extends Model
             if ($item->numRemaining() <= 0) {
                 return 'show-active';
             }
+
             return 'show-disabled';
         }
 
@@ -275,6 +278,7 @@ class SnipeModel extends Model
             if ($item->availableForCheckIn()) {
                 return 'show-active';
             }
+
             return 'show-disabled';
         }
 

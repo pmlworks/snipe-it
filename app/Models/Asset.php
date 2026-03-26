@@ -456,6 +456,8 @@ class Asset extends Depreciable
                 return true;
 
             }
+
+            return false;
         }
 
         return false;
@@ -465,8 +467,11 @@ class Asset extends Depreciable
     {
 
         // This asset is currently assigned to anyone and is not deleted...
-        if ($this->assigned_to) {
+        if (($this->assigned_to != '') && ($this->assetstatus) && ($this->assetstatus->archived == '0')
+            && ($this->assetstatus->deployable == '1')
+        ) {
             return true;
+
         }
 
         return false;
