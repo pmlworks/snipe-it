@@ -95,7 +95,7 @@
                   />
 
                   <x-tabs.files-tab count="{{ $location->uploads()->count() }}"/>
-                  <x-tabs.history-tab count="{{ $location->actionlog()->count() }}" model="\App\Models\Location::class"/>
+                  <x-tabs.history-tab count="{{ $location->history()->count() }}" :model="$location"/>
                   <x-tabs.upload-tab count="{{ $location->uploads()->count() }}" :item="$location"/>
 
               </x-slot:tabnav>
@@ -192,17 +192,7 @@
 
                   <!-- start history tab pane -->
                   <x-tabs.pane name="history">
-                      <x-slot:table_header>
-                          {{ trans('general.history') }}
-                      </x-slot:table_header>
-
-                      <x-table
-                          name="locationHistory"
-                          api_url="{{ route('api.activity.index', ['item_id' => $location->id, 'item_type' => 'location']) }}"
-                          :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                          export_filename="export-locations-history-{{ str_slug($location->name) }}-{{ date('Y-m-d') }}"
-                      />
-
+                      <x-table.history :model="$location" :route="route('api.locations.history', $location)"/>
                   </x-tabs.pane>
                   <!-- end history tab pane -->
 

@@ -6,6 +6,7 @@ use App\Events\CheckoutableCheckedIn;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\ComponentsTransformer;
 use App\Models\Asset;
 use App\Models\Component;
@@ -386,5 +387,13 @@ class ComponentsController extends Controller
         }
 
         return response()->json(Helper::formatStandardApiResponse('error', null, 'No matching checkouts for that component join record'));
+    }
+
+    public function history(Request $request, Component $component): JsonResponse|array
+    {
+        $this->authorize('history', $component);
+        $history = $component->getHistory($request);
+
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

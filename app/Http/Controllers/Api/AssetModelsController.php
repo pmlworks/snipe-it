@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\StoreAssetModelRequest;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\AssetModelsTransformer;
 use App\Http\Transformers\AssetsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
@@ -349,5 +350,13 @@ class AssetModelsController extends Controller
         }
 
         return (new SelectlistTransformer)->transformSelectlist($assetmodels);
+    }
+
+    public function history(Request $request, AssetModel $model): JsonResponse|array
+    {
+        $this->authorize('history', $model);
+        $history = $model->getHistory($request);
+
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

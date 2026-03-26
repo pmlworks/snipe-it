@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\AssetsTransformer;
 use App\Http\Transformers\LocationsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
@@ -454,5 +455,13 @@ class LocationsController extends Controller
         $paginated_results = new LengthAwarePaginator($locations_formatted->forPage($page, 500), $locations_formatted->count(), 500, $page, []);
 
         return (new SelectlistTransformer)->transformSelectlist($paginated_results);
+    }
+
+    public function history(Request $request, Location $location): JsonResponse|array
+    {
+        $this->authorize('history', $location);
+        $history = $location->getHistory($request);
+
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

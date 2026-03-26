@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
@@ -34,6 +35,77 @@ trait Loggable
     public function log()
     {
         return $this->morphMany(Actionlog::class, 'item');
+    }
+
+    public function history()
+    {
+        return $this->hasMany(Actionlog::class, 'item_id')
+            ->where('item_type', self::class);
+    }
+
+    public function getHistory(Request $request)
+    {
+        $allowed_columns = [
+            'id',
+            'created_at',
+            'target_id',
+            'created_by',
+            'accept_signature',
+            'action_type',
+            'note',
+            'remote_ip',
+            'user_agent',
+            'target_type',
+            'item_type',
+            'action_source',
+            'action_date',
+        ];
+
+        $history = $this->with('item', 'user', 'adminuser', 'target', 'location', 'history');
+
+        if ($request->filled('search')) {
+            $history = $this->history()->TextSearch(e($request->input('search')));
+        }
+
+        if ($request->filled('action_type')) {
+            $history = $this->history()->where('action_type', '=', $request->input('action_type'));
+        }
+
+        if ($request->filled('created_by')) {
+            $history = $this->history()->where('created_by', '=', $request->input('created_by'));
+        }
+
+        if ($request->filled('action_source')) {
+            $history = $this->history()->where('action_source', '=', $request->input('action_source'));
+        }
+
+        if ($request->filled('remote_ip')) {
+            $history = $this->history()->where('remote_ip', '=', $request->input('remote_ip'));
+        }
+
+        if ($request->filled('uploads')) {
+            $history = $this->history()->whereNotNull('filename');
+        }
+
+        $total = $this->history()->count();
+        // Make sure the offset and limit are actually integers and do not exceed system limits
+        $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
+        $limit = app('api_limit_value');
+
+        $order = ($request->input('order') == 'asc') ? 'asc' : 'desc';
+
+        switch ($request->input('sort')) {
+            case 'created_by':
+                $this->history()->OrderByCreatedBy($order);
+                break;
+            default:
+                $sort = in_array($request->input('sort'), $allowed_columns) ? e($request->input('sort')) : 'action_logs.created_at';
+                $history = $this->history()->orderBy($sort, $order);
+                break;
+        }
+
+        return $history->skip($offset)->take($limit)->get();
+
     }
 
     public function setImported(bool $bool): void

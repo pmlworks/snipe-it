@@ -37,7 +37,7 @@
                     <x-tabs.eula-tab count="{{ $user->eulas()->count() }}"/>
                     <x-tabs.location-tab count="{{ $user->managedLocations()->count() }}"/>
                     <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users" icon_type="manager" :label="trans('admin/users/table.managed_users')"/>
-                    <x-tabs.history-tab count="{{ $user->userlog()->count() }}" model="\App\Models\User::class"/>
+                    <x-tabs.history-tab count="{{ $user->history()->count() }}" :model="$user"/>
                     <x-tabs.upload-tab :item="$user"/>
                 </x-slot:tabnav>
 
@@ -501,18 +501,7 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-
-                        <x-slot:table_header>
-                            {{ trans('general.history') }}
-                        </x-slot:table_header>
-
-                        <x-table
-                            name="userHistory_{{ $user->id }}"
-                            api_url="{{ route('api.activity.index', ['target_id' => $user->id, 'target_type' => User::class]) }}"
-                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                            export_filename="export-history-{{ str_slug($user->name) }}-{{ date('Y-m-d') }}"
-                        />
-
+                        <x-table.history :model="$user" :route="route('api.users.history', $user)"/>
                     </x-tabs.pane>
                     <!-- end history tab pane -->
                 </x-slot:tabpanes>

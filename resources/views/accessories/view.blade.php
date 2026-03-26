@@ -26,7 +26,7 @@
 
                     <x-tabs.checkedout-tab :item="$accessory" count="{{ $accessory->checkouts_count }}" />
                     <x-tabs.files-tab count="{{ $accessory->uploads()->count() }}" />
-                    <x-tabs.history-tab model="\App\Models\Accessory::class"/>
+                    <x-tabs.history-tab count="{{ $user->history()->count() }}" :model="$accessory"/>
                     <x-tabs.upload-tab :item="$accessory"/>
                 </x-slot:tabnav>
 
@@ -49,17 +49,7 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:table_header>
-                            {{ trans('general.history') }}
-                        </x-slot:table_header>
-
-                        <x-table
-                            name="accessoryHistory"
-                            api_url="{{ route('api.activity.index', ['item_id' => $accessory->id, 'item_type' => 'accessory']) }}"
-                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                            export_filename="export-accessory-{{ str_slug($accessory->name) }}-{{ date('Y-m-d') }}"
-                        />
-
+                        <x-table.history :model="$accessory" :route="route('api.accessories.history', $accessory)"/>
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 

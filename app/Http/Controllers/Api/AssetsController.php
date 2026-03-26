@@ -11,6 +11,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\StoreAssetRequest;
 use App\Http\Requests\UpdateAssetRequest;
 use App\Http\Traits\MigratesLegacyAssetLocations;
+use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\AssetsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
 use App\Models\AccessoryCheckout;
@@ -1450,5 +1451,13 @@ class AssetsController extends Controller
                 'error_file' => $e->getFile(),
             ], $e->getMessage()), 500);
         }
+    }
+
+    public function history(Request $request, Asset $asset): JsonResponse|array
+    {
+        $this->authorize('history', $asset);
+        $history = $asset->getHistory($request);
+
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

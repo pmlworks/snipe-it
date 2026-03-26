@@ -967,4 +967,12 @@ class UsersController extends Controller
         return response()->json(Helper::formatStandardApiResponse('success', null, $ldap_results['summary']), 200);
 
     }
+
+    public function history(Request $request, User $user): JsonResponse|array
+    {
+        $this->authorize('history', $user);
+        $history = $user->getHistory($request);
+
+        return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
+    }
 }

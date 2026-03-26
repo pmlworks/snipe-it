@@ -18,7 +18,6 @@
             <x-tabs>
                 <x-slot:tabnav>
 
-
                     <x-tabs.nav-item
                             name="seats"
                             icon_type="checkedout"
@@ -34,7 +33,7 @@
                     />
 
                     <x-tabs.files-tab name="files" count="{{ $license->uploads()->count() }}"/>
-                    <x-tabs.history-tab model="\App\Models\License::class"/>
+                    <x-tabs.history-tab count="{{ $license->history()->count() }}" :model="$license"/>
                     <x-tabs.upload-tab :item="$license"/>
                 </x-slot:tabnav>
 
@@ -73,17 +72,7 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-slot:table_header>
-                            {{ trans('general.history') }}
-                        </x-slot:table_header>
-
-                        <x-table
-                            name="locationHistory_{{ $license->id }}"
-                            api_url="{{ route('api.activity.index', ['item_id' => $license->id, 'item_type' => 'license']) }}"
-                            :presenter="\App\Presenters\HistoryPresenter::dataTableLayout()"
-                            export_filename="export-licenses-{{ str_slug($license->name) }}-{{ date('Y-m-d') }}"
-                        />
-
+                        <x-table.history :model="$license" :route="route('api.licenses.history', $license)"/>
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 
