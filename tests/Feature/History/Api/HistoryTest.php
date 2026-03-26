@@ -4,10 +4,10 @@ namespace Tests\Feature\History\Api;
 
 use App\Models\Accessory;
 use App\Models\Asset;
+use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\License;
 use App\Models\Location;
-use App\Models\Component;
 use App\Models\Maintenance;
 use App\Models\User;
 use Tests\TestCase;

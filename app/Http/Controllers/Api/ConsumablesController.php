@@ -373,6 +373,7 @@ class ConsumablesController extends Controller
     {
         $this->authorize('history', $consumable);
         $history = $consumable->getHistory($request);
+
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

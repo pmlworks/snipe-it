@@ -150,7 +150,6 @@ class UserFactory extends Factory
         return $this->appendPermission(['consumables.view' => '1']);
     }
 
-
     public function createAssets()
     {
         return $this->appendPermission(['assets.create' => '1']);

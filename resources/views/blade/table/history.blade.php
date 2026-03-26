@@ -19,7 +19,5 @@
         api_url="{{ $route }}"
         export_filename="export-history-{{ date('Y-m-d') }}"
     />
-@else
-    Nope
 @endcan
 <!-- end assets tab pane -->

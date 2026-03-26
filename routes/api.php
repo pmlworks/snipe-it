@@ -229,7 +229,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
             ]
         )->name('api.components.history');
 
-
         Route::get('selectlist',
             [
                 Api\ComponentsController::class,
@@ -601,7 +600,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
     /**
      * Asset maintenances API routes
      */
-
     Route::get('/maintenances/{maintenance}/history',
         [
             Api\MaintenancesController::class,

@@ -148,7 +148,6 @@ class AuthServiceProvider extends ServiceProvider
 
             return false;
         });
-        
 
         /**
          * Define the demo mode gate so we have an easy way to use @can and Gate::allows()

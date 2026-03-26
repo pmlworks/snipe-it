@@ -37,7 +37,7 @@ class MaintenancesController extends Controller
         $this->authorize('view', Asset::class);
 
         $maintenances = Maintenance::select('maintenances.*')
-            ->with('asset', 'asset.model', 'asset.location', 'asset.defaultLoc', 'supplier', 'asset.company', 'asset.assetstatus', 'adminuser', 'asset.assignedTo',);
+            ->with('asset', 'asset.model', 'asset.location', 'asset.defaultLoc', 'supplier', 'asset.company', 'asset.assetstatus', 'adminuser', 'asset.assignedTo');
 
         if ($request->filled('search')) {
             $maintenances = $maintenances->TextSearch($request->input('search'));
@@ -130,7 +130,7 @@ class MaintenancesController extends Controller
         if (request()->input('format') == 'flat') {
             return (new MaintenancesTransformer)->transformMaintenancesFlat($maintenances, $total);
         }
-        
+
         return (new MaintenancesTransformer)->transformMaintenances($maintenances, $total);
 
     }
@@ -259,6 +259,7 @@ class MaintenancesController extends Controller
         $asset = $maintenance->asset;
         $this->authorize('history', $asset);
         $history = $maintenance->getHistory($request);
+
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }

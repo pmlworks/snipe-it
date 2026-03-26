@@ -417,6 +417,7 @@ class AccessoriesController extends Controller
     {
         $this->authorize('history', $accessory);
         $history = $accessory->getHistory($request);
+
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $history->count()), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
 }
