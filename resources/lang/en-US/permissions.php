@@ -203,7 +203,7 @@ return [
         'name' => 'Manage Component Files',
         'note' => 'Allows the user to upload, download, and delete files associated with components.',
     ],
-    
+
     'licenseskeys' => [
         'name' => 'Manage License Keys',
         'note' => 'Allows the user to view product keys associated with licenses.',

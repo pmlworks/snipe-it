@@ -13,6 +13,6 @@ class ConsumablePolicy extends CheckoutablePermissionsPolicy
 
     public function files(User $user, $item = null)
     {
-        return $user->hasAccess($this->columnName() . '.files');
+        return $user->hasAccess($this->columnName().'.files');
     }
 }
