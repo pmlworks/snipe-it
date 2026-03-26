@@ -324,7 +324,7 @@ class Location extends SnipeModel
      */
     public function assignedAssets()
     {
-        return $this->morphMany(Asset::class, 'assigned', 'assigned_type', 'assigned_to')->withTrashed();
+        return $this->morphMany(Asset::class, 'assigned', 'assigned_type', 'assigned_to')->AssetsForShow()->withTrashed();
     }
 
     /**
