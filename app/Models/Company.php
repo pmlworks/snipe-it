@@ -26,8 +26,8 @@ final class Company extends SnipeModel
     use CompanyableTrait;
     use HasFactory;
     use HasUploads;
-    use SoftDeletes;
     use Loggable;
+    use SoftDeletes;
 
     protected $table = 'companies';
 

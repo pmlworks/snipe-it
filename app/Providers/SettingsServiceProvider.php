@@ -175,7 +175,6 @@ class SettingsServiceProvider extends ServiceProvider
             return 'companies/';
         });
 
-
         // Accessories paths and URLs
         app()->singleton('accessories_upload_path', function () {
             return 'accessories/';

@@ -8,7 +8,6 @@ use App\Models\Traits\Searchable;
 use App\Presenters\ActionlogPresenter;
 use App\Presenters\Presentable;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -439,7 +438,6 @@ class Actionlog extends SnipeModel
 
         return Carbon::parse($last_audit_date)->addMonths($monthInterval)->toDateString();
     }
-    
 
     /**
      * Determines what the type of request is so we can log it to the action_log
@@ -537,11 +535,11 @@ class Actionlog extends SnipeModel
             case AssetModel::class:
                 return 'private_uploads/models/'.$this->filename;
             case Company::class:
-                return 'private_uploads/companies/' . $this->filename;
+                return 'private_uploads/companies/'.$this->filename;
             case Consumable::class:
                 return 'private_uploads/consumables/'.$this->filename;
             case Department::class:
-                return 'private_uploads/departments/' . $this->filename;
+                return 'private_uploads/departments/'.$this->filename;
             case Component::class:
                 return 'private_uploads/components/'.$this->filename;
             case License::class:
