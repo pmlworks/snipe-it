@@ -112,6 +112,24 @@ class SettingsServiceProvider extends ServiceProvider
             return 'locations/';
         });
 
+        // Companies
+        app()->singleton('companies_upload_path', function () {
+            return 'companies/';
+        });
+
+        app()->singleton('companies_upload_url', function () {
+            return 'companies/';
+        });
+
+        // Departments
+        app()->singleton('departments_upload_path', function () {
+            return 'departments/';
+        });
+
+        app()->singleton('departments_upload_url', function () {
+            return 'departments/';
+        });
+
         // Users
         app()->singleton('users_upload_path', function () {
             return 'avatars/';
@@ -156,6 +174,7 @@ class SettingsServiceProvider extends ServiceProvider
         app()->singleton('companies_upload_url', function () {
             return 'companies/';
         });
+
 
         // Accessories paths and URLs
         app()->singleton('accessories_upload_path', function () {
