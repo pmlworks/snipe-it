@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\MaintenancesTransformer;
@@ -32,15 +33,16 @@ class MaintenancesController extends Controller
      *
      * @since [v1.8]
      */
-    public function index(Request $request): JsonResponse|array
+    public function index(FilterRequest $request): JsonResponse|array
     {
         $this->authorize('view', Asset::class);
 
         $maintenances = Maintenance::select('maintenances.*')
             ->with('asset', 'asset.model', 'asset.location', 'asset.defaultLoc', 'supplier', 'asset.company', 'asset.assetstatus', 'adminuser', 'asset.assignedTo');
 
-        if ($request->filled('search')) {
-            $maintenances = $maintenances->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $maintenances->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->filled('asset_id')) {

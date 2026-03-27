@@ -78,10 +78,9 @@ class CategoriesController extends Controller
 
         }
 
-        if ((! is_null($filter)) && (count($filter)) > 0) {
-            $categories->ByFilter($filter);
-        } elseif ($request->filled('search')) {
-            $categories->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $categories->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         /*

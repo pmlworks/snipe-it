@@ -93,21 +93,9 @@ class AssetModelsController extends Controller
             ->withCount('assignedAssets as assets_assigned_count')
             ->withCount('archivedAssets as assets_archived_count');
 
-        $filter = [];
-
-        if ($request->filled('filter')) {
-            $filter = json_decode($request->input('filter'), true);
-
-            $filter = array_filter($filter, function ($key) use ($allowed_columns) {
-                return in_array($key, $allowed_columns);
-            }, ARRAY_FILTER_USE_KEY);
-
-        }
-
-        if ((! is_null($filter)) && (count($filter)) > 0) {
-            $assetmodels->ByFilter($filter);
-        } elseif ($request->filled('search')) {
-            $assetmodels->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $assetmodels->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->input('status') == 'deleted') {

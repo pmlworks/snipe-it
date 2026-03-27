@@ -142,17 +142,6 @@ class AssetsController extends Controller
             $allowed_columns[] = $field->db_column_name();
         }
 
-        $filter = [];
-
-        if ($request->filled('filter')) {
-            $filter = json_decode($request->input('filter'), true);
-
-            $filter = array_filter($filter, function ($key) use ($allowed_columns) {
-                return in_array($key, $allowed_columns);
-            }, ARRAY_FILTER_USE_KEY);
-
-        }
-
         $assets = Asset::select('assets.*')
 //            ->addSelect([
 //                'first_checkout_at' => Actionlog::query()
@@ -195,10 +184,9 @@ class AssetsController extends Controller
             }
         }
 
-        if ((! is_null($filter)) && (count($filter)) > 0) {
-            $assets->ByFilter($filter);
-        } elseif ($request->filled('search')) {
-            $assets->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $assets->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         /**

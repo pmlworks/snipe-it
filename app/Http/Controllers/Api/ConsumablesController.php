@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\CheckoutableCheckedOut;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\StoreConsumableRequest;
 use App\Http\Transformers\ActionlogsTransformer;
@@ -25,7 +26,7 @@ class ConsumablesController extends Controller
      *
      * @since [v4.0]
      */
-    public function index(Request $request): array
+    public function index(FilterRequest $request): array
     {
         $this->authorize('index', Consumable::class);
 
@@ -60,21 +61,9 @@ class ConsumablesController extends Controller
             'manufacturer',
         ];
 
-        $filter = [];
-
-        if ($request->filled('filter')) {
-            $filter = json_decode($request->input('filter'), true);
-
-            $filter = array_filter($filter, function ($key) use ($allowed_columns) {
-                return in_array($key, $allowed_columns);
-            }, ARRAY_FILTER_USE_KEY);
-
-        }
-
-        if ((! is_null($filter)) && (count($filter)) > 0) {
-            $consumables->ByFilter($filter);
-        } elseif ($request->filled('search')) {
-            $consumables->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $consumables->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->filled('name')) {

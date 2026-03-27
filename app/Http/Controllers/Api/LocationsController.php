@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\AssetsTransformer;
@@ -32,7 +33,7 @@ class LocationsController extends Controller
      *
      * @return Response
      */
-    public function index(Request $request): JsonResponse|array
+    public function index(FilterRequest $request): JsonResponse|array
     {
         $this->authorize('view', Location::class);
         $allowed_columns = [
@@ -107,8 +108,9 @@ class LocationsController extends Controller
             $locations = Company::scopeCompanyables($locations);
         }
 
-        if ($request->filled('search')) {
-            $locations = $locations->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $locations->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->filled('name')) {
