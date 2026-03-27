@@ -94,6 +94,7 @@ class Category extends SnipeModel
         'category_type',
         'notes',
         'eula_text',
+        'created_at',
     ];
 
     /**
@@ -103,6 +104,14 @@ class Category extends SnipeModel
      */
     protected $searchableRelations = [
         'adminuser' => ['first_name', 'last_name', 'display_name'],
+    ];
+
+    protected $searchableCounts = [
+        'accessories_count',
+        'consumables_count',
+        'components_count',
+        'licenses_count',
+        'models_count',
     ];
 
     /**
