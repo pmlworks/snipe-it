@@ -24,12 +24,9 @@ use Illuminate\Support\Facades\DB;
  * 2. Make sure you import the App\Models\Traits\Searchable trait and use Searchable in the model
  * 3. Make sure you check the request for the request input filter or search and then invoke the TextSearch scope, like:
  *
- * if ($request->filled('filter')) {
- *     $modelThingie = $licenses->TextSearch($request->input('filter'));
- * } elseif ($request->filled('search')) {
- *     $modelThingie = $licenses->TextSearch($request->input('search'));
+ * if ($request->filled('filter') || $request->filled('search')) {
+ *       $whateverModel->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
  * }
- *
  * 4. Set the "data-advanced
  *
  *
@@ -220,8 +217,9 @@ trait Searchable
     /**
      * Searches the models attributes for the search terms
      *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
+     * @param  $query  Builder
+     * @param  $terms  array
+     * @return Builder
      */
     private function searchAttributes(Builder $query, array $terms)
     {
@@ -264,8 +262,9 @@ trait Searchable
     /**
      * Searches the models custom fields for the search terms
      *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
+     * @param  $query  Builder
+     * @param  $terms  array
+     * @return Builder
      */
     private function searchCustomFields(Builder $query, array $terms)
     {
@@ -291,8 +290,9 @@ trait Searchable
     /**
      * Searches the models relations for the search terms
      *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @return Illuminate\Database\Eloquent\Builder
+     * @param  $query  Builder
+     * @param  $terms  array
+     * @return Builder
      */
     private function searchRelations(Builder $query, array $terms)
     {
@@ -345,9 +345,9 @@ trait Searchable
      *
      * This is a noop in this trait, but can be overridden in the implementing model, to allow more advanced searches
      *
-     * @param  Illuminate\Database\Eloquent\Builder  $query
-     * @param  array  $terms  The search terms
-     * @return Illuminate\Database\Eloquent\Builder
+     * @param  $query  Builder
+     * @param  $terms  array
+     * @return Builder
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
