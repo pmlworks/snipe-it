@@ -85,6 +85,7 @@ class AssetModel extends SnipeModel
      * @var array
      */
     protected $searchableAttributes = [
+        'created_at',
         'eol',
         'min_amt',
         'model_number',

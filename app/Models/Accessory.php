@@ -47,6 +47,7 @@ class Accessory extends SnipeModel
      * @var array
      */
     protected $searchableAttributes = [
+        'created_at',
         'model_number',
         'name',
         'notes',
@@ -66,6 +67,10 @@ class Accessory extends SnipeModel
         'location' => ['name'],
         'manufacturer' => ['name'],
         'supplier' => ['name'],
+    ];
+
+    protected $searchableCounts = [
+        'checkouts_count',
     ];
 
     /**
