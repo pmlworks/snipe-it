@@ -89,14 +89,21 @@ class Category extends SnipeModel
      *
      * @var array
      */
-    protected $searchableAttributes = ['name', 'category_type', 'notes'];
+    protected $searchableAttributes = [
+        'name',
+        'category_type',
+        'notes',
+        'eula_text',
+    ];
 
     /**
      * The relations and their attributes that should be included when searching the model.
      *
      * @var array
      */
-    protected $searchableRelations = [];
+    protected $searchableRelations = [
+        'adminuser' => ['first_name', 'last_name', 'display_name'],
+    ];
 
     /**
      * Checks if category can be deleted
@@ -263,11 +270,6 @@ class Category extends SnipeModel
         return $this->hasMany(AssetModel::class, 'category_id');
     }
 
-    public function adminuser()
-    {
-        return $this->belongsTo(User::class, 'created_by')->withTrashed();
-    }
-
     /**
      * Checks for a category-specific EULA, and if that doesn't exist,
      * checks for a settings level EULA
@@ -314,33 +316,6 @@ class Category extends SnipeModel
      * BEGIN QUERY SCOPES
      * -----------------------------------------------
      **/
-
-    /**
-     * Query builder scope to search on text filters for complex Bootstrap Tables API
-     *
-     * @param  Builder  $query  Query builder instance
-     * @param  text  $filter  JSON array of search keys and terms
-     * @return Builder Modified query builder
-     */
-    public function scopeByFilter($query, $filter)
-    {
-        return $query->where(
-            function ($query) use ($filter) {
-                foreach ($filter as $fieldname => $search_val) {
-
-                    if ($fieldname == 'name') {
-                        $query->where('categories.name', 'LIKE', '%'.$search_val.'%');
-                    }
-
-                    if ($fieldname == 'category_type') {
-                        $query->where('categories.category_type', 'LIKE', '%'.$search_val.'%');
-                    }
-
-                }
-
-            }
-        );
-    }
 
     /**
      * Query builder scope for whether or not the category requires acceptance
