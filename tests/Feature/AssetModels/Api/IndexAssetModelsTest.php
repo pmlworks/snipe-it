@@ -64,28 +64,28 @@ class IndexAssetModelsTest extends TestCase
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
     }
 
-            public function test_asset_model_index_filter_can_search_computed_count_aliases()
-            {
-                $targetModel = AssetModel::factory()->create(['name' => 'Two Assets Model']);
-                $otherModel = AssetModel::factory()->create(['name' => 'One Asset Model']);
+    public function test_asset_model_index_filter_can_search_computed_count_aliases()
+    {
+        $targetModel = AssetModel::factory()->create(['name' => 'Two Assets Model']);
+        $otherModel = AssetModel::factory()->create(['name' => 'One Asset Model']);
 
-                Asset::factory()->count(2)->create(['model_id' => $targetModel->id]);
-                Asset::factory()->create(['model_id' => $otherModel->id]);
+        Asset::factory()->count(2)->create(['model_id' => $targetModel->id]);
+        Asset::factory()->create(['model_id' => $otherModel->id]);
 
-                $this->actingAsForApi(User::factory()->superuser()->create())
-                    ->getJson(route('api.models.index', [
-                        'filter' => '{"assets_count":"2"}',
-                        'sort' => 'id',
-                        'order' => 'asc',
-                        'offset' => '0',
-                        'limit' => '20',
-                    ]))
-                    ->assertOk()
-                    ->assertJsonStructure([
-                        'total',
-                        'rows',
-                    ])
-                    ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc())
-                    ->assertJsonFragment(['name' => 'Two Assets Model']);
-            }
+        $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.models.index', [
+                'filter' => '{"assets_count":"2"}',
+                'sort' => 'id',
+                'order' => 'asc',
+                'offset' => '0',
+                'limit' => '20',
+            ]))
+            ->assertOk()
+            ->assertJsonStructure([
+                'total',
+                'rows',
+            ])
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc())
+            ->assertJsonFragment(['name' => 'Two Assets Model']);
+    }
 }
