@@ -50,7 +50,7 @@ trait Searchable
         $terms = $preparedSearch['terms'];
         $filters = $preparedSearch['filters'];
 
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             return $this->applySearchFilters($query, $filters);
         }
 
@@ -83,8 +83,6 @@ trait Searchable
      * Supported filter inputs:
      * - {"field":"value"}
      * - filter:{"field":"value"}
-     *
-     * @return array
      */
     private function prepareSearchInput(string $search): array
     {
@@ -107,8 +105,6 @@ trait Searchable
 
     /**
      * Normalize a structured filter payload into scalar string filters.
-     *
-     * @return array|null
      */
     private function parseStructuredFilterPayload(string $search): ?array
     {
@@ -120,24 +116,24 @@ trait Searchable
 
         if (str_starts_with($search, 'filter:')) {
             $payload = substr($search, 7);
-        } elseif (!(str_starts_with($search, '{') && str_ends_with($search, '}'))) {
+        } elseif (! (str_starts_with($search, '{') && str_ends_with($search, '}'))) {
             return null;
         }
 
         $decoded = json_decode($payload, true);
 
-        if (!is_array($decoded)) {
+        if (! is_array($decoded)) {
             return null;
         }
 
         $filters = [];
 
         foreach ($decoded as $key => $value) {
-            if (!is_string($key)) {
+            if (! is_string($key)) {
                 continue;
             }
 
-            if (!is_scalar($value) && $value !== null) {
+            if (! is_scalar($value) && $value !== null) {
                 continue;
             }
 
@@ -167,7 +163,6 @@ trait Searchable
     /**
      * Apply structured filters to searchable attributes and relations.
      *
-     * @param  Builder  $query
      * @param  array<string, string>  $filters
      */
     private function applySearchFilters(Builder $query, array $filters): Builder
@@ -178,12 +173,12 @@ trait Searchable
 
         foreach ($filters as $filterKey => $filterValue) {
             if (in_array($filterKey, $searchableAttributes, true)) {
-                $query->where($table . '.' . $filterKey, 'LIKE', '%' . $filterValue . '%');
+                $query->where($table.'.'.$filterKey, 'LIKE', '%'.$filterValue.'%');
 
                 continue;
             }
 
-            if (!array_key_exists($filterKey, $searchableRelations)) {
+            if (! array_key_exists($filterKey, $searchableRelations)) {
                 continue;
             }
 
@@ -194,14 +189,14 @@ trait Searchable
                 $firstConditionAdded = false;
 
                 foreach ($relationColumns as $relationColumn) {
-                    if (!$firstConditionAdded) {
-                        $relationQuery->where($relationTable . '.' . $relationColumn, 'LIKE', '%' . $filterValue . '%');
+                    if (! $firstConditionAdded) {
+                        $relationQuery->where($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
                         $firstConditionAdded = true;
 
                         continue;
                     }
 
-                    $relationQuery->orWhere($relationTable . '.' . $relationColumn, 'LIKE', '%' . $filterValue . '%');
+                    $relationQuery->orWhere($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
                 }
 
                 if (($filterKey === 'adminuser') || ($filterKey === 'user')) {
