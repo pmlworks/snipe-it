@@ -21,11 +21,12 @@
     <x-container columns="2">
         <x-page-column class="col-md-9 main-panel">
 
+
             <x-tabs>
                 <x-slot:tabnav>
                     <x-tabs.checkedout-tab :item="$accessory" count="{{ $accessory->checkouts_count }}" />
                     <x-tabs.files-tab :item="$accessory" count="{{ $accessory->uploads()->count() }}"/>
-                    <x-tabs.history-tab count="{{ $user->history()->count() }}" :model="$accessory"/>
+                    <x-tabs.history-tab count="{{ $accessory->history()->count() }}" :model="$accessory"/>
                     <x-tabs.upload-tab :item="$accessory"/>
                 </x-slot:tabnav>
 
