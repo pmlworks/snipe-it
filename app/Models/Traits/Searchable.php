@@ -11,6 +11,28 @@ use Illuminate\Support\Facades\DB;
  * This trait allows for cleaner searching of models,
  * moving from complex queries to an easier declarative syntax.
  *
+ * This handles all the out of the box advanced search stuff (using the "advanced search" bootstrap table plugin),
+ * allowing you to just define which attributes and relations should be searched, and then it does the rest.
+ *
+ * You can override these trait methods (for example, advancedSearch) if you need different ebhavior, but this really
+ * should cover most of the use cases, and allows you to easily add searching to your models without having to
+ * write complex queries.
+ *
+ * To use this:
+ *
+ * 1. Make sure the model has $searchableAttributes and $searchableRelations set
+ * 2. Make sure you import the App\Models\Traits\Searchable trait and use Searchable in the model
+ * 3. Make sure you check the request for the request input filter or search and then invoke the TextSearch scope, like:
+ *
+ * if ($request->filled('filter')) {
+ *     $modelThingie = $licenses->TextSearch($request->input('filter'));
+ * } elseif ($request->filled('search')) {
+ *     $modelThingie = $licenses->TextSearch($request->input('search'));
+ * }
+ *
+ * 4. Set the "data-advanced
+ *
+ *
  * @author Till Deeke <kontakt@tilldeeke.de>
  */
 trait Searchable
@@ -24,7 +46,13 @@ trait Searchable
      */
     public function scopeTextSearch($query, $search)
     {
-        $terms = $this->prepeareSearchTerms($search);
+        $preparedSearch = $this->prepareSearchInput((string) $search);
+        $terms = $preparedSearch['terms'];
+        $filters = $preparedSearch['filters'];
+
+        if (!empty($filters)) {
+            return $this->applySearchFilters($query, $filters);
+        }
 
         /**
          * Search the attributes of this model
@@ -50,6 +78,82 @@ trait Searchable
     }
 
     /**
+     * Parse free-text terms and structured filters for TextSearch.
+     *
+     * Supported filter inputs:
+     * - {"field":"value"}
+     * - filter:{"field":"value"}
+     *
+     * @return array
+     */
+    private function prepareSearchInput(string $search): array
+    {
+        $search = trim($search);
+
+        $parsedFilters = $this->parseStructuredFilterPayload($search);
+
+        if ($parsedFilters !== null) {
+            return [
+                'terms' => [],
+                'filters' => $parsedFilters,
+            ];
+        }
+
+        return [
+            'terms' => $this->prepeareSearchTerms($search),
+            'filters' => [],
+        ];
+    }
+
+    /**
+     * Normalize a structured filter payload into scalar string filters.
+     *
+     * @return array|null
+     */
+    private function parseStructuredFilterPayload(string $search): ?array
+    {
+        if ($search === '') {
+            return null;
+        }
+
+        $payload = $search;
+
+        if (str_starts_with($search, 'filter:')) {
+            $payload = substr($search, 7);
+        } elseif (!(str_starts_with($search, '{') && str_ends_with($search, '}'))) {
+            return null;
+        }
+
+        $decoded = json_decode($payload, true);
+
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        $filters = [];
+
+        foreach ($decoded as $key => $value) {
+            if (!is_string($key)) {
+                continue;
+            }
+
+            if (!is_scalar($value) && $value !== null) {
+                continue;
+            }
+
+            $normalizedValue = trim((string) ($value ?? ''));
+
+            if ($normalizedValue === '') {
+                continue;
+            }
+
+            $filters[$key] = $normalizedValue;
+        }
+
+        return $filters;
+    }
+
+    /**
      * Prepares the search term, splitting and cleaning it up
      *
      * @param  string  $search  The search term
@@ -58,6 +162,64 @@ trait Searchable
     private function prepeareSearchTerms($search)
     {
         return explode(' OR ', $search);
+    }
+
+    /**
+     * Apply structured filters to searchable attributes and relations.
+     *
+     * @param  Builder  $query
+     * @param  array<string, string>  $filters
+     */
+    private function applySearchFilters(Builder $query, array $filters): Builder
+    {
+        $searchableAttributes = $this->getSearchableAttributes();
+        $searchableRelations = $this->getSearchableRelations();
+        $table = $this->getTable();
+
+        foreach ($filters as $filterKey => $filterValue) {
+            if (in_array($filterKey, $searchableAttributes, true)) {
+                $query->where($table . '.' . $filterKey, 'LIKE', '%' . $filterValue . '%');
+
+                continue;
+            }
+
+            if (!array_key_exists($filterKey, $searchableRelations)) {
+                continue;
+            }
+
+            $relationColumns = (array) $searchableRelations[$filterKey];
+
+            $query->whereHas($filterKey, function (Builder $relationQuery) use ($filterKey, $relationColumns, $filterValue) {
+                $relationTable = $this->getRelationTable($filterKey);
+                $firstConditionAdded = false;
+
+                foreach ($relationColumns as $relationColumn) {
+                    if (!$firstConditionAdded) {
+                        $relationQuery->where($relationTable . '.' . $relationColumn, 'LIKE', '%' . $filterValue . '%');
+                        $firstConditionAdded = true;
+
+                        continue;
+                    }
+
+                    $relationQuery->orWhere($relationTable . '.' . $relationColumn, 'LIKE', '%' . $filterValue . '%');
+                }
+
+                if (($filterKey === 'adminuser') || ($filterKey === 'user')) {
+                    $relationQuery->orWhereRaw(
+                        $this->buildMultipleColumnSearch(
+                            [
+                                'users.first_name',
+                                'users.last_name',
+                                'users.display_name',
+                            ]
+                        ),
+                        ["%{$filterValue}%"]
+                    );
+                }
+            });
+        }
+
+        return $query;
     }
 
     /**
