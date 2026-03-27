@@ -72,7 +72,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'min_amt',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('mail.min_QTY'),
@@ -83,7 +83,7 @@ class AssetModelPresenter extends Presenter
 
             [
                 'field' => 'assets_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('admin/models/table.numassets'),
@@ -93,7 +93,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'assets_assigned_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.assigned'),
@@ -103,7 +103,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'remaining',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.remaining'),
@@ -122,7 +122,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'assets_archived_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.archived'),

@@ -165,12 +165,19 @@ trait Searchable
     private function applySearchFilters(Builder $query, array $filters): Builder
     {
         $searchableAttributes = $this->getSearchableAttributes();
+        $searchableCounts = $this->getSearchableCounts();
         $searchableRelations = $this->getSearchableRelations();
         $table = $this->getTable();
 
         foreach ($filters as $filterKey => $filterValue) {
             if (in_array($filterKey, $searchableAttributes, true)) {
                 $query->where($table.'.'.$filterKey, 'LIKE', '%'.$filterValue.'%');
+
+                continue;
+            }
+
+            if (in_array($filterKey, $searchableCounts, true)) {
+                $query = $this->applyCountAliasFilter($query, $filterKey, $filterValue);
 
                 continue;
             }
@@ -212,6 +219,18 @@ trait Searchable
         }
 
         return $query;
+    }
+
+    /**
+     * Apply filtering on computed count aliases (for example withCount aliases).
+     */
+    private function applyCountAliasFilter(Builder $query, string $countAlias, string $filterValue): Builder
+    {
+        if (is_numeric($filterValue)) {
+            return $query->having($countAlias, '=', (int) $filterValue);
+        }
+
+        return $query->having($countAlias, 'LIKE', '%'.$filterValue.'%');
     }
 
     /**
@@ -374,6 +393,14 @@ trait Searchable
     private function getSearchableRelations()
     {
         return $this->searchableRelations ?? [];
+    }
+
+    /**
+     * Get searchable computed count aliases, if defined.
+     */
+    private function getSearchableCounts(): array
+    {
+        return $this->searchableCounts ?? [];
     }
 
     /**

@@ -85,10 +85,11 @@ class AssetModel extends SnipeModel
      * @var array
      */
     protected $searchableAttributes = [
-        'name',
-        'model_number',
-        'notes',
         'eol',
+        'min_amt',
+        'model_number',
+        'name',
+        'notes',
     ];
 
     /**
@@ -102,6 +103,18 @@ class AssetModel extends SnipeModel
         'manufacturer' => ['name'],
         'fieldset' => ['name'],
         'adminuser' => ['first_name', 'last_name', 'display_name'],
+    ];
+
+    /**
+     * Computed aliases (withCount/withSum) that can be searched via TextSearch filters.
+     *
+     * @var array
+     */
+    protected $searchableCounts = [
+        'assets_count',
+        'remaining',
+        'assets_assigned_count',
+        'assets_archived_count',
     ];
 
     protected static function booted(): void
