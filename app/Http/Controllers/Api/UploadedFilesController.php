@@ -153,7 +153,7 @@ class UploadedFilesController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.file_upload_status.invalid_id')), 200);
         }
 
-        if (! Storage::exists(self::$map_storage_path[$object_type].'/'.$log->filename)) {
+        if (! Storage::exists(self::$map_storage_path[$object_type].$log->filename)) {
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.file_upload_status.file_not_found'), 200));
         }
 
@@ -162,10 +162,10 @@ class UploadedFilesController extends Controller
                 'Content-Disposition' => 'inline',
             ];
 
-            return Storage::download(self::$map_storage_path[$object_type].'/'.$log->filename, $log->filename, $headers);
+            return Storage::download(self::$map_storage_path[$object_type].$log->filename, $log->filename, $headers);
         }
 
-        return StorageHelper::downloader(self::$map_storage_path[$object_type].'/'.$log->filename);
+        return StorageHelper::downloader(self::$map_storage_path[$object_type].$log->filename);
 
     }
 
@@ -202,8 +202,8 @@ class UploadedFilesController extends Controller
 
         if ($log) {
             // Check the file actually exists, and delete it
-            if (Storage::exists(self::$map_storage_path[$object_type].'/'.$log->filename)) {
-                Storage::delete(self::$map_storage_path[$object_type].'/'.$log->filename);
+            if (Storage::exists(self::$map_storage_path[$object_type].$log->filename)) {
+                Storage::delete(self::$map_storage_path[$object_type].$log->filename);
             }
             // Delete the record of the file
             if ($log->logUploadDelete($object, $log->filename)) {
