@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRequest;
 use App\Http\Transformers\GroupsTransformer;
 use App\Models\Group;
 use Illuminate\Http\JsonResponse;
@@ -18,7 +19,7 @@ class GroupsController extends Controller
      *
      * @since [v4.0]
      */
-    public function index(Request $request): JsonResponse|array
+    public function index(FilterRequest $request): JsonResponse|array
     {
         $this->authorize('superadmin');
 
@@ -26,8 +27,9 @@ class GroupsController extends Controller
 
         $groups = Group::select(['id', 'name', 'permissions', 'notes', 'created_at', 'updated_at', 'created_by'])->with('adminuser')->withCount('users as users_count');
 
-        if ($request->filled('search')) {
-            $groups = $groups->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $groups->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->filled('name')) {

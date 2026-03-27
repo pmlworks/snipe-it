@@ -73,10 +73,9 @@ class ComponentsController extends Controller
 
         }
 
-        if ((! is_null($filter)) && (count($filter)) > 0) {
-            $components->ByFilter($filter);
-        } elseif ($request->filled('search')) {
-            $components->TextSearch($request->input('search'));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $components->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if ($request->filled('name')) {
