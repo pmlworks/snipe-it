@@ -94,6 +94,6 @@ class IndexAccessoryTest extends TestCase implements TestsFullMultipleCompaniesS
                 'total',
                 'rows',
             ])
-            ->assertJson(fn(AssertableJson $json) => $json->has('rows', 1)->where('rows.0.name', 'Accessory With Two Checkouts')->etc());
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->where('rows.0.name', 'Accessory With Two Checkouts')->etc());
     }
 }
