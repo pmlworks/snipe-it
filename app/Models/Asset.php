@@ -37,7 +37,13 @@ class Asset extends Depreciable
     protected $with = ['model', 'adminuser'];
 
     use CompanyableTrait;
-    use HasFactory, Loggable, Presentable, Requestable, SoftDeletes, UniqueUndeletedTrait, ValidatingTrait;
+    use HasFactory;
+    use Loggable;
+    use Presentable;
+    use Requestable;
+    use SoftDeletes;
+    use UniqueUndeletedTrait;
+    use ValidatingTrait;
     use HasUploads;
 
     public const LOCATION = 'location';
