@@ -66,6 +66,7 @@ class IndexAssetModelsTest extends TestCase
 
     public function test_asset_model_index_filter_can_search_computed_count_aliases()
     {
+        $this->markIncompleteIfSqlite('This test is not compatible with SQLite');
         $targetModel = AssetModel::factory()->create(['name' => 'Two Assets Model']);
         $otherModel = AssetModel::factory()->create(['name' => 'One Asset Model']);
 
