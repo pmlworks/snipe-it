@@ -120,32 +120,4 @@ class StorageHelper
 
     }
 
-    /**
-     * Decide whether to show the file inline or download it.
-     */
-    public static function showOrDownloadFile($file, $filename)
-    {
-
-        $headers = [];
-
-        if (request('inline') == 'true') {
-
-            $headers = [
-                'Content-Disposition' => 'inline',
-            ];
-
-            // This is NOT allowed as inline - force it to be displayed as text in the browser
-            if (self::allowSafeInline($file) != true) {
-                $headers = array_merge($headers, ['Content-Type' => 'text/plain']);
-            }
-        }
-
-        // Everything else seems okay, but the file doesn't exist on the server.
-        if (Storage::missing($file)) {
-            throw new FileNotFoundException;
-        }
-
-        return Storage::download($file, $filename, $headers);
-
-    }
 }
