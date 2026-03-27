@@ -170,6 +170,16 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         'adminuser' => ['first_name', 'last_name', 'display_name'],
     ];
 
+    protected $searchableCounts = [
+        'accessories_count',
+        'assets_count',
+        'licenses_count',
+        'consumables_count',
+        'accessories_count',
+        'manages_users_count',
+        'manages_locations_count',
+    ];
+
     /**
      * This sets the name property on the user. It's not a real field in the database
      * (since we use first_name and last_name), but the Laravel mailable method
