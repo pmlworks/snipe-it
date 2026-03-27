@@ -89,6 +89,30 @@ class CustomField extends Model
     ];
 
     /**
+     * The attributes that should be included when searching the model.
+     *
+     * @var array
+     */
+    protected $searchableAttributes = [
+        'name',
+        'format',
+        'element',
+        'db_column',
+        'help_text',
+    ];
+
+    /**
+     * The relations and their attributes that should be included when searching the model.
+     *
+     * @var array
+     */
+    protected $searchableRelations = [
+        'fieldset' => ['name'],
+        'assetModels' => ['name'],
+        'adminuser' => ['first_name', 'last_name', 'display_name'],
+    ];
+
+    /**
      * This is confusing, since it's actually the custom fields table that
      * we're usually modifying, but since we alter the assets table, we have to
      * say that here, otherwise the new fields get added onto the custom fields

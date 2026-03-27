@@ -115,6 +115,7 @@ class Location extends SnipeModel
     protected $searchableRelations = [
         'parent' => ['name'],
         'company' => ['name'],
+        'adminuser' => ['first_name', 'last_name', 'display_name'],
     ];
 
     /**
@@ -156,18 +157,6 @@ class Location extends SnipeModel
     public function users()
     {
         return $this->hasMany(User::class, 'location_id');
-    }
-
-    /**
-     * Establishes the location -> admin user relationship
-     *
-     * @author A. Gianotto <snipe@snipe.net>
-     *
-     * @return Relation
-     */
-    public function adminuser()
-    {
-        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
 
     /**

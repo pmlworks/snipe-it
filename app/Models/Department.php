@@ -77,14 +77,21 @@ class Department extends SnipeModel
      *
      * @var array
      */
-    protected $searchableAttributes = ['name', 'notes', 'phone', 'fax'];
+    protected $searchableAttributes = [
+        'name',
+        'notes',
+        'phone',
+        'fax',
+    ];
 
     /**
      * The relations and their attributes that should be included when searching the model.
      *
      * @var array
      */
-    protected $searchableRelations = [];
+    protected $searchableRelations = [
+        'adminuser' => ['first_name', 'last_name', 'display_name'],
+    ];
 
     public function isDeletable()
     {

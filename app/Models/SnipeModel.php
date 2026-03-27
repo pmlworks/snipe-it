@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Storage;
 
 class SnipeModel extends Model
@@ -238,6 +239,20 @@ class SnipeModel extends Model
     public function actionlog()
     {
         return $this->hasMany(Actionlog::class, 'target_id')->where('target_type', '=', self::class)->orderBy('created_at', 'DESC')->withTrashed();
+    }
+
+    /**
+     * Establishes the object -> admin user relationship
+     *
+     * @return Relation
+     *
+     * @since  [v3.0]
+     *
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     */
+    public function adminuser()
+    {
+        return $this->belongsTo(User::class, 'created_by')->withTrashed();
     }
 
     public function showCheckoutButton($item)

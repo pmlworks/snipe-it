@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterRequest;
 use App\Http\Transformers\ActionlogsTransformer;
 use App\Models\Actionlog;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ReportsController extends Controller
 {
@@ -17,14 +17,15 @@ class ReportsController extends Controller
      *
      * @since [v4.0]
      */
-    public function index(Request $request): JsonResponse|array
+    public function index(FilterRequest $request): JsonResponse|array
     {
         $this->authorize('activity.view');
 
         $actionlogs = Actionlog::with('item', 'user', 'adminuser', 'target', 'location');
 
-        if ($request->filled('search')) {
-            $actionlogs = $actionlogs->TextSearch(e($request->input('search')));
+        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
+        if ($request->filled('filter') || $request->filled('search')) {
+            $actionlogs->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
         }
 
         if (($request->filled('target_type')) && ($request->filled('target_id'))) {

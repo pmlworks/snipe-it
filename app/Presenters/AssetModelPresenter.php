@@ -72,7 +72,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'min_amt',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('mail.min_QTY'),
@@ -83,7 +83,7 @@ class AssetModelPresenter extends Presenter
 
             [
                 'field' => 'assets_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('admin/models/table.numassets'),
@@ -93,7 +93,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'assets_assigned_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.assigned'),
@@ -103,7 +103,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'remaining',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.remaining'),
@@ -114,15 +114,15 @@ class AssetModelPresenter extends Presenter
             [
                 'field' => 'percent_remaining',
                 'searchable' => false,
-                'sortable' => false,
+                'sortable' => true,
                 'switchable' => true,
-                'title' => '% ' . trans('general.remaining'),
+                'title' => '% '.trans('general.remaining'),
                 'visible' => true,
                 'formatter' => 'progressBarFormatter',
             ],
             [
                 'field' => 'assets_archived_count',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.archived'),
@@ -132,7 +132,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'depreciation',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('general.depreciation'),
@@ -158,7 +158,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'fieldset',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
                 'title' => trans('admin/models/general.fieldset'),
@@ -192,7 +192,7 @@ class AssetModelPresenter extends Presenter
             ],
             [
                 'field' => 'created_by',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'title' => trans('general.created_by'),
                 'visible' => false,
@@ -290,8 +290,9 @@ class AssetModelPresenter extends Presenter
     public function imageUrl()
     {
         if (! empty($this->image)) {
-            $url = Storage::disk('public')->url(app('models_upload_path') . e($this->image));
-            return '<img src="' . $url . '" alt="' . e($this->name) . '" height="50" width="50">';
+            $url = Storage::disk('public')->url(app('models_upload_path').e($this->image));
+
+            return '<img src="'.$url.'" alt="'.e($this->name).'" height="50" width="50">';
         }
 
         return '';
@@ -305,7 +306,7 @@ class AssetModelPresenter extends Presenter
     public function imageSrc()
     {
         if (! empty($this->image)) {
-            return Storage::disk('public')->url(app('models_upload_path') . e($this->image));
+            return Storage::disk('public')->url(app('models_upload_path').e($this->image));
         }
 
         return '';
