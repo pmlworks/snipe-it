@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FilterRequest;
 use App\Http\Transformers\CustomFieldsetsTransformer;
 use App\Http\Transformers\CustomFieldsTransformer;
 use App\Models\CustomField;
@@ -36,16 +35,10 @@ class CustomFieldsetsController extends Controller
      *
      * @since [v1.8]
      */
-    public function index(FilterRequest $request): array
+    public function index(): array
     {
         $this->authorize('index', CustomField::class);
-        $fieldsets = CustomFieldset::withCount('fields as fields_count', 'models as models_count');
-
-        // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
-        if ($request->filled('filter') || $request->filled('search')) {
-            $fieldsets->TextSearch($request->input('filter') ? $request->input('filter') : $request->input('search'));
-        }
-        $fieldsets->get();
+        $fieldsets = CustomFieldset::withCount('fields as fields_count', 'models as models_count')->get();
 
         return (new CustomFieldsetsTransformer)->transformCustomFieldsets($fieldsets, $fieldsets->count());
     }
