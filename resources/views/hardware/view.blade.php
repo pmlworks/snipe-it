@@ -361,7 +361,7 @@
                     <!-- end maintenances tab pane -->
 
                     <!-- start audits tab pane -->
-                    <x-tabs.pane name="assets" class="in active">
+                    <x-tabs.pane name="audits">
 
                         <x-slot:table_header>
                             {{ trans('general.audits') }}
