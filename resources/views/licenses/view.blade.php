@@ -39,7 +39,7 @@
 
                 <x-slot:tabpanes>
 
-                    <x-tabs.pane name="seats" class="in active">
+                    <x-tabs.pane name="seats">
                         <x-slot:table_header>
                             {{ trans('general.assigned') }}
                         </x-slot:table_header>
