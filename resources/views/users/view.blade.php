@@ -37,7 +37,7 @@
                     <x-tabs.eula-tab count="{{ $user->eulas()->count() }}"/>
                     <x-tabs.location-tab count="{{ $user->managedLocations()->count() }}"/>
                     <x-tabs.user-tab count="{{ $user->managesUsers()->count() }}" name="managed-users" icon_type="manager" :label="trans('admin/users/table.managed_users')"/>
-                    <x-tabs.history-tab count="{{ $user->history()->count() }}" :model="$user"/>
+                    <x-tabs.history-tab count="{{ $user->history->count() }}" :model="$user"/>
                     <x-tabs.upload-tab :item="$user"/>
                 </x-slot:tabnav>
 
