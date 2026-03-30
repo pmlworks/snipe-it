@@ -212,8 +212,8 @@ class Asset extends Depreciable
         'defaultLoc' => ['name'],
         'location' => ['name'],
         'model' => ['name', 'model_number', 'eol'],
-        'model.category' => ['name'],
-        'model.manufacturer' => ['name'],
+        'category' => ['name'],
+        'manufacturer' => ['name'],
     ];
 
     protected static function booted(): void
@@ -623,6 +623,18 @@ class Asset extends Depreciable
         }
 
     }
+
+    public function manufacturer()
+    {
+        return $this->hasOneThrough(Manufacturer::class, AssetModel::class, 'id', 'id', 'model_id', 'manufacturer_id');
+    }
+
+    public function category()
+    {
+        return $this->hasOneThrough(Category::class, AssetModel::class, 'id', 'id', 'model_id', 'category_id');
+    }
+
+
 
     /**
      * Establishes the asset -> depreciation relationship
