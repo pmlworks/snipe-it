@@ -62,6 +62,13 @@
                     <x-tabs.asset-tab count="{{ $asset->assignedAssets()->AssetsForShow()->count() }}"/>
                     <x-tabs.accessory-tab count="{{ $asset->assignedAccessories()->count() }}"/>
                     <x-tabs.maintenance-tab count="{{ $asset->maintenances->count() }}"/>
+                    <x-tabs.nav-item
+                        name="audits"
+                        icon_type="audit"
+                        label="{{ trans('general.audits') }}"
+                        count="{{ $asset->audits()->count() }}"
+                        tooltip="{{ trans('general.audits') }}"
+                    />
                     <x-tabs.files-tab count="{{ $asset->uploads()->count() }}"/>
                     <x-tabs.model-files-tab count="{{ $asset->model?->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $asset->history()->count() }}" :model="$asset"/>
@@ -352,6 +359,18 @@
                         />
                     </x-tabs.pane>
                     <!-- end maintenances tab pane -->
+
+                    <!-- start audits tab pane -->
+                    <x-tabs.pane name="assets" class="in active">
+
+                        <x-slot:table_header>
+                            {{ trans('general.audits') }}
+                        </x-slot:table_header>
+
+                        <x-table.assets :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'audit'])"/>
+                    </x-tabs.pane>
+                    <!-- end audits tab pane -->
+
 
                     <x-tabs.pane name="files">
                         <x-table.files object_type="assets" :object="$asset"/>
