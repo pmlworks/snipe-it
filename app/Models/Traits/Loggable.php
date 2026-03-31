@@ -39,8 +39,13 @@ trait Loggable
 
     public function history()
     {
-        return $this->hasMany(Actionlog::class, 'item_id')
-            ->where('item_type', self::class);
+
+        return $this->morphMany(Actionlog::class, 'item')
+            ->orWhere(function ($query) {
+                $query->where('target_type', '=', static::class)
+                    ->where('target_id', '=', $this->getKey());
+            });
+
     }
 
     public function getHistory(Request $request)
