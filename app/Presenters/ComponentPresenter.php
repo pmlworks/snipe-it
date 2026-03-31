@@ -219,7 +219,7 @@ class ComponentPresenter extends Presenter
                 'sortable' => true,
                 'title' => trans('general.name'),
                 'visible' => true,
-                'formatter' => 'hardwareLinkFormatter',
+                'formatter' => 'componentsLinkFormatter',
             ],
             [
                 'field' => 'qty',
