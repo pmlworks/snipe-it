@@ -353,6 +353,7 @@
 
                         <x-table
                             name="assetMaintenances_{{ $asset->id }}"
+                            buttons="maintenanceButtons"
                             api_url="{{ route('api.maintenances.index', array('asset_id' => $asset->id)) }}"
                             :presenter="\App\Presenters\MaintenancesPresenter::dataTableLayout()"
                             export_filename="export-maintenances-{{ str_slug($asset->name) }}-{{ date('Y-m-d') }}"
