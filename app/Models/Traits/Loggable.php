@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -26,11 +27,11 @@ trait Loggable
     public ?bool $imported = false;
 
     /**
-     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
+     * @return MorphMany
      *
      * @since  [v3.4]
      *
-     * @return Actionlog
+     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
      */
     public function log()
     {
@@ -39,8 +40,13 @@ trait Loggable
 
     public function history()
     {
-        return $this->hasMany(Actionlog::class, 'item_id')
-            ->where('item_type', self::class);
+
+        return $this->morphMany(Actionlog::class, 'item')
+            ->orWhere(function ($query) {
+                $query->where('target_type', '=', static::class)
+                    ->where('target_id', '=', $this->getKey());
+            });
+
     }
 
     public function getHistory(Request $request)
