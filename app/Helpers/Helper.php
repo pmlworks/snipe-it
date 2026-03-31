@@ -1816,6 +1816,8 @@ class Helper
         $labelWidth = ($maxLabelWidthPerUnit * $labelSize) + $labelPadding;
         $valueX = $currentX + $labelWidth + $gap;
         $valueWidth = $usableWidth - $labelWidth - $gap;
+        $fullValueX = $currentX;
+        $fullValueWidth = $usableWidth;
 
         return compact(
             'scale',
@@ -1829,7 +1831,9 @@ class Helper
             'rowAdvance',
             'labelWidth',
             'valueX',
-            'valueWidth'
+            'valueWidth',
+            'fullValueX',
+            'fullValueWidth',
         );
     }
 }
