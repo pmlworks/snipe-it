@@ -52,7 +52,7 @@
 | **{{ trans('mail.additional_notes') }}** | {{ $note }} |
 @endif
 @endcomponent
-
+@if($accept_url)
 @if (($req_accept == 1) && ($eula!=''))
 {{ trans('mail.read_the_terms_and_click') }}
 @elseif (($req_accept == 1) && ($eula==''))
@@ -70,7 +70,7 @@
 @if ($req_accept == 1)
 **[✔ {{ trans('mail.i_have_read') }}]({{ $accept_url }})**
 @endif
-
+@endif
 
 {{ trans('mail.best_regards') }}
 
