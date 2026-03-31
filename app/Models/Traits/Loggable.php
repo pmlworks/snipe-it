@@ -26,11 +26,11 @@ trait Loggable
     public ?bool $imported = false;
 
     /**
-     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
-     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      * @since  [v3.4]
      *
-     * @return Actionlog
+     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
+     *
      */
     public function log()
     {
