@@ -132,6 +132,9 @@ class CheckoutAssetMail extends BaseMailable
 
     private function introductionLine(): string
     {
+        if (is_null($this->acceptance)) {
+            return trans_choice('mail.new_item_checked', 1);
+        }
         if ($this->firstTimeSending && $this->target instanceof Location) {
             return trans_choice('mail.new_item_checked_location', 1, ['location' => $this->target->name]);
         }
@@ -140,7 +143,7 @@ class CheckoutAssetMail extends BaseMailable
             return trans_choice('mail.new_item_checked_with_acceptance', 1);
         }
 
-        if ($this->firstTimeSending && ! $this->requiresAcceptance()) {
+        if ($this->firstTimeSending && !$this->requiresAcceptance()) {
             return trans_choice('mail.new_item_checked', 1);
         }
 
@@ -149,7 +152,7 @@ class CheckoutAssetMail extends BaseMailable
         }
 
         // we shouldn't get here but let's send a default message just in case
-        return trans('new_item_checked');
+        return trans('mail.new_item_checked');
     }
 
     private function requiresAcceptance(): int|bool

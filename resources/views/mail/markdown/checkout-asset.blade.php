@@ -53,9 +53,9 @@
 @endif
 @endcomponent
 
-@if (($req_accept == 1) && ($eula!=''))
+@if (($req_accept == 1) && ($eula!='') && $accept_url)
 {{ trans('mail.read_the_terms_and_click') }}
-@elseif (($req_accept == 1) && ($eula==''))
+@elseif (($req_accept == 1) && ($eula=='') && $accept_url)
 {{ trans('mail.click_on_the_link_asset') }}
 @elseif (($req_accept == 0) && ($eula!=''))
 {{ trans('mail.read_the_terms') }}
@@ -65,12 +65,12 @@
 @component('mail::panel')
 {!! $eula !!}
 @endcomponent
-@endif
 
-@if ($req_accept == 1)
+
+@if ($req_accept == 1 && $accept_url)
 **[✔ {{ trans('mail.i_have_read') }}]({{ $accept_url }})**
 @endif
-
+@endif
 
 {{ trans('mail.best_regards') }}
 
