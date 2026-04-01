@@ -361,13 +361,21 @@
 
                     <!-- start audits tab pane -->
                     <x-tabs.pane name="audits">
-                        <x-table.history :table_header="trans('general.audits')" :model="$asset" :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'audit'])"/>
+                        <x-table.history
+                            :table_header="trans('general.audits')"
+                            :model="$asset"
+                            :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'audit'])"
+                            :hide_fields="['id','action_type', 'item', 'changed', 'target','quantity','changed','serial','signature_file','log_meta']"/>
                     </x-tabs.pane>
                     <!-- end audits tab pane -->
 
                     <!-- start notes tab pane -->
                     <x-tabs.pane name="notes">
-                        <x-table.history :table_header="trans('general.notes')" :model="$asset" :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'note added'])"/>
+                        <x-table.history
+                            :table_header="trans('general.notes')"
+                            :model="$asset" :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'note added'])"
+                            :hide_fields="['id','action_type', 'item', 'changed', 'target','file','file_download','quantity','changed','serial','signature_file','log_meta']"
+                        />
                     </x-tabs.pane>
                     <!-- end audits tab pane -->
 
@@ -382,7 +390,10 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-table.history :model="$asset" :route="route('api.assets.history', $asset)"/>
+                        <x-table.history
+                            :model="$asset"
+                            :route="route('api.assets.history', $asset)"
+                        />
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 
