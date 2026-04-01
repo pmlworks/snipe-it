@@ -338,11 +338,13 @@
             </x-info-element.url>
         </x-info-element>
 
-        <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
-            <x-info-element.url>
-                {{ $infoPanelObj->support_url }}
-            </x-info-element.url>
-        </x-info-element>
+        @if ($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)
+            <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
+                <x-info-element.url>
+                    {{ $infoPanelObj->present()->dynamicUrl($infoPanelObj->model->manufacturer->support_url) }}
+                </x-info-element.url>
+            </x-info-element>
+        @endif
 
 
         @if (($infoPanelObj->present()->displayAddress) && (config('services.google.maps_api_key')))
