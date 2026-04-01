@@ -214,12 +214,12 @@ class ComponentPresenter extends Presenter
                 'visible' => false,
             ],
             [
-                'field' => 'name',
+                'field' => 'assigned_to',
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('general.name'),
                 'visible' => true,
-                'formatter' => 'componentsLinkFormatter',
+                'formatter' => 'polymorphicItemFormatter',
             ],
             [
                 'field' => 'qty',

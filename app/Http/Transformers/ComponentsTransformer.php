@@ -88,12 +88,10 @@ class ComponentsTransformer
         $array = [];
         foreach ($components_assets as $asset) {
             $array[] = [
-                'assigned_pivot_id' => $asset->pivot->id,
-                'id' => (int) $asset->id,
-                'name' => e($asset->display_name),
+                'id' => (int) $asset->pivot->id,
+                'assigned_to' => $this->transformAssignedTo($asset),
                 'qty' => $asset->pivot->assigned_qty,
                 'note' => ($asset->pivot->note) ? e($asset->pivot->note) : null,
-                'type' => 'asset',
                 'created_at' => Helper::getFormattedDateObject($asset->pivot->created_at, 'datetime'),
                 'available_actions' => ['checkin' => true],
             ];
@@ -101,4 +99,10 @@ class ComponentsTransformer
 
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
+
+    public function transformAssignedTo($componentCheckout)
+    {
+        return (new AssetsTransformer)->transformAssetCompact($componentCheckout);
+    }
+
 }
