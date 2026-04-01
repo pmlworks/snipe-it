@@ -116,13 +116,21 @@
                     {!!  $infoPanelObj->model->present()->formattedNameLink !!}
                 </x-copy-to-clipboard>
             </x-info-element>
-        @endif
 
-        @if ($infoPanelObj->model_number)
+            <!-- This is an asset, so look into the model for the model number -->
             <x-info-element icon_type="number" title="{{ trans('general.model_no') }}">
                 {{ trans('general.model_no') }}
                 <x-copy-to-clipboard copy_what="model_number" class="pull-right">
-                {{ $infoPanelObj->model_number }}
+                    {{ $infoPanelObj->model->model_number }}
+                </x-copy-to-clipboard>
+            </x-info-element>
+
+        @elseif ($infoPanelObj->model_number)
+            <!-- This is not an asset (with a model) so just grab it off the object -->
+            <x-info-element icon_type="number" title="{{ trans('general.model_no') }}">
+                {{ trans('general.model_no') }}
+                <x-copy-to-clipboard copy_what="model_number" class="pull-right">
+                    {{ $infoPanelObj->model_number }}
                 </x-copy-to-clipboard>
             </x-info-element>
         @endif
