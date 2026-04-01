@@ -62,6 +62,7 @@
                     <x-tabs.asset-tab count="{{ $asset->assignedAssets()->AssetsForShow()->count() }}"/>
                     <x-tabs.accessory-tab count="{{ $asset->assignedAccessories()->count() }}"/>
                     <x-tabs.maintenance-tab count="{{ $asset->maintenances->count() }}"/>
+
                     <x-tabs.nav-item
                         name="audits"
                         icon_type="audit"
@@ -69,6 +70,7 @@
                         count="{{ $asset->audits()->count() }}"
                         tooltip="{{ trans('general.audits') }}"
                     />
+                    <x-tabs.note-tab :item="$asset" count="{{ $asset->journal->count() }}"/>
                     <x-tabs.files-tab :item="$asset" count="{{ $asset->uploads()->count() }}"/>
                     <x-tabs.model-files-tab count="{{ $asset->model?->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $asset->history()->count() }}" :model="$asset"/>
@@ -331,18 +333,14 @@
                         </x-slot:table_header>
 
                         <x-table
-                            name="assetAccessories_{{ $asset->id }}"
+                            name="assetAccessories"
+                            buttons="accessoryButtons"
                             api_url="{{ route('api.assets.assigned_accessories', ['asset' => $asset]) }}"
                             :presenter="\App\Presenters\AssetPresenter::assignedAccessoriesDataTableLayout()"
                             export_filename="export-maintenances-{{ str_slug($asset->name) }}-{{ date('Y-m-d') }}"
                         />
                     </x-tabs.pane>
 
-                    <!-- start history tab pane -->
-                    <x-tabs.pane name="history">
-                        <x-table.history :model="$asset" :route="route('api.assets.history', $asset)"/>
-                    </x-tabs.pane>
-                    <!-- end history tab pane -->
 
                     <!-- start maintenances tab pane -->
                     <x-tabs.pane name="maintenances">
@@ -352,7 +350,7 @@
                         </x-slot:table_header>
 
                         <x-table
-                            name="assetMaintenances_{{ $asset->id }}"
+                            name="assetMaintenances"
                             buttons="maintenanceButtons"
                             api_url="{{ route('api.maintenances.index', array('asset_id' => $asset->id)) }}"
                             :presenter="\App\Presenters\MaintenancesPresenter::dataTableLayout()"
@@ -363,12 +361,21 @@
 
                     <!-- start audits tab pane -->
                     <x-tabs.pane name="audits">
+                        <x-table.history
+                            :table_header="trans('general.audits')"
+                            :model="$asset"
+                            :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'audit'])"
+                            :hide_fields="['id','action_type', 'item', 'changed', 'target','quantity','changed','serial','signature_file','log_meta']"/>
+                    </x-tabs.pane>
+                    <!-- end audits tab pane -->
 
-                        <x-slot:table_header>
-                            {{ trans('general.audits') }}
-                        </x-slot:table_header>
-
-                        <x-table.assets :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'audit'])"/>
+                    <!-- start notes tab pane -->
+                    <x-tabs.pane name="notes">
+                        <x-table.history
+                            :table_header="trans('general.notes')"
+                            :model="$asset" :route="route('api.activity.index', ['item_id' => $asset->id, 'item_type' => 'asset', 'action_type' => 'note added'])"
+                            :hide_fields="['id','action_type', 'item', 'changed', 'target','file','file_download','quantity','changed','serial','signature_file','log_meta']"
+                        />
                     </x-tabs.pane>
                     <!-- end audits tab pane -->
 
@@ -378,8 +385,17 @@
                     </x-tabs.pane>
 
                     <x-tabs.pane name="model-files">
-                        <x-table.files object_type="models" :object="$asset->model"/>
+                        <x-table.files :table_header="trans('general.additional_files')" object_type="models" :object="$asset->model"/>
                     </x-tabs.pane>
+
+                    <!-- start history tab pane -->
+                    <x-tabs.pane name="history">
+                        <x-table.history
+                            :model="$asset"
+                            :route="route('api.assets.history', $asset)"
+                        />
+                    </x-tabs.pane>
+                    <!-- end history tab pane -->
 
 
                 </x-slot:tabpanes>
