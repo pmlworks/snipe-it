@@ -48,7 +48,7 @@ class ReportsController extends Controller
 
         if (($request->filled('target_type')) && ($request->filled('target_id'))) {
             $actionlogs = $actionlogs->where('target_id', '=', $request->input('target_id'))
-                ->where('target_type', '=', $target);
+                ->where('target_type', '=', Helper::normalizeFullModelName($request->input('target_type')));
         }
 
         if (($request->filled('item_type')) && ($request->filled('item_id'))) {
