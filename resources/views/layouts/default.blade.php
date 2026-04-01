@@ -297,8 +297,6 @@
         }
 
 
-
-        input[type="*"]:disabled,
         input:disabled,
         input[type="checkbox"]:disabled,
         input[type="radio"]:disabled,
@@ -327,7 +325,7 @@
         .select2-container--default.select2-container--disabled .select2-search__field {
             -webkit-text-fill-color: var(--text-help) !important;
         }
-        
+
 
         input[type="search"].search-highlight {
             background-color: var(--search-highlight);
