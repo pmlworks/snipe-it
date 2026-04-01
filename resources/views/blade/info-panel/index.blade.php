@@ -340,10 +340,10 @@
             </x-info-element.url>
         </x-info-element>
 
-        @if ($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)
+        @if ($infoPanelObj->manufacturer)
             <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
                 <x-info-element.url>
-                    {{ $infoPanelObj->present()->dynamicUrl($infoPanelObj->model->manufacturer->support_url) }}
+                    {{ $infoPanelObj->present()->dynamicUrl($infoPanelObj->manufacturer->support_url) }}
                 </x-info-element.url>
             </x-info-element>
         @endif
