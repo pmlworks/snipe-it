@@ -104,5 +104,4 @@ class ComponentsTransformer
     {
         return (new AssetsTransformer)->transformAssetCompact($componentCheckout);
     }
-
 }
