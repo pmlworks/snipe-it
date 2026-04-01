@@ -116,12 +116,6 @@
                     {!!  $infoPanelObj->model->present()->formattedNameLink !!}
                 </x-copy-to-clipboard>
             </x-info-element>
-
-            @if ($infoPanelObj->model->category)
-            <x-info-element icon_type="category" icon_color="{{ $infoPanelObj->model->category->tag_color }}" title="{{ trans('general.category') }}">
-                <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->model->category->present()->nameUrl !!}</x-copy-to-clipboard>
-            </x-info-element>
-            @endif
         @endif
 
         @if ($infoPanelObj->model_number)
@@ -338,11 +332,13 @@
             </x-info-element.url>
         </x-info-element>
 
-        <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
-            <x-info-element.url>
-                {{ $infoPanelObj->support_url }}
-            </x-info-element.url>
-        </x-info-element>
+        @if ($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)
+            <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
+                <x-info-element.url>
+                    {{ $infoPanelObj->present()->dynamicUrl($infoPanelObj->model->manufacturer->support_url) }}
+                </x-info-element.url>
+            </x-info-element>
+        @endif
 
 
         @if (($infoPanelObj->present()->displayAddress) && (config('services.google.maps_api_key')))
