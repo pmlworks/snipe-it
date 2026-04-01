@@ -69,7 +69,7 @@
                         count="{{ $asset->audits()->count() }}"
                         tooltip="{{ trans('general.audits') }}"
                     />
-                    <x-tabs.files-tab count="{{ $asset->uploads()->count() }}"/>
+                    <x-tabs.files-tab :item="$asset" count="{{ $asset->uploads()->count() }}"/>
                     <x-tabs.model-files-tab count="{{ $asset->model?->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $asset->history()->count() }}" :model="$asset"/>
                     <x-tabs.upload-tab :item="$asset"/>

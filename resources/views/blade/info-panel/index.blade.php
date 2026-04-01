@@ -117,9 +117,11 @@
                 </x-copy-to-clipboard>
             </x-info-element>
 
+            @if ($infoPanelObj->model->category)
             <x-info-element icon_type="category" icon_color="{{ $infoPanelObj->model->category->tag_color }}" title="{{ trans('general.category') }}">
                 <x-copy-to-clipboard class="pull-right" copy_what="category">{!!  $infoPanelObj->model->category->present()->nameUrl !!}</x-copy-to-clipboard>
             </x-info-element>
+            @endif
         @endif
 
         @if ($infoPanelObj->model_number)

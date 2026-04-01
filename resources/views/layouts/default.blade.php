@@ -1349,7 +1349,7 @@
 
 
                             <!-- User Account: style can be found in dropdown.less -->
-                            @if (Auth::check())
+                            @if (auth()->check())
                                 <li class="dropdown user user-menu">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         @if (auth()->user()->present()->gravatar())
