@@ -9,11 +9,11 @@ class HistoryPresenter extends Presenter
      *
      * @return string
      */
-    public static function dataTableLayout($hide_fields = array())
+    public static function dataTableLayout($hide_fields = [])
     {
         $layout = [];
 
-        if (!in_array('id', $hide_fields)) {
+        if (! in_array('id', $hide_fields)) {
             array_push($layout,
                 [
                     'id' => 'id',
@@ -26,7 +26,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('icon', $hide_fields)) {
+        if (! in_array('icon', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'icon',
@@ -40,7 +40,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('created_at', $hide_fields)) {
+        if (! in_array('created_at', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'created_at',
@@ -52,7 +52,7 @@ class HistoryPresenter extends Presenter
                     'formatter' => 'dateDisplayFormatter',
                 ]);
         }
-        if (!in_array('created_by', $hide_fields)) {
+        if (! in_array('created_by', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'created_by',
@@ -64,8 +64,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-
-        if (!in_array('action_type', $hide_fields)) {
+        if (! in_array('action_type', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'action_type',
@@ -77,7 +76,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('action_date', $hide_fields)) {
+        if (! in_array('action_date', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'action_date',
@@ -89,7 +88,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('item', $hide_fields)) {
+        if (! in_array('item', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'item',
@@ -102,8 +101,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-
-        if (!in_array('serial', $hide_fields)) {
+        if (! in_array('serial', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'item.serial',
@@ -112,7 +110,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('target', $hide_fields)) {
+        if (! in_array('target', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'target',
@@ -125,7 +123,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('file', $hide_fields)) {
+        if (! in_array('file', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'file',
@@ -138,7 +136,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('file_download', $hide_fields)) {
+        if (! in_array('file_download', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'file_download',
@@ -151,7 +149,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('quantity', $hide_fields)) {
+        if (! in_array('quantity', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'quantity',
@@ -162,7 +160,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('note', $hide_fields)) {
+        if (! in_array('note', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'note',
@@ -174,7 +172,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('signature_file', $hide_fields)) {
+        if (! in_array('signature_file', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'signature_file',
@@ -187,7 +185,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('log_meta', $hide_fields)) {
+        if (! in_array('log_meta', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'log_meta',
@@ -199,7 +197,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('remote_ip', $hide_fields)) {
+        if (! in_array('remote_ip', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'remote_ip',
@@ -210,7 +208,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('user_agent', $hide_fields)) {
+        if (! in_array('user_agent', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'user_agent',
@@ -221,7 +219,7 @@ class HistoryPresenter extends Presenter
                 ]);
         }
 
-        if (!in_array('action_source', $hide_fields)) {
+        if (! in_array('action_source', $hide_fields)) {
             array_push($layout,
                 [
                     'field' => 'action_source',

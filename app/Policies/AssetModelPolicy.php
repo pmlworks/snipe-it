@@ -17,6 +17,7 @@ class AssetModelPolicy extends SnipePermissionsPolicy
         if ($user->hasAccess('assets.files')) {
             return true;
         }
+
         return $user->hasAccess($this->columnName().'.files');
     }
 }
