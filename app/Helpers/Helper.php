@@ -1836,4 +1836,14 @@ class Helper
             'fullValueWidth',
         );
     }
+
+    public static function normalizeFullModelName($model): string
+    {
+        if (str_contains($model, 'App\\Models\\')) {
+            return $model;
+        }
+
+        return 'App\\Models\\'.ucwords($model);
+
+    }
 }
