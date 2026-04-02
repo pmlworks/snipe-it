@@ -205,7 +205,7 @@ class ViewAssetsController extends Controller
             $logaction->logaction(ActionType::RequestCanceled);
 
             if (($settings->alert_email != '') && ($settings->alerts_enabled == '1') && (! config('app.lock_passwords'))) {
-                $settings->notify((new RequestAssetNotification($data))->locale($settings->locale));
+                $settings->notify((new RequestAssetCancelation($data))->locale($settings->locale));
             }
 
             return redirect()->back()->with('success')->with('success', trans('admin/hardware/message.requests.canceled'));
