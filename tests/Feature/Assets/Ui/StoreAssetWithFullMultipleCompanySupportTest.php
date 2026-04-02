@@ -76,7 +76,7 @@ class StoreAssetWithFullMultipleCompanySupportTest extends TestCase
             $this->fail('Asset was not created.');
         }
 
-        $this->assertEquals($location->id, $asset->location_id);
+        $this->assertEquals($location->id, $asset->rtd_location_id);
         $this->assertEquals($admin->id, $asset->assigned_to);
     }
 }
