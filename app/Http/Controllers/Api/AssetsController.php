@@ -155,7 +155,7 @@ class AssetsController extends Controller
             ->with(
                 'model',
                 'location',
-                'assetstatus',
+    'status',
                 'company',
                 'defaultLoc',
                 'assignedTo',
@@ -476,7 +476,7 @@ class AssetsController extends Controller
     public function showByTag(Request $request, $tag): JsonResponse|array
     {
         $this->authorize('index', Asset::class);
-        $assets = Asset::where('asset_tag', $tag)->with('assetstatus')->with('assignedTo');
+        $assets = Asset::where('asset_tag', $tag)->with('status')->with('assignedTo');
 
         // Check if they've passed ?deleted=true
         if ($request->input('deleted', 'false') == 'true') {
@@ -516,7 +516,7 @@ class AssetsController extends Controller
     {
         $this->authorize('index', Asset::class);
         $assets = Asset::where('serial', $serial)->with([
-            'assetstatus',
+            'status',
             'assignedTo',
             'company',
             'defaultLoc',
@@ -560,7 +560,7 @@ class AssetsController extends Controller
      */
     public function show(Request $request, $id): JsonResponse|array
     {
-        if ($asset = Asset::with('assetstatus')
+        if ($asset = Asset::with('status')
             ->with('assignedTo')->withTrashed()
             ->withCount('checkins as checkins_count', 'checkouts as checkouts_count', 'userRequests as user_requests_count')->find($id)
         ) {
@@ -600,14 +600,14 @@ class AssetsController extends Controller
             'assets.assigned_to',
             'assets.assigned_type',
             'assets.status_id',
-        ])->with('model', 'assetstatus', 'assignedTo')
+        ])->with('model', 'status', 'assignedTo')
             ->NotArchived();
 
         if ((Setting::getSettings()->full_multiple_companies_support == '1') && ($request->filled('companyId'))) {
             $assets->where('assets.company_id', $request->input('companyId'));
         }
 
-        if ($request->filled('assetStatusType') && $request->input('assetStatusType') === 'RTD') {
+        if ($request->filled('statusType') && $request->input('statusType') === 'RTD') {
             $assets = $assets->RTD();
         }
 
@@ -628,8 +628,8 @@ class AssetsController extends Controller
                 $asset->use_text .= ' → '.$asset->assigned->display_name;
             }
 
-            if ($asset->assetstatus->getStatuslabelType() == 'pending') {
-                $asset->use_text .= '('.$asset->assetstatus->getStatuslabelType().')';
+            if ($asset->status->getStatuslabelType() == 'pending') {
+                $asset->use_text .= '(' . $asset->status->getStatuslabelType() . ')';
             }
 
             $asset->use_image = ($asset->getImageUrl()) ? $asset->getImageUrl() : null;
@@ -1147,8 +1147,8 @@ class AssetsController extends Controller
                 'id' => $asset->id,
                 'asset_tag' => $asset->asset_tag,
                 'note' => e($request->input('note')),
-                'status_label' => e($asset->assetstatus?->display_name),
-                'status_type' => $asset->assetstatus?->getStatuslabelType(),
+                'status_label' => e($asset->status?->display_name),
+                'status_type' => $asset->status?->getStatuslabelType(),
                 'next_audit_date' => Helper::getFormattedDateObject($asset->next_audit_date),
             ];
 
@@ -1255,7 +1255,7 @@ class AssetsController extends Controller
         $assets = Asset::select('assets.*')
             ->with(
                 'location',
-                'assetstatus',
+                'status',
                 'assetlog',
                 'company',
                 'assignedTo',

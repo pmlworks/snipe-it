@@ -92,13 +92,14 @@ class AssetPresenter extends Presenter
                 'visible' => true,
                 'formatter' => 'categoriesLinkObjFormatter',
             ], [
-                'field' => 'status_label',
+                'field' => 'status',
                 'searchable' => true,
                 'sortable' => true,
                 'title' => trans('admin/hardware/table.status'),
                 'visible' => true,
                 'formatter' => 'statuslabelsLinkObjFormatter',
-            ], [
+            ],
+            [
                 'field' => 'assigned_to',
                 'searchable' => true,
                 'sortable' => true,
@@ -596,7 +597,7 @@ class AssetPresenter extends Presenter
             return 'deployed';
         }
 
-        return $this->model->assetstatus->getStatuslabelType();
+        return $this->model->status->getStatuslabelType();
     }
 
     /**
@@ -610,7 +611,7 @@ class AssetPresenter extends Presenter
             return trans('general.deployed');
         }
 
-        return $this->model->assetstatus->name;
+        return $this->model->status->name;
     }
 
     /**
@@ -630,14 +631,14 @@ class AssetPresenter extends Presenter
     public function fullStatusText()
     {
         // Make sure the status is valid
-        if ($this->assetstatus) {
+        if ($this->status) {
 
             // If the status is assigned to someone or something...
             if ($this->model->assigned) {
 
                 // If it's assigned and not set to the default "ready to deploy" status
-                if ($this->assetstatus->name != trans('general.ready_to_deploy')) {
-                    return trans('general.deployed').' ('.$this->model->assetstatus->name.')';
+                if ($this->status->name != trans('general.ready_to_deploy')) {
+                    return trans('general.deployed') . ' (' . $this->model->status->name . ')';
                 }
 
                 // If it's assigned to the default "ready to deploy" status, just
@@ -647,7 +648,7 @@ class AssetPresenter extends Presenter
             }
 
             // Return just the status name
-            return $this->model->assetstatus->name;
+            return $this->model->status->name;
         }
 
         // This status doesn't seem valid - either data has been manually edited or

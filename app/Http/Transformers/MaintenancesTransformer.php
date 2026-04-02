@@ -39,10 +39,10 @@ class MaintenancesTransformer
                 'name' => ($assetmaintenance->asset->model->name) ? e($assetmaintenance->asset->model->name) : null,
                 'model_number' => ($assetmaintenance->asset->model->model_number) ? e($assetmaintenance->asset->model->model_number) : null,
             ] : null,
-            'status_label' => (($assetmaintenance->asset) && ($assetmaintenance->asset->assetstatus)) ? [
-                'id' => (int) $assetmaintenance->asset->assetstatus->id,
-                'name' => e($assetmaintenance->asset->assetstatus->name),
-                'status_type' => e($assetmaintenance->asset->assetstatus->getStatuslabelType()),
+            'status_label' => (($assetmaintenance->asset) && ($assetmaintenance->asset->status)) ? [
+                'id' => (int) $assetmaintenance->asset->status->id,
+                'name' => e($assetmaintenance->asset->status->name),
+                'status_type' => e($assetmaintenance->asset->status->getStatuslabelType()),
                 'status_meta' => e($assetmaintenance->asset->present()->statusMeta),
             ] : null,
             'assigned_to' => (new AssetsTransformer)->transformAssignedTo($assetmaintenance->asset),
@@ -116,7 +116,7 @@ class MaintenancesTransformer
             'image' => ($assetmaintenance->image != '') ? Storage::disk('public')->url('maintenances/' . e($assetmaintenance->image)) : null,
             'model' => ($assetmaintenance->asset?->model?->name) ? e($assetmaintenance->asset?->model?->name) : null,
             'model_number' => ($assetmaintenance->asset?->model?->model_number) ? e($assetmaintenance->asset?->model?->model_number) : null,
-            'status_label' => ($assetmaintenance->asset?->assetstatus) ? e($assetmaintenance->asset?->assetstatus?->display_name) : null,
+            'status_label' => ($assetmaintenance->asset?->status) ? e($assetmaintenance->asset?->status?->display_name) : null,
             'assigned_to' => ($assetmaintenance->asset?->assigned) ? e($assetmaintenance->asset?->assigned?->display_name) : null,
             'company' => ($assetmaintenance->asset?->company?->name) ? e($assetmaintenance->asset->company->name) : null,
             'name' => ($assetmaintenance->name) ? e($assetmaintenance->name) : null,

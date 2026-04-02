@@ -71,7 +71,7 @@ class CheckoutAssetMail extends BaseMailable
      */
     public function content(): Content
     {
-        $this->item->load('assetstatus');
+        $this->item->load('status');
         $eula = method_exists($this->item, 'getEula') ? $this->item->getEula() : '';
         $req_accept = $this->requiresAcceptance();
         $fields = [];
@@ -97,7 +97,7 @@ class CheckoutAssetMail extends BaseMailable
             with: [
                 'item' => $this->item,
                 'admin' => $this->admin,
-                'status' => $this->item->assetstatus?->name,
+                'status' => $this->item->status?->name,
                 'note' => $this->note,
                 'target' => $name,
                 'fields' => $fields,

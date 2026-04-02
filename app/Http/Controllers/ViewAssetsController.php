@@ -151,7 +151,7 @@ class ViewAssetsController extends Controller
             'requests',
             'assets' => function ($q) {
                 $q->where('requestable', 1)
-                    ->whereHas('assetstatus', fn ($s) => $s->where('archived', 0)
+                    ->whereHas('status', fn($s) => $s->where('archived', 0)
                         ->where(fn ($s) => $s->where('deployable', 1)->orWhere('pending', 1)
                         )
                     );
