@@ -102,6 +102,8 @@ class RequestAssetNotification extends Notification
         if (($this->item->model) && ($this->item->model->fieldset)) {
             $fields = $this->item->model->fieldset->fields;
         }
+        $originalLocale = app()->getLocale();
+        app()->setLocale($this->settings->locale);
 
         $message = (new MailMessage)->markdown('notifications.markdown.asset-requested',
             [
@@ -121,6 +123,8 @@ class RequestAssetNotification extends Notification
                     'X-System-Sender', 'Snipe-IT'
                 );
             });
+        
+        app()->setLocale($originalLocale);
 
         return $message;
     }
