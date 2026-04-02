@@ -770,7 +770,7 @@ class Asset extends Depreciable
                     $first_asset = $this;
                 }
                 if ($iterations > 10) {
-                    throw new \Exception('Asset assignment Loop for Asset ID: '.$first_asset->id);
+                    throw new \Exception('Asset assignment Loop for Asset ID: ' . e($first_asset->id));
                 }
                 $assigned_to = self::find($this->assigned_to); // have to do this this way because otherwise it errors
                 if ($assigned_to) {

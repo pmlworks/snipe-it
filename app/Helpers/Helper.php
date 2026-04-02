@@ -1511,7 +1511,7 @@ class Helper
             case 'pt':
                 return (1 / 72) * static::getUnitConversionFactor('in');
             default:
-                throw new \InvalidArgumentException('Unit: \''.$unit.'\' is not supported');
+                throw new \InvalidArgumentException('Unit: ' . e($unit) . ' is not supported');
 
                 return false;
         }
