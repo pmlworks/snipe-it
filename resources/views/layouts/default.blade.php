@@ -1349,7 +1349,7 @@
 
 
                             <!-- User Account: style can be found in dropdown.less -->
-                            @if (Auth::check())
+                            @if (auth()->check())
                                 <li class="dropdown user user-menu">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                         @if (auth()->user()->present()->gravatar())
@@ -1399,18 +1399,18 @@
                                         </li>
 
                                         @can('self.profile')
-                                        @if (Auth::user()->ldap_import!='1')
-                                        <li {!! (request()->is('account/profile') ? ' class="active"' : '') !!}>
-                                            <a href="{{ route('account.password.index') }}">
-                                                <x-icon type="password" class="fa-fw" />
-                                                {{ trans('general.changepassword') }}
-                                            </a>
-                                        </li>
-                                        @endif
+                                            @if (Auth::user()->ldap_import!='1')
+                                                <li {!! (request()->is('account/profile') ? ' class="active"' : '') !!}>
+                                                    <a href="{{ route('account.password.index') }}">
+                                                        <x-icon type="password" class="fa-fw"/>
+                                                        {{ trans('general.changepassword') }}
+                                                    </a>
+                                                </li>
+                                            @endif
                                         @endcan
 
                                         <li>
-                                            <a type="button" data-theme-toggle aria-label="Dark mode" class="btn-link btn-anchor" href=""  onclick="event.preventDefault();">
+                                            <a type="button" data-theme-toggle aria-label="{{ trans('general.dark_mode') }}" class="btn-link btn-anchor" onclick="event.preventDefault();">
                                                 {{ trans('general.dark_mode') }}
                                             </a>
                                         </li>
