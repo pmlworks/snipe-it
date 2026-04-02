@@ -296,21 +296,23 @@
             border-color: var(--input-border-color) !important;
         }
 
-
-
-        input[type="*"]:disabled,
-        input[type=checkbox]:disabled,
-        input[type=radio]:disabled,
+        input:disabled,
+        input[type="checkbox"]:disabled,
+        input[type="radio"]:disabled,
         input[readonly],
+        textarea[readonly],
         .select2-container--default.select2-container--disabled .select2-selection--single,
+        .select2-container--default.select2-container--disabled .select2-selection--multiple,
         .select2-container--default.select2-container--disabled .select2-selection__rendered,
-        textarea[readonly]
-        {
+        .select2-container--default.select2-container--disabled .select2-selection--multiple .select2-search--inline {
             background-color: light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
             cursor: not-allowed !important;
         }
 
-
+        .select2-container--default.select2-container--disabled .select2-search__field::placeholder {
+            color: var(--text-help) !important;
+            opacity: 1 !important;
+        }
 
         input[type="search"].search-highlight {
             background-color: var(--search-highlight);
