@@ -70,7 +70,7 @@ class EmailNotificationsToUserUponCheckoutTest extends TestCase
             $mailContents = $mail->render();
 
             if (! str_contains($mailContents, $url)) {
-                $this->fail('Email does not contain the acceptance url');
+                $this->fail("Email does not contain the acceptance url. Expected to find $url in email contents.");
             }
 
             return $mail->hasTo($this->user->email);
