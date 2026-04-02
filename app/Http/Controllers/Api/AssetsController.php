@@ -155,7 +155,7 @@ class AssetsController extends Controller
             ->with(
                 'model',
                 'location',
-    'status',
+                'status',
                 'company',
                 'defaultLoc',
                 'assignedTo',
@@ -629,7 +629,7 @@ class AssetsController extends Controller
             }
 
             if ($asset->status->getStatuslabelType() == 'pending') {
-                $asset->use_text .= '(' . $asset->status->getStatuslabelType() . ')';
+                $asset->use_text .= '('.$asset->status->getStatuslabelType().')';
             }
 
             $asset->use_image = ($asset->getImageUrl()) ? $asset->getImageUrl() : null;

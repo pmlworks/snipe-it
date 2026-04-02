@@ -233,7 +233,7 @@ class DepreciationReportPresenter extends Presenter
             $imagePath = $this->model->image;
         }
         if (! empty($imagePath)) {
-            return Storage::disk('public')->url(app('assets_upload_path') . e($imagePath));
+            return Storage::disk('public')->url(app('assets_upload_path').e($imagePath));
         }
 
         return $imagePath;
@@ -369,7 +369,7 @@ class DepreciationReportPresenter extends Presenter
 
                 // If it's assigned and not set to the default "ready to deploy" status
                 if ($this->status->name != trans('general.ready_to_deploy')) {
-                    return trans('general.deployed') . ' (' . $this->model->status->name . ')';
+                    return trans('general.deployed').' ('.$this->model->status->name.')';
                 }
 
                 // If it's assigned to the default "ready to deploy" status, just

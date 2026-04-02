@@ -1022,7 +1022,7 @@ class ReportsController extends Controller
                     }
 
                     if ($request->filled('status')) {
-                        $row[] = ($asset->status) ? $asset->status->name . ' (' . $asset->present()->statusMeta . ')' : '';
+                        $row[] = ($asset->status) ? $asset->status->name.' ('.$asset->present()->statusMeta.')' : '';
                     }
 
                     if ($request->filled('checkout_date')) {

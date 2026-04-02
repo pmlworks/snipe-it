@@ -143,7 +143,7 @@ class CheckoutAssetMail extends BaseMailable
             return trans_choice('mail.new_item_checked_with_acceptance', 1);
         }
 
-        if ($this->firstTimeSending && !$this->requiresAcceptance()) {
+        if ($this->firstTimeSending && ! $this->requiresAcceptance()) {
             return trans_choice('mail.new_item_checked', 1);
         }
 

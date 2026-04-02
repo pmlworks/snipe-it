@@ -17,6 +17,7 @@ class MaintenancesTransformer
         foreach ($maintenances as $assetmaintenance) {
             $array[] = self::transformMaintenance($assetmaintenance);
         }
+
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
 
@@ -103,6 +104,7 @@ class MaintenancesTransformer
         foreach ($maintenances as $assetmaintenance) {
             $array[] = self::transformMaintenanceForReport($assetmaintenance);
         }
+
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
 
@@ -113,7 +115,7 @@ class MaintenancesTransformer
             'asset_name' => ($assetmaintenance->asset->name) ? e($assetmaintenance->asset->name) : null,
             'asset_tag' => ($assetmaintenance->asset->asset_tag) ? e($assetmaintenance->asset->asset_tag) : null,
             'serial' => ($assetmaintenance->asset?->serial) ? e($assetmaintenance->asset->serial) : null,
-            'image' => ($assetmaintenance->image != '') ? Storage::disk('public')->url('maintenances/' . e($assetmaintenance->image)) : null,
+            'image' => ($assetmaintenance->image != '') ? Storage::disk('public')->url('maintenances/'.e($assetmaintenance->image)) : null,
             'model' => ($assetmaintenance->asset?->model?->name) ? e($assetmaintenance->asset?->model?->name) : null,
             'model_number' => ($assetmaintenance->asset?->model?->model_number) ? e($assetmaintenance->asset?->model?->model_number) : null,
             'status_label' => ($assetmaintenance->asset?->status) ? e($assetmaintenance->asset?->status?->display_name) : null,
@@ -136,7 +138,7 @@ class MaintenancesTransformer
             'is_warranty' => (bool) $assetmaintenance->is_warranty,
 
         ];
-        
+
         return $array;
     }
 }
