@@ -201,7 +201,11 @@
         @if ($infoPanelObj->order_number)
             <x-info-element icon_type="order" title="{{ trans('general.order_number') }}">
                 <x-copy-to-clipboard copy_what="order_number" class="pull-right">
-                    {{ $infoPanelObj->order_number }}
+                    @if ($infoPanelObj::class == "App\Models\Asset")
+                        <a href="{{ route('hardware.index', ['order_number' => $infoPanelObj->order_number]) }}">{{ $infoPanelObj->order_number }}</a>
+                    @else
+                        {{ $infoPanelObj->order_number }}
+                    @endif
                 </x-copy-to-clipboard>
             </x-info-element>
         @endif
