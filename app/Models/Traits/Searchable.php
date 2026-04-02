@@ -4,6 +4,8 @@ namespace App\Models\Traits;
 
 use App\Models\Asset;
 use App\Models\CustomField;
+use App\Models\Location;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -182,14 +184,22 @@ trait Searchable
                 continue;
             }
 
-            if (! array_key_exists($filterKey, $searchableRelations)) {
+            $resolvedRelationKey = $this->resolveSearchableRelationKey($filterKey, $searchableRelations);
+
+            if ($resolvedRelationKey === null) {
                 continue;
             }
 
-            $relationColumns = (array) $searchableRelations[$filterKey];
+            if ($this->isAssignedToRelationKey($resolvedRelationKey)) {
+                $query = $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $filterValue);
 
-            $query->whereHas($filterKey, function (Builder $relationQuery) use ($filterKey, $relationColumns, $filterValue) {
-                $relationTable = $this->getRelationTable($filterKey);
+                continue;
+            }
+
+            $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
+
+            $query->whereHas($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $filterValue) {
+                $relationTable = $this->getRelationTable($resolvedRelationKey);
                 $firstConditionAdded = false;
 
                 foreach ($relationColumns as $relationColumn) {
@@ -203,7 +213,7 @@ trait Searchable
                     $relationQuery->orWhere($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
                 }
 
-                if (($filterKey === 'adminuser') || ($filterKey === 'user')) {
+                if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
                     $relationQuery->orWhereRaw(
                         $this->buildMultipleColumnSearch(
                             [
@@ -219,6 +229,86 @@ trait Searchable
         }
 
         return $query;
+    }
+
+    /**
+     * Resolve alias keys to configured searchable relation keys.
+     */
+    private function resolveSearchableRelationKey(string $filterKey, array $searchableRelations): ?string
+    {
+        if (array_key_exists($filterKey, $searchableRelations)) {
+            return $filterKey;
+        }
+
+        if (($filterKey === 'assigned_to') && array_key_exists('assignedTo', $searchableRelations)) {
+            return 'assignedTo';
+        }
+
+        if (($filterKey === 'assignedTo') && array_key_exists('assigned_to', $searchableRelations)) {
+            return 'assigned_to';
+        }
+
+        return null;
+    }
+
+    /**
+     * Determine whether a relation key represents polymorphic assignee lookups.
+     */
+    private function isAssignedToRelationKey(string $relationKey): bool
+    {
+        return in_array($relationKey, ['assigned_to', 'assignedTo'], true);
+    }
+
+    /**
+     * Apply filters for assignees with type-specific searchable columns.
+     */
+    private function applyAssignedToRelationFilter(Builder $query, string $relationKey, string $filterValue): Builder
+    {
+        $relationName = ($relationKey === 'assigned_to' && method_exists($this, 'assignedTo'))
+            ? 'assignedTo'
+            : $relationKey;
+
+        if (! method_exists($this, $relationName)) {
+            return $query;
+        }
+
+        return $query->whereHasMorph(
+            $relationName,
+            [User::class, Asset::class, Location::class],
+            function (Builder $assigneeQuery, string $assigneeType) use ($filterValue) {
+                $assigneeColumns = match ($assigneeType) {
+                    User::class => ['first_name', 'last_name', 'username', 'display_name'],
+                    Asset::class => ['asset_tag', 'name'],
+                    Location::class => ['name'],
+                    default => [],
+                };
+
+                if (empty($assigneeColumns)) {
+                    return;
+                }
+
+                $assigneeTable = (new $assigneeType)->getTable();
+                $firstConditionAdded = false;
+
+                foreach ($assigneeColumns as $assigneeColumn) {
+                    if (! $firstConditionAdded) {
+                        $assigneeQuery->where($assigneeTable.'.'.$assigneeColumn, 'LIKE', '%'.$filterValue.'%');
+                        $firstConditionAdded = true;
+
+                        continue;
+                    }
+
+                    $assigneeQuery->orWhere($assigneeTable.'.'.$assigneeColumn, 'LIKE', '%'.$filterValue.'%');
+                }
+
+                if ($assigneeType === User::class) {
+                    $assigneeQuery->orWhereRaw(
+                        $this->buildMultipleColumnSearch(['users.first_name', 'users.last_name']),
+                        ["%{$filterValue}%"]
+                    );
+                }
+            }
+        );
     }
 
     /**

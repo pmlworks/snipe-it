@@ -214,6 +214,7 @@ class Asset extends Depreciable
         'model' => ['name', 'model_number', 'eol'],
         'category' => ['name'],
         'manufacturer' => ['name'],
+        'assigned_to' => ['name'],
     ];
 
     protected static function booted(): void
