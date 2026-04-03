@@ -112,15 +112,15 @@ class Label implements View
                 if ($template->getSupportLogo()) {
 
                     $logo = null;
-
                     // Should we use the assets assigned company logo? (A.K.A. "Is `Labels > Use Asset Logo` enabled?"), and do we have a company logo?
                     if ($settings->label2_asset_logo && $asset->company && $asset->company->image!='') {
                         $logo = Storage::disk('public')->path('companies/'.e($asset->company->image));
                     } elseif (!empty($settings->label_logo)) {
                         // Use the general site label logo, if available
                         $logo = Storage::disk('public')->path('/'.e($settings->label_logo));
+                    } elseif (!empty($asset->is_label_preview)) {
+                        $logo = public_path('img/label-preview-logo.png');
                     }
-
                     if (!empty($logo)) {
                         $assetData->put('logo', $logo);
                     }
