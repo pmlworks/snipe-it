@@ -201,7 +201,7 @@ trait Searchable
                 $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
                 if ($dbColumn !== null) {
-                    $query->where($table . '.' . $dbColumn, 'LIKE', '%' . $filterValue . '%');
+                    $query->where($table.'.'.$dbColumn, 'LIKE', '%'.$filterValue.'%');
 
                     continue;
                 }
@@ -326,13 +326,13 @@ trait Searchable
 
                 foreach ($columns as $column) {
                     if (! $firstConditionAdded) {
-                        $assigneeQuery->where($table . '.' . $column, 'LIKE', '%' . $filterValue . '%');
+                        $assigneeQuery->where($table.'.'.$column, 'LIKE', '%'.$filterValue.'%');
                         $firstConditionAdded = true;
 
                         continue;
                     }
 
-                    $assigneeQuery->orWhere($table . '.' . $column, 'LIKE', '%' . $filterValue . '%');
+                    $assigneeQuery->orWhere($table.'.'.$column, 'LIKE', '%'.$filterValue.'%');
                 }
 
                 if ($assigneeType === User::class) {
@@ -460,14 +460,14 @@ trait Searchable
 
         foreach ($customFields as $field) {
             foreach ($terms as $term) {
-                if (!$firstConditionAdded) {
-                    $query = $query->where($this->getTable() . '.' . $field->db_column_name(), 'LIKE', '%' . $term . '%');
+                if (! $firstConditionAdded) {
+                    $query = $query->where($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
                     $firstConditionAdded = true;
 
                     continue;
                 }
 
-                $query = $query->orWhere($this->getTable() . '.' . $field->db_column_name(), 'LIKE', '%' . $term . '%');
+                $query = $query->orWhere($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
             }
         }
 
@@ -503,9 +503,9 @@ trait Searchable
             $query = $query->orWhereHas(
                 $relation, function (Builder $relationQuery) use ($relation, $columns, $terms, $isUserRelation, $concatSql) {
 
-                // $table must be resolved inside the closure for self-referential relations
-                // (e.g. User->manager, User->adminuser). getRelationTable relies on the
-                // alias counter that orWhereHas increments before this callback runs.
+                    // $table must be resolved inside the closure for self-referential relations
+                    // (e.g. User->manager, User->adminuser). getRelationTable relies on the
+                    // alias counter that orWhereHas increments before this callback runs.
                     $table = $this->getRelationTable($relation);
 
                     /**
@@ -519,22 +519,22 @@ trait Searchable
                     foreach ($columns as $column) {
                         foreach ($terms as $term) {
                             if (! $firstConditionAdded) {
-                                $relationQuery->where($table . '.' . $column, 'LIKE', '%' . $term . '%');
+                                $relationQuery->where($table.'.'.$column, 'LIKE', '%'.$term.'%');
                                 $firstConditionAdded = true;
 
                                 continue;
                             }
 
-                            $relationQuery->orWhere($table . '.' . $column, 'LIKE', '%' . $term . '%');
+                            $relationQuery->orWhere($table.'.'.$column, 'LIKE', '%'.$term.'%');
                         }
                     }
 
-                // Also search first+last name concatenated for user relations so that
-                // "John Smith" matches even when the terms are split across columns.
-                if ($isUserRelation && $concatSql !== null) {
-                    foreach ($terms as $term) {
-                        $relationQuery->orWhereRaw($concatSql, ["%{$term}%"]);
-                    }
+                    // Also search first+last name concatenated for user relations so that
+                    // "John Smith" matches even when the terms are split across columns.
+                    if ($isUserRelation && $concatSql !== null) {
+                        foreach ($terms as $term) {
+                            $relationQuery->orWhereRaw($concatSql, ["%{$term}%"]);
+                        }
                     }
                 }
             );
@@ -575,14 +575,14 @@ trait Searchable
 
                 foreach ($columns as $column) {
                     foreach ($terms as $term) {
-                        if (!$firstConditionAdded) {
-                            $morphQuery->where($table . '.' . $column, 'LIKE', '%' . $term . '%');
+                        if (! $firstConditionAdded) {
+                            $morphQuery->where($table.'.'.$column, 'LIKE', '%'.$term.'%');
                             $firstConditionAdded = true;
 
                             continue;
                         }
 
-                        $morphQuery->orWhere($table . '.' . $column, 'LIKE', '%' . $term . '%');
+                        $morphQuery->orWhere($table.'.'.$column, 'LIKE', '%'.$term.'%');
                     }
                 }
 
@@ -755,7 +755,7 @@ trait Searchable
      */
     private function resolveCustomFieldDbColumn(string $filterKey): ?string
     {
-        if (!$this instanceof Asset) {
+        if (! $this instanceof Asset) {
             return null;
         }
 

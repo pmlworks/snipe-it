@@ -6,7 +6,6 @@ use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
 use App\Models\CustomField;
-use App\Models\CustomFieldset;
 use App\Models\License;
 use App\Models\Location;
 use App\Models\Manufacturer;
