@@ -206,7 +206,7 @@ class Asset extends Depreciable
      * @var array
      */
     protected $searchableRelations = [
-        'assetstatus' => ['name'],
+        'status' => ['name'],
         'supplier' => ['name'],
         'company' => ['name'],
         'defaultLoc' => ['name'],
@@ -214,6 +214,21 @@ class Asset extends Depreciable
         'model' => ['name', 'model_number', 'eol'],
         'category' => ['name'],
         'manufacturer' => ['name'],
+        'assigned_to' => ['name'],
+    ];
+
+    /**
+     * Maps the field names exposed by the API / transformers to the actual
+     * Eloquent relation names used in $searchableRelations.
+     *
+     * This lets callers filter using the same key they see in API responses
+     * without needing to know the internal relation name.
+     *
+     * @var array<string, string> [ api_key => relation_name ]
+     */
+    protected $searchableRelationAliases = [
+        'status_label' => 'status',
+        'assigned_to' => 'assignedTo',
     ];
 
     protected static function booted(): void
@@ -456,8 +471,8 @@ class Asset extends Depreciable
         if ((! $this->assigned_to) && (! $this->deleted_at)) {
 
             // The asset status is not archived and is deployable
-            if (($this->assetstatus) && ($this->assetstatus->archived == '0')
-                && ($this->assetstatus->deployable == '1')
+            if (($this->status) && ($this->status->archived == '0')
+                && ($this->status->deployable == '1')
             ) {
                 return true;
 
@@ -473,8 +488,8 @@ class Asset extends Depreciable
     {
 
         // This asset is currently assigned to anyone and is not deleted...
-        if (($this->assigned_to != '') && ($this->assetstatus) && ($this->assetstatus->archived == '0')
-            && ($this->assetstatus->deployable == '1')
+        if (($this->assigned_to != '') && ($this->status) && ($this->status->archived == '0')
+            && ($this->status->deployable == '1')
         ) {
             return true;
 
@@ -978,7 +993,7 @@ class Asset extends Depreciable
      *
      * @return Relation
      */
-    public function assetstatus()
+    public function status()
     {
         return $this->belongsTo(Statuslabel::class, 'status_id');
     }
@@ -1416,7 +1431,7 @@ class Asset extends Depreciable
     public function scopePending($query)
     {
         return $query->whereHas(
-            'assetstatus', function ($query) {
+            'status', function ($query) {
                 $query->where('deployable', '=', 0)
                     ->where('pending', '=', 1)
                     ->where('archived', '=', 0);
@@ -1473,7 +1488,7 @@ class Asset extends Depreciable
     {
         return $query->whereNull('assets.assigned_to')
             ->whereHas(
-                'assetstatus', function ($query) {
+                'status', function ($query) {
                     $query->where('deployable', '=', 1)
                         ->where('pending', '=', 0)
                         ->where('archived', '=', 0);
@@ -1490,7 +1505,7 @@ class Asset extends Depreciable
     public function scopeUndeployable($query)
     {
         return $query->whereHas(
-            'assetstatus', function ($query) {
+            'status', function ($query) {
                 $query->where('deployable', '=', 0)
                     ->where('pending', '=', 0)
                     ->where('archived', '=', 0);
@@ -1507,7 +1522,7 @@ class Asset extends Depreciable
     public function scopeNotArchived($query)
     {
         return $query->whereHas(
-            'assetstatus', function ($query) {
+            'status', function ($query) {
                 $query->where('archived', '=', 0);
             }
         );
@@ -1676,7 +1691,7 @@ class Asset extends Depreciable
 
         if (Setting::getSettings()->show_archived_in_list != 1) {
             return $query->whereHas(
-                'assetstatus', function ($query) {
+                'status', function ($query) {
                     $query->where('archived', '=', 0);
                 }
             );
@@ -1695,7 +1710,7 @@ class Asset extends Depreciable
     public function scopeArchived($query)
     {
         return $query->whereHas(
-            'assetstatus', function ($query) {
+            'status', function ($query) {
                 $query->where('deployable', '=', 0)
                     ->where('pending', '=', 0)
                     ->where('archived', '=', 1);
@@ -1726,7 +1741,7 @@ class Asset extends Depreciable
 
         return Company::scopeCompanyables($query->where($table.'.requestable', '=', 1))
             ->whereHas(
-                'assetstatus', function ($query) {
+                'status', function ($query) {
                     $query->where(
                         function ($query) {
                             $query->where('deployable', '=', 1)
