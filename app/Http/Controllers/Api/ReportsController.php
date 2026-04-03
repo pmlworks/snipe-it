@@ -30,13 +30,13 @@ class ReportsController extends Controller
 
             if (($request->filled('target_type')) && ($request->filled('target_id'))) {
                 $target = Helper::normalizeFullModelName(request()->input('target_type'));
-                $target::find(request()->input('target_id'))->withTrashed();
+                $target::find(request()->input('target_id'))?->withTrashed();
                 $this->authorize('view', $target);
             }
 
             if (($request->filled('item_type')) && ($request->filled('item_id'))) {
                 $item = Helper::normalizeFullModelName(request()->input('item_type'));
-                $item::find(request()->input('item_id'))->withTrashed();
+                $item::find(request()->input('item_id'))?->withTrashed();
                 $this->authorize('view', $item);
             }
 
