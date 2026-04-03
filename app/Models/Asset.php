@@ -217,6 +217,20 @@ class Asset extends Depreciable
         'assigned_to' => ['name'],
     ];
 
+    /**
+     * Maps the field names exposed by the API / transformers to the actual
+     * Eloquent relation names used in $searchableRelations.
+     *
+     * This lets callers filter using the same key they see in API responses
+     * without needing to know the internal relation name.
+     *
+     * @var array<string, string> [ api_key => relation_name ]
+     */
+    protected $searchableRelationAliases = [
+        'status_label' => 'assetstatus',
+        'assigned_to' => 'assignedTo',
+    ];
+
     protected static function booted(): void
     {
         static::forceDeleted(function (Asset $asset) {
