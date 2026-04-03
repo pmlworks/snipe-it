@@ -23,7 +23,7 @@ use Tests\TestCase;
  * Tests verify that:
  * 1. Attributes are searchable via both modes
  * 2. Relations are searchable via both modes
- * 3. Relation aliases (e.g., status_label → assetstatus) work correctly
+ * 3. Relation aliases (e.g., status_label → status) work correctly
  * 4. Multi-word searches work as expected
  */
 class SearchableTraitTest extends TestCase
@@ -147,7 +147,7 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
-     * Test Asset structured filter using relation alias (status_label → assetstatus)
+     * Test Asset structured filter using relation alias (status_label → status)
      */
     public function test_asset_structured_filter_using_relation_alias()
     {
@@ -157,7 +157,7 @@ class SearchableTraitTest extends TestCase
         Asset::factory()->create(['status_id' => $status->id]);
         Asset::factory()->create();
 
-        // Filter using the API key 'status_label' should map to 'assetstatus' relation
+        // Filter using the API key 'status_label' should map to 'status' relation
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
                 'filter' => json_encode(['status_label' => 'TestStatus']),
@@ -590,6 +590,28 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Test filtering on a custom field using the raw db_column slug.
+     */
+    public function test_custom_field_gets_skipped_if_encrypted()
+    {
+        $field = CustomField::factory()->testEncrypted()->create();
+        $dbColumn = $field->db_column_name();
+
+        Asset::factory()->create([$dbColumn => '3.2GHz i9']);
+        Asset::factory()->create([$dbColumn => '2.4GHz i5']);
+
+        Asset::flushCustomFieldFilterMap();
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode([$dbColumn => 'i9']),
+            ]))
+            ->assertOk()
+            // Encrypted fields are not searchable, so this filter key is ignored.
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
      * Test that custom field filter returns no results when value doesn't match.
      */
     public function test_custom_field_filter_returns_empty_when_no_match()
@@ -603,7 +625,7 @@ class SearchableTraitTest extends TestCase
 
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode(['CPU' => 'NonExistentCPU']),
+                'filter' => json_encode([$dbColumn => 'NonExistentCPU']),
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 0)->etc());

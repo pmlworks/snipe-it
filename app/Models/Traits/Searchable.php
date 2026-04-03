@@ -269,7 +269,7 @@ trait Searchable
             return $filterKey;
         }
 
-        // 2. Model-defined aliases — e.g. 'status_label' => 'assetstatus'.
+        // 2. Model-defined aliases — e.g. 'status_label' => 'status'.
         $aliases = $this->getSearchableRelationAliases();
 
         if (array_key_exists($filterKey, $aliases)) {
@@ -455,7 +455,8 @@ trait Searchable
             return $query;
         }
 
-        $customFields = CustomField::all();
+        // Only pull unencrypted fields, since encrypted fields cannot be searched on
+        $customFields = CustomField::where('field_encrypted', 0)->get();
         $firstConditionAdded = false;
 
         foreach ($customFields as $field) {
@@ -650,7 +651,7 @@ trait Searchable
      * Eloquent relation names used in $searchableRelations.  For example:
      *
      *   protected $searchableRelationAliases = [
-     *       'status_label' => 'assetstatus',
+     *       'status_label' => 'status',
      *   ];
      *
      * Override this method in a model if you need dynamic alias resolution.
@@ -799,6 +800,7 @@ trait Searchable
         try {
             CustomField::query()
                 ->whereNotNull('db_column')
+                ->where('field_encrypted', 0)
                 ->get(['name', 'db_column'])
                 ->each(function (CustomField $field) use (&$map): void {
                     $dbColumn = $field->db_column;
