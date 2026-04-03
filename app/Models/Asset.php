@@ -227,7 +227,7 @@ class Asset extends Depreciable
      * @var array<string, string> [ api_key => relation_name ]
      */
     protected $searchableRelationAliases = [
-        'status_label' => 'assetstatus',
+        'status_label' => 'status',
         'assigned_to' => 'assignedTo',
     ];
 
