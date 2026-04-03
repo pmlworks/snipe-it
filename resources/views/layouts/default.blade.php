@@ -580,6 +580,7 @@
         }
 
 
+        .dropdown-menu > li > a,
         .dropdown-menu > li > a:link,
         .dropdown-menu > li > a:visited,
         .dropdown-menu > .active > a:link,
@@ -589,7 +590,7 @@
         .navbar-nav > li > a:link,
         .navbar-nav > li > a:visited
         {
-            background-color: var(--main-theme-color);
+            background-color: var(--main-theme-color) !important;
             /*background-color: rgba(0,0,0,.15);*/
             color: var(--nav-primary-text-color) !important;
             /*color: var(--nav-primary-text-color) !important;*/
@@ -2147,11 +2148,12 @@
              * Utility function to update the button text and aria-label.
              */
             function updateButton({ buttonEl, isDark }) {
-                const newCta = isDark ? '<i class="fa-regular fa-sun fa-fw"></i>  {{ trans('general.light_mode') }}' : '<i class="fa-solid fa-moon fa-fw"></i>   {{ trans('general.dark_mode') }}';
+                const newCta = isDark ? '{{ trans('general.light_mode') }}' : '{{ trans('general.dark_mode') }}';
+                const newCtaButton = isDark ? '<i class="fa-regular fa-sun fa-fw"></i> ' : '<i class="fa-solid fa-moon fa-fw"></i> ';
                 // use an aria-label if omitting text on the button
                 // and using a sun/moon icon, for example
                 buttonEl.setAttribute("aria-label", newCta);
-                buttonEl.innerHTML = newCta;
+                buttonEl.innerHTML = newCtaButton + newCta;
             }
 
             /**
