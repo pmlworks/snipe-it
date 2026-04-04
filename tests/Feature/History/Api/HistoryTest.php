@@ -343,7 +343,7 @@ class IndexHistoryTest extends TestCase
     {
         $subject = User::factory()->create();
         $actor = User::factory()->viewUserHistory()->create();
-        $uniqueNote = 'history-pagination-limit-' . uniqid();
+        $uniqueNote = 'history-pagination-limit-'.uniqid();
 
         $first = Actionlog::factory()->create([
             'item_id' => $subject->id,
@@ -394,7 +394,7 @@ class IndexHistoryTest extends TestCase
     {
         $subject = User::factory()->create();
         $actor = User::factory()->viewUserHistory()->create();
-        $uniqueNote = 'history-pagination-offset-' . uniqid();
+        $uniqueNote = 'history-pagination-offset-'.uniqid();
 
         Actionlog::factory()->create([
             'item_id' => $subject->id,
@@ -440,5 +440,4 @@ class IndexHistoryTest extends TestCase
             ->assertJsonCount(1, 'rows')
             ->assertJsonPath('rows.0.id', $second->id);
     }
-
 }
