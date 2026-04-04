@@ -67,8 +67,8 @@ trait Loggable
             'action_date',
         ];
 
-        // Start with the polymorphic history relation so all subsequent filters,
-        // search terms, and sorting are applied to the same query instance.
+        // Start with the polymorphic history relation so all filters and
+        // ordering are applied to the same query instance.
         $history = $this->history();
 
         if ($request->filled('search')) {
@@ -95,11 +95,6 @@ trait Loggable
             $history = $history->whereNotNull('filename');
         }
 
-        $total = $history->count();
-        // Make sure the offset and limit are actually integers and do not exceed system limits
-        $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
-        $limit = app('api_limit_value');
-
         $order = ($request->input('order') == 'asc') ? 'asc' : 'desc';
 
         switch ($request->input('sort')) {
@@ -112,7 +107,7 @@ trait Loggable
                 break;
         }
 
-        return $history->skip($offset)->take($limit)->get();
+        return $history;
 
     }
 

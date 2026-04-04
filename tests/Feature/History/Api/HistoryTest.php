@@ -338,4 +338,107 @@ class IndexHistoryTest extends TestCase
             ->assertJsonPath('rows.0.created_by.id', $alphaCreator->id)
             ->assertJsonPath('rows.1.created_by.id', $omegaCreator->id);
     }
+
+    public function test_viewing_user_history_respects_limit_and_keeps_full_total()
+    {
+        $subject = User::factory()->create();
+        $actor = User::factory()->viewUserHistory()->create();
+        $uniqueNote = 'history-pagination-limit-' . uniqid();
+
+        $first = Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-01-01 00:00:00',
+            'action_date' => '2026-01-01 00:00:00',
+        ]);
+
+        Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-01-02 00:00:00',
+            'action_date' => '2026-01-02 00:00:00',
+        ]);
+
+        Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-01-03 00:00:00',
+            'action_date' => '2026-01-03 00:00:00',
+        ]);
+
+        $this->actingAsForApi($actor)
+            ->getJson(route('api.users.history', [
+                'user' => $subject,
+                'search' => $uniqueNote,
+                'sort' => 'created_at',
+                'order' => 'asc',
+                'offset' => 0,
+                'limit' => 1,
+            ]))
+            ->assertOk()
+            ->assertJsonPath('total', 3)
+            ->assertJsonCount(1, 'rows')
+            ->assertJsonPath('rows.0.id', $first->id);
+    }
+
+    public function test_viewing_user_history_respects_offset_and_limit_and_keeps_full_total()
+    {
+        $subject = User::factory()->create();
+        $actor = User::factory()->viewUserHistory()->create();
+        $uniqueNote = 'history-pagination-offset-' . uniqid();
+
+        Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-02-01 00:00:00',
+            'action_date' => '2026-02-01 00:00:00',
+        ]);
+
+        $second = Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-02-02 00:00:00',
+            'action_date' => '2026-02-02 00:00:00',
+        ]);
+
+        Actionlog::factory()->create([
+            'item_id' => $subject->id,
+            'item_type' => User::class,
+            'created_by' => $actor->id,
+            'action_type' => 'update',
+            'note' => $uniqueNote,
+            'created_at' => '2026-02-03 00:00:00',
+            'action_date' => '2026-02-03 00:00:00',
+        ]);
+
+        $this->actingAsForApi($actor)
+            ->getJson(route('api.users.history', [
+                'user' => $subject,
+                'search' => $uniqueNote,
+                'sort' => 'created_at',
+                'order' => 'asc',
+                'offset' => 1,
+                'limit' => 1,
+            ]))
+            ->assertOk()
+            ->assertJsonPath('total', 3)
+            ->assertJsonCount(1, 'rows')
+            ->assertJsonPath('rows.0.id', $second->id);
+    }
+
 }
