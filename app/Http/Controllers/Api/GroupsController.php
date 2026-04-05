@@ -84,9 +84,8 @@ class GroupsController extends Controller
             ? NormalizePermissionsPayloadAction::run($request->input('permissions'))
             : $defaultPermissions;
 
-        $group->name = $request->input('name');
+        $group->fill($request->only(['name', 'notes']));
         $group->created_by = auth()->id();
-        $group->notes = $request->input('notes');
         $group->permissions = json_encode(
             Helper::selectedPermissionsArray(config('permissions'), $requestedPermissions)
         );
@@ -129,13 +128,8 @@ class GroupsController extends Controller
         $this->authorize('superadmin');
         $group = Group::findOrFail($id);
 
-        if ($request->has('name')) {
-            $group->name = $request->input('name');
-        }
-
-        if ($request->has('notes')) {
-            $group->notes = $request->input('notes');
-        }
+        // Fill only the keys present in the request, so PATCH skips absent fields naturally.
+        $group->fill($request->only(['name', 'notes']));
 
         // Preserve existing permissions when omitted from PATCH/PUT payload.
         if ($request->has('permissions')) {
