@@ -34,4 +34,3 @@ final class PreserveUnauthorizedPrivilegedPermissionsAction
         return $requestedPermissions;
     }
 }
-
