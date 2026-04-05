@@ -571,31 +571,30 @@ class UsersController extends Controller
 
             if ($request->has('permissions')) {
 
-                $permissions_array = $request->input('permissions');
-                $orig_permissions_array = $user->decodePermissions();
+                $permissions_array = $this->normalizePermissionsPayload($request->input('permissions'));
+                $orig_permissions_array = $this->normalizePermissionsPayload($user->decodePermissions());
 
-                // Strip out the individual superuser permission if the API user isn't a superadmin
+                // Strip out the individual superuser permission if the API user isn't a superadmin.
+                // If the target user did not already have a superuser key, remove any injected value.
                 if (! auth()->user()->isSuperUser()) {
-
-                    if (is_array($orig_permissions_array)) {
-                        if (array_key_exists('superuser', $orig_permissions_array)) {
-                            $permissions_array['superuser'] = $orig_permissions_array['superuser'];
-                        }
+                    if (array_key_exists('superuser', $orig_permissions_array)) {
+                        $permissions_array['superuser'] = $orig_permissions_array['superuser'];
+                    } else {
+                        unset($permissions_array['superuser']);
                     }
-
                 }
 
-                // Strip out the individual admin permission if the API user isn't an admin
+                // Strip out the individual admin permission if the API user isn't an admin.
+                // If the target user did not already have an admin key, remove any injected value.
                 if ((! auth()->user()->isAdmin()) && (! auth()->user()->isSuperUser())) {
-
-                    if (is_array($orig_permissions_array)) {
-                        if (array_key_exists('admin', $orig_permissions_array)) {
-                            $permissions_array['admin'] = $orig_permissions_array['admin'];
-                        }
+                    if (array_key_exists('admin', $orig_permissions_array)) {
+                        $permissions_array['admin'] = $orig_permissions_array['admin'];
+                    } else {
+                        unset($permissions_array['admin']);
                     }
                 }
 
-                // This is going to update the whole thing, not just what was passed
+                // This is going to update the whole thing, not just what was passed.
                 $user->permissions = $permissions_array;
             }
 
@@ -977,5 +976,29 @@ class UsersController extends Controller
         $history = $history->skip($offset)->take($limit)->get();
 
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $total), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * Normalize permissions payloads from request/model to a consistent associative array.
+     *
+     * @return array<string, mixed>
+     */
+    private function normalizePermissionsPayload(mixed $permissions): array
+    {
+        if (is_string($permissions)) {
+            $decoded = json_decode($permissions, true);
+
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        if (is_array($permissions)) {
+            return $permissions;
+        }
+
+        if ($permissions instanceof \stdClass) {
+            return (array) $permissions;
+        }
+
+        return [];
     }
 }
