@@ -165,9 +165,8 @@ class GroupsController extends Controller
      */
     public function update(Request $request, Group $group): RedirectResponse
     {
-        if ($request->has('name')) {
-            $group->name = $request->input('name');
-        }
+        $group->name = $request->input('name');
+        $group->notes = $request->input('notes');
 
         if ($request->has('permission')) {
             $group->permissions = json_encode(
@@ -176,10 +175,6 @@ class GroupsController extends Controller
                     NormalizePermissionsPayloadAction::run($request->input('permission'))
                 )
             );
-        }
-
-        if ($request->has('notes')) {
-            $group->notes = $request->input('notes');
         }
 
         if (! config('app.lock_passwords')) {
