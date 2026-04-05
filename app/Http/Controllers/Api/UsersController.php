@@ -574,7 +574,6 @@ class UsersController extends Controller
 
         }
 
-
         if ($request->filled('company_id')) {
             $user->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         }
