@@ -129,6 +129,7 @@ class AssetsController extends Controller
             'category',
             'manufacturer',
             'supplier',
+            'status',
             'jobtitle',
             'assigned_to',
             'created_by',
@@ -170,17 +171,6 @@ class AssetsController extends Controller
         if ($filter_non_deprecable_assets) {
             $non_deprecable_models = AssetModel::select('id')->whereNotNull('depreciation_id')->get();
             $assets->InModelList($non_deprecable_models->toArray());
-        }
-
-        // These are used by the API to query against specific ID numbers.
-        // They are also used by the individual searches on detail pages like
-        // locations, etc.
-
-        // Search custom fields by column name
-        foreach ($all_custom_fields as $field) {
-            if ($request->filled($field->db_column_name()) && $field->db_column_name()) {
-                $assets->where('assets.'.$field->db_column_name(), '=', $request->input($field->db_column_name()));
-            }
         }
 
         // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
