@@ -160,13 +160,10 @@ class UsersController extends Controller
 
             }
 
-            if ($request->filled('groups')) {
-                if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
-                    $user->groups()->sync($request->input('groups'));
-                }
-            } else {
-                $user->groups()->sync([]);
+            if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
+                $user->groups()->sync($request->input('groups'));
             }
+
 
             return Helper::getRedirectOption($request, $user->id, 'Users')
                 ->with('success', trans('admin/users/message.success.create'));
@@ -318,7 +315,7 @@ class UsersController extends Controller
             ));
 
             // Only save groups if the user is a superuser
-            if (($request->has('groups')) && (auth()->user()->isSuperUser())) {
+            if (auth()->user()->isSuperUser()) {
                 $user->groups()->sync($request->input('groups'));
             }
         }
