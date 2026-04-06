@@ -166,7 +166,7 @@ trait Searchable
      */
     private function prepeareSearchTerms($search)
     {
-        return explode(' OR ', $search);
+        return explode(' AND ', $search);
     }
 
     /**
