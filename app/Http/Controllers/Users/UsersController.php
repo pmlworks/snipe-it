@@ -164,7 +164,6 @@ class UsersController extends Controller
                 $user->groups()->sync($request->input('groups'));
             }
 
-
             return Helper::getRedirectOption($request, $user->id, 'Users')
                 ->with('success', trans('admin/users/message.success.create'));
         }
