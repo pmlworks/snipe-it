@@ -397,14 +397,14 @@
         },
 
         btnShowDeleted: {
-            text: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+            text: '{{ (request()->input('status_type') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
             icon: 'fa-solid fa-trash',
             event () {
-                window.location.href = '{{ (request()->input('status') == "Deleted") ? route('hardware.index') : route('hardware.index', ['status' => 'Deleted']) }}';
+                window.location.href = '{{ (request()->input('status_type') == "Deleted") ? route('hardware.index') : route('hardware.index', ['status_type' => 'Deleted']) }}';
             },
             attributes: {
-                class: '{{ (request()->input('status') == "Deleted") ? 'btn-selected' : '' }}',
-                title: '{{ (request()->input('status') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
+                class: '{{ (request()->input('status_type') == "Deleted") ? 'btn-selected' : '' }}',
+                title: '{{ (request()->input('status_type') == "Deleted") ? trans('general.list_all') : trans('general.deleted') }}',
 
             }
         },
