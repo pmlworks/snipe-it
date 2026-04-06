@@ -521,12 +521,9 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
-     * Test filtering on a custom field by its human-readable name (e.g. "CPU").
-     *
-     * The filter key should be case-insensitive and should map to the underlying
-     * db_column (e.g. "_snipeit_cpu_N") automatically.
+     * Test filtering on a custom field using the raw db_column slug.
      */
-    public function test_custom_field_filter_by_human_readable_name()
+    public function test_custom_field_filter_by_db_column_slug()
     {
         $field = CustomField::factory()->cpu()->create();
         $dbColumn = $field->db_column_name();
@@ -538,19 +535,19 @@ class SearchableTraitTest extends TestCase
         // Flush cache so the newly created field is picked up.
         Asset::flushCustomFieldFilterMap();
 
-        // Filter using the human-readable field name "CPU" (exact case)
+        // Filter using the raw db_column key.
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode(['CPU' => '3.2GHz']),
+                'filter' => json_encode([$dbColumn => '3.2GHz']),
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
     }
 
     /**
-     * Test filtering on a custom field using a lowercase name.
+     * Test filtering by a human-readable custom field name is ignored.
      */
-    public function test_custom_field_filter_by_lowercase_name()
+    public function test_custom_field_filter_by_human_readable_name_is_ignored()
     {
         $field = CustomField::factory()->cpu()->create();
         $dbColumn = $field->db_column_name();
@@ -562,30 +559,44 @@ class SearchableTraitTest extends TestCase
 
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode(['cpu' => 'i9']),
+                'filter' => json_encode(['CPU' => 'i9']),
             ]))
             ->assertOk()
-            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+            // Human-readable custom field keys are intentionally ignored.
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
     }
 
     /**
-     * Test filtering on a custom field using the raw db_column slug.
+     * Test custom field name collisions do not override relation filters.
      */
-    public function test_custom_field_filter_by_db_column_slug()
+    public function test_custom_field_name_collision_does_not_override_relation_filter()
     {
-        $field = CustomField::factory()->cpu()->create();
+        $status = Statuslabel::factory()->create(['name' => 'CollisionStatus-'.now()->timestamp]);
+        $otherStatus = Statuslabel::factory()->create(['name' => 'DifferentStatus-'.now()->timestamp]);
+
+        $field = CustomField::factory()->create([
+            'name' => 'status',
+            'field_encrypted' => 0,
+        ]);
         $dbColumn = $field->db_column_name();
 
-        Asset::factory()->create([$dbColumn => '3.2GHz i9']);
-        Asset::factory()->create([$dbColumn => '2.4GHz i5']);
+        Asset::factory()->create([
+            'status_id' => $status->id,
+            $dbColumn => 'custom-status-value',
+        ]);
+        Asset::factory()->create([
+            'status_id' => $otherStatus->id,
+            $dbColumn => 'CollisionStatus',
+        ]);
 
         Asset::flushCustomFieldFilterMap();
 
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode([$dbColumn => 'i9']),
+                'filter' => json_encode(['status' => 'CollisionStatus']),
             ]))
             ->assertOk()
+            // This must filter the status relation, not the custom field with same name.
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
     }
 
@@ -647,7 +658,7 @@ class SearchableTraitTest extends TestCase
 
         $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode(['CPU' => 'Intel']),
+                'filter' => json_encode([$dbColumn => 'Intel']),
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());

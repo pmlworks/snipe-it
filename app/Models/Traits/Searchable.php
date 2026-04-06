@@ -195,8 +195,8 @@ trait Searchable
             }
 
             // Check if this is a custom field (only for Assets - for *now*).
-            // Accepts both the human-readable field name (e.g. "CPU") and the raw
-            // db_column slug (e.g. "_snipeit_cpu_4") as filter keys.
+            // Only db_column keys (e.g. "_snipeit_cpu_4") are accepted to avoid
+            // collisions with standard attributes or relation filter keys.
             if ($this instanceof Asset) {
                 $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
@@ -747,8 +747,7 @@ trait Searchable
     /**
      * Resolve a filter key to the actual database column name for a custom field.
      *
-     * Accepts both human-readable field names (e.g. "CPU", "cpu") and raw
-     * db_column slugs (e.g. "_snipeit_cpu_4") as filter keys.
+     * Accepts only raw db_column slugs (e.g. "_snipeit_cpu_4") as filter keys.
      *
      * Returns null when the key cannot be matched to any known custom field.
      *
@@ -762,27 +761,15 @@ trait Searchable
 
         $map = $this->buildCustomFieldFilterMap();
 
-        // 1. Exact match on db_column (e.g. "_snipeit_cpu_4")
-        if (array_key_exists($filterKey, $map)) {
-            return $map[$filterKey];
-        }
-
-        // 2. Case-insensitive match on human-readable field name (e.g. "CPU", "cpu")
-        $lowerKey = strtolower($filterKey);
-
-        if (array_key_exists($lowerKey, $map)) {
-            return $map[$lowerKey];
-        }
-
-        return null;
+        // Exact match on db_column (e.g. "_snipeit_cpu_4") only.
+        return $map[$filterKey] ?? null;
     }
 
     /**
      * Build a lookup map for custom field filter resolution.
      *
-     * The returned array has two types of entries for every custom field:
-     *   - db_column  (exact)  → db_column   e.g. "_snipeit_cpu_4" => "_snipeit_cpu_4"
-     *   - lowercase name      → db_column   e.g. "cpu"            => "_snipeit_cpu_4"
+     * The returned array contains db_column entries only:
+     *   - db_column (exact) → db_column, e.g. "_snipeit_cpu_4" => "_snipeit_cpu_4"
      *
      * Results are cached statically for the duration of the request.
      * Call flushCustomFieldFilterMap() to reset the cache (useful in tests).
@@ -801,15 +788,12 @@ trait Searchable
             CustomField::query()
                 ->whereNotNull('db_column')
                 ->where('field_encrypted', 0)
-                ->get(['name', 'db_column'])
+                ->get(['db_column'])
                 ->each(function (CustomField $field) use (&$map): void {
                     $dbColumn = $field->db_column;
 
                     // Exact db_column key (e.g. "_snipeit_cpu_4")
                     $map[$dbColumn] = $dbColumn;
-
-                    // Lowercase human-readable name key (e.g. "cpu")
-                    $map[strtolower($field->name)] = $dbColumn;
                 });
         } catch (\Exception $e) {
             // Guard against missing table or schema issues during migrations / tests
