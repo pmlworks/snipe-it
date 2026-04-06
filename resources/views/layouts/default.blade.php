@@ -1482,7 +1482,7 @@
                                     <x-icon type="angle-left" class="pull-right fa-fw"/>
                                 </a>
                                 <ul class="treeview-menu">
-                                    <li {!! (!request()->query('status') && (request()->is('hardware')) ? ' class="active"' : '') !!}>
+                                    <li {!! (!request()->query('status_type') && (request()->is('hardware')) ? ' class="active"' : '') !!}>
                                         <a href="{{ url('hardware') }}">
                                             <x-icon type="circle" class="text-grey fa-fw"/>
                                             {{ trans('general.list_all') }}
@@ -1599,8 +1599,8 @@
                                     @endcan
 
                                     @can('create', \App\Models\Asset::class)
-                                        <li{!! (request()->query('status') == 'Deleted' ? ' class="active"' : '') !!}>
-                                            <a href="{{ url('hardware?status=Deleted') }}">
+                                        <li{!! (request()->query('status_type') == 'Deleted' ? ' class="active"' : '') !!}>
+                                            <a href="{{ url('hardware?status_type=Deleted') }}">
                                                 {{ trans('general.deleted') }}
                                             </a>
                                         </li>
