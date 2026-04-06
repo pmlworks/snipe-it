@@ -127,7 +127,6 @@ class AssetsController extends Controller
             'location',
             'rtd_location',
             'category',
-            'status_label',
             'manufacturer',
             'supplier',
             'jobtitle',
@@ -232,7 +231,7 @@ class AssetsController extends Controller
         // We switched from using query scopes here because of a Laravel bug
         // related to fulltext searches on complex queries.
         // I am sad. :(
-        switch ($request->input('status')) {
+        switch ($request->input('status_type')) {
             case 'Deleted':
                 $assets->onlyTrashed();
                 break;
@@ -404,7 +403,7 @@ class AssetsController extends Controller
             case 'rtd_location':
                 $assets->OrderRtdLocation($order);
                 break;
-            case 'status_label':
+            case 'status':
                 $assets->OrderStatus($order);
                 break;
             case 'supplier':
