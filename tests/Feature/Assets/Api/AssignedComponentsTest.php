@@ -5,7 +5,6 @@ namespace Tests\Feature\Assets\Api;
 use App\Models\Asset;
 use App\Models\Company;
 use App\Models\Component;
-use App\Models\ComponentAssignment;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -55,6 +54,4 @@ class AssignedComponentsTest extends TestCase
                     ->etc();
             });
     }
-
-    
 }
