@@ -674,7 +674,8 @@ class Asset extends Depreciable
      */
     public function components()
     {
-        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')->withPivot('id', 'assigned_qty', 'created_at', 'note');
+        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')
+            ->withPivot('id', 'assigned_qty', 'created_at', 'note', 'created_by');
     }
 
     /**
