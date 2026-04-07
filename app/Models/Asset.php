@@ -34,7 +34,7 @@ class Asset extends Depreciable
 {
     protected $presenter = AssetPresenter::class;
 
-    protected $with = ['model', 'adminuser'];
+    protected $with = ['model', 'adminuser', 'location', 'company'];
 
     use CompanyableTrait;
     use HasFactory;
@@ -79,7 +79,6 @@ class Asset extends Depreciable
      * Leaving this commented out, since we need to test further, but this would eager load the model relationship every single
      * time the asset model is loaded.
      */
-    // protected $with = ['model'];
 
     /**
      * Whether the model should inject it's identifier to the unique
