@@ -1365,9 +1365,8 @@ class AssetsController extends Controller
         }
 
         $offset = ($request->input('offset') > $component_checkouts->count()) ? $component_checkouts->count() : app('api_offset_value');
-        $limit = app('api_limit_value');
-
         $total = $component_checkouts->count();
+        $limit = app('api_limit_value');
         $component_checkouts = $component_checkouts->skip($offset)->take($limit)->get();
 
         return (new AssetsTransformer)->transformCheckedoutComponents($component_checkouts, $total);
