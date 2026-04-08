@@ -40,17 +40,17 @@ class ComponentAssignment extends Model
      */
     public function component()
     {
-        return $this->belongsTo(Component::class);
+        return $this->belongsTo(Component::class)->withTrashed();
     }
 
     public function components()
     {
-        return $this->hasMany(Component::class, 'id', 'component_id');
+        return $this->hasMany(Component::class, 'id', 'component_id')->withTrashed();
     }
 
     public function assets()
     {
-        return $this->hasMany(Asset::class, 'id', 'asset_id');
+        return $this->hasMany(Asset::class, 'id', 'asset_id')->withTrashed();
     }
 
     /**

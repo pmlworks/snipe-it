@@ -403,8 +403,8 @@ class AssetsTransformer
             $array[] = [
                 'assigned_pivot_id' => $component_checkout->id,
                 'name' => [
-                    'id' => $component_checkout->component->id,
-                    'name' => e($component_checkout->component->display_name),
+                    'id' => $component_checkout->component?->id,
+                    'name' => e($component_checkout->component?->display_name),
                     'type' => 'component',
                 ],
                 'assigned_qty' => $component_checkout->assigned_qty,
