@@ -417,7 +417,7 @@ class AssetsTransformer
                 ] : null,
                 'available_actions' => [
                     'checkin' => (($component_checkout->component?->deleted_at == '') && Gate::allows('checkin', Component::class)),
-                    'view' => (($component_checkout->component?->deleted_at == '') && Gate::allows('view', Component::class))
+                    'view' => (($component_checkout->component?->deleted_at == '') && Gate::allows('view', Component::class)),
                 ],
             ];
         }
