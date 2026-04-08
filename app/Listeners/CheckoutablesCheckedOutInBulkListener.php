@@ -142,7 +142,7 @@ class CheckoutablesCheckedOutInBulkListener
         if ($target instanceof Asset) {
             $target->load('assignedTo');
 
-            return $target->assignedto;
+            return $target->assigned;
         }
 
         if ($target instanceof Location) {
