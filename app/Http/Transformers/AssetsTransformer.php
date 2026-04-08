@@ -406,6 +406,7 @@ class AssetsTransformer
                     'id' => $component_checkout->component?->id,
                     'name' => e($component_checkout->component?->display_name),
                     'type' => 'component',
+                    'deleted_at' => $component_checkout->component?->deleted_at,
                 ],
                 'assigned_qty' => $component_checkout->assigned_qty,
                 'note' => ($component_checkout->note) ? e($component_checkout->note) : null,
@@ -414,7 +415,10 @@ class AssetsTransformer
                     'id' => (int) $component_checkout->adminuser->id,
                     'name' => e($component_checkout->adminuser->display_name),
                 ] : null,
-                'available_actions' => ['checkin' => Gate::allows('checkin', Component::class)],
+                'available_actions' => [
+                    'checkin' => (($component_checkout->component?->deleted_at == '') && Gate::allows('checkin', Component::class)),
+                    'view' => (($component_checkout->component?->deleted_at == '') && Gate::allows('view', Component::class))
+                ],
             ];
         }
 
