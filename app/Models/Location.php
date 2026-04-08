@@ -182,7 +182,7 @@ class Location extends SnipeModel
 
     public function countAllTheThings()
     {
-        return ($this->assets()->count() + $this->consumables()->count() + $this->components()->count() + $this->users()->count() + $this->assignedAccessories()->count() + $this->assignedAssets()->count() + $this->accessories()->count());
+        return $this->assets()->count() + $this->consumables()->count() + $this->components()->count() + $this->users()->count() + $this->assignedAccessories()->count() + $this->assignedAssets()->count() + $this->accessories()->count();
     }
 
     /**
