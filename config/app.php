@@ -233,7 +233,6 @@ return [
 
     'allow_iframing' => env('ALLOW_IFRAMING', false),
 
-
     /*
    |--------------------------------------------------------------------------
    | LOG AUTHED USER HEADER

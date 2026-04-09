@@ -73,7 +73,6 @@ class SecurityHeaders
             $response->headers->set('X-Authorized-User-ID', auth()?->id());
         }
 
-
         // This defaults to false to maintain backwards compatibility for
         // people who are not running Snipe-IT over TLS (shame, shame, shame!)
         // Seriously though, please run Snipe-IT over TLS. Let's Encrypt is free.
