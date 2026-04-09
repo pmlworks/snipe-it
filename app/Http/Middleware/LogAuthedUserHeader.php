@@ -18,9 +18,9 @@ class LogAuthedUserHeader
 
         $response = $next($request);
 
-        if (config('app.authorized_user_header') === true) {
+        if ((config('app.authorized_user_header') === true) && ($request->bearerToken() != '')) {
             $response->headers->set('X-Authorized-User-ID', auth()?->id());
-        }
+        } 
 
         return $response;
     }
