@@ -20,6 +20,8 @@ class LogAuthedUserHeader
 
         if ((config('app.authorized_user_header') === true) && ($request->bearerToken() != '')) {
             $response->headers->set('X-API-User-ID', auth()?->id());
+            $response->headers->set('X-API-Token-Name', $request->user()?->token()?->name);
+            $response->headers->set('X-API-Token-ID', $request->user()?->token()?->id);
         }
 
         return $response;
