@@ -171,7 +171,7 @@ class Consumable extends SnipeModel
         }
 
         if (($this->qty == '') || ($this->qty == 0)) {
-            return 1;
+            return 0;
         }
 
         return ($this->qty - $this->consumables_users_count) / $this->qty * 100;
