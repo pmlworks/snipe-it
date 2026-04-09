@@ -170,7 +170,7 @@ class Consumable extends SnipeModel
             return 100;
         }
 
-        if ($this->qty == '') {
+        if (($this->qty == '') || ($this->qty == 0)) {
             return 1;
         }
 
