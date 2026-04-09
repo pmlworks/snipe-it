@@ -56,4 +56,18 @@ return [
         'not_saved' => 'Your settings were not saved.',
         'mismatch' => 'There is 1 item in the database that need your attention before you can enable location scoping.|There are :count items in the database that need your attention before you can enable location scoping.',
     ],
+    'oauth' => [
+        'token_revoked'         => 'Personal access token revoked successfully.',
+        'token_unrevoked'       => 'Personal access token reinstated successfully.',
+        'token_not_found'       => 'That personal access token could not be found.',
+        'token_revoke_error'    => 'An error occurred while revoking the token.',
+        'token_unrevoke_error'  => 'An error occurred while reinstating the token.',
+        'client_created'        => 'OAuth client created successfully.',
+        'client_updated'        => 'OAuth client updated successfully.',
+        'client_deleted'        => 'OAuth client deleted successfully.',
+        'token_deleted'         => 'Token revoked successfully.',
+        'client_delete_denied'  => 'You are not authorized to delete this client.',
+        'client_edit_denied'    => 'You are not authorized to edit this client.',
+        'token_delete_denied'   => 'You are not authorized to revoke this token.',
+    ],
 ];
