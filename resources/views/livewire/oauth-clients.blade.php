@@ -61,9 +61,13 @@
                             </td>
                             <td>
                                 @if($isRevokedClient)
-                                    <span class="label label-danger">{{ trans('admin/settings/general.oauth_token_status_revoked') }}</span>
+                                    <span class="label label-danger">
+                                        <x-icon type="x"/> {{ trans('admin/settings/general.oauth_token_status_revoked') }}
+                                    </span>
                                 @else
-                                    <span class="label label-success">{{ trans('admin/settings/general.oauth_token_status_active') }}</span>
+                                    <span class="label label-success">
+                                        <x-icon type="checkmark"/> {{ trans('admin/settings/general.oauth_token_status_active') }}
+                                    </span>
                                 @endif
                             </td>
                             <td><code>{{ $client->redirect }}</code></td>

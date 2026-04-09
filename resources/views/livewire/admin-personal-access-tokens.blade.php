@@ -50,11 +50,17 @@
                             <td>{{ $token->client_name }}</td>
                             <td>
                                 @if($isRevoked)
-                                    <span class="label label-danger">{{ trans('admin/settings/general.oauth_token_status_revoked') }}</span>
+                                    <span class="label label-danger">
+                                         <x-icon type="x"/>
+                                        {{ trans('admin/settings/general.oauth_token_status_revoked') }}</span>
                                 @elseif($isExpired)
-                                    <span class="label label-warning">{{ trans('admin/settings/general.oauth_token_status_expired') }}</span>
+                                    <span class="label label-warning">
+                                         <x-icon type="warning"/>
+                                        {{ trans('admin/settings/general.oauth_token_status_expired') }}</span>
                                 @else
-                                    <span class="label label-success">{{ trans('admin/settings/general.oauth_token_status_active') }}</span>
+                                    <span class="label label-success">
+                                         <x-icon type="checkmark"/>
+                                        {{ trans('admin/settings/general.oauth_token_status_active') }}</span>
                                 @endif
                             </td>
                             <td>{{ $token->created_at ? \App\Helpers\Helper::getFormattedDateObject($token->created_at, 'datetime', false) : '' }}</td>
