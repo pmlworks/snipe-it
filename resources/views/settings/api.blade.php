@@ -11,7 +11,6 @@
 @section('content')
     @if (!config('app.lock_passwords'))
         <x-container>
-            <x-page-column>
                 <x-tabs>
                     <x-slot:tabnav>
 
@@ -30,8 +29,6 @@
                             name="authorized-applications"
                             :label="trans('admin/settings/general.oauth_authorized_apps')"
                         />
-
-
                     </x-slot:tabnav>
 
                     <x-slot:tabpanes>
@@ -57,7 +54,7 @@
                                         <thead>
                                             <tr>
                                                 <th data-field="name" data-sortable="true">{{ trans('general.name') }}</th>
-                                                <th data-field="user" data-sortable="true">{{ trans('general.user') }}</th>
+                                                <th data-field="user" data-sortable="true">{{ trans('general.created_by') }}</th>
                                                 <th data-field="client" data-sortable="true">{{ trans('admin/settings/general.oauth_client') }}</th>
                                                 <th data-field="status" data-sortable="true">{{ trans('general.status') }}</th>
                                                 <th data-field="created_at" data-sortable="true">{{ trans('general.created_at') }}</th>
@@ -126,7 +123,6 @@
                         </x-tabs.pane>
                     </x-slot:tabpanes>
                 </x-tabs>
-            </x-page-column>
         </x-container>
     @else
         <p class="text-warning"><i class="fas fa-lock" aria-hidden="true"></i> {{ trans('general.feature_disabled') }}</p>
