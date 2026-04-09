@@ -471,14 +471,14 @@ trait Searchable
 
             foreach ($customFields as $field) {
                 foreach ($terms as $term) {
-                    if (!$firstConditionAdded) {
-                        $customFieldQuery->where($this->getTable() . '.' . $field->db_column_name(), 'LIKE', '%' . $term . '%');
+                    if (! $firstConditionAdded) {
+                        $customFieldQuery->where($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
                         $firstConditionAdded = true;
 
                         continue;
                     }
 
-                    $customFieldQuery->orWhere($this->getTable() . '.' . $field->db_column_name(), 'LIKE', '%' . $term . '%');
+                    $customFieldQuery->orWhere($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
                 }
             }
         });
