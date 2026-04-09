@@ -339,6 +339,7 @@ return [
     'oauth_client' => 'Client',
     'oauth_deleted_user' => 'Deleted user (ID: :id)',
     'oauth_token_status_revoked' => 'Revoked',
+    'oauth_token_status_expired' => 'Expired',
     'oauth_token_status_active' => 'Active',
     'oauth_revoke' => 'Revoke',
     'oauth_unrevoke' => 'Unrevoke',
