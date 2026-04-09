@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
@@ -207,11 +208,55 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     {
         static::forceDeleted(function (User $user) {
             CheckoutRequest::where(['user_id' => $user->id])->forceDelete();
+            $user->purgeAssociatedPassportTokens();
         });
 
         static::softDeleted(function (User $user) {
             CheckoutRequest::where(['user_id' => $user->id])->delete();
+            $user->revokeAssociatedPassportTokens();
         });
+    }
+
+    /**
+     * Revoke all Passport access/refresh tokens associated with this user.
+     */
+    private function revokeAssociatedPassportTokens(): void
+    {
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $this->id)
+            ->pluck('id');
+
+        if ($accessTokenIds->isEmpty()) {
+            return;
+        }
+
+        DB::table('oauth_access_tokens')
+            ->whereIn('id', $accessTokenIds)
+            ->update(['revoked' => true]);
+
+        DB::table('oauth_refresh_tokens')
+            ->whereIn('access_token_id', $accessTokenIds)
+            ->update(['revoked' => true]);
+    }
+
+    /**
+     * Hard-delete all Passport access/refresh tokens associated with this user.
+     */
+    private function purgeAssociatedPassportTokens(): void
+    {
+        $accessTokenIds = DB::table('oauth_access_tokens')
+            ->where('user_id', $this->id)
+            ->pluck('id');
+
+        if ($accessTokenIds->isNotEmpty()) {
+            DB::table('oauth_refresh_tokens')
+                ->whereIn('access_token_id', $accessTokenIds)
+                ->delete();
+        }
+
+        DB::table('oauth_access_tokens')
+            ->where('user_id', $this->id)
+            ->delete();
     }
 
     /**
