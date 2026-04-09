@@ -324,8 +324,8 @@ return [
     'username_format_help' => 'This setting will only be used by the import process if a username is not provided and we have to generate a username for you.',
     'oauth_title' => 'OAuth API Settings',
     'oauth_clients' => 'OAuth Clients',
-    'oauth' => 'OAuth',
-    'oauth_help' => 'Oauth Endpoint Settings',
+    'oauth' => 'OAuth & API',
+    'oauth_help' => 'Oauth Endpoint Settings and API tokens',
     'oauth_no_clients' => 'You have not created any OAuth clients yet.',
     'oauth_secret' => 'Secret',
     'oauth_authorized_apps' => 'Authorized Applications',
@@ -533,6 +533,7 @@ return [
         'purge' => 'permanently delete',
         'security' => 'password, passwords, requirements, two factor, two-factor, common passwords, remote login, logout, authentication',
         'notifications' => 'alerts, email, notifications, audit, threshold, email alerts, cc',
+        'oauth' => 'oauth, oath, api, personal access keys, tokens',
     ],
 
 ];
