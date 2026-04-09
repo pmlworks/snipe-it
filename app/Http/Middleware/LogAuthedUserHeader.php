@@ -21,7 +21,7 @@ class LogAuthedUserHeader
         if (config('app.authorized_user_header') === true) {
             $response->headers->set('X-Authorized-User-ID', auth()?->id());
         }
-        
+
         return $response;
     }
 }
