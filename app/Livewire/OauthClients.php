@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Client;
 use Laravel\Passport\ClientRepository;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class OauthClients extends Component
 {
+    public string $section = 'all';
+
     public $name;
 
     public $redirect;
@@ -22,11 +25,47 @@ class OauthClients extends Component
 
     public $authorizationError;
 
+    public function mount(?string $section = null): void
+    {
+        if ($section !== null) {
+            $this->section = $section;
+        }
+    }
+
+    public function showOauthClients(): bool
+    {
+        return in_array($this->section, ['all', 'oauth-clients'], true);
+    }
+
+    public function showAuthorizedApplications(): bool
+    {
+        return in_array($this->section, ['all', 'authorized-applications'], true);
+    }
+
     public function render()
     {
         return view('livewire.oauth-clients', [
             'clients' => app(ClientRepository::class)->activeForUser(auth()->id()),
             'authorized_tokens' => app(TokenRepository::class)->forUser(auth()->id())->where('revoked', false),
+            'authorizedApplications' => DB::table('oauth_access_tokens as tokens')
+                ->join('oauth_clients as clients', 'tokens.client_id', '=', 'clients.id')
+                ->leftJoin('users as creators', 'clients.user_id', '=', 'creators.id')
+                ->where('tokens.user_id', auth()->id())
+                ->where('tokens.revoked', false)
+                ->select([
+                    'tokens.id as token_id',
+                    'tokens.name as token_name',
+                    'tokens.scopes',
+                    'tokens.created_at',
+                    'tokens.expires_at',
+                    'clients.name as client_name',
+                    'clients.user_id as client_owner_id',
+                    'creators.display_name as client_owner_display_name',
+                    'creators.username as client_owner_username',
+                    'creators.deleted_at as client_owner_deleted_at',
+                ])
+                ->orderByDesc('tokens.created_at')
+                ->get(),
         ]);
     }
 
@@ -43,6 +82,7 @@ class OauthClients extends Component
             $this->redirect,
         );
 
+        session()->flash('success', trans('admin/settings/message.oauth.client_created'));
         $this->dispatch('clientCreated');
     }
 
@@ -50,11 +90,12 @@ class OauthClients extends Component
     {
         // test for safety
         // ->delete must be of type Client - thus the model binding
-        if ($clientId->user_id == auth()->id()) {
+        if ((auth()->id()->isSuperUser()) || ($clientId->user_id == auth()->id())) {
             app(ClientRepository::class)->delete($clientId);
+            session()->flash('success', trans('admin/settings/message.oauth.client_deleted'));
         } else {
             Log::warning('User '.auth()->id().' attempted to delete client '.$clientId->id.' which belongs to user '.$clientId->created_by);
-            $this->authorizationError = 'You are not authorized to delete this client.';
+            $this->authorizationError = trans('admin/settings/message.oauth.client_delete_denied');
         }
     }
 
@@ -63,9 +104,10 @@ class OauthClients extends Component
         $token = app(TokenRepository::class)->find($tokenId);
         if ($token->created_by == auth()->id()) {
             app(TokenRepository::class)->revokeAccessToken($tokenId);
+            session()->flash('success', trans('admin/settings/message.oauth.token_deleted'));
         } else {
             Log::warning('User '.auth()->id().' attempted to delete token '.$tokenId.' which belongs to user '.$token->created_by);
-            $this->authorizationError = 'You are not authorized to delete this token.';
+            $this->authorizationError = trans('admin/settings/message.oauth.token_delete_denied');
         }
     }
 
@@ -91,9 +133,10 @@ class OauthClients extends Component
             $client->name = $this->editName;
             $client->redirect = $this->editRedirect;
             $client->save();
+            session()->flash('success', trans('admin/settings/message.oauth.client_updated'));
         } else {
             Log::warning('User '.auth()->id().' attempted to edit client '.$editClientId->id.' which belongs to user '.$client->created_by);
-            $this->authorizationError = 'You are not authorized to edit this client.';
+            $this->authorizationError = trans('admin/settings/message.oauth.client_edit_denied');
         }
 
         $this->dispatch('clientUpdated');
