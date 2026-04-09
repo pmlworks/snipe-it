@@ -14,20 +14,24 @@
             <x-page-column>
                 <x-tabs>
                     <x-slot:tabnav>
-                        <x-tabs.nav-item
-                            class="active"
-                            name="authorized-applications"
-                            :label="trans('admin/settings/general.oauth_authorized_apps')"
-                        />
+
                         <x-tabs.nav-item
                             name="personal-access-tokens"
                             :label="trans('admin/settings/general.oauth_personal_access_tokens')"
                             :count="($personalAccessTokens ?? collect())->count()"
                         />
+
                         <x-tabs.nav-item
                             name="oauth-clients"
                             :label="trans('admin/settings/general.oauth_clients')"
                         />
+
+                        <x-tabs.nav-item
+                            name="authorized-applications"
+                            :label="trans('admin/settings/general.oauth_authorized_apps')"
+                        />
+
+
                     </x-slot:tabnav>
 
                     <x-slot:tabpanes>
