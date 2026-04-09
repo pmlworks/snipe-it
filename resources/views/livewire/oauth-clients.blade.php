@@ -10,7 +10,6 @@
     @endif
 
     @if ($this->showOauthClients())
-       
         @if($clients->count() === 0)
             <p>{{ trans('admin/settings/general.oauth_no_clients') }}</p>
         @else

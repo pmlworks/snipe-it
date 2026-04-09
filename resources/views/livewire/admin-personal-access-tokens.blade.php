@@ -27,10 +27,9 @@
                 <tbody>
                     @foreach($tokens as $token)
                         @php
-                            $isRevoked  = (int) $token->revoked === 1;
-                            $isExpired  = !$isRevoked && $token->expires_at && \Carbon\Carbon::parse($token->expires_at)->isPast();
-                            $isActive   = !$isRevoked && !$isExpired;
-                            $profileLabel     = $token->display_name ?: $token->username;
+                            $isRevoked         = (int) $token->revoked === 1;
+                            $isExpired         = !$isRevoked && $token->expires_at && \Carbon\Carbon::parse($token->expires_at)->isPast();
+                            $profileLabel      = $token->display_name ?: $token->username;
                             $isSoftDeletedUser = $token->user_deleted_at !== null;
                         @endphp
                         <tr>
