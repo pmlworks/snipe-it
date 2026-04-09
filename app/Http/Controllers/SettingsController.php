@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActionType;
 use App\Helpers\Helper;
 use App\Helpers\StorageHelper;
 use App\Http\Requests\ImageUploadRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\StoreLdapSettings;
 use App\Http\Requests\StoreLocalizationSettings;
 use App\Http\Requests\StoreNotificationSettings;
 use App\Http\Requests\StoreSecuritySettings;
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CustomField;
 use App\Models\Group;
@@ -1118,7 +1120,103 @@ class SettingsController extends Controller
      */
     public function api(): View
     {
-        return view('settings.api');
+        $personalAccessTokens = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->leftJoin('users', 'oauth_access_tokens.user_id', '=', 'users.id')
+            ->where('oauth_clients.personal_access_client', true)
+            ->select([
+                'oauth_access_tokens.id',
+                'oauth_access_tokens.name',
+                'oauth_access_tokens.revoked',
+                'oauth_access_tokens.created_at',
+                'oauth_access_tokens.expires_at',
+                'oauth_access_tokens.user_id as token_user_id',
+                'oauth_clients.name as client_name',
+                'users.id as existing_user_id',
+                'users.first_name as first_name',
+                'users.last_name as last_name',
+                'users.username as username',
+                'users.display_name as display_name',
+                'users.deleted_at as user_deleted_at',
+            ])
+            ->orderByDesc('oauth_access_tokens.created_at')
+            ->get();
+
+        return view('settings.api', [
+            'personalAccessTokens' => $personalAccessTokens,
+        ]);
+    }
+
+    /**
+     * Revoke a personal access token from the admin OAuth settings page.
+     */
+    public function revokePersonalAccessToken(string $token): RedirectResponse
+    {
+        $tokenRow = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->where('oauth_access_tokens.id', $token)
+            ->where('oauth_clients.personal_access_client', true)
+            ->select(['oauth_access_tokens.id', 'oauth_access_tokens.user_id'])
+            ->first();
+
+        if ($tokenRow === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#personal-access-tokens')
+                ->with('error', trans('admin/settings/message.oauth.token_not_found'));
+        }
+
+        DB::table('oauth_access_tokens')
+            ->where('id', $tokenRow->id)
+            ->update(['revoked' => true]);
+
+        $logaction = new Actionlog;
+        $logaction->item_type = User::class;
+        $logaction->item_id = $tokenRow->user_id;
+        $logaction->target_type = User::class;
+        $logaction->target_id = $tokenRow->user_id;
+        $logaction->created_by = auth()->id();
+        // $logaction->note = 'Token ID: ' . $tokenRow->id;
+        $logaction->logaction(ActionType::TokenRevoked);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#personal-access-tokens')
+            ->with('success', trans('admin/settings/message.oauth.token_revoked'));
+    }
+
+    /**
+     * Unrevoke a personal access token from the admin OAuth settings page.
+     */
+    public function unrevokePersonalAccessToken(string $token): RedirectResponse
+    {
+        $tokenRow = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->where('oauth_access_tokens.id', $token)
+            ->where('oauth_clients.personal_access_client', true)
+            ->select(['oauth_access_tokens.id', 'oauth_access_tokens.user_id'])
+            ->first();
+
+        if ($tokenRow === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#personal-access-tokens')
+                ->with('error', trans('admin/settings/message.oauth.token_not_found'));
+        }
+
+        DB::table('oauth_access_tokens')
+            ->where('id', $tokenRow->id)
+            ->update(['revoked' => false]);
+
+        $logaction = new Actionlog;
+        $logaction->item_type = User::class;
+        $logaction->item_id = $tokenRow->user_id;
+        $logaction->target_type = User::class;
+        $logaction->target_id = $tokenRow->user_id;
+        $logaction->created_by = auth()->id();
+        // $logaction->note = 'Token ID: ' . $tokenRow->id;
+        $logaction->logaction(ActionType::TokenUnrevoked);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#personal-access-tokens')
+            ->with('success', trans('admin/settings/message.oauth.token_unrevoked'));
     }
 
     /**
