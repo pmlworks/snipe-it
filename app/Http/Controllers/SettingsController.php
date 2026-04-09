@@ -1236,4 +1236,52 @@ class SettingsController extends Controller
     {
         return view('settings.logins');
     }
+
+    /**
+     * Revoke an OAuth client from the admin OAuth settings page.
+     */
+    public function revokeOAuthClient(string $client): RedirectResponse
+    {
+        $oauthClient = DB::table('oauth_clients')
+            ->where('id', $client)
+            ->first();
+
+        if ($oauthClient === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#oauth-clients')
+                ->with('error', trans('admin/settings/message.oauth.client_not_found'));
+        }
+
+        DB::table('oauth_clients')
+            ->where('id', $client)
+            ->update(['revoked' => true]);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#oauth-clients')
+            ->with('success', trans('admin/settings/message.oauth.client_revoked'));
+    }
+
+    /**
+     * Unrevoke an OAuth client from the admin OAuth settings page.
+     */
+    public function unrevokeOAuthClient(string $client): RedirectResponse
+    {
+        $oauthClient = DB::table('oauth_clients')
+            ->where('id', $client)
+            ->first();
+
+        if ($oauthClient === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#oauth-clients')
+                ->with('error', trans('admin/settings/message.oauth.client_not_found'));
+        }
+
+        DB::table('oauth_clients')
+            ->where('id', $client)
+            ->update(['revoked' => false]);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#oauth-clients')
+            ->with('success', trans('admin/settings/message.oauth.client_unrevoked'));
+    }
 }

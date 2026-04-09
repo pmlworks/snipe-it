@@ -45,7 +45,9 @@ class OauthClients extends Component
     {
         $clients = collect();
         if ($this->showOauthClients()) {
-            $clients = app(ClientRepository::class);
+            $clients = Client::query()
+                ->orderByDesc('created_at')
+                ->get();
 
             if ($clients->isNotEmpty()) {
                 $tokenCountsByClientId = DB::table('oauth_access_tokens')
@@ -130,7 +132,6 @@ class OauthClients extends Component
     {
         $revokedTokenCount = DB::table('oauth_access_tokens')
             ->where('client_id', $clientId)
-            ->where('user_id', auth()->id())
             ->where('revoked', false)
             ->update(['revoked' => true]);
 

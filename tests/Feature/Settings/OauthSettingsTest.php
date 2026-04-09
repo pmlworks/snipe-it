@@ -277,7 +277,6 @@ class OauthSettingsTest extends TestCase
         $this->actingAs($superuser)
             ->get(route('settings.oauth.index'))
             ->assertOk()
-            ->assertDontSee(trans('admin/settings/general.oauth_associated_token_count'))
             ->assertSee('Active Client Creator')
             ->assertSee(route('users.show', $activeCreator))
             ->assertSee('<del>Deleted Client Creator</del>', false)
@@ -314,6 +313,42 @@ class OauthSettingsTest extends TestCase
             'personal_access_client' => 0,
             'password_client' => 0,
             'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('oauth_clients')->insert([
+            'user_id' => null,
+            'name' => 'Personal Access Legacy Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 1,
+            'password_client' => 0,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('oauth_clients')->insert([
+            'user_id' => null,
+            'name' => 'Password Grant Legacy Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 0,
+            'password_client' => 1,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('oauth_clients')->insert([
+            'user_id' => null,
+            'name' => 'Revoked OAuth Legacy Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 0,
+            'password_client' => 0,
+            'revoked' => 1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -358,8 +393,17 @@ class OauthSettingsTest extends TestCase
             ->get(route('settings.oauth.index'))
             ->assertOk()
             ->assertSee(trans('admin/settings/general.oauth_associated_token_count'))
+            ->assertSee(trans('admin/settings/general.oauth_client_type'))
             ->assertSee('Owned OAuth Client')
+            ->assertSee('Personal Access Legacy Client')
+            ->assertSee('Password Grant Legacy Client')
+            ->assertSee('Revoked OAuth Legacy Client')
+            ->assertSee(trans('admin/settings/general.oauth_client_type_oauth'))
+            ->assertSee(trans('admin/settings/general.oauth_client_type_personal_access'))
+            ->assertSee(trans('admin/settings/general.oauth_client_type_password_grant'))
+            ->assertSee(trans('admin/settings/general.oauth_token_status_revoked'))
             ->assertSee('data-field="associated_token_count"', false)
+            ->assertSee('data-field="client_type"', false)
             ->assertSeeInOrder(['Owned OAuth Client', '<td>2</td>'], false)
             ->assertDontSee('Other Client Token One');
     }

@@ -29,6 +29,8 @@
                     <tr>
                         <th data-field="id" data-sortable="true">{{ trans('general.id') }}</th>
                         <th data-field="name" data-sortable="true">{{ trans('general.name') }}</th>
+                        <th data-field="client_type" data-sortable="true">{{ trans('admin/settings/general.oauth_client_type') }}</th>
+                        <th data-field="revoked" data-sortable="true">{{ trans('general.status') }}</th>
                         <th data-field="redirect" data-sortable="true">{{ trans('admin/settings/general.oauth_redirect_url') }}</th>
                         <th data-field="secret" data-sortable="true">{{ trans('admin/settings/general.oauth_secret') }}</th>
                         <th data-field="associated_token_count" data-sortable="true">{{ trans('admin/settings/general.oauth_associated_token_count') }}</th>
@@ -41,9 +43,29 @@
                 </thead>
                 <tbody>
                     @foreach($clients as $client)
+                        @php
+                            $isPersonalAccessClient = (int) $client->personal_access_client === 1;
+                            $isPasswordGrantClient = (int) $client->password_client === 1;
+                            $isRevokedClient = (int) $client->revoked === 1;
+                            $clientTypeLabel = $isPersonalAccessClient
+                                ? trans('admin/settings/general.oauth_client_type_personal_access')
+                                : ($isPasswordGrantClient
+                                    ? trans('admin/settings/general.oauth_client_type_password_grant')
+                                    : trans('admin/settings/general.oauth_client_type_oauth'));
+                        @endphp
                         <tr>
                             <td>{{ $client->id }}</td>
                             <td>{{ $client->name }}</td>
+                            <td>
+                                <span class="label label-info">{{ $clientTypeLabel }}</span>
+                            </td>
+                            <td>
+                                @if($isRevokedClient)
+                                    <span class="label label-danger">{{ trans('admin/settings/general.oauth_token_status_revoked') }}</span>
+                                @else
+                                    <span class="label label-success">{{ trans('admin/settings/general.oauth_token_status_active') }}</span>
+                                @endif
+                            </td>
                             <td><code>{{ $client->redirect }}</code></td>
                             <td><code>{{ $client->secret }}</code></td>
                             <td>{{ $client->associated_token_count ?? 0 }}</td>
@@ -53,14 +75,27 @@
                                     {{ $client->updated_at ? Helper::getFormattedDateObject($client->updated_at, 'datetime', false) : '' }}
                                 @endif
                             </td>
-                            <td class="text-right">
-                                <a class="action-link btn btn-sm btn-warning" wire:click="editClient('{{ $client->id }}')" onclick="$('#modal-edit-client').modal('show');">
+                            <td class="text-right" style="white-space: nowrap;">
+                                @if($isRevokedClient)
+                                    <form method="POST" action="{{ route('settings.oauth.clients.unrevoke', ['client' => $client->id]) }}" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-default text-success" data-tooltip="true" title="{{ trans('admin/settings/general.oauth_unrevoke') }}">
+                                            <i class="fa-solid fa-toggle-off"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('settings.oauth.clients.revoke', ['client' => $client->id]) }}" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-default text-danger" data-tooltip="true" title="{{ trans('admin/settings/general.oauth_revoke') }}">
+                                            <i class="fa-solid fa-toggle-on"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                                <a class="action-link btn btn-sm btn-warning" wire:click="editClient('{{ $client->id }}')" onclick="$('#modal-edit-client').modal('show');" data-tooltip="true" title="{{ trans('general.update') }}">
                                     <i class="fas fa-pencil-alt" aria-hidden="true"></i>
-                                    <span class="sr-only">{{ trans('general.update') }}</span>
                                 </a>
-                                <a class="action-link btn btn-danger btn-sm" wire:click="deleteClient('{{ $client->id }}')">
+                                <a class="action-link btn btn-sm btn-danger" wire:click="deleteClient('{{ $client->id }}')" data-tooltip="true" title="{{ trans('general.delete') }}">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
-                                    <span class="sr-only">{{ trans('general.delete') }}</span>
                                 </a>
                             </td>
                         </tr>
@@ -72,7 +107,7 @@
 
     @if ($this->showAuthorizedApplications())
         @if($authorizedApplications->count() === 0)
-                <p>{{ trans('admin/settings/general.oauth_no_applications) }}</p>
+            <p>{{ trans('admin/settings/general.oauth_no_clients') }}</p>
         @else
             <div id="AuthorizedAppsToolbar" class="pull-left" style="min-width: 280px; padding-top: 10px;"></div>
             <table
