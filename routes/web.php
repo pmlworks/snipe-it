@@ -229,6 +229,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'authorize:superuser
         ->breadcrumbs(fn (Trail $trail) => $trail->parent('settings.index')
             ->push(trans('admin/settings/general.oauth'), route('settings.oauth.index')));
 
+    Route::post('oauth/tokens/{token}/revoke', [SettingsController::class, 'revokePersonalAccessToken'])
+        ->name('settings.oauth.tokens.revoke');
+
+    Route::post('oauth/tokens/{token}/unrevoke', [SettingsController::class, 'unrevokePersonalAccessToken'])
+        ->name('settings.oauth.tokens.unrevoke');
+
     Route::get('google', [SettingsController::class, 'getGoogleLoginSettings'])
         ->name('settings.google.index')
         ->breadcrumbs(fn (Trail $trail) => $trail->parent('settings.index')

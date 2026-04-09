@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActionType;
 use App\Helpers\Helper;
 use App\Helpers\StorageHelper;
 use App\Http\Requests\ImageUploadRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\StoreLdapSettings;
 use App\Http\Requests\StoreLocalizationSettings;
 use App\Http\Requests\StoreNotificationSettings;
 use App\Http\Requests\StoreSecuritySettings;
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CustomField;
 use App\Models\Group;
@@ -1118,7 +1120,86 @@ class SettingsController extends Controller
      */
     public function api(): View
     {
-        return view('settings.api');
+        $personalAccessTokenCount = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->where('oauth_clients.personal_access_client', true)
+            ->count();
+
+        return view('settings.api', [
+            'personalAccessTokenCount' => $personalAccessTokenCount,
+        ]);
+    }
+
+    /**
+     * Revoke a personal access token from the admin OAuth settings page.
+     */
+    public function revokePersonalAccessToken(string $token): RedirectResponse
+    {
+        $tokenRow = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->where('oauth_access_tokens.id', $token)
+            ->where('oauth_clients.personal_access_client', true)
+            ->select(['oauth_access_tokens.id', 'oauth_access_tokens.user_id'])
+            ->first();
+
+        if ($tokenRow === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#personal-access-tokens')
+                ->with('error', trans('admin/settings/message.oauth.token_not_found'));
+        }
+
+        DB::table('oauth_access_tokens')
+            ->where('id', $tokenRow->id)
+            ->update(['revoked' => true]);
+
+        $logaction = new Actionlog;
+        $logaction->item_type = User::class;
+        $logaction->item_id = $tokenRow->user_id;
+        $logaction->target_type = User::class;
+        $logaction->target_id = $tokenRow->user_id;
+        $logaction->created_by = auth()->id();
+        // $logaction->note = 'Token ID: ' . $tokenRow->id;
+        $logaction->logaction(ActionType::TokenRevoked);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#personal-access-tokens')
+            ->with('success', trans('admin/settings/message.oauth.token_revoked'));
+    }
+
+    /**
+     * Unrevoke a personal access token from the admin OAuth settings page.
+     */
+    public function unrevokePersonalAccessToken(string $token): RedirectResponse
+    {
+        $tokenRow = DB::table('oauth_access_tokens')
+            ->join('oauth_clients', 'oauth_access_tokens.client_id', '=', 'oauth_clients.id')
+            ->where('oauth_access_tokens.id', $token)
+            ->where('oauth_clients.personal_access_client', true)
+            ->select(['oauth_access_tokens.id', 'oauth_access_tokens.user_id'])
+            ->first();
+
+        if ($tokenRow === null) {
+            return redirect()
+                ->to(route('settings.oauth.index').'#personal-access-tokens')
+                ->with('error', trans('admin/settings/message.oauth.token_not_found'));
+        }
+
+        DB::table('oauth_access_tokens')
+            ->where('id', $tokenRow->id)
+            ->update(['revoked' => false]);
+
+        $logaction = new Actionlog;
+        $logaction->item_type = User::class;
+        $logaction->item_id = $tokenRow->user_id;
+        $logaction->target_type = User::class;
+        $logaction->target_id = $tokenRow->user_id;
+        $logaction->created_by = auth()->id();
+        // $logaction->note = 'Token ID: ' . $tokenRow->id;
+        $logaction->logaction(ActionType::TokenUnrevoked);
+
+        return redirect()
+            ->to(route('settings.oauth.index').'#personal-access-tokens')
+            ->with('success', trans('admin/settings/message.oauth.token_unrevoked'));
     }
 
     /**
