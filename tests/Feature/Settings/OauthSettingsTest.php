@@ -180,6 +180,28 @@ class OauthSettingsTest extends TestCase
                 'expires_at' => now()->addDay(),
             ],
             [
+                'id' => 'authorized-active-token-2',
+                'user_id' => $superuser->id,
+                'client_id' => $activeClientId,
+                'name' => 'Authorized Active Token Two',
+                'scopes' => '[]',
+                'revoked' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => 'authorized-revoked-token',
+                'user_id' => $superuser->id,
+                'client_id' => $activeClientId,
+                'name' => 'Authorized Revoked Token',
+                'scopes' => '[]',
+                'revoked' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
                 'id' => 'authorized-deleted-token',
                 'user_id' => $superuser->id,
                 'client_id' => $deletedClientId,
@@ -195,12 +217,91 @@ class OauthSettingsTest extends TestCase
         $this->actingAs($superuser)
             ->get(route('settings.oauth.index'))
             ->assertOk()
+            ->assertDontSee(trans('admin/settings/general.oauth_associated_token_count'))
             ->assertSee('Active Client Creator')
             ->assertSee(route('users.show', $activeCreator))
             ->assertSee('<del>Deleted Client Creator</del>', false)
             ->assertSee(route('users.show', $softDeletedCreator))
+            ->assertDontSee('Authorized Active Token')
+            ->assertDontSee('Authorized Active Token Two')
+            ->assertDontSee('Authorized Deleted Token')
+            ->assertDontSee('Authorized Revoked Token')
             ->assertSee('data-field="client_owner"', false)
             ->assertSee('data-sortable="true"', false);
+    }
+
+    public function test_oauth_clients_table_shows_associated_token_count_per_client_id(): void
+    {
+        $superuser = User::factory()->superuser()->create();
+
+        $ownedClientId = DB::table('oauth_clients')->insertGetId([
+            'user_id' => $superuser->id,
+            'name' => 'Owned OAuth Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 0,
+            'password_client' => 0,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $otherClientId = DB::table('oauth_clients')->insertGetId([
+            'user_id' => User::factory()->create()->id,
+            'name' => 'Other OAuth Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 0,
+            'password_client' => 0,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => 'owned-client-token-1',
+                'user_id' => $superuser->id,
+                'client_id' => $ownedClientId,
+                'name' => 'Owned Client Token One',
+                'scopes' => '[]',
+                'revoked' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => 'owned-client-token-2',
+                'user_id' => $superuser->id,
+                'client_id' => $ownedClientId,
+                'name' => 'Owned Client Token Two',
+                'scopes' => '[]',
+                'revoked' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => 'other-client-token-1',
+                'user_id' => $superuser->id,
+                'client_id' => $otherClientId,
+                'name' => 'Other Client Token One',
+                'scopes' => '[]',
+                'revoked' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+        ]);
+
+        $this->actingAs($superuser)
+            ->get(route('settings.oauth.index'))
+            ->assertOk()
+            ->assertSee(trans('admin/settings/general.oauth_associated_token_count'))
+            ->assertSee('Owned OAuth Client')
+            ->assertSee('data-field="associated_token_count"', false)
+            ->assertSeeInOrder(['Owned OAuth Client', '<td>2</td>'], false)
+            ->assertDontSee('Other Client Token One');
     }
 
     public function test_superuser_can_revoke_and_unrevoke_personal_access_token(): void

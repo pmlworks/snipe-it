@@ -99,12 +99,14 @@
                                                         @if((int) $token->revoked === 1)
                                                             <form method="POST" action="{{ route('settings.oauth.tokens.unrevoke', ['token' => $token->id]) }}" style="display: inline;">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-sm btn-success">{{ trans('admin/settings/general.oauth_unrevoke') }}</button>
+                                                                <button type="submit" class="btn btn-sm btn-default text-success" data-tooltip="true" title="{{ trans('admin/settings/general.oauth_unrevoke') }}">
+                                                                    <i class="fa-solid fa-toggle-off"></i></button>
                                                             </form>
                                                         @else
                                                             <form method="POST" action="{{ route('settings.oauth.tokens.revoke', ['token' => $token->id]) }}" style="display: inline;">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-sm btn-danger">{{ trans('admin/settings/general.oauth_revoke') }}</button>
+                                                                <button type="submit" class="btn btn-sm btn-default text-danger" data-tooltip="true" title="{{ trans('admin/settings/general.oauth_revoke') }}">
+                                                                    <i class="fa-solid fa-toggle-on"></i></button>
                                                             </form>
                                                         @endif
                                                     </td>

@@ -32,6 +32,7 @@
                         <th data-field="name" data-sortable="true">{{ trans('general.name') }}</th>
                         <th data-field="redirect" data-sortable="true">{{ trans('admin/settings/general.oauth_redirect_url') }}</th>
                         <th data-field="secret" data-sortable="true">{{ trans('admin/settings/general.oauth_secret') }}</th>
+                        <th data-field="associated_token_count" data-sortable="true">{{ trans('admin/settings/general.oauth_associated_token_count') }}</th>
                         <th data-field="created_at" data-sortable="true">{{ trans('general.created_at') }}</th>
                         <th data-field="updated_at" data-sortable="true">{{ trans('general.updated_at') }}</th>
                         <th>
@@ -46,6 +47,7 @@
                             <td>{{ $client->name }}</td>
                             <td><code>{{ $client->redirect }}</code></td>
                             <td><code>{{ $client->secret }}</code></td>
+                            <td>{{ $client->associated_token_count ?? 0 }}</td>
                             <td>{{ $client->created_at ? Helper::getFormattedDateObject($client->created_at, 'datetime', false) : '' }}</td>
                             <td>
                                 @if ($client->created_at != $client->updated_at)
@@ -87,8 +89,7 @@
                 <thead>
                     <tr>
                         <th data-field="name" data-sortable="true">{{ trans('general.name') }}</th>
-                        <th data-field="client_owner" data-sortable="true">{{ trans('general.user') }}</th>
-                        <th data-field="personal_access_token" data-sortable="true">{{ trans('account/general.personal_access_token') }}</th>
+                        <th data-field="client_owner" data-sortable="true">{{ trans('general.created_by') }}</th>
                         <th data-field="oauth_scopes" data-sortable="true">{{ trans('admin/settings/general.oauth_scopes') }}</th>
                         <th data-field="created_at" data-sortable="true">{{ trans('general.created_at') }}</th>
                         <th data-field="expires" data-sortable="true">{{ trans('general.expires') }}</th>
@@ -118,7 +119,6 @@
                                     {{ trans('general.na') }}
                                 @endif
                             </td>
-                            <td>{{ $application->token_name }}</td>
                             <td>
                                 @if(!$application->scopes)
                                     <span class="label label-default">{{ trans('admin/settings/general.no_scopes') }}</span>
@@ -127,7 +127,7 @@
                             <td>{{ $application->created_at ? Helper::getFormattedDateObject($application->created_at, 'datetime', false) : '' }}</td>
                             <td>{{ $application->expires_at ? Helper::getFormattedDateObject($application->expires_at, 'datetime', false) : '' }}</td>
                             <td>
-                                <a class="btn btn-sm btn-danger pull-right" wire:click="deleteToken('{{ $application->token_id }}')">
+                                <a class="btn btn-sm btn-danger pull-right" wire:click="deleteAuthorizedApplication('{{ $application->client_id }}')">
                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                     <span class="sr-only">{{ trans('general.delete') }}</span>
                                 </a>

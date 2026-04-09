@@ -332,6 +332,7 @@ return [
     'oauth_redirect_url' => 'Redirect URL',
     'oauth_name_help' => ' Something your users will recognize and trust.',
     'oauth_scopes' => 'Scopes',
+    'oauth_associated_token_count' => 'Token Count',
     'oauth_callback_url' => 'Your application authorization callback URL.',
     'oauth_personal_access_tokens' => 'User API Tokens (Personal Access Tokens)',
     'oauth_personal_access_tokens_none' => 'No personal access tokens found.',
