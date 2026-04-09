@@ -45,7 +45,7 @@ class OauthClients extends Component
     {
         $clients = collect();
         if ($this->showOauthClients()) {
-            $clients = app(ClientRepository::class)->activeForUser(auth()->id());
+            $clients = app(ClientRepository::class);
 
             if ($clients->isNotEmpty()) {
                 $tokenCountsByClientId = DB::table('oauth_access_tokens')
@@ -63,7 +63,6 @@ class OauthClients extends Component
         $authorizedApplications = collect();
         if ($this->showAuthorizedApplications()) {
             $authorizedTokenSummary = DB::table('oauth_access_tokens as tokens')
-                ->where('tokens.user_id', auth()->id())
                 ->where('tokens.revoked', false)
                 ->selectRaw('tokens.client_id')
                 ->selectRaw('MAX(tokens.scopes) as scopes')
