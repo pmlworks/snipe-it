@@ -81,6 +81,66 @@ class OauthSettingsTest extends TestCase
             ->assertDontSee('Non Personal Token');
     }
 
+    public function test_personal_access_token_status_shows_active_revoked_or_expired(): void
+    {
+        $superuser = User::factory()->superuser()->create();
+
+        $personalClientId = DB::table('oauth_clients')->insertGetId([
+            'user_id' => null,
+            'name' => 'Personal Client',
+            'secret' => 'secret',
+            'redirect' => 'http://localhost/callback',
+            'personal_access_client' => 1,
+            'password_client' => 0,
+            'revoked' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('oauth_access_tokens')->insert([
+            [
+                'id' => 'status-active-token',
+                'user_id' => $superuser->id,
+                'client_id' => $personalClientId,
+                'name' => 'Active Status Token',
+                'scopes' => '[]',
+                'revoked' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => 'status-revoked-token',
+                'user_id' => $superuser->id,
+                'client_id' => $personalClientId,
+                'name' => 'Revoked Status Token',
+                'scopes' => '[]',
+                'revoked' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'expires_at' => now()->addDay(),
+            ],
+            [
+                'id' => 'status-expired-token',
+                'user_id' => $superuser->id,
+                'client_id' => $personalClientId,
+                'name' => 'Expired Status Token',
+                'scopes' => '[]',
+                'revoked' => 0,
+                'created_at' => now()->subDays(10),
+                'updated_at' => now()->subDays(10),
+                'expires_at' => now()->subDay(),
+            ],
+        ]);
+
+        $this->actingAs($superuser)
+            ->get(route('settings.oauth.index'))
+            ->assertOk()
+            ->assertSee(trans('admin/settings/general.oauth_token_status_active'))
+            ->assertSee(trans('admin/settings/general.oauth_token_status_revoked'))
+            ->assertSee(trans('admin/settings/general.oauth_token_status_expired'));
+    }
+
     public function test_permission_required_to_view_oauth_settings(): void
     {
         $this->actingAs(User::factory()->create())
