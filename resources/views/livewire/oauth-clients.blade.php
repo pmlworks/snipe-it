@@ -72,7 +72,7 @@
 
     @if ($this->showAuthorizedApplications())
         @if($authorizedApplications->count() === 0)
-            <p>{{ trans('admin/settings/general.oauth_no_clients') }}</p>
+                <p>{{ trans('admin/settings/general.oauth_no_applications) }}</p>
         @else
             <div id="AuthorizedAppsToolbar" class="pull-left" style="min-width: 280px; padding-top: 10px;"></div>
             <table

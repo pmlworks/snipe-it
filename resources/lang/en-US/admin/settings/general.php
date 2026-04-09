@@ -327,6 +327,7 @@ return [
     'oauth' => 'OAuth & API',
     'oauth_help' => 'Oauth Endpoint Settings and API tokens',
     'oauth_no_clients' => 'You have not created any OAuth clients yet.',
+    'oauth_no_applications' => 'You have not created any Authorized Applications yet.',
     'oauth_secret' => 'Secret',
     'oauth_authorized_apps' => 'Authorized Applications',
     'oauth_redirect_url' => 'Redirect URL',
