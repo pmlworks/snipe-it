@@ -521,6 +521,54 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Test asset free-text search across multiple custom fields.
+     */
+    public function test_asset_free_text_search_matches_across_multiple_custom_fields()
+    {
+        $macFieldOne = CustomField::factory()->macAddress()->create([
+            'name' => 'MAC Address One '.now()->timestamp,
+        ]);
+        $macFieldTwo = CustomField::factory()->macAddress()->create([
+            'name' => 'MAC Address Two '.(now()->timestamp + 1),
+        ]);
+
+        $dbColumnOne = $macFieldOne->db_column_name();
+        $dbColumnTwo = $macFieldTwo->db_column_name();
+
+        $firstMatchingAsset = Asset::factory()->create([
+            $dbColumnOne => 'AA:BB:CC:11:22:33',
+            $dbColumnTwo => null,
+        ]);
+        $secondMatchingAsset = Asset::factory()->create([
+            $dbColumnOne => null,
+            $dbColumnTwo => 'AA:BB:CC:44:55:66',
+        ]);
+        Asset::factory()->create([
+            $dbColumnOne => '10:20:30:40:50:60',
+            $dbColumnTwo => '66:55:44:33:22:11',
+        ]);
+
+        $response = $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', ['search' => 'AA:BB:CC']))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+
+        $returnedIds = collect($response->json('rows'))
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->sort()
+            ->values()
+            ->all();
+
+        $expectedIds = collect([$firstMatchingAsset->id, $secondMatchingAsset->id])
+            ->sort()
+            ->values()
+            ->all();
+
+        $this->assertSame($expectedIds, $returnedIds);
+    }
+
+    /**
      * Test filtering on a custom field using the raw db_column slug.
      */
     public function test_custom_field_filter_by_db_column_slug()

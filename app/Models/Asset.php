@@ -34,7 +34,7 @@ class Asset extends Depreciable
 {
     protected $presenter = AssetPresenter::class;
 
-    protected $with = ['model', 'adminuser'];
+    protected $with = ['model', 'adminuser', 'location', 'company'];
 
     use CompanyableTrait;
     use HasFactory;
@@ -79,7 +79,6 @@ class Asset extends Depreciable
      * Leaving this commented out, since we need to test further, but this would eager load the model relationship every single
      * time the asset model is loaded.
      */
-    // protected $with = ['model'];
 
     /**
      * Whether the model should inject it's identifier to the unique
@@ -674,7 +673,8 @@ class Asset extends Depreciable
      */
     public function components()
     {
-        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')->withPivot('id', 'assigned_qty', 'created_at', 'note');
+        return $this->belongsToMany('\App\Models\Component', 'components_assets', 'asset_id', 'component_id')
+            ->withPivot('id', 'assigned_qty', 'created_at', 'note', 'created_by');
     }
 
     /**

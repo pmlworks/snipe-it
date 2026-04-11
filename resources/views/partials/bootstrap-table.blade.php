@@ -307,6 +307,28 @@
 
     }); // end user table buttons
 
+    // Oauth table buttons
+    window.oauthButtons = () => ({
+
+        btnAdd: {
+            text: '{{ (request()->input('status') == "deleted") ? trans('admin/users/table.show_current') : trans('admin/users/table.show_deleted') }}',
+            icon: 'fa fa-plus',
+            attributes: {
+                event() {
+                    wire:click = "$dispatch('openModal')"
+                    onclick = "$('#modal-create-client').modal('show');"
+                },
+
+                title: '{{ trans('general.create') }}',
+                class: 'btn-warning',
+                @if ($snipeSettings->shortcuts_enabled == 1)
+                accesskey: 'n'
+                @endif
+            },
+        },
+
+    }); // end user table buttons
+
 
     @can('create', \App\Models\Company::class)
     // Company table buttons
@@ -1218,6 +1240,11 @@
             // display the username if it's checked out to a user, but don't do it if the username's there already
             if (value.username && !value.name.match('\\(') && !value.name.match('\\)')) {
                 value.name = value.name + ' (' + value.username + ')';
+            }
+
+            // Show as strikethrough if it's been deleted
+            if (value.deleted_at && value.deleted_at != '') {
+                return '<nobr><span class="text-muted" data-tooltip="true" title="{{ trans('general.deleted') }} ' + value.type + '"><del><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</del></span></nobr>';
             }
 
             return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</a></nobr>';

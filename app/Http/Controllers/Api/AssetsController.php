@@ -20,6 +20,7 @@ use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
+use App\Models\ComponentAssignment;
 use App\Models\CustomField;
 use App\Models\License;
 use App\Models\LicenseSeat;
@@ -1319,7 +1320,6 @@ class AssetsController extends Controller
 
     public function assignedAccessories(Request $request, Asset $asset): JsonResponse|array
     {
-        $this->authorize('view', Asset::class);
         $this->authorize('view', $asset);
         $accessory_checkouts = AccessoryCheckout::AssetsAssigned()
             ->where('assigned_to', $asset->id)
@@ -1335,14 +1335,41 @@ class AssetsController extends Controller
         return (new AssetsTransformer)->transformCheckedoutAccessories($accessory_checkouts, $total);
     }
 
-    public function assignedComponents(Asset $asset): JsonResponse|array
+    public function assignedComponents(Request $request, Asset $asset): JsonResponse|array
     {
         $this->authorize('view', $asset);
         $asset->loadCount('components');
-        $total = $asset->components_count;
-        $components = $asset->load(['components' => fn ($query) => $query->applyOffsetAndLimit($total)])->components;
 
-        return (new AssetsTransformer)->transformCheckedoutComponents($components, $total);
+        $allowed_columns = [
+            'created_at',
+            'assigned_qty',
+            'note',
+        ];
+
+        $component_checkouts = ComponentAssignment::where('asset_id', $asset->id)->with('adminuser')->with('component');
+
+        $sort_override = $request->input('sort');
+        $column_sort = in_array($sort_override, $allowed_columns) ? $sort_override : 'created_at';
+        $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
+
+        switch ($sort_override) {
+            case 'created_by':
+                $component_checkouts = $component_checkouts->OrderByCreatedByName($order);
+                break;
+            case 'name':
+                $component_checkouts = $component_checkouts->OrderByComponentName($order);
+                break;
+            default:
+                $component_checkouts = $component_checkouts->orderBy($column_sort, $order);
+                break;
+        }
+
+        $offset = ($request->input('offset') > $component_checkouts->count()) ? $component_checkouts->count() : app('api_offset_value');
+        $total = $component_checkouts->count();
+        $limit = app('api_limit_value');
+        $component_checkouts = $component_checkouts->skip($offset)->take($limit)->get();
+
+        return (new AssetsTransformer)->transformCheckedoutComponents($component_checkouts, $total);
     }
 
     /**

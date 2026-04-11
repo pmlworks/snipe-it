@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
 use App\Models\Asset;
+use App\Models\Component;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\Setting;
@@ -398,16 +399,26 @@ class AssetsTransformer
     public function transformCheckedoutComponents(Collection $components_assets, $total)
     {
         $array = [];
-        foreach ($components_assets as $component) {
+        foreach ($components_assets as $component_checkout) {
             $array[] = [
-                'assigned_pivot_id' => $component->pivot->id,
-                'id' => (int) $component->id,
-                'name' => e($component->display_name),
-                'qty' => $component->pivot->assigned_qty,
-                'note' => ($component->pivot->note) ? e($component->pivot->note) : null,
-                'type' => 'asset',
-                'created_at' => Helper::getFormattedDateObject($component->pivot->created_at, 'datetime'),
-                'available_actions' => ['checkin' => true],
+                'assigned_pivot_id' => $component_checkout->id,
+                'name' => [
+                    'id' => $component_checkout->component?->id,
+                    'name' => e($component_checkout->component?->display_name),
+                    'type' => 'component',
+                    'deleted_at' => $component_checkout->component?->deleted_at,
+                ],
+                'assigned_qty' => $component_checkout->assigned_qty,
+                'note' => ($component_checkout->note) ? e($component_checkout->note) : null,
+                'created_at' => Helper::getFormattedDateObject($component_checkout->created_at, 'datetime'),
+                'created_by' => $component_checkout->adminuser ? [
+                    'id' => (int) $component_checkout->adminuser->id,
+                    'name' => e($component_checkout->adminuser->display_name),
+                ] : null,
+                'available_actions' => [
+                    'checkin' => (($component_checkout->component?->deleted_at == '') && Gate::allows('checkin', Component::class)),
+                    'view' => (($component_checkout->component?->deleted_at == '') && Gate::allows('view', Component::class)),
+                ],
             ];
         }
 

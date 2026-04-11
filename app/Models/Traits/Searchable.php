@@ -456,23 +456,32 @@ trait Searchable
         }
 
         // Only pull unencrypted fields, since encrypted fields cannot be searched on
-        $customFields = CustomField::where('field_encrypted', 0)->get();
-        $firstConditionAdded = false;
+        $customFields = CustomField::query()
+            ->whereNotNull('db_column')
+            ->where('field_encrypted', 0)
+            ->get(['db_column']);
 
-        foreach ($customFields as $field) {
-            foreach ($terms as $term) {
-                if (! $firstConditionAdded) {
-                    $query = $query->where($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
-                    $firstConditionAdded = true;
-
-                    continue;
-                }
-
-                $query = $query->orWhere($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
-            }
+        if ($customFields->isEmpty()) {
+            return $query;
         }
 
-        return $query;
+        // Group custom-fields so all custom fields behave consistently as OR conditions.
+        return $query->orWhere(function (Builder $customFieldQuery) use ($customFields, $terms): void {
+            $firstConditionAdded = false;
+
+            foreach ($customFields as $field) {
+                foreach ($terms as $term) {
+                    if (! $firstConditionAdded) {
+                        $customFieldQuery->where($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
+                        $firstConditionAdded = true;
+
+                        continue;
+                    }
+
+                    $customFieldQuery->orWhere($this->getTable().'.'.$field->db_column_name(), 'LIKE', '%'.$term.'%');
+                }
+            }
+        });
     }
 
     /**
