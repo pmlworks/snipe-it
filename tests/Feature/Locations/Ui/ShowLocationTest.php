@@ -37,4 +37,26 @@ class ShowLocationTest extends TestCase
             ->get(route('locations.print_all_assigned', Location::factory()->create()))
             ->assertOk();
     }
+
+    public function test_show_page_includes_parent_location_breadcrumb_hierarchy()
+    {
+        $grandparent = Location::factory()->create(['name' => 'Grandparent Breadcrumb Location']);
+        $parent = Location::factory()->create([
+            'name' => 'Parent Breadcrumb Location',
+            'parent_id' => $grandparent->id,
+        ]);
+        $child = Location::factory()->create([
+            'name' => 'Child Breadcrumb Location',
+            'parent_id' => $parent->id,
+        ]);
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->get(route('locations.show', $child))
+            ->assertOk()
+            ->assertSeeInOrder([
+                route('locations.show', $grandparent),
+                route('locations.show', $parent),
+                route('locations.show', $child),
+            ]);
+    }
 }
