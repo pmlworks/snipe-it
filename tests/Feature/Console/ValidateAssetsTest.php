@@ -63,4 +63,3 @@ class ValidateAssetsTest extends TestCase
         return [$validAsset, $invalidAsset];
     }
 }
-
