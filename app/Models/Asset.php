@@ -766,12 +766,16 @@ class Asset extends Depreciable
 
     public function accessories()
     {
-        return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to');
 
-        // return $this->hasManyThrough(Accessory::class, AccessoryCheckout::class, 'assigned_to', 'id')
-        //     ->where('assigned_type', self::ASSET);
-        // return $this->hasManyThrough(AccessoryCheckout::class, AssetModel::class, 'id', 'id', 'model_id', 'accessory_id');
+        // return $this->belongsToMany('App\Role')->withPivot('column1', 'column2');
         //
+        // return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to');
+
+        return $this->hasManyThrough(Accessory::class, AccessoryCheckout::class, 'assigned_to', 'id')
+            ->where('assigned_type', self::ASSET);
+
+        // return $this->hasManyThrough(AccessoryCheckout::class, AssetModel::class, 'id', 'id', 'model_id', 'accessory_id');
+
         // return $this->belongsToMany(AccessoryCheckout::class, 'components_assets', 'asset_id', 'component_id')
         //     ->withPivot('id', 'assigned_qty', 'created_at', 'note', 'created_by');
     }
