@@ -761,8 +761,24 @@ class Asset extends Depreciable
      */
     public function assignedAccessories()
     {
-        return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to');
+        return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to')->with('accessory');
     }
+
+    public function accessories()
+    {
+        return $this->hasManyThrough(
+            Accessory::class,
+            AccessoryCheckout::class,
+            'assigned_to',
+            'id',
+            'id',
+            'accessory_id'
+        )->where('assigned_type', self::class);
+    }
+
+    // {
+    //     return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to')->withTrashed();
+    // }
 
     /**
      * Get the asset's location based on the assigned user
@@ -1248,12 +1264,12 @@ class Asset extends Depreciable
 
     public function getComponentCost()
     {
-        $cost = 0;
-        foreach ($this->components as $component) {
-            $cost += $component->pivot->assigned_qty * $component->purchase_cost;
-        }
+        return (float) $this->components->sum('calculated_purchase_cost');
+    }
 
-        return $cost;
+    public function getAccessoryCost()
+    {
+        return (float) $this->accessories()->sum('purchase_cost');
     }
 
     /**

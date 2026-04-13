@@ -285,23 +285,57 @@
 
                             <x-well class="well-sm">
                                 <div class="well-display">
-                                    <x-data-row icon_type="maintenances" label="Active Maintenances">
+                                    <x-data-row icon_type="money" :label="trans('general.purchase_cost')" align="right">
+                                        {{ Helper::formatCurrencyOutput($asset->purchase_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row icon_type="maintenances" :label="trans('general.maintenances')" align="right">
+                                        {{ Helper::formatCurrencyOutput($total_maintenance_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row icon_type="accessories" :label="trans('general.accessories')" align="right">
+                                        {{ Helper::formatCurrencyOutput($total_accessory_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row icon_type="licenses" :label="trans('general.licenses')" align="right">
+                                        {{ Helper::formatCurrencyOutput($total_license_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row icon_type="components" :label="trans('general.components')" align="right">
+                                        {{ Helper::formatCurrencyOutput($total_component_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row icon_type="assets" :label="trans('general.assets')" align="right">
+                                        {{ Helper::formatCurrencyOutput($total_asset_cost) }}
+                                    </x-data-row>
+
+                                    <x-data-row :label="trans('general.total_cost')" align="right" style="border-top: 1px solid var(--box-header-top-border-color) !important;">
+                                        {{ Helper::formatCurrencyOutput($total_cost_for_asset) }}
+                                    </x-data-row>
+
+                                </div>
+                            </x-well>
+
+                            <x-well class="well-sm">
+                                <div class="well-display">
+                                    <x-data-row icon_type="maintenances" label="Active Maintenances" align="right">
                                         {{ $asset->maintenances->whereNull('completion_date')->count() }}
                                     </x-data-row>
 
-                                    <x-data-row icon_type="checkout" :label="trans('general.checkouts_count')">
+                                    <x-data-row icon_type="checkout" :label="trans('general.checkouts_count')" align="right">
                                         {{ ($asset->checkouts) ? (int) $asset->checkouts->count() : '0' }}
                                     </x-data-row>
 
-                                    <x-data-row icon_type="checkin" :label="trans('general.checkins_count')">
+                                    <x-data-row icon_type="checkin" :label="trans('general.checkins_count')" align="right">
                                         {{ ($asset->checkins) ? (int) $asset->checkins->count() : '0' }}
                                     </x-data-row>
 
-                                    <x-data-row icon_type="request" :label="trans('general.user_requests_count')">
+                                    <x-data-row icon_type="request" :label="trans('general.user_requests_count')" align="right">
                                         {{ ($asset->userRequests) ? (int) $asset->userRequests->count() : '0' }}
                                     </x-data-row>
                                 </div>
                             </x-well>
+
 
 
                             @if (($snipeSettings->qr_code=='1') || $snipeSettings->label2_2d_type!='none')

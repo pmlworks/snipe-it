@@ -192,8 +192,8 @@ class AssetsTransformer
                         'pivot_id' => $component->pivot->id,
                         'name' => e($component->name),
                         'qty' => $component->pivot->assigned_qty,
-                        'price_cost' => $component->purchase_cost,
-                        'purchase_total' => $component->purchase_cost * $component->pivot->assigned_qty,
+                        'purchase_cost' => $component->purchase_cost,
+                        'purchase_total' => $component->calculated_purchase_cost,
                         'checkout_date' => Helper::getFormattedDateObject($component->pivot->created_at, 'datetime'),
 
                     ];
