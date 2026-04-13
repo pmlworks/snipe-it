@@ -219,10 +219,18 @@ class AssetsController extends Controller
 
         // This is used by the sidenav, mostly
 
-        // We switched from using query scopes here because of a Laravel bug
-        // related to fulltext searches on complex queries.
-        // I am sad. :(
-        switch ($request->input('status_type')) {
+        // This bit here accounts for folks actually using the formerly-known-as status like we previously used in the sidenav
+        // to return a list of all assets with the status *type* of Deployed, etc. The inuput field used to be "status" (which was consistent
+        // with the relation rename, but it broke the sidebar. This should handle both use cases in the event that someone didn't update
+        // their API integration code
+        $status_type_key = null;
+        if ($request->filled('status_type')) {
+            $status_type_key = $request->input('status_type');
+        } elseif ($request->filled('status')) {
+            $status_type_key = $request->input('status');
+        }
+
+        switch ($status_type_key) {
             case 'Deleted':
                 $assets->onlyTrashed();
                 break;
