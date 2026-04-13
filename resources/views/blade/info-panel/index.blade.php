@@ -275,8 +275,19 @@
         <x-info-panel.manufacturer :asset="$infoPanelObj" :manufacturer="($infoPanelObj->manufacturer ?? $infoPanelObj->model?->manufacturer)"/>
 
         @if ((isset($infoPanelObj->parent)) && ($infoPanelObj->parent))
+            @php
+                $locationAncestors = [];
+                $ancestorCursor = $infoPanelObj->parent;
+
+                while ($ancestorCursor) {
+                    array_unshift($locationAncestors, $ancestorCursor);
+                    $ancestorCursor = $ancestorCursor->parent;
+                }
+            @endphp
             <x-info-element icon_type="parent" title="{{ trans('admin/locations/table.parent') }}">
-                <a href="{{ route('locations.show', $infoPanelObj->parent->id) }}">{{ $infoPanelObj->parent->display_name }}</a>
+                @foreach ($locationAncestors as $ancestor)
+                    <a href="{{ route('locations.show', $ancestor->id) }}">{{ $ancestor->display_name }}</a>@if (! $loop->last) &rsaquo; @endif
+                @endforeach
             </x-info-element>
         @endif
 

@@ -59,4 +59,33 @@ class ShowLocationTest extends TestCase
                 route('locations.show', $child),
             ]);
     }
+
+    public function test_show_page_info_panel_includes_parent_location_hierarchy_without_current_location()
+    {
+        $grandparent = Location::factory()->create(['name' => 'Grandparent Info Panel Location']);
+        $parent = Location::factory()->create([
+            'name' => 'Parent Info Panel Location',
+            'parent_id' => $grandparent->id,
+        ]);
+        $child = Location::factory()->create([
+            'name' => 'Child Info Panel Location',
+            'parent_id' => $parent->id,
+        ]);
+
+        $response = $this->actingAs(User::factory()->superuser()->create())
+            ->get(route('locations.show', $child));
+
+        $response->assertOk()
+            ->assertSeeInOrder([
+                route('locations.show', $grandparent),
+                route('locations.show', $parent),
+            ]);
+
+        $responseContent = $response->getContent();
+
+        $this->assertStringNotContainsString(
+            '<a href="'.route('locations.show', $child).'">'.$child->display_name.'</a>',
+            $responseContent
+        );
+    }
 }
