@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Http\Controllers\Assets\BulkAssetsController;
+use App\Models\Accessory;
+use App\Models\AccessoryCheckout;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
@@ -288,5 +290,38 @@ class AssetTest extends TestCase
         $filtered = array_diff([$deployable->id, $undeployable->id], $undeployableIds);
 
         $this->assertEquals([$deployable->id], array_values($filtered));
+    }
+
+    public function test_asset_accessories_relationship_uses_accessory_checkout_rows(): void
+    {
+        $asset = Asset::factory()->create();
+        $otherAsset = Asset::factory()->create();
+
+        $primaryAccessory = Accessory::factory()->create(['purchase_cost' => 10]);
+        $secondaryAccessory = Accessory::factory()->create(['purchase_cost' => 15]);
+
+        AccessoryCheckout::factory()->create([
+            'accessory_id' => $primaryAccessory->id,
+            'assigned_to' => $asset->id,
+            'assigned_type' => Asset::class,
+        ]);
+        AccessoryCheckout::factory()->create([
+            'accessory_id' => $primaryAccessory->id,
+            'assigned_to' => $asset->id,
+            'assigned_type' => Asset::class,
+        ]);
+        AccessoryCheckout::factory()->create([
+            'accessory_id' => $secondaryAccessory->id,
+            'assigned_to' => $asset->id,
+            'assigned_type' => Asset::class,
+        ]);
+        AccessoryCheckout::factory()->create([
+            'accessory_id' => $primaryAccessory->id,
+            'assigned_to' => $otherAsset->id,
+            'assigned_type' => Asset::class,
+        ]);
+
+        $this->assertCount(3, $asset->accessories()->get());
+        $this->assertSame(35.0, $asset->getAccessoryCost());
     }
 }
