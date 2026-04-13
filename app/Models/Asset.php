@@ -765,7 +765,6 @@ class Asset extends Depreciable
     }
 
     public function accessories()
-
     {
         return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to');
 
@@ -777,11 +776,9 @@ class Asset extends Depreciable
         //     ->withPivot('id', 'assigned_qty', 'created_at', 'note', 'created_by');
     }
 
-
     // {
     //     return $this->morphMany(AccessoryCheckout::class, 'assigned', 'assigned_type', 'assigned_to')->withTrashed();
     // }
-
 
     /**
      * Get the asset's location based on the assigned user
