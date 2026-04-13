@@ -93,8 +93,8 @@ class CreateUserTest extends TestCase
 
         $user = User::findOrFail($response['payload']['id']);
 
+        // assert against resized hash
         $this->assertEquals(
-            // assert against resized hash
             'db2e13ba04318c99058ca429d67777322f48566b',
             sha1(Storage::disk('public')->get(app('users_upload_path').$user->avatar))
         );
