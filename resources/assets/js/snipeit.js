@@ -149,8 +149,8 @@ $(function () {
         // deleteForm is the ID of the modal form itself
         $('#deleteForm').attr('action', href);
         $dataConfirmModal.find('.modal-header-icon').addClass(headericon);
-        $dataConfirmModal.find('.modal-title').text(title).prepend('<i class="fa ' + headericon + '"></i> ');
-        $dataConfirmModal.find('.modal-body').text(message);
+        $dataConfirmModal.find('.modal-title').text('').text(title).prepend('<i class="fa ' + headericon + '"></i> ');
+        $dataConfirmModal.find('.modal-body').text('').text(message);
         $dataConfirmModal.attr('action', href);
 
         // Fire the modal
