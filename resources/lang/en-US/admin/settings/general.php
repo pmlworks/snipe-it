@@ -361,6 +361,7 @@ return [
     'general_title' => 'Update General Settings',
     'mail_test' => 'Send Test',
     'mail_test_help' => 'This will attempt to send a test mail to :replyto.',
+    'mail_test_no_email' => 'MAIL_REPLYTO_ADDR not set or has no value .env config file. Cannot send test email. Please update this value in your configuration file with a valid email address.',
     'filter_by_keyword' => 'Filter by setting keyword',
     'security' => 'Security',
     'security_title' => 'Update Security Settings',
