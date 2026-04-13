@@ -8,6 +8,7 @@ use App\Models\AccessoryCheckout;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
+use App\Models\Component;
 use App\Models\Setting;
 use App\Models\Statuslabel;
 use App\Models\User;
@@ -323,5 +324,50 @@ class AssetTest extends TestCase
 
         $this->assertCount(3, $asset->accessories()->get());
         $this->assertSame(35.0, $asset->getAccessoryCost());
+    }
+
+    public function test_asset_components_calculated_total_uses_assigned_quantity(): void
+    {
+        $asset = Asset::factory()->create();
+
+        $firstComponent = Component::factory()->create(['purchase_cost' => 10]);
+        $secondComponent = Component::factory()->create(['purchase_cost' => 25]);
+
+        $asset->components()->attach($firstComponent->id, [
+            'assigned_qty' => 3,
+            'created_by' => User::factory()->create()->id,
+            'created_at' => now(),
+        ]);
+
+        $asset->components()->attach($secondComponent->id, [
+            'assigned_qty' => 2,
+            'created_by' => User::factory()->create()->id,
+            'created_at' => now(),
+        ]);
+
+        $freshAsset = $asset->fresh();
+
+        $this->assertEquals(35, $freshAsset->components->sum('purchase_cost'));
+        $this->assertEquals(80, $freshAsset->components->sum('calculated_purchase_cost'));
+        $this->assertSame(80.0, $freshAsset->getComponentCost());
+    }
+
+    public function test_asset_components_calculated_total_treats_null_purchase_cost_as_zero(): void
+    {
+        $asset = Asset::factory()->create();
+
+        $componentWithoutCost = Component::factory()->create(['purchase_cost' => null]);
+
+        $asset->components()->attach($componentWithoutCost->id, [
+            'assigned_qty' => 4,
+            'created_by' => User::factory()->create()->id,
+            'created_at' => now(),
+        ]);
+
+        $freshAsset = $asset->fresh();
+
+        $this->assertSame(0.0, $freshAsset->components->first()->calculated_purchase_cost);
+        $this->assertEquals(0, $freshAsset->components->sum('calculated_purchase_cost'));
+        $this->assertSame(0.0, $freshAsset->getComponentCost());
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
 use App\Presenters\ComponentPresenter;
 use App\Presenters\Presentable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -163,6 +164,26 @@ class Component extends SnipeModel
     public function assets()
     {
         return $this->belongsToMany(Asset::class, 'components_assets')->withPivot('id', 'assigned_qty', 'created_at', 'created_by', 'note');
+    }
+
+    protected function calculatedPurchaseCost(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $unitPurchaseCost = $this->getRawOriginal('purchase_cost');
+                $assignedQty = $this->pivot?->assigned_qty;
+
+                if ($unitPurchaseCost === null) {
+                    return $assignedQty !== null ? 0.0 : null;
+                }
+
+                if ($assignedQty !== null) {
+                    return (float) $unitPurchaseCost * (int) $assignedQty;
+                }
+
+                return (float) $unitPurchaseCost;
+            }
+        );
     }
 
     /**
