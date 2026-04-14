@@ -117,6 +117,7 @@ class ConsumableCheckoutController extends Controller
             $request->input('note'),
             [],
             $consumable->checkout_qty,
+            $request->boolean('sign_in_place'),
         ));
 
         $request->request->add(['checkout_to_type' => 'user']);

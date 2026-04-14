@@ -130,7 +130,7 @@ class AssetCheckoutController extends Controller
                 'sign_in_place' => $request->boolean('sign_in_place'),
             ]);
 
-            if ($asset->checkOut($target, $admin, $checkout_at, $expected_checkin, $request->input('note'), $request->input('name'))) {
+            if ($asset->checkOut($target, $admin, $checkout_at, $expected_checkin, $request->input('note'), $request->input('name'), null, $request->boolean('sign_in_place'))) {
 
                 // When sign_in_place is requested and the target is a user, redirect to the
                 // acceptance/signature page so the user can sign in person. The signature is
