@@ -103,7 +103,7 @@ class CheckoutAcceptanceFactory extends Factory
         $acceptance->checkoutable->assetlog()->create([
             'action_type' => 'checkout',
             'target_id' => $acceptance->assigned_to_id,
-            'target_type' => get_class($acceptance->assignedTo),
+            'target_type' => User::class, // BEFORE: get_class($acceptance->assignedTo). a Checkout acceptance is only generated for Users, this avoids a null for testing soft-deleted users.
             'item_id' => $acceptance->checkoutable_id,
             'item_type' => $acceptance->checkoutable_type,
         ]);
