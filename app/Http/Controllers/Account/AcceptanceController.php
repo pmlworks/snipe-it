@@ -30,7 +30,8 @@ class AcceptanceController extends Controller
      */
     public function index(): View
     {
-        $acceptances = CheckoutAcceptance::forUser(auth()->user())->pending()->get();
+        $currentUser = $this->currentUser();
+        $acceptances = CheckoutAcceptance::forUser($currentUser)->pending()->get();
 
         return view('account/accept.index', compact('acceptances'));
     }
@@ -42,7 +43,9 @@ class AcceptanceController extends Controller
      */
     public function create($id): View|RedirectResponse
     {
+        $currentUser = $this->currentUser();
         $acceptance = CheckoutAcceptance::find($id);
+        $isSignInPlaceAdminFlow = false;
 
         if (is_null($acceptance)) {
             return redirect()->route('account.accept')->with('error', trans('admin/hardware/message.does_not_exist'));
@@ -52,7 +55,9 @@ class AcceptanceController extends Controller
             return redirect()->route('account.accept')->with('error', trans('admin/users/message.error.asset_already_accepted'));
         }
 
-        if (! $acceptance->isCheckedOutTo(auth()->user())) {
+        $isSignInPlaceAdminFlow = $this->isSignInPlaceAdminFlow($acceptance);
+
+        if (! $acceptance->isCheckedOutTo($currentUser) && (! $isSignInPlaceAdminFlow)) {
             return redirect()->route('account.accept')->with('error', trans('admin/users/message.error.incorrect_user_accepted'));
         }
 
@@ -60,7 +65,7 @@ class AcceptanceController extends Controller
             return redirect()->route('account.accept')->with('error', trans('general.error_user_company'));
         }
 
-        return view('account/accept.create', compact('acceptance'));
+        return view('account/accept.create', compact('acceptance', 'isSignInPlaceAdminFlow'));
     }
 
     /**
@@ -70,6 +75,7 @@ class AcceptanceController extends Controller
      */
     public function store(Request $request, $id): RedirectResponse
     {
+        $currentUser = $this->currentUser();
 
         if (! $acceptance = CheckoutAcceptance::find($id)) {
             return redirect()->route('account.accept')->with('error', trans('admin/hardware/message.does_not_exist'));
@@ -83,7 +89,9 @@ class AcceptanceController extends Controller
             return redirect()->route('account.accept')->with('error', trans('admin/users/message.error.asset_already_accepted'));
         }
 
-        if (! $acceptance->isCheckedOutTo(auth()->user())) {
+        $isSignInPlaceAdminFlow = $this->isSignInPlaceAdminFlow($acceptance);
+
+        if (! $acceptance->isCheckedOutTo($currentUser) && (! $isSignInPlaceAdminFlow)) {
             return redirect()->route('account.accept')->with('error', trans('admin/users/message.error.incorrect_user_accepted'));
         }
 
@@ -223,7 +231,44 @@ class AcceptanceController extends Controller
             }
         }
 
+        if ($isSignInPlaceAdminFlow) {
+            $request->request->add(['assigned_user' => $assigned_user?->id]);
+
+            $redirect = Helper::getRedirectOption(
+                $request,
+                session('sign_in_place_item_id'),
+                session('sign_in_place_table'),
+            );
+
+            session()->forget([
+                'sign_in_place_acceptance_id',
+                'sign_in_place_item_id',
+                'sign_in_place_table',
+            ]);
+
+            return $redirect->with('success', $return_msg);
+        }
+
         return redirect()->to('account/accept')->with('success', $return_msg);
 
+    }
+
+    private function isSignInPlaceAdminFlow(CheckoutAcceptance $acceptance): bool
+    {
+        $currentUser = auth()->user();
+
+        return ((int) session('sign_in_place_acceptance_id') === (int) $acceptance->id)
+            && ($currentUser?->can('checkout', $acceptance->checkoutable));
+    }
+
+    private function currentUser(): User
+    {
+        $user = auth()->user();
+
+        if (! $user instanceof User) {
+            abort(403, trans('general.insufficient_permissions'));
+        }
+
+        return $user;
     }
 }

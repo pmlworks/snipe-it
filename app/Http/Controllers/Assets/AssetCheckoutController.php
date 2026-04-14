@@ -8,7 +8,9 @@ use App\Http\Controllers\CheckInOutRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetCheckoutRequest;
 use App\Models\Asset;
+use App\Models\CheckoutAcceptance;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
@@ -125,6 +127,36 @@ class AssetCheckoutController extends Controller
             session()->put(['redirect_option' => $request->input('redirect_option'), 'checkout_to_type' => $request->input('checkout_to_type')]);
 
             if ($asset->checkOut($target, $admin, $checkout_at, $expected_checkin, $request->input('note'), $request->input('name'))) {
+
+                // When sign_in_place is requested and the target is a user, redirect to the
+                // acceptance/signature page so the user can sign in person. The signature is
+                // attributed to the target user, not the admin.
+                if ($request->boolean('sign_in_place') && $target instanceof User) {
+                    $acceptance = CheckoutAcceptance::where('checkoutable_type', Asset::class)
+                        ->where('checkoutable_id', $asset->id)
+                        ->where('assigned_to_id', $target->id)
+                        ->pending()
+                        ->latest()
+                        ->first();
+
+                    // If requireAcceptance() is false the listener won't have created one; create it now.
+                    if (! $acceptance) {
+                        $acceptance = new CheckoutAcceptance;
+                        $acceptance->checkoutable()->associate($asset);
+                        $acceptance->assignedTo()->associate($target);
+                        $acceptance->save();
+                    }
+
+                    session([
+                        'sign_in_place_acceptance_id' => $acceptance->id,
+                        'sign_in_place_item_id' => $asset->id,
+                        'sign_in_place_table' => 'Assets',
+                    ]);
+
+                    return redirect()->route('account.accept.item', $acceptance->id)
+                        ->with('success', trans('admin/hardware/message.checkout.success'));
+                }
+
                 return Helper::getRedirectOption($request, $asset->id, 'Assets')
                     ->with('success', trans('admin/hardware/message.checkout.success'));
             }

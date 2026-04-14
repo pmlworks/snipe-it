@@ -7,6 +7,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LicenseCheckoutRequest;
 use App\Models\Asset;
+use App\Models\CheckoutAcceptance;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\User;
@@ -111,6 +112,34 @@ class LicenseCheckoutController extends Controller
         }
 
         if ($checkoutTarget) {
+
+            // When sign_in_place is requested and the target is a user, redirect to the
+            // acceptance/signature page so the user can sign in person.
+            if ($request->boolean('sign_in_place') && $checkoutTarget instanceof User) {
+                $acceptance = CheckoutAcceptance::where('checkoutable_type', LicenseSeat::class)
+                    ->where('checkoutable_id', $licenseSeat->id)
+                    ->where('assigned_to_id', $checkoutTarget->id)
+                    ->pending()
+                    ->latest()
+                    ->first();
+
+                // If requireAcceptance() is false the listener won't have created one; create it now.
+                if (! $acceptance) {
+                    $acceptance = new CheckoutAcceptance;
+                    $acceptance->checkoutable()->associate($licenseSeat);
+                    $acceptance->assignedTo()->associate($checkoutTarget);
+                    $acceptance->save();
+                }
+
+                session([
+                    'sign_in_place_acceptance_id' => $acceptance->id,
+                    'sign_in_place_item_id' => $license->id,
+                    'sign_in_place_table' => 'Licenses',
+                ]);
+
+                return redirect()->route('account.accept.item', $acceptance->id)
+                    ->with('success', trans('admin/licenses/message.checkout.success'));
+            }
 
             return Helper::getRedirectOption($request, $license->id, 'Licenses')
                 ->with('success', trans('admin/licenses/message.checkout.success'));
