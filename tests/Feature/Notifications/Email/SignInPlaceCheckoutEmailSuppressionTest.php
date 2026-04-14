@@ -110,4 +110,3 @@ class SignInPlaceCheckoutEmailSuppressionTest extends TestCase
         Mail::assertNotSent(CheckoutLicenseMail::class);
     }
 }
-
