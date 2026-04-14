@@ -4,6 +4,7 @@ namespace Tests\Feature\Checkouts\Ui;
 
 use App\Events\CheckoutableCheckedOut;
 use App\Models\Asset;
+use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\LicenseSeat;
 use App\Models\Location;
@@ -347,5 +348,33 @@ class AssetCheckoutTest extends TestCase
             ])
             ->assertStatus(302)
             ->assertRedirect(route('locations.show', ['location' => $target]));
+    }
+
+    public function test_asset_checkout_page_post_redirects_to_signature_page_when_sign_in_place_is_checked()
+    {
+        $targetUser = User::factory()->create();
+        $asset = Asset::factory()->create();
+
+        $response = $this->actingAs(User::factory()->admin()->create())
+            ->from(route('hardware.checkout.create', $asset))
+            ->post(route('hardware.checkout.store', $asset), [
+                'checkout_to_type' => 'user',
+                'assigned_user' => $targetUser->id,
+                'redirect_option' => 'index',
+                'sign_in_place' => 1,
+            ]);
+
+        $acceptance = CheckoutAcceptance::query()
+            ->where('checkoutable_type', Asset::class)
+            ->where('checkoutable_id', $asset->id)
+            ->where('assigned_to_id', $targetUser->id)
+            ->pending()
+            ->latest()
+            ->first();
+
+        $this->assertNotNull($acceptance);
+
+        $response->assertStatus(302)
+            ->assertRedirect(route('account.accept.item', $acceptance));
     }
 }
