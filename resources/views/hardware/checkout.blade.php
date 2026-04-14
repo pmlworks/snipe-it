@@ -137,6 +137,7 @@
                             <div class="col-md-8">
                                 <x-input.datepicker
                                         name="expected_checkin"
+                                        col_size_class="col-md-7"
                                         :value="old('expected_checkin', $item->expected_checkin)"
                                         placeholder="{{ trans('general.select_date') }}"
                                         required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"
