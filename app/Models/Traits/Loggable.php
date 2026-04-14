@@ -107,7 +107,7 @@ trait Loggable
                 break;
         }
 
-        return $history;
+        return $history->forApiHistory();
 
     }
 
