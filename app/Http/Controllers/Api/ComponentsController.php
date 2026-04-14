@@ -391,11 +391,11 @@ class ComponentsController extends Controller
     public function history(Request $request, Component $component): JsonResponse|array
     {
         $this->authorize('history', $component);
-        $history = $component->getHistory($request);
-        $total = $component->getHistory($request)->count();
+        $historyQuery = $component->getHistory($request);
+        $total = (clone $historyQuery)->count();
         $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
-        $history = $history->skip($offset)->take($limit)->get();
+        $history = (clone $historyQuery)->skip($offset)->take($limit)->get();
 
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $total), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }

@@ -9,6 +9,7 @@ use App\Presenters\ActionlogPresenter;
 use App\Presenters\Presentable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -326,6 +327,27 @@ class Actionlog extends SnipeModel
     public function target()
     {
         return $this->morphTo('target')->withTrashed();
+    }
+
+    /**
+     * Eager load history relations used by the API transformer to avoid N+1 queries.
+     */
+    public function scopeForApiHistory($query)
+    {
+        return $query->with([
+            'adminuser',
+            'location',
+            'item' => function (MorphTo $morphTo) {
+                $morphTo->morphWith([
+                    Asset::class => ['model'],
+                ]);
+            },
+            'target' => function (MorphTo $morphTo) {
+                $morphTo->morphWith([
+                    Asset::class => ['model'],
+                ]);
+            },
+        ]);
     }
 
     /**
