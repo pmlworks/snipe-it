@@ -102,13 +102,21 @@ class LicenseCheckoutController extends Controller
             session()->put(['checkout_to_type' => 'asset']);
             $checkoutTarget = $this->checkoutToAsset($licenseSeat);
             $request->request->add(['assigned_asset' => $checkoutTarget->id]);
-            session()->put(['redirect_option' => $request->input('redirect_option'), 'checkout_to_type' => 'asset']);
+            session()->put([
+                'redirect_option' => $request->input('redirect_option'),
+                'checkout_to_type' => 'asset',
+                'sign_in_place' => $request->boolean('sign_in_place'),
+            ]);
 
         } elseif ($request->filled('assigned_to')) {
             session()->put(['checkout_to_type' => 'user']);
             $checkoutTarget = $this->checkoutToUser($licenseSeat);
             $request->request->add(['assigned_user' => $checkoutTarget->id]);
-            session()->put(['redirect_option' => $request->input('redirect_option'), 'checkout_to_type' => 'user']);
+            session()->put([
+                'redirect_option' => $request->input('redirect_option'),
+                'checkout_to_type' => 'user',
+                'sign_in_place' => $request->boolean('sign_in_place'),
+            ]);
         }
 
         if ($checkoutTarget) {

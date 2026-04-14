@@ -124,7 +124,11 @@ class AssetCheckoutController extends Controller
                 }
             }
 
-            session()->put(['redirect_option' => $request->input('redirect_option'), 'checkout_to_type' => $request->input('checkout_to_type')]);
+            session()->put([
+                'redirect_option' => $request->input('redirect_option'),
+                'checkout_to_type' => $request->input('checkout_to_type'),
+                'sign_in_place' => $request->boolean('sign_in_place'),
+            ]);
 
             if ($asset->checkOut($target, $admin, $checkout_at, $expected_checkin, $request->input('note'), $request->input('name'))) {
 

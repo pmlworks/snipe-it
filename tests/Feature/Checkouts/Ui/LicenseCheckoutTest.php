@@ -151,4 +151,19 @@ class LicenseCheckoutTest extends TestCase
         $response->assertStatus(302)
             ->assertRedirect(route('account.accept.item', $acceptance));
     }
+
+    public function test_license_checkout_stores_sign_in_place_preference_in_session()
+    {
+        $targetUser = User::factory()->create();
+        $seat = LicenseSeat::factory()->create();
+
+        $response = $this->actingAs(User::factory()->admin()->create())
+            ->post(route('licenses.checkout', $seat->license), [
+                'assigned_to' => $targetUser->id,
+                'redirect_option' => 'index',
+                'sign_in_place' => 1,
+            ]);
+
+        $response->assertSessionHas('sign_in_place', true);
+    }
 }

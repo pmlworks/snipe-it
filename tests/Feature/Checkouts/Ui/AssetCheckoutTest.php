@@ -377,4 +377,20 @@ class AssetCheckoutTest extends TestCase
         $response->assertStatus(302)
             ->assertRedirect(route('account.accept.item', $acceptance));
     }
+
+    public function test_asset_checkout_stores_sign_in_place_preference_in_session()
+    {
+        $targetUser = User::factory()->create();
+        $asset = Asset::factory()->create();
+
+        $response = $this->actingAs(User::factory()->admin()->create())
+            ->post(route('hardware.checkout.store', $asset), [
+                'checkout_to_type' => 'user',
+                'assigned_user' => $targetUser->id,
+                'redirect_option' => 'index',
+                'sign_in_place' => 1,
+            ]);
+
+        $response->assertSessionHas('sign_in_place', true);
+    }
 }
