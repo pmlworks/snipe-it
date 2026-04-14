@@ -121,6 +121,19 @@
                              @endif
                          </div>
                      </div>
+
+                     <!-- Sign in place checkbox -->
+                     <div class="form-group" id="sign_in_place_div">
+                         <div class="col-md-7 col-md-offset-3">
+                             <label class="form-control">
+                                 <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place', session('sign_in_place', false))) aria-label="sign_in_place">
+                                 {{ trans('general.sign_in_place') }}
+                             </label>
+                             <p class="help-block">
+                                 {{ trans('general.sign_in_place_help') }}
+                             </p>
+                         </div>
+                     </div>
                  </div>
              @endif
           <!-- Note -->

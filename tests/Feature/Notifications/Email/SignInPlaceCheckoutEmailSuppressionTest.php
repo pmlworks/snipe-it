@@ -3,8 +3,10 @@
 namespace Tests\Feature\Notifications\Email;
 
 use App\Mail\CheckoutAssetMail;
+use App\Mail\CheckoutAccessoryMail;
 use App\Mail\CheckoutConsumableMail;
 use App\Mail\CheckoutLicenseMail;
+use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
@@ -108,5 +110,32 @@ class SignInPlaceCheckoutEmailSuppressionTest extends TestCase
         $this->assertNotNull($acceptance);
         $response->assertRedirect(route('account.accept.item', $acceptance));
         Mail::assertNotSent(CheckoutLicenseMail::class);
+    }
+
+    public function test_accessory_checkout_does_not_send_initial_acceptance_email_when_sign_in_place_is_selected(): void
+    {
+        $targetUser = User::factory()->create();
+        $accessory = Accessory::factory()->requiringAcceptance()->create(['qty' => 5]);
+
+        $response = $this->actingAs(User::factory()->admin()->create())
+            ->post(route('accessories.checkout.store', $accessory), [
+                'assigned_user' => $targetUser->id,
+                'checkout_to_type' => 'user',
+                'redirect_option' => 'index',
+                'checkout_qty' => 2,
+                'sign_in_place' => 1,
+            ]);
+
+        $acceptance = CheckoutAcceptance::query()
+            ->where('checkoutable_type', Accessory::class)
+            ->where('checkoutable_id', $accessory->id)
+            ->where('assigned_to_id', $targetUser->id)
+            ->pending()
+            ->latest()
+            ->first();
+
+        $this->assertNotNull($acceptance);
+        $response->assertRedirect(route('account.accept.item', $acceptance));
+        Mail::assertNotSent(CheckoutAccessoryMail::class);
     }
 }
