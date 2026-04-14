@@ -11,7 +11,7 @@ use Storage;
 
 class PurgeEulaPDFTest extends TestCase
 {
-    public function test_it_purges_acceptances_for_deleted_users(): void
+    public function test_only_purges_acceptances_for_deleted_users(): void
     {
         $intervalDate = now()->subDays(30);
 
@@ -60,7 +60,7 @@ class PurgeEulaPDFTest extends TestCase
         ]);
     }
 
-    public function test_it_only_purges_records_for_the_given_company(): void
+    public function test_only_purges_records_for_the_given_company(): void
     {
         $intervalDate = now()->subDays(30);
 
@@ -117,7 +117,7 @@ class PurgeEulaPDFTest extends TestCase
         ]);
     }
 
-    public function test_it_only_purges_soft_deleted_users_for_the_given_company(): void
+    public function test_only_purges_soft_deleted_users_for_the_given_company(): void
     {
         $intervalDate = now()->subDays(30);
 
@@ -199,7 +199,7 @@ class PurgeEulaPDFTest extends TestCase
         ]);
     }
 
-    public function test_it_does_not_purge_recent_acceptances_even_for_soft_deleted_users(): void
+    public function test_does_not_purge_recent_acceptances_even_for_soft_deleted_users(): void
     {
         $company = Company::factory()->create();
 
@@ -207,7 +207,7 @@ class PurgeEulaPDFTest extends TestCase
             'company_id' => $company->id,
         ]);
         $softDeletedUser->delete();
-        
+
         $recentAsset = Asset::factory()->create();
 
         Storage::fake('local');
