@@ -13,7 +13,7 @@ return new class extends Migration
     {
 
         Schema::table('companies', function (Blueprint $table) {
-            if (!Schema::hasColumn('companies', 'deleted_at')) {
+            if (! Schema::hasColumn('companies', 'deleted_at')) {
                 $table->softDeletes();
             }
         });
