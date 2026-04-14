@@ -142,7 +142,7 @@ class LicenseCheckoutController extends Controller
                 session([
                     'sign_in_place_acceptance_id' => $acceptance->id,
                     'sign_in_place_item_id' => $license->id,
-                    'sign_in_place_table' => 'Licenses',
+                    'sign_in_place_resource_type' => 'Licenses',
                 ]);
 
                 return redirect()->route('account.accept.item', $acceptance->id)

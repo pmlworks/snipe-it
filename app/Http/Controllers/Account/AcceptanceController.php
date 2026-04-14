@@ -237,13 +237,13 @@ class AcceptanceController extends Controller
             $redirect = Helper::getRedirectOption(
                 $request,
                 session('sign_in_place_item_id'),
-                session('sign_in_place_table'),
+                session('sign_in_place_resource_type'),
             );
 
             session()->forget([
                 'sign_in_place_acceptance_id',
                 'sign_in_place_item_id',
-                'sign_in_place_table',
+                'sign_in_place_resource_type',
             ]);
 
             return $redirect->with('success', $return_msg);

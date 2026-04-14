@@ -151,7 +151,7 @@ class ConsumableCheckoutController extends Controller
             session([
                 'sign_in_place_acceptance_id' => $acceptance->id,
                 'sign_in_place_item_id' => $consumable->id,
-                'sign_in_place_table' => 'Consumables',
+                'sign_in_place_resource_type' => 'Consumables',
             ]);
 
             return redirect()->route('account.accept.item', $acceptance->id)

@@ -154,7 +154,7 @@ class AssetCheckoutController extends Controller
                     session([
                         'sign_in_place_acceptance_id' => $acceptance->id,
                         'sign_in_place_item_id' => $asset->id,
-                        'sign_in_place_table' => 'Assets',
+                        'sign_in_place_resource_type' => 'Assets',
                     ]);
 
                     return redirect()->route('account.accept.item', $acceptance->id)

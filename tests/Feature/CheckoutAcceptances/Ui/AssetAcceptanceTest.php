@@ -179,7 +179,7 @@ class AssetAcceptanceTest extends TestCase
             ->withSession([
                 'sign_in_place_acceptance_id' => $checkoutAcceptance->id,
                 'sign_in_place_item_id' => $asset->id,
-                'sign_in_place_table' => 'Assets',
+                'sign_in_place_resource_type' => 'Assets',
                 'redirect_option' => 'target',
                 'checkout_to_type' => 'user',
             ])
