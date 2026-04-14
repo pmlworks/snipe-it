@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Notifications\Email;
 
-use App\Mail\CheckoutAssetMail;
 use App\Mail\CheckoutAccessoryMail;
+use App\Mail\CheckoutAssetMail;
 use App\Mail\CheckoutConsumableMail;
 use App\Mail\CheckoutLicenseMail;
 use App\Models\Accessory;
