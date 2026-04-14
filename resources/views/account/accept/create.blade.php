@@ -112,11 +112,11 @@
                     <div class="box-footer" style="display: none;" id="showSubmit">
                         <div class="row">
                             <div class="col-md-7">
-                                @if (auth()->user()->email!='')
+                                @if ($acceptance->assignedTo?->email)
                                     <div class="col-md-12" style="display: none;" id="showEmailBox">
                                         <label class="form-control">
                                             <input type="checkbox" value="1" name="send_copy" id="send_copy" checked="checked" aria-label="send_copy">
-                                            {{ trans('mail.send_pdf_copy') }} ({{ auth()->user()->email }})
+                                            {{ trans('mail.send_pdf_copy') }} ({{ $acceptance->assignedTo->email }})
                                         </label>
                                     </div>
                                 @endif

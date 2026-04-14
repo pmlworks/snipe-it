@@ -168,20 +168,25 @@
 
 
                         @if ($asset->requireAcceptance() || $asset->getEula() || ($snipeSettings->webhook_endpoint!=''))
-                            <div class="row">
-                            <div class="notification-callout">
+                            <div class="form-group notification-callout" style="display:none;">
                                 <div class="col-md-8 col-md-offset-3">
                                     <div class="callout callout-info">
 
                                         @if ($asset->requireAcceptance())
-                                            <x-icon type="email" />
+                                            <x-icon type="email"/>
                                             {{ trans('admin/categories/general.required_acceptance') }}
                                             <br>
                                         @endif
 
                                         @if ($asset->getEula())
-                                            <x-icon type="email" />
+                                            <x-icon type="email"/>
                                             {{ trans('admin/categories/general.required_eula') }}
+                                            <br>
+                                        @endif
+
+                                        @if (($asset->model?->category) && ($asset->model->category->checkin_email))
+                                            <x-icon type="email"/>
+                                            {{ trans('admin/categories/general.checkin_email_notification') }}
                                             <br>
                                         @endif
 
@@ -191,9 +196,22 @@
                                         @endif
                                     </div>
                                 </div>
-                            </div>
+
+                                <!-- Sign in place checkbox -->
+                                <div class="form-group" id="sign_in_place_div">
+                                    <div class="col-md-7 col-md-offset-3">
+                                        <label class="form-control">
+                                            <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place')) aria-label="sign_in_place">
+                                            {{ trans('general.sign_in_place') }}
+                                        </label>
+                                        <p class="help-block">
+                                            {{ trans('general.sign_in_place_help') }}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         @endif
+
 
                     </div> <!--/.box-body-->
 

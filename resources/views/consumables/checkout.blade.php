@@ -99,10 +99,29 @@
                         <br>
                     @endif
 
+                    @if (($consumable->category) && ($consumable->category->checkin_email))
+                      <i class="far fa-envelope"></i>
+                      {{ trans('admin/categories/general.checkin_email_notification') }}
+                      <br>
+                    @endif
+
                     @if ($snipeSettings->webhook_endpoint!='')
                         <i class="fab fa-slack"></i>
                         {{ trans('general.webhook_msg_note') }}
                     @endif
+                  </div>
+                </div>
+
+                <!-- Sign in place checkbox -->
+                <div class="form-group" id="sign_in_place_div">
+                  <div class="col-md-7 col-md-offset-3">
+                    <label class="form-control">
+                      <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place')) aria-label="sign_in_place">
+                      {{ trans('general.sign_in_place') }}
+                    </label>
+                    <p class="help-block">
+                      {{ trans('general.sign_in_place_help') }}
+                    </p>
                   </div>
                 </div>
               </div>
