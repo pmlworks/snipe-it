@@ -24,12 +24,11 @@ class DenormalizedEolAndAddColumnForExplicitDateToAssets extends Migration
             }
         });
 
-
         // This is a back in time migration to fix restores from very old versions of Snipe-IT where
         // companies were not soft-deletable.  We will undo this in this migration
         // after the eol_explicit stuff is done
         Schema::table('companies', function (Blueprint $table) {
-            if (!Schema::hasColumn('companies', 'deleted_at')) {
+            if (! Schema::hasColumn('companies', 'deleted_at')) {
                 $table->datetime('deleted_at')->default(false);
             }
         });
@@ -65,9 +64,8 @@ class DenormalizedEolAndAddColumnForExplicitDateToAssets extends Migration
                 'asset_eol_date' => $this->eolUpdateExpression(),
             ]);
 
-
         Schema::table('companies', function (Blueprint $table) {
-            if (!Schema::hasColumn('companies', 'deleted_at')) {
+            if (! Schema::hasColumn('companies', 'deleted_at')) {
                 $table->dropColumn('deleted_at');
             }
         });
