@@ -282,11 +282,11 @@ class LicensesController extends Controller
     public function history(Request $request, License $license): JsonResponse|array
     {
         $this->authorize('history', $license);
-        $history = $license->getHistory($request);
-        $total = $license->getHistory($request)->count();
+        $historyQuery = $license->getHistory($request);
+        $total = (clone $historyQuery)->count();
         $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
-        $history = $history->skip($offset)->take($limit)->get();
+        $history = (clone $historyQuery)->skip($offset)->take($limit)->get();
 
         return response()->json((new ActionlogsTransformer)->transformActionlogs($history, $total), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
     }
