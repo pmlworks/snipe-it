@@ -15,12 +15,12 @@ class PurgeEulaPDFs extends Command
      * @var string
      */
     protected $signature = 'snipeit:purge-eula-pdfs  
-                            {--older-than-days= : The number of days we should delete before } 
+                            {--older-than-days= : The number of days we should delete before }
+                            {--company-id= : Only purge acceptances for users in this company}
+                            {--only-deleted-users : Only purge acceptances for deleted users, including soft-deleted or missing users}
                             {--force : Skip the interactive yes/no prompt for confirmation}
                             {--dryrun : Show the records that would be deleted but don\'t update the database or delete files from disk}
-                            {--with-output : Display the results in a table in your console}
-                            {--company-id= : Only purge acceptances for users in this company}
-                            {--only-deleted-users : Only purge acceptances for deleted users, including soft-deleted or missing users}';
+                            {--with-output : Display the results in a table in your console}';
 
     /**
      * The console command description.
