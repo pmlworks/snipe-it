@@ -23,14 +23,7 @@ class DenormalizedEolAndAddColumnForExplicitDateToAssets extends Migration
                 $table->boolean('eol_explicit')->default(false)->after('asset_eol_date');
             }
         });
-
-        // This is a back in time migration to fix restores from very old versions of Snipe-IT where
-        // companies were not soft-deletable.
-        Schema::table('companies', function (Blueprint $table) {
-            if (! Schema::hasColumn('companies', 'deleted_at')) {
-                $table->softDeletes();
-            }
-        });
+        
 
         // Update the eol_explicit column with the value from asset_eol_date if it exists and is different from the calculated value
         Asset::whereNotNull('asset_eol_date')->with('model')->chunkById(500, function ($assetsWithEolDates) {
