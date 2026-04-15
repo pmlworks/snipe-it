@@ -25,7 +25,7 @@ class AddEolDateOnAssetsTable extends Migration
             // This is a back in time migration to fix restores from very old versions of Snipe-IT where
             // companies were not soft-deletable.
             Schema::table('companies', function (Blueprint $table) {
-                if (!Schema::hasColumn('companies', 'deleted_at')) {
+                if (! Schema::hasColumn('companies', 'deleted_at')) {
                     $table->softDeletes();
                 }
             });
