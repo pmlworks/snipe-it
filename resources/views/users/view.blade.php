@@ -67,7 +67,7 @@
 
                         <!-- well column -->
                         <x-page-column class="col-md-4">
-                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                            <x-well>
                                 <x-icon type="start_date" class="fa-fw"/>
                                 <strong>{{ trans('general.start_date') }}</strong>
                                 @if ($user->start_date != '')
@@ -81,8 +81,8 @@
                         <!-- ./ well column -->
 
                         <!-- well column -->
-                        <x-page-column class="col-md-4" style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
-                            <x-well style="text-overflow: ellipsis;white-space: nowrap;overflow: hidden;">
+                        <x-page-column class="col-md-4">
+                            <x-well>
                                 <x-icon type="end_date" class="fa-fw {{ (($user->end_date!='' && $user->end_date < Carbon::now()) ? ' text-danger' : '') }}"/>
                                 <strong>{{ trans('general.end_date') }}</strong>
                                 @if ($user->end_date != '')
