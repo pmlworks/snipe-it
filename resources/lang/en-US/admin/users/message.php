@@ -44,7 +44,7 @@ return [
         'delete_has_users_var' => 'This user still manages another user. Please select another manager for that user first.|This user still manages :count users. Please select another manager for them first.',
         'unsuspend' => 'There was an issue unsuspending the user. Please try again.',
         'import' => 'There was an issue importing users. Please try again.',
-        'asset_already_accepted' => 'This asset has already been accepted.',
+        'asset_already_accepted' => 'This item has already been accepted.',
         'accept_or_decline' => 'You must either accept or decline this asset.',
         'cannot_delete_yourself' => 'We would feel really bad if you deleted yourself, please reconsider.',
         'incorrect_user_accepted' => 'The asset you have attempted to accept was not checked out to you.',
