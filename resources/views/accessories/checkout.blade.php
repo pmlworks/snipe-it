@@ -98,7 +98,7 @@
              </div>
 
 
-             @if ($accessory->requireAcceptance() || $accessory->getEula() || ($snipeSettings->webhook_endpoint!=''))
+             @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $accessory->getEula() || ($snipeSettings->webhook_endpoint!=''))
                  <div class="form-group notification-callout">
                      <div class="col-md-8 col-md-offset-3">
                          <div class="callout callout-info">
@@ -123,7 +123,7 @@
                      </div>
 
                      <!-- Sign in place checkbox -->
-                     @if ($accessory->requireAcceptance())
+                     @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')
                      <div class="form-group" id="sign_in_place_div">
                          <div class="col-md-7 col-md-offset-3">
                              <label class="form-control">
