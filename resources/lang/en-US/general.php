@@ -564,6 +564,8 @@ return [
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
     'upload_files' => 'Upload Files',
     'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
