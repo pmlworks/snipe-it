@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Breadcrumbs\BuildAcceptanceBreadcrumbs;
 use App\Http\Controllers\Account;
 use App\Http\Controllers\ActionlogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -425,83 +426,11 @@ Route::group(['prefix' => 'account', 'middleware' => ['auth']], function () {
             ->push(trans('general.profile'), route('account'))
             ->push(trans('general.accept_items'), route('account.accept')));
 
-    Route::get('accept/{id}', [Account\AcceptanceController::class, 'create'])
+    Route::get('accept/{acceptance}', [Account\AcceptanceController::class, 'create'])
         ->name('account.accept.item')
-        ->breadcrumbs(function (Trail $trail, $id) {
-            $trail->parent('home');
+        ->breadcrumbs(fn (Trail $trail, mixed $acceptance) => BuildAcceptanceBreadcrumbs::forAcceptance($trail, $acceptance));
 
-            if ((int) session('sign_in_place_acceptance_id') === (int) $id) {
-                $resourceType = session('sign_in_place_resource_type');
-                $itemId = session('sign_in_place_item_id');
-
-                if ($resourceType && $itemId) {
-                    $item = null;
-                    $indexRoute = null;
-                    $showRoute = null;
-                    $checkoutRoute = null;
-                    $resourceLabel = null;
-
-                    switch ($resourceType) {
-                        case 'Assets':
-                            $item = \App\Models\Asset::find($itemId);
-                            $resourceLabel = trans('general.assets');
-                            $indexRoute = route('hardware.index');
-                            if ($item) {
-                                $showRoute = route('hardware.show', $item);
-                                $checkoutRoute = route('hardware.checkout.create', $item);
-                            }
-                            break;
-                        case 'Licenses':
-                            $item = \App\Models\License::find($itemId);
-                            $resourceLabel = trans('general.licenses');
-                            $indexRoute = route('licenses.index');
-                            if ($item) {
-                                $showRoute = route('licenses.show', $item);
-                                $checkoutRoute = route('licenses.checkout', $item);
-                            }
-                            break;
-                        case 'Consumables':
-                            $item = \App\Models\Consumable::find($itemId);
-                            $resourceLabel = trans('general.consumables');
-                            $indexRoute = route('consumables.index');
-                            if ($item) {
-                                $showRoute = route('consumables.show', $item);
-                                $checkoutRoute = route('consumables.checkout.show', $item);
-                            }
-                            break;
-                        case 'Accessories':
-                            $item = \App\Models\Accessory::find($itemId);
-                            $resourceLabel = trans('general.accessories');
-                            $indexRoute = route('accessories.index');
-                            if ($item) {
-                                $showRoute = route('accessories.show', $item);
-                                $checkoutRoute = route('accessories.checkout.show', $item);
-                            }
-                            break;
-                    }
-
-                    if ($resourceLabel && $indexRoute) {
-                        $trail->push($resourceLabel, $indexRoute);
-                    }
-
-                    if ($item && $showRoute) {
-                        $trail->push($item->display_name ?? $item->name ?? trans('general.item'), $showRoute);
-                    }
-
-                    if ($checkoutRoute) {
-                        $trail->push(trans('general.checkout'));
-                    }
-                }
-
-                $trail->push(trans('general.sign_in_place'));
-            } else {
-                $trail->push(trans('general.profile'), route('account'));
-                $trail->push(trans('general.accept_items'), route('account.accept'));
-                $trail->push(trans('general.accept_item'), route('account.accept.item', $id));
-            }
-        });
-
-    Route::post('accept/{id}', [Account\AcceptanceController::class, 'store'])
+    Route::post('accept/{acceptance}', [Account\AcceptanceController::class, 'store'])
         ->name('account.store-acceptance');
 
     Route::get(
