@@ -9,8 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\SaveUserRequest;
+use App\Mail\UnacceptedAssetReminderMail;
 use App\Models\Actionlog;
-use App\Models\Asset;
+use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\Group;
 use App\Models\Setting;
@@ -22,6 +23,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -698,6 +700,48 @@ class UsersController extends Controller
 
         return redirect()->back()->with('error', trans('admin/users/message.user_not_found', ['id' => $id]));
 
+    }
+
+    /**
+     * Resend pending acceptance reminder email for a specific user.
+     */
+    public function resendAcceptanceReminder(User $user): RedirectResponse
+    {
+        $this->authorize('view', $user);
+
+        if (empty($user->email)) {
+            return redirect()->back()->with('error', trans('admin/users/message.user_has_no_email'));
+        }
+
+        if ($user->activated == '0') {
+            return redirect()->back()->with('error', trans('admin/users/message.not_activated'));
+        }
+
+        $pendingItems = $user->getAssignedItemsWithPendingAcceptance();
+
+        if ($pendingItems->isEmpty()) {
+            return redirect()->back()->with('warning', trans('admin/users/message.error.no_pending_acceptances'));
+        }
+
+        $firstAcceptance = CheckoutAcceptance::query()
+            ->forUser($user)
+            ->pending()
+            ->with('assignedTo')
+            ->first();
+
+        if (! $firstAcceptance) {
+            return redirect()->back()->with('warning', trans('admin/users/message.error.no_pending_acceptances'));
+        }
+
+        $mailable = new UnacceptedAssetReminderMail($firstAcceptance, $pendingItems->count());
+
+        if (! empty($user->locale)) {
+            $mailable->locale($user->locale);
+        }
+
+        Mail::to($user->email)->send($mailable);
+
+        return redirect()->back()->with('success', trans_choice('admin/users/message.success.acceptance_reminder_sent', $pendingItems->count(), ['count' => $pendingItems->count()]));
     }
 
     /**

@@ -743,6 +743,22 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     }
 
     /**
+     * Get all assigned items that still have a pending acceptance for this user.
+     */
+    public function getAssignedItemsWithPendingAcceptance(): Collection
+    {
+        return CheckoutAcceptance::query()
+            ->forUser($this)
+            ->pending()
+            ->with('checkoutable')
+            ->get()
+            ->map(fn (CheckoutAcceptance $acceptance) => $acceptance->checkoutable)
+            ->filter()
+            ->unique(fn ($item) => $item::class.':'.$item->getKey())
+            ->values();
+    }
+
+    /**
      * Establishes the user -> eula relationship
      *
      * @return Relation
