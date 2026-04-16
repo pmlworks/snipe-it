@@ -60,7 +60,17 @@
                         </h2>
                     </div>
                     <div class="box-body">
-                        @if ($acceptance->checkoutable->getEula())
+                        <div class="col-md-12" style="padding-bottom: 12px;">
+                            <p class="text-muted" style="margin-bottom: 4px;">
+                                <strong>{{ trans('general.assigned_date') }}:</strong> {{ $checkedOutAt }}
+                            </p>
+                            <p class="text-muted" style="margin-bottom: 0;">
+                                <strong>{{ trans('general.created_by') }}
+                                    :</strong> {{ $checkedOutBy ?? trans('general.unknown_admin') }}
+                            </p>
+                        </div>
+
+                    @if ($acceptance->checkoutable->getEula())
                             <div class="col-md-12" style="padding-top: 5px; padding-bottom: 15px;">
                                 <div style="background-color: rgba(211,211,211,0.25); padding: 10px; border: var(--box-header-bottom-border-color) 1px solid;">
                                     {!!  str_replace('<p>', '<p dir="auto">', Helper::parseEscapedMarkedown($acceptance->checkoutable->getEula())) !!}
@@ -148,7 +158,6 @@
         @if ($snipeSettings->require_accept_signature=='1')
 
         var wrapper = document.getElementById("signature-pad"),
-            saveButton = wrapper.querySelector("[data-action=save]"),
             canvas = wrapper.querySelector("canvas"),
             signaturePad;
 
@@ -199,7 +208,7 @@
                 $("#showEmailBox").show();
                 $("#showSubmit").show();
                 $("#submit-button").removeClass("btn-danger").addClass("btn-success").show();
-                $("#submitIcon").removeClass("fa-check").addClass("fa-check");
+                $("#submitIcon").removeClass("fa-times").addClass("fa-check");
                 $("#buttonText").text('{{ trans_choice('general.i_accept_item', $acceptance->qty ?? 1) }}');
                 $("#note").prop('required', false);
             }
