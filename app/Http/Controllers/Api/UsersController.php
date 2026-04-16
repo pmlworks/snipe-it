@@ -808,7 +808,7 @@ class UsersController extends Controller
             try {
                 $user = User::find($request->input('id'));
                 $this->authorize('update', $user);
-                
+
                 if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
 
                     $user->two_factor_secret = null;
