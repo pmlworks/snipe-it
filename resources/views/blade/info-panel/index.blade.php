@@ -8,7 +8,7 @@
 <div class="box-header with-border" style="padding-top: 0;">
 
     @if (isset($buttons))
-        <div class="row hidden-print" style="padding-left: 5px">
+        <div class="row hidden-print" style="padding-left: 5px;">
             {{ $buttons }}
         </div>
     @endif
@@ -49,10 +49,12 @@
 
 
     @if ($infoPanelObj->present()->displayAddress)
-        <x-copy-to-clipboard class="pull-right" copy_what="address">
-            {!! nl2br($infoPanelObj->present()->displayAddress) !!}
-        </x-copy-to-clipboard>
-        <br><br>
+            <x-copy-to-clipboard class="pull-right" copy_what="address">
+                <div style="word-break: break-word; padding: 0; margin: 0">
+                    {!! nl2br($infoPanelObj->present()->displayAddress) !!}
+                </div>
+            </x-copy-to-clipboard>
+            <br>
     @endif
 
 
