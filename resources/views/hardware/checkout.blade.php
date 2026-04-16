@@ -77,7 +77,7 @@
                                 {{ trans('admin/hardware/form.name') }}
                             </label>
 
-                            <div class="col-md-8">
+                            <div class="col-md-7">
                                 <input class="form-control" type="text" name="name" id="name"
                                        value="{{ old('name', $asset->name) }}" tabindex="1">
                                 {!! $errors->first('name', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
@@ -137,6 +137,7 @@
                             <div class="col-md-8">
                                 <x-input.datepicker
                                         name="expected_checkin"
+                                        col_size_class="col-md-7"
                                         :value="old('expected_checkin', $item->expected_checkin)"
                                         placeholder="{{ trans('general.select_date') }}"
                                         required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"

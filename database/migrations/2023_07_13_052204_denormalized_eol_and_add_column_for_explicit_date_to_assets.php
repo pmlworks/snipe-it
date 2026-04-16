@@ -54,6 +54,7 @@ class DenormalizedEolAndAddColumnForExplicitDateToAssets extends Migration
             ->update([
                 'asset_eol_date' => $this->eolUpdateExpression(),
             ]);
+
     }
 
     /**
