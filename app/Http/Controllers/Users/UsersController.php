@@ -11,6 +11,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\SaveUserRequest;
 use App\Mail\UnacceptedAssetReminderMail;
 use App\Models\Actionlog;
+use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\Group;
