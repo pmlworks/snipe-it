@@ -192,4 +192,36 @@ class AssetAcceptanceTest extends TestCase
         $this->assertNotNull($checkoutAcceptance->refresh()->accepted_at);
         Event::assertDispatched(CheckoutAccepted::class);
     }
+
+    public function test_sign_in_place_acceptance_page_uses_checkout_flow_breadcrumbs()
+    {
+        $assignee = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+        $asset = Asset::factory()->create();
+
+        $checkoutAcceptance = CheckoutAcceptance::factory()
+            ->pending()
+            ->for($assignee, 'assignedTo')
+            ->for($asset, 'checkoutable')
+            ->create();
+
+        $response = $this->actingAs($admin)
+            ->withSession([
+                'sign_in_place_acceptance_id' => $checkoutAcceptance->id,
+                'sign_in_place_item_id' => $asset->id,
+                'sign_in_place_resource_type' => 'Assets',
+            ])
+            ->get(route('account.accept.item', $checkoutAcceptance));
+
+        $response->assertOk()
+            ->assertSeeInOrder([
+                trans('general.assets'),
+                $asset->display_name,
+                trans('general.checkout'),
+                trans('general.sign_in_place'),
+            ], false)
+            ->assertSee(route('hardware.index'), false)
+            ->assertSee(route('hardware.show', $asset), false)
+            ->assertDontSee(route('hardware.checkout.create', $asset), false);
+    }
 }

@@ -47,7 +47,7 @@
             <div class="col-sm-12 col-sm-offset-1 col-md-10 col-md-offset-1">
                 <div class="panel box box-default">
                     <div class="box-header with-border">
-                        <h2 class="box-title">
+                        <h2 class="box-title" style="line-height: 25px;">
                             {{ $acceptance->checkoutable->display_name }}
                             @if ($acceptance->qty > 1)
                                 <strong>×{{ $acceptance->qty }}</strong>
