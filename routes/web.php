@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Breadcrumbs\BuildAcceptanceBreadcrumbs;
 use App\Http\Controllers\Account;
 use App\Http\Controllers\ActionlogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -425,13 +426,11 @@ Route::group(['prefix' => 'account', 'middleware' => ['auth']], function () {
             ->push(trans('general.profile'), route('account'))
             ->push(trans('general.accept_items'), route('account.accept')));
 
-    Route::get('accept/{id}', [Account\AcceptanceController::class, 'create'])
+    Route::get('accept/{acceptance}', [Account\AcceptanceController::class, 'create'])
         ->name('account.accept.item')
-        ->breadcrumbs(fn (Trail $trail, $id) => $trail->parent('home')
-            ->push(trans('general.profile'), route('account'))
-            ->push(trans('general.accept_item'), route('account.accept.item', $id)));
+        ->breadcrumbs(fn (Trail $trail, mixed $acceptance) => BuildAcceptanceBreadcrumbs::forAcceptance($trail, $acceptance));
 
-    Route::post('accept/{id}', [Account\AcceptanceController::class, 'store'])
+    Route::post('accept/{acceptance}', [Account\AcceptanceController::class, 'store'])
         ->name('account.store-acceptance');
 
     Route::get(
