@@ -53,7 +53,9 @@
                                 <strong>×{{ $acceptance->qty }}</strong>
                             @endif
 
-                            {!!  (($acceptance->checkoutable) && ($acceptance->checkoutable->serial)) ? '<br>'.trans('general.serial_number').': '.e($acceptance->checkoutable->serial) : '' !!}
+                            @if (($acceptance->checkoutable) && ($acceptance->checkoutable->serial))
+                                <br>{{ trans('general.serial_number') }}: {{ $acceptance->checkoutable->serial }}
+                            @endif
 
                         </h2>
                     </div>
