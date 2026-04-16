@@ -123,6 +123,7 @@
                      </div>
 
                      <!-- Sign in place checkbox -->
+                     @if ($accessory->requireAcceptance())
                      <div class="form-group" id="sign_in_place_div">
                          <div class="col-md-7 col-md-offset-3">
                              <label class="form-control">
@@ -134,6 +135,7 @@
                              </p>
                          </div>
                      </div>
+                     @endif
                  </div>
              @endif
           <!-- Note -->
