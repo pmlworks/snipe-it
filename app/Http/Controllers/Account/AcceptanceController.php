@@ -50,13 +50,13 @@ class AcceptanceController extends Controller
     {
         $currentUser = auth()->user();
 
-        if (!$currentUser instanceof User) {
+        if (! $currentUser instanceof User) {
             abort(403, trans('general.insufficient_permissions'));
         }
 
         $acceptance = CheckoutAcceptance::find($id);
 
-        if (!$acceptance) {
+        if (! $acceptance) {
             return redirect()->route('account.accept')->with('error', trans('admin/hardware/message.does_not_exist'));
         }
 
@@ -94,13 +94,13 @@ class AcceptanceController extends Controller
     {
         $currentUser = auth()->user();
 
-        if (!$currentUser instanceof User) {
+        if (! $currentUser instanceof User) {
             abort(403, trans('general.insufficient_permissions'));
         }
 
         $acceptance = CheckoutAcceptance::find($id);
 
-        if (!$acceptance) {
+        if (! $acceptance) {
             return redirect()->route('account.accept')->with('error', trans('admin/hardware/message.does_not_exist'));
         }
 
@@ -352,7 +352,7 @@ class AcceptanceController extends Controller
             return false;
         }
 
-        return !$acceptance->isCheckedOutTo($currentUser)
+        return ! $acceptance->isCheckedOutTo($currentUser)
             && $currentUser->can('checkout', $acceptance->checkoutable)
             && ($checkoutToType === 'user');
     }
@@ -398,7 +398,7 @@ class AcceptanceController extends Controller
 
     private function flattenSignatureBackgroundToWhite(string $signatureBinary): string
     {
-        if (!function_exists('imagecreatefromstring') || !function_exists('imagecreatetruecolor')) {
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagecreatetruecolor')) {
             return $signatureBinary;
         }
 
