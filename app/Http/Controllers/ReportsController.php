@@ -917,7 +917,7 @@ class ReportsController extends Controller
 
                     if ($request->filled('user_company')) {
                         if ($asset->checkedOutToUser()) {
-                            $row[] = ($asset->assignedto->company) ? $asset->assignedto->company->display_name : '';
+                            $row[] = ($asset->assignedto?->company) ? $asset->assignedto->company->display_name : '';
                         } else {
                             $row[] = ''; // Empty string if unassigned
                         }
