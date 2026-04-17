@@ -180,7 +180,7 @@ trait Loggable
 
         $changed = [];
         $array_to_flip = array_keys($fields_array);
-        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin']);
+        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin', 'requestable']);
         $originalValues = array_intersect_key($originalValues, array_flip($array_to_flip));
 
         foreach ($originalValues as $key => $value) {
@@ -279,7 +279,7 @@ trait Loggable
         $changed = [];
 
         $array_to_flip = array_keys($fields_array);
-        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin']);
+        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin', 'requestable']);
 
         $originalValues = array_intersect_key($originalValues, array_flip($array_to_flip));
 

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Checkins\Ui;
 
 use App\Events\CheckoutableCheckedIn;
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
 use App\Models\LicenseSeat;
@@ -262,6 +263,21 @@ class AssetCheckinTest extends TestCase
             ]);
 
         $this->assertTrue((bool) $asset->fresh()->requestable);
+
+        $log = Actionlog::query()
+            ->where('item_type', Asset::class)
+            ->where('item_id', $asset->id)
+            ->where('action_type', 'checkin from')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($log);
+        $this->assertNotNull($log->log_meta);
+
+        $logMeta = json_decode($log->log_meta, true);
+        $this->assertArrayHasKey('requestable', $logMeta);
+        $this->assertEquals(0, (int) $logMeta['requestable']['old']);
+        $this->assertEquals(1, (int) $logMeta['requestable']['new']);
     }
 
     public function test_checkin_does_not_set_asset_to_requestable_when_status_is_not_deployable()

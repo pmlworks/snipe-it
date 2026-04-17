@@ -4,6 +4,7 @@ namespace Tests\Feature\Checkouts\Ui;
 
 use App\Events\CheckoutableCheckedOut;
 use App\Models\Asset;
+use App\Models\Actionlog;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\LicenseSeat;
@@ -241,6 +242,8 @@ class AssetCheckoutTest extends TestCase
 
     public function test_checkout_can_set_asset_to_not_requestable()
     {
+        Event::fakeExcept([CheckoutableCheckedOut::class]);
+
         $asset = Asset::factory()->create(['requestable' => 1]);
         $targetUser = User::factory()->create();
 
@@ -252,6 +255,21 @@ class AssetCheckoutTest extends TestCase
             ]);
 
         $this->assertFalse((bool) $asset->fresh()->requestable);
+
+        $log = Actionlog::query()
+            ->where('item_type', Asset::class)
+            ->where('item_id', $asset->id)
+            ->where('action_type', 'checkout')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($log);
+        $this->assertNotNull($log->log_meta);
+
+        $logMeta = json_decode($log->log_meta, true);
+        $this->assertArrayHasKey('requestable', $logMeta);
+        $this->assertEquals(1, (int) $logMeta['requestable']['old']);
+        $this->assertEquals(0, (int) $logMeta['requestable']['new']);
     }
 
     public function test_last_checkout_uses_current_date_if_not_provided()
