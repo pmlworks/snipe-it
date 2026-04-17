@@ -10,6 +10,7 @@ use App\Http\Traits\MigratesLegacyAssetLocations;
 use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
 use App\Models\LicenseSeat;
+use App\Models\Statuslabel;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -56,9 +57,16 @@ class AssetCheckinController extends Controller
             default => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.user')]),
         };
 
+        $deployableStatusIds = array_map('intval', array_keys(Helper::deployableStatusLabelList()));
+        $selectedStatusId = old('status_id');
+        $showRequestableToggle = is_numeric($selectedStatusId)
+            && in_array((int) $selectedStatusId, $deployableStatusIds, true);
+
         return view('hardware/checkin', compact('asset', 'target_option'))
             ->with('item', $asset)
             ->with('statusLabel_list', Helper::statusLabelList())
+            ->with('deployable_status_ids', $deployableStatusIds)
+            ->with('show_requestable_toggle', $showRequestableToggle)
             ->with('backto', $backto)
             ->with('table_name', 'Assets');
     }
@@ -105,6 +113,19 @@ class AssetCheckinController extends Controller
 
         if ($request->filled('status_id')) {
             $asset->status_id = e($request->input('status_id'));
+        }
+
+        $selectedStatusId = $request->filled('status_id')
+            ? (int) $request->input('status_id')
+            : (int) $asset->status_id;
+
+        $isDeployableStatus = Statuslabel::query()
+            ->whereKey($selectedStatusId)
+            ->where('deployable', 1)
+            ->exists();
+
+        if ($request->boolean('set_requestable') && $isDeployableStatus) {
+            $asset->requestable = true;
         }
 
         // Add any custom fields that should be included in the checkout

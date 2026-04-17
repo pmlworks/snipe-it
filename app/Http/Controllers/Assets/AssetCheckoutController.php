@@ -103,6 +103,10 @@ class AssetCheckoutController extends Controller
                 $asset->status_id = $request->input('status_id');
             }
 
+            if ($request->boolean('set_not_requestable')) {
+                $asset->requestable = false;
+            }
+
             if (! empty($asset->licenseseats->all())) {
                 if (request('checkout_to_type') == 'user') {
                     foreach ($asset->licenseseats as $seat) {
