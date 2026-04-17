@@ -76,18 +76,23 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <div class="col-md-7 col-md-offset-3">
-                    <label class="form-control" for="set_not_requestable">
-                        <input
-                            type="checkbox"
-                            value="1"
-                            name="set_not_requestable"
-                            id="set_not_requestable"
-                            @checked((bool) old('set_not_requestable', true))
-                        >
-                        {{ trans('admin/hardware/general.not_requestable') }}
-                    </label>
+            <div class="form-group {{ $errors->has('set_not_requestable') ? 'error' : '' }}">
+                <label for="set_not_requestable" class="col-md-3 control-label">
+                    {{ trans('admin/hardware/form.requestable') }}
+                </label>
+                <div class="col-md-7">
+                    <x-input.select
+                        name="set_not_requestable"
+                        id="set_not_requestable"
+                        :options="[
+                            '' => trans('general.do_not_change'),
+                            '1' => trans('admin/hardware/general.not_requestable'),
+                        ]"
+                        :selected="old('set_not_requestable', '')"
+                        style="width: 100%;"
+                        aria-label="set_not_requestable"
+                    />
+                    {!! $errors->first('set_not_requestable', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
             </div>
 
