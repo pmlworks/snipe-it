@@ -961,6 +961,11 @@ class AssetsController extends Controller
             $asset->status_id = $request->input('status_id');
         }
 
+        // Preserve existing requestable state unless API caller explicitly includes the field.
+        if ($request->has('requestable')) {
+            $asset->requestable = $request->boolean('requestable');
+        }
+
         if (! isset($target)) {
             return response()->json(Helper::formatStandardApiResponse('error', $error_payload, 'Checkout target for asset '.e($asset->asset_tag).' is invalid - '.$error_payload['target_type'].' does not exist.'));
         }
