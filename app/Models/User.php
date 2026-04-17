@@ -320,7 +320,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     public function getEffectivePermissionsBySection(): array
     {
         $displayablePermissions = collect(config('permissions'))
-            ->map(static fn(array $permissions): array => array_values(array_filter($permissions, static fn(array $permission): bool => ($permission['display'] ?? false) === true)))
+            ->map(static fn (array $permissions): array => array_values(array_filter($permissions, static fn (array $permission): bool => ($permission['display'] ?? false) === true)))
             ->all();
 
         $configuredPermissions = collect($displayablePermissions)
@@ -342,7 +342,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         $groupDenialsByPermission = [];
         foreach ($this->groups as $group) {
             $groupPermissions = $group->decodePermissions();
-            if (!is_array($groupPermissions)) {
+            if (! is_array($groupPermissions)) {
                 continue;
             }
 
@@ -360,9 +360,9 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             $permissionKey = $permissionConfig['permission'];
             $directPermissionValue = (int) ($directPermissions[$permissionKey] ?? 0);
             $isAllowed = $this->hasAccess($permissionKey);
-            $isDenied = ($directPermissionValue === -1) || ((count($groupDenialsByPermission[$permissionKey] ?? []) > 0) && !$isAllowed);
+            $isDenied = ($directPermissionValue === -1) || ((count($groupDenialsByPermission[$permissionKey] ?? []) > 0) && ! $isAllowed);
 
-            if (!$isAllowed && !$isDenied) {
+            if (! $isAllowed && ! $isDenied) {
                 continue;
             }
 
@@ -378,7 +378,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             } elseif ($this->isSuperUser()) {
                 $source = 'superuser';
                 $sourceGroups = [];
-            } elseif (!$isDenied && $directPermissionValue === 1) {
+            } elseif (! $isDenied && $directPermissionValue === 1) {
                 $source = 'individual';
                 $sourceGroups = [];
             }
@@ -412,10 +412,10 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         };
 
         if ($sourceGroups === []) {
-            return $statusLabel . ' (' . $sourceLabel . ')';
+            return $statusLabel.' ('.$sourceLabel.')';
         }
 
-        return $statusLabel . ' (' . $sourceLabel . '): ' . implode(', ', array_values(array_unique($sourceGroups)));
+        return $statusLabel.' ('.$sourceLabel.'): '.implode(', ', array_values(array_unique($sourceGroups)));
     }
 
     /**
