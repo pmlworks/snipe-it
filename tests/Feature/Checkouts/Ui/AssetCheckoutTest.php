@@ -3,8 +3,8 @@
 namespace Tests\Feature\Checkouts\Ui;
 
 use App\Events\CheckoutableCheckedOut;
-use App\Models\Asset;
 use App\Models\Actionlog;
+use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\LicenseSeat;
