@@ -76,6 +76,21 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <div class="col-md-7 col-md-offset-3">
+                    <label class="form-control" for="set_not_requestable">
+                        <input
+                            type="checkbox"
+                            value="1"
+                            name="set_not_requestable"
+                            id="set_not_requestable"
+                            @checked((bool) old('set_not_requestable', true))
+                        >
+                        {{ trans('admin/hardware/general.not_requestable') }}
+                    </label>
+                </div>
+            </div>
+
 
             <!-- Checkout selector -->
 

@@ -101,6 +101,23 @@
                             </div>
                         </div>
 
+                        @if ($asset->requestable)
+                            <div class="form-group">
+                                <div class="col-md-7 col-md-offset-3">
+                                    <label class="form-control" for="set_not_requestable">
+                                        <input
+                                            type="checkbox"
+                                            value="1"
+                                            name="set_not_requestable"
+                                            id="set_not_requestable"
+                                            @checked((bool) old('set_not_requestable', true))
+                                        >
+                                        {{ trans('admin/hardware/general.not_requestable') }}
+                                    </label>
+                                </div>
+                            </div>
+                        @endif
+
                         @include ('partials.forms.checkout-selector', ['user_select' => 'true','asset_select' => 'true', 'location_select' => 'true'])
                         @include ('partials.forms.edit.user-select', ['translated_name' => trans('general.user'), 'fieldname' => 'assigned_user', 'style' => (session('checkout_to_type') ?: 'user') == 'user' ? '' : 'display: none;'])
                         <!-- We have to pass unselect here so that we don't default to the asset that's being checked out. We want that asset to be pre-selected everywhere else. -->
