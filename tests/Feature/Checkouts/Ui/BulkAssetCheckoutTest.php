@@ -118,6 +118,24 @@ class BulkAssetCheckoutTest extends TestCase
         });
     }
 
+    public function test_bulk_checkout_leaves_requestable_unchanged_when_not_selected()
+    {
+        $requestableAsset = Asset::factory()->create(['requestable' => 1]);
+        $nonRequestableAsset = Asset::factory()->create(['requestable' => 0]);
+        $targetUser = User::factory()->create();
+
+        $this->actingAs(User::factory()->checkoutAssets()->create())
+            ->post(route('hardware.bulkcheckout.store'), [
+                'selected_assets' => [$requestableAsset->id, $nonRequestableAsset->id],
+                'checkout_to_type' => 'user',
+                'assigned_user' => $targetUser->id,
+                // Intentionally omitted: set_not_requestable
+            ]);
+
+        $this->assertTrue((bool) $requestableAsset->fresh()->requestable);
+        $this->assertFalse((bool) $nonRequestableAsset->fresh()->requestable);
+    }
+
     public static function checkoutTargets()
     {
         yield 'Checkout to user' => [
