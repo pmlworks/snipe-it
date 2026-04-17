@@ -808,21 +808,27 @@ class UsersController extends Controller
             try {
                 $user = User::find($request->input('id'));
                 $this->authorize('update', $user);
-                $user->two_factor_secret = null;
-                $user->two_factor_enrolled = 0;
-                $user->saveQuietly();
 
-                // Log the reset
-                $logaction = new Actionlog;
-                $logaction->target_type = User::class;
-                $logaction->target_id = $user->id;
-                $logaction->item_type = User::class;
-                $logaction->item_id = $user->id;
-                $logaction->created_at = date('Y-m-d H:i:s');
-                $logaction->created_by = auth()->id();
-                $logaction->logaction('2FA reset');
+                if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
 
-                return response()->json(['message' => trans('admin/settings/general.two_factor_reset_success')], 200);
+                    $user->two_factor_secret = null;
+                    $user->two_factor_enrolled = 0;
+                    $user->saveQuietly();
+
+                    // Log the reset
+                    $logaction = new Actionlog;
+                    $logaction->target_type = User::class;
+                    $logaction->target_id = $user->id;
+                    $logaction->item_type = User::class;
+                    $logaction->item_id = $user->id;
+                    $logaction->created_at = date('Y-m-d H:i:s');
+                    $logaction->created_by = auth()->id();
+                    $logaction->logaction('2FA reset');
+
+                    return response()->json(['message' => trans('admin/settings/general.two_factor_reset_success')], 200);
+                }
+
+                return response()->json(['message' => trans('general.unauthorized')], 500);
             } catch (\Exception $e) {
                 return response()->json(['message' => trans('admin/settings/general.two_factor_reset_error')], 500);
             }

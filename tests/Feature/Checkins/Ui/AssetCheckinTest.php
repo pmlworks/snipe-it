@@ -47,6 +47,79 @@ class AssetCheckinTest extends TestCase
             ->assertOk();
     }
 
+    public function test_requestable_toggle_is_hidden_on_checkin_page_without_old_status_selection()
+    {
+        $deployableStatus = Statuslabel::factory()->readyToDeploy()->create();
+        $asset = Asset::factory()->assignedToUser()->create([
+            'status_id' => $deployableStatus->id,
+        ]);
+
+        $response = $this->actingAs(User::factory()->checkinAssets()->create())
+            ->get(route('hardware.checkin.create', $asset))
+            ->assertOk();
+
+        $content = $response->getContent();
+
+        $this->assertStringContainsString('id="set-requestable-wrapper"', $content);
+        $this->assertMatchesRegularExpression(
+            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            $content
+        );
+    }
+
+    public function test_requestable_toggle_is_hidden_on_checkin_page_for_non_deployable_status()
+    {
+        $nonDeployableStatus = Statuslabel::factory()->create(['deployable' => 0]);
+        $asset = Asset::factory()->assignedToUser()->create([
+            'status_id' => $nonDeployableStatus->id,
+        ]);
+
+        $response = $this->actingAs(User::factory()->checkinAssets()->create())
+            ->get(route('hardware.checkin.create', $asset))
+            ->assertOk();
+
+        $content = $response->getContent();
+
+        $this->assertMatchesRegularExpression(
+            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            $content
+        );
+    }
+
+    public function test_requestable_toggle_visibility_prefers_old_input_status_id_when_present()
+    {
+        $deployableStatus = Statuslabel::factory()->readyToDeploy()->create();
+        $nonDeployableStatus = Statuslabel::factory()->create(['deployable' => 0]);
+
+        $asset = Asset::factory()->assignedToUser()->create([
+            'status_id' => $nonDeployableStatus->id,
+        ]);
+
+        $responseWithDeployableOldInput = $this->actingAs(User::factory()->checkinAssets()->create())
+            ->withSession(['_old_input' => ['status_id' => (string) $deployableStatus->id]])
+            ->get(route('hardware.checkin.create', $asset))
+            ->assertOk();
+
+        $this->assertDoesNotMatchRegularExpression(
+            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            $responseWithDeployableOldInput->getContent()
+        );
+
+        $assetWithDeployableStatus = Asset::factory()->assignedToUser()->create([
+            'status_id' => $deployableStatus->id,
+        ]);
+
+        $responseWithNonDeployableOldInput = $this->actingAs(User::factory()->checkinAssets()->create())
+            ->withSession(['_old_input' => ['status_id' => (string) $nonDeployableStatus->id]])
+            ->get(route('hardware.checkin.create', $assetWithDeployableStatus))
+            ->assertOk();
+
+        $this->assertMatchesRegularExpression(
+            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            $responseWithNonDeployableOldInput->getContent()
+        );
+    }
+
     public function test_asset_can_be_checked_in()
     {
         Event::fake([CheckoutableCheckedIn::class]);
@@ -173,6 +246,38 @@ class AssetCheckinTest extends TestCase
         Event::assertDispatched(function (CheckoutableCheckedIn $event) {
             return $event->action_date === '2023-01-02' && $event->note === 'hello';
         }, 1);
+    }
+
+    public function test_checkin_can_set_asset_to_requestable_when_status_is_deployable()
+    {
+        $deployableStatus = Statuslabel::factory()->readyToDeploy()->create();
+        $asset = Asset::factory()->assignedToUser()->create([
+            'requestable' => 0,
+        ]);
+
+        $this->actingAs(User::factory()->checkinAssets()->create())
+            ->post(route('hardware.checkin.store', [$asset]), [
+                'status_id' => $deployableStatus->id,
+                'set_requestable' => 1,
+            ]);
+
+        $this->assertTrue((bool) $asset->fresh()->requestable);
+    }
+
+    public function test_checkin_does_not_set_asset_to_requestable_when_status_is_not_deployable()
+    {
+        $undeployableStatus = Statuslabel::factory()->create(['deployable' => 0]);
+        $asset = Asset::factory()->assignedToUser()->create([
+            'requestable' => 0,
+        ]);
+
+        $this->actingAs(User::factory()->checkinAssets()->create())
+            ->post(route('hardware.checkin.store', [$asset]), [
+                'status_id' => $undeployableStatus->id,
+                'set_requestable' => 1,
+            ]);
+
+        $this->assertFalse((bool) $asset->fresh()->requestable);
     }
 
     public function test_asset_checkin_page_is_redirected_if_model_is_invalid()
