@@ -230,4 +230,35 @@ class AssetCheckoutTest extends TestCase
 
         $this->assertTrue((int) Carbon::parse($asset->last_checkout)->diffInSeconds(now(), true) < 2);
     }
+
+    public function test_api_checkout_can_update_requestable_when_field_is_passed()
+    {
+        $asset = Asset::factory()->create(['requestable' => 1]);
+        $targetUser = User::factory()->create();
+
+        $this->actingAsForApi(User::factory()->checkoutAssets()->create())
+            ->postJson(route('api.asset.checkout', $asset), [
+                'checkout_to_type' => 'user',
+                'assigned_user' => $targetUser->id,
+                'requestable' => 0,
+            ])
+            ->assertStatusMessageIs('success');
+
+        $this->assertFalse((bool) $asset->fresh()->requestable);
+    }
+
+    public function test_api_checkout_leaves_requestable_unchanged_when_field_is_omitted()
+    {
+        $asset = Asset::factory()->create(['requestable' => 1]);
+        $targetUser = User::factory()->create();
+
+        $this->actingAsForApi(User::factory()->checkoutAssets()->create())
+            ->postJson(route('api.asset.checkout', $asset), [
+                'checkout_to_type' => 'user',
+                'assigned_user' => $targetUser->id,
+            ])
+            ->assertStatusMessageIs('success');
+
+        $this->assertTrue((bool) $asset->fresh()->requestable);
+    }
 }
