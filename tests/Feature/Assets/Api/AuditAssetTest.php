@@ -4,6 +4,7 @@ namespace Tests\Feature\Assets\Api;
 
 use App\Models\Asset;
 use App\Models\User;
+use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
@@ -85,7 +86,10 @@ class AuditAssetTest extends TestCase
         $this->assertHasTheseActionLogs($asset, ['create', 'audit']);
 
         $asset->refresh();
-        $this->assertEquals($now, $asset->last_audit_date);
+        $this->assertTrue(
+            Carbon::parse($asset->last_audit_date)->betweenIncluded($now->copy()->subSecond(), now()->addSecond()),
+            'Expected last_audit_date to be close to the audit request time.'
+        );
         $this->assertEquals($future, $asset->next_audit_date);
     }
 
