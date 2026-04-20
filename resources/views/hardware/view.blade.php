@@ -224,7 +224,6 @@
                                 <x-well class="well-sm">
                                     @if($asset->purchase_date && $asset->asset_eol_date)
                                         <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$asset->eolProgressPercent()">
-                                            {{ Helper::getFormattedDateObject($asset->asset_eol_date, 'date', false) }}
                                             (<strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>/{{ $asset->model?->eol }} {{ trans('general.months') }}
                                             )
                                         </x-progressbar>
