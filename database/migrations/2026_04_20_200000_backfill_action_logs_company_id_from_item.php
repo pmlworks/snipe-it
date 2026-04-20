@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 return new class extends Migration
 {
     private const ASSET_CLASS = 'App\\Models\\Asset';
+
     private const AUDIT_ACTION = 'audit';
 
     public function up(): void
@@ -36,7 +37,7 @@ return new class extends Migration
     {
         if ($driver === 'mysql' || $driver === 'mariadb') {
             // MySQL/MariaDB supports UPDATE ... JOIN directly
-            DB::statement("
+            DB::statement('
                 UPDATE action_logs al
                 INNER JOIN assets src
                     ON src.id = al.item_id
@@ -46,10 +47,10 @@ return new class extends Migration
                   AND al.item_type = ?
                   AND al.company_id IS NULL
                   AND al.deleted_at IS NULL
-            ", [self::AUDIT_ACTION, self::ASSET_CLASS]);
+            ', [self::AUDIT_ACTION, self::ASSET_CLASS]);
         } else {
             // SQLite / PostgreSQL: use a correlated subquery update
-            DB::statement("
+            DB::statement('
                 UPDATE action_logs
                 SET company_id = (
                     SELECT src.company_id
@@ -67,8 +68,7 @@ return new class extends Migration
                       WHERE src2.id = action_logs.item_id
                         AND src2.company_id IS NOT NULL
                   )
-            ", [self::AUDIT_ACTION, self::ASSET_CLASS]);
+            ', [self::AUDIT_ACTION, self::ASSET_CLASS]);
         }
     }
 };
-

@@ -18,6 +18,7 @@ use Tests\TestCase;
 class ActionlogCompanyIdBackfillTest extends TestCase
 {
     private const ASSET_CLASS = 'App\\Models\\Asset';
+
     private const AUDIT_ACTION = 'audit';
 
     /**
@@ -28,11 +29,11 @@ class ActionlogCompanyIdBackfillTest extends TestCase
     {
         return DB::table('action_logs')->insertGetId(array_merge([
             'action_type' => self::AUDIT_ACTION,
-            'item_type'   => self::ASSET_CLASS,
-            'item_id'     => null,
-            'company_id'  => null,
-            'created_at'  => now(),
-            'updated_at'  => now(),
+            'item_type' => self::ASSET_CLASS,
+            'item_id' => null,
+            'company_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ], $attributes));
     }
 
@@ -44,7 +45,7 @@ class ActionlogCompanyIdBackfillTest extends TestCase
         $driver = DB::getDriverName();
 
         if ($driver === 'mysql' || $driver === 'mariadb') {
-            DB::statement("
+            DB::statement('
                 UPDATE action_logs al
                 INNER JOIN assets src ON src.id = al.item_id AND src.company_id IS NOT NULL
                 SET al.company_id = src.company_id
@@ -52,9 +53,9 @@ class ActionlogCompanyIdBackfillTest extends TestCase
                   AND al.item_type = ?
                   AND al.company_id IS NULL
                   AND al.deleted_at IS NULL
-            ", [self::AUDIT_ACTION, self::ASSET_CLASS]);
+            ', [self::AUDIT_ACTION, self::ASSET_CLASS]);
         } else {
-            DB::statement("
+            DB::statement('
                 UPDATE action_logs
                 SET company_id = (
                     SELECT src.company_id FROM assets src
@@ -69,7 +70,7 @@ class ActionlogCompanyIdBackfillTest extends TestCase
                       SELECT 1 FROM assets src2
                       WHERE src2.id = action_logs.item_id AND src2.company_id IS NOT NULL
                   )
-            ", [self::AUDIT_ACTION, self::ASSET_CLASS]);
+            ', [self::AUDIT_ACTION, self::ASSET_CLASS]);
         }
     }
 
@@ -78,35 +79,35 @@ class ActionlogCompanyIdBackfillTest extends TestCase
     public function test_backfill_populates_company_id_for_asset_audit(): void
     {
         $company = Company::factory()->create();
-        $asset   = Asset::factory()->create(['company_id' => $company->id]);
+        $asset = Asset::factory()->create(['company_id' => $company->id]);
 
         $logId = $this->insertLegacyLog(['item_type' => self::ASSET_CLASS, 'item_id' => $asset->id]);
 
         $this->runBackfill();
 
         $this->assertDatabaseHas('action_logs', [
-            'id'         => $logId,
+            'id' => $logId,
             'company_id' => $company->id,
         ]);
     }
 
     public function test_backfill_does_not_overwrite_existing_company_id(): void
     {
-        $company        = Company::factory()->create();
-        $otherCompany   = Company::factory()->create();
-        $asset          = Asset::factory()->create(['company_id' => $otherCompany->id]);
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $asset = Asset::factory()->create(['company_id' => $otherCompany->id]);
 
         // Row already has a company_id — the backfill must leave it alone
         $logId = $this->insertLegacyLog([
-            'item_type'  => self::ASSET_CLASS,
-            'item_id'    => $asset->id,
+            'item_type' => self::ASSET_CLASS,
+            'item_id' => $asset->id,
             'company_id' => $company->id,
         ]);
 
         $this->runBackfill();
 
         $this->assertDatabaseHas('action_logs', [
-            'id'         => $logId,
+            'id' => $logId,
             'company_id' => $company->id, // unchanged
         ]);
     }
@@ -120,7 +121,7 @@ class ActionlogCompanyIdBackfillTest extends TestCase
         $this->runBackfill();
 
         $this->assertDatabaseHas('action_logs', [
-            'id'         => $logId,
+            'id' => $logId,
             'company_id' => null, // item has no company, so log stays null
         ]);
     }
@@ -128,20 +129,19 @@ class ActionlogCompanyIdBackfillTest extends TestCase
     public function test_backfill_ignores_non_audit_action_logs(): void
     {
         $company = Company::factory()->create();
-        $asset   = Asset::factory()->create(['company_id' => $company->id]);
+        $asset = Asset::factory()->create(['company_id' => $company->id]);
 
         $logId = $this->insertLegacyLog([
             'action_type' => 'checkout',
-            'item_type'   => self::ASSET_CLASS,
-            'item_id'     => $asset->id,
+            'item_type' => self::ASSET_CLASS,
+            'item_id' => $asset->id,
         ]);
 
         $this->runBackfill();
 
         $this->assertDatabaseHas('action_logs', [
-            'id'         => $logId,
+            'id' => $logId,
             'company_id' => null,
         ]);
     }
 }
-

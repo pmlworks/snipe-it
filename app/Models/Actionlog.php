@@ -120,7 +120,7 @@ class Actionlog extends SnipeModel
             // Only resolve company_id if it was never explicitly set by the caller.
             // Using array_key_exists on getRawOriginal() / getAttributes() lets us
             // distinguish "was set to null intentionally" from "was never set at all".
-            if (!array_key_exists('company_id', $actionlog->getAttributes())) {
+            if (! array_key_exists('company_id', $actionlog->getAttributes())) {
                 $actionlog->company_id = static::resolveCompanyIdFromAttributes(
                     $actionlog->target_type,
                     $actionlog->target_id,
