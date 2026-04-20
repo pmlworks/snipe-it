@@ -116,25 +116,60 @@ class Actionlog extends SnipeModel
     public static function boot()
     {
         parent::boot();
-        static::creating(
-            function (self $actionlog) {
-                // If the admin is a superadmin, let's see if the target instead has a company.
-                if (auth()->user() && auth()->user()->isSuperUser()) {
-                    if ($actionlog->target) {
-                        $actionlog->company_id = $actionlog->target->company_id;
-                    } elseif ($actionlog->item) {
-                        $actionlog->company_id = $actionlog->item->company_id;
-                    }
-                } elseif (auth()->user() && auth()->user()->company) {
-                    $actionlog->company_id = auth()->user()->company_id;
-                }
-
-                if ($actionlog->action_date == '') {
-                    $actionlog->action_date = Carbon::now();
-                }
-
+        static::creating(function (self $actionlog): void {
+            // Only resolve company_id if it was never explicitly set by the caller.
+            // Using array_key_exists on getRawOriginal() / getAttributes() lets us
+            // distinguish "was set to null intentionally" from "was never set at all".
+            if (!array_key_exists('company_id', $actionlog->getAttributes())) {
+                $actionlog->company_id = static::resolveCompanyIdFromAttributes(
+                    $actionlog->target_type,
+                    $actionlog->target_id,
+                    $actionlog->item_type,
+                    $actionlog->item_id,
+                );
             }
-        );
+
+            if ($actionlog->action_date == '') {
+                $actionlog->action_date = Carbon::now();
+            }
+        });
+    }
+
+    /**
+     * Resolve the company_id for a new action log by querying the item model
+     * directly, bypassing all global scopes to avoid FMCS filtering issues.
+     *
+     * We intentionally prefer the item (asset, license, etc.) over the target
+     * (user, location) because FMCS visibility is based on who *owns* the item,
+     * not who it was checked out to.  If the item has no company_id we fall back
+     * to the target so that logs on unowned items still get a company stamp where
+     * possible.
+     */
+    protected static function resolveCompanyIdFromAttributes(
+        ?string $targetType,
+        ?int $targetId,
+        ?string $itemType,
+        ?int $itemId,
+    ): ?int {
+        // Prefer the item (the thing being acted upon) for FMCS ownership.
+        if ($itemType && $itemId && class_exists($itemType)) {
+            $companyId = app($itemType)::withoutGlobalScopes()
+                ->where('id', $itemId)
+                ->value('company_id');
+
+            if ($companyId !== null) {
+                return $companyId;
+            }
+        }
+
+        // Fall back to target only when the item has no company_id.
+        if ($targetType && $targetId && class_exists($targetType)) {
+            return app($targetType)::withoutGlobalScopes()
+                ->where('id', $targetId)
+                ->value('company_id');
+        }
+
+        return null;
     }
 
     /**
