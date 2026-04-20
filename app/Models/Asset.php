@@ -1267,6 +1267,39 @@ class Asset extends Depreciable
         return (float) $this->components->sum('calculated_purchase_cost');
     }
 
+    /**
+     * Return EOL progress percentage (0-100), based on elapsed months since
+     * purchase date over the configured EOL window.
+     */
+    public function eolProgressPercent(): float
+    {
+        if (! $this->purchase_date || ! $this->asset_eol_date) {
+            return 0.0;
+        }
+
+        return $this->calculateProgressPercent(
+            start: Carbon::parse($this->purchase_date),
+            end: Carbon::parse($this->asset_eol_date),
+        );
+    }
+
+    /**
+     * Return warranty progress percentage (0-100), based on elapsed months
+     * since purchase date over the warranty window.
+     */
+    public function warrantyProgressPercent(): float
+    {
+        if (! $this->purchase_date || ! $this->warranty_expires) {
+            return 0.0;
+        }
+
+        return $this->calculateProgressPercent(
+            start: Carbon::parse($this->purchase_date),
+            end: $this->warranty_expires,
+        );
+    }
+
+
     public function getAccessoryCost()
     {
         return (float) $this->accessories()->sum('purchase_cost');
