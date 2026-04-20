@@ -9,9 +9,11 @@ use App\Presenters\ActionlogPresenter;
 use App\Presenters\Presentable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 /**
@@ -52,6 +54,13 @@ class Actionlog extends SnipeModel
     ];
 
     use Searchable;
+
+    /**
+     * Cache whether a model table has a company_id column.
+     *
+     * @var array<string, bool>
+     */
+    protected static array $companyColumnCache = [];
 
     /**
      * The attributes that should be included when searching the model.
@@ -144,6 +153,9 @@ class Actionlog extends SnipeModel
      * not who it was checked out to.  If the item has no company_id we fall back
      * to the target so that logs on unowned items still get a company stamp where
      * possible.
+     *
+     * This has to include an exception for the asset models table, since they are
+     * not company-constrained (on purpose.)
      */
     protected static function resolveCompanyIdFromAttributes(
         ?string $targetType,
@@ -152,24 +164,42 @@ class Actionlog extends SnipeModel
         ?int $itemId,
     ): ?int {
         // Prefer the item (the thing being acted upon) for FMCS ownership.
-        if ($itemType && $itemId && class_exists($itemType)) {
-            $companyId = app($itemType)::withoutGlobalScopes()
-                ->where('id', $itemId)
-                ->value('company_id');
+        $companyId = static::resolveCompanyIdFromModelClass($itemType, $itemId);
 
-            if ($companyId !== null) {
-                return $companyId;
-            }
+        if ($companyId !== null) {
+            return $companyId;
         }
 
         // Fall back to target only when the item has no company_id.
-        if ($targetType && $targetId && class_exists($targetType)) {
-            return app($targetType)::withoutGlobalScopes()
-                ->where('id', $targetId)
-                ->value('company_id');
+        return static::resolveCompanyIdFromModelClass($targetType, $targetId);
+
+    }
+
+    /**
+     * Resolve company_id from a model class and ID, but only if that model's
+     * table has a company_id column.
+     */
+    protected static function resolveCompanyIdFromModelClass(?string $modelClass, ?int $id): ?int
+    {
+        if (!$modelClass || !$id || !class_exists($modelClass) || !is_subclass_of($modelClass, Model::class)) {
+            return null;
         }
 
-        return null;
+        /** @var Model $instance */
+        $instance = app($modelClass);
+        $table = $instance->getTable();
+
+        $hasCompanyColumn = static::$companyColumnCache[$table]
+            ??= Schema::hasColumn($table, 'company_id');
+
+        if (!$hasCompanyColumn) {
+            return null;
+        }
+
+        return $modelClass::withoutGlobalScopes()
+            ->whereKey($id)
+            ->value('company_id');
+
     }
 
     /**
