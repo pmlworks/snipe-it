@@ -1424,7 +1424,7 @@ class AssetsController extends Controller
                 $label = new Label;
 
                 if (! $label) {
-                    throw new \Exception('Label object could not be created');
+                    throw new \Exception(trans('admin/labels/message.label_not_created'));
                 }
 
                 // Configure label with assets and settings
@@ -1445,7 +1445,7 @@ class AssetsController extends Controller
 
                 // Verify PDF was generated successfully
                 if (empty($pdf_content)) {
-                    throw new \Exception('PDF content is empty');
+                    throw new \Exception(trans('admin/labels/message.use_new_label_engine'));
                 }
 
                 $encoded_content = base64_encode($pdf_content);
