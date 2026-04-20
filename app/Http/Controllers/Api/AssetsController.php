@@ -1445,7 +1445,7 @@ class AssetsController extends Controller
 
                 // Verify PDF was generated successfully
                 if (empty($pdf_content)) {
-                    throw new \Exception(trans('admin/labels/message.use_new_label_engine'));
+                    throw new \Exception(trans('admin/labels/message.use_new_label_engine_for_api'));
                 }
 
                 $encoded_content = base64_encode($pdf_content);
