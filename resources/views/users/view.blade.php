@@ -147,7 +147,22 @@
                                     @endif
                                 </x-data-row>
 
-                                @if (($user->email!='') && ($user->activated=='1')  && ($user->getAssignedItemsWithPendingAcceptance()->count() > 0))
+                                <x-data-row :label="trans('general.permissions')">
+                                    @if (!empty($effectivePermissionsBySection))
+                                        @foreach ($effectivePermissionsBySection as $section => $permissions)
+                                            @foreach ($permissions as $permission)
+                                                @if (($permission['status'] ?? 'allowed') === 'denied')
+                                                    <span class="label label-danger" data-tooltip="true" title="{{ $permission['source_label'] }}"><x-icon type="x" class="fa-fw"/> {{ $permission['permission'] }}</span>
+                                                @else
+                                                    <span class="label label-success" data-tooltip="true" title="{{ $permission['source_label'] }}"><x-icon type="checkmark" class="fa-fw"/> {{ $permission['permission'] }}</span>
+                                                @endif
+                                            @endforeach
+
+                                        @endforeach
+                                    @endif
+                                </x-data-row>
+
+                            @if (($user->email!='') && ($user->activated=='1')  && ($user->getAssignedItemsWithPendingAcceptance()->count() > 0))
 
                                     <x-data-row :label="trans_choice('admin/users/general.unaccepted_items', $user->getAssignedItemsWithPendingAcceptance()->count())">
                                         <form action="{{ route('users.acceptance_reminder', $user) }}" method="POST" class="form-inline" style="display: inline;">

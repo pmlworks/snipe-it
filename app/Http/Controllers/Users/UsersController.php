@@ -439,6 +439,7 @@ class UsersController extends Controller
             'accessories',
             'licenses',
             'userloc',
+            'groups',
         ])
             ->withTrashed()
             ->find($user->id);
@@ -449,6 +450,7 @@ class UsersController extends Controller
         return view('users/view', [
             'user' => $user,
             'settings' => Setting::getSettings(),
+            'effectivePermissionsBySection' => $user->getEffectivePermissionsBySection(),
         ]);
     }
 
