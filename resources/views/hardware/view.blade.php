@@ -220,62 +220,22 @@
 
                         <!-- start side stats column -->
                         <x-page-column class="col-md-4 col-sm-12">
-
-                            @php
-                                // Compute elapsed/total percentage clamped to 0–100
-                                $clampedPercent = fn (float $elapsed, float $total): float =>
-                                    $total > 0 ? min(100, max(0, ($elapsed / $total) * 100)) : 0;
-
-                                $now = Carbon::now();
-                                $purchaseCarbon = $asset->purchase_date ? Carbon::parse($asset->purchase_date) : null;
-
-                                // EOL percentage: elapsed since purchase / total EOL period
-                                $eolPercent = 0;
-                                if ($purchaseCarbon && $asset->asset_eol_date) {
-                                    $eolPercent = $clampedPercent(
-                                        $purchaseCarbon->diffInMonths($now),
-                                        $purchaseCarbon->diffInMonths($asset->asset_eol_date)
-                                    );
-                                }
-
-                                // Depreciation percentage: elapsed since purchase / total depreciation period
-                                $deprPercent = 0;
-                                $deprDate = $asset->depreciated_date();
-                                if ($purchaseCarbon && $deprDate) {
-                                    $deprPercent = $clampedPercent(
-                                        $purchaseCarbon->diffInMonths($now),
-                                        $purchaseCarbon->diffInMonths(Carbon::instance($deprDate))
-                                    );
-                                }
-
-                                // Warranty percentage: elapsed since purchase / total warranty period
-                                $warrantyPercent = 0;
-                                if ($purchaseCarbon && $asset->warranty_expires) {
-                                    $warrantyPercent = $clampedPercent(
-                                        $purchaseCarbon->diffInMonths($now),
-                                        $purchaseCarbon->diffInMonths($asset->warranty_expires)
-                                    );
-                                }
-                            @endphp
-
-
-                            @if($asset->purchase_date || $asset->asset_eol_date || $deprDate || $asset->warranty_expires)
+                            @if($asset->purchase_date || $asset->asset_eol_date || $asset->depreciated_date() || $asset->warranty_expires)
                                 <x-well class="well-sm">
                                     @if($asset->purchase_date && $asset->asset_eol_date)
-                                        <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$eolPercent">
-                                        <strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>
-                                            /{{ $asset->model?->eol }} {{ trans('general.months') }}
+                                        <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$asset->eolProgressPercent()">
+                                            (<strong>{{ (int) Carbon::now()->diffInMonths($asset->asset_eol_date, true) }}</strong>/{{ $asset->model?->eol }} {{ trans('general.months') }})
                                         </x-progressbar>
                                     @endif
 
-                                    @if($deprDate)
-                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$deprPercent">
-                                            {{ Helper::getFormattedDateObject($deprDate->format('Y-m-d'), 'date', false) }}
+                                    @if($asset->depreciated_date())
+                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.fully_depreciated')" :percent="$asset->depreciationProgressPercent()">
+                                            {{ Helper::getFormattedDateObject($asset->depreciated_date()->format('Y-m-d'), 'date', false) }}
                                         </x-progressbar>
                                     @endif
 
                                     @if($asset->warranty_expires)
-                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$warrantyPercent">
+                                        <x-progressbar use_well="false" columns="12" :text="trans('admin/hardware/form.warranty_expires')" :percent="$asset->warrantyProgressPercent()">
                                         {{ Helper::getFormattedDateObject($asset->warranty_expires, 'date', false) }}
                                         </x-progressbar>
                                     @endif
