@@ -299,18 +299,36 @@
                 ({{ $infoPanelObj->depreciation->months.' '.trans('general.months')}})
             </x-info-element>
 
-            <x-info-element icon_type="depreciation-calendar" title="{{ trans('admin/hardware/form.fully_depreciated') }}">
+            <x-info-element icon_type="depreciation-calendar" class="{{ $infoPanelObj->depreciationProgressPercent() > 90 ? 'text-danger' : '' }}" title="{{ trans('admin/hardware/form.fully_depreciated') }}">
+                {{ trans('admin/hardware/form.fully_depreciated') }}
                 {{ Helper::getFormattedDateObject($infoPanelObj->depreciated_date(), 'date', false) }}
                 -
                 <span class="text-muted">{{ Carbon::parse($infoPanelObj->depreciated_date())->diffForHumans(['parts' => 2]) }}</span>
+                @if (method_exists($infoPanelObj, 'depreciationProgressPercent'))
+                    <span class="text-muted">
+                        ({{ (int) round($infoPanelObj->depreciationProgressPercent()) }}%)
+                    </span>
+                @endif
             </x-info-element>
         @endif
 
+
         @if ($infoPanelObj->eol)
-            <x-info-element icon_type="eol" title="{{ trans('general.eol') }}">
+            <x-info-element icon_type="eol" title="{{ trans('general.device_eol') }}">
                 {{ $infoPanelObj->eol .' '.trans('general.months') }}
             </x-info-element>
         @endif
+
+        @if ($infoPanelObj->asset_eol_date)
+            <x-info-element icon_type="depreciation-calendar" title="{{ trans('general.device_eol') }}">
+                {{ trans('general.device_eol') }}
+                {{ Helper::getFormattedDateObject($infoPanelObj->asset_eol_date, 'date', false) }}
+                -
+                <span class="text-muted">{{ Carbon::parse($infoPanelObj->asset_eol_date)->diffForHumans(['parts' => 2]) }}</span>
+
+            </x-info-element>
+        @endif
+
 
         @if ($infoPanelObj->email)
             <x-info-element icon_type="email" title="{{ trans('general.email') }}">
@@ -356,14 +374,6 @@
                 {{ $infoPanelObj->url }}
             </x-info-element.url>
         </x-info-element>
-
-        @if ($infoPanelObj->manufacturer)
-            <x-info-element icon_type="external-link" title="{{ trans('admin/manufacturers/table.support_url') }}">
-                <x-info-element.url>
-                    {{ $infoPanelObj->present()->dynamicUrl($infoPanelObj->manufacturer->support_url) }}
-                </x-info-element.url>
-            </x-info-element>
-        @endif
 
 
         @if (($infoPanelObj->present()->displayAddress) && (config('services.google.maps_api_key')))
