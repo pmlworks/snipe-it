@@ -181,7 +181,7 @@ class Actionlog extends SnipeModel
      */
     protected static function resolveCompanyIdFromModelClass(?string $modelClass, ?int $id): ?int
     {
-        if (!$modelClass || !$id || !class_exists($modelClass) || !is_subclass_of($modelClass, Model::class)) {
+        if (! $modelClass || ! $id || ! class_exists($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
             return null;
         }
 
@@ -192,7 +192,7 @@ class Actionlog extends SnipeModel
         $hasCompanyColumn = static::$companyColumnCache[$table]
             ??= Schema::hasColumn($table, 'company_id');
 
-        if (!$hasCompanyColumn) {
+        if (! $hasCompanyColumn) {
             return null;
         }
 
