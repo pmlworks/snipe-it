@@ -220,6 +220,26 @@
 
                         <!-- start side stats column -->
                         <x-page-column class="col-md-4 col-sm-12">
+
+                            @if ($asset->hasOrphanedAssignment())
+                                <x-well class="well-sm">
+                                    <p class="text-danger" style="line-height: 20px;">
+                                        <x-icon type="warning" class="text-danger"/> {{ trans('general.warning', ['warning' => trans('general.item_target_not_found_hard', ['item_type' => $asset->assignedType(), 'id' => $asset->assigned_to])]) }}
+                                    </p>
+
+                                    <form action="{{ route('asset.checkin.force', $asset) }}" method="POST" class="form-inline" style="display: inline;">
+                                        {{ csrf_field() }}
+                                        {{ method_field('POST') }}
+                                        <button class="btn btn-sm btn-danger btn-block hidden-print" type="submit" data-tooltip="true" data-placement="top" data-title="{{ trans('general.force_checkin') }}">
+                                            <x-icon type="checkin" class="fa-fw"/>
+                                            {{ trans('general.force_checkin') }}
+                                        </button>
+                                    </form>
+
+                                </x-well>
+                            @endif
+
+
                             @if($asset->purchase_date || $asset->asset_eol_date || $asset->depreciated_date() || $asset->warranty_expires)
                                 <x-well class="well-sm">
                                     @if($asset->purchase_date && $asset->asset_eol_date)

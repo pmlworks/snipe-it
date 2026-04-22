@@ -97,4 +97,3 @@ class AssetOrphanedAssignmentTest extends TestCase
         $this->assertFalse($asset->hasOrphanedAssignment());
     }
 }
-

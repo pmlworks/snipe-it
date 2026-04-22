@@ -3,7 +3,6 @@
 namespace Tests\Feature\Assets\Ui;
 
 use App\Models\Asset;
-use App\Models\Location;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -111,4 +110,3 @@ class ForceCheckinAssetTest extends TestCase
             ->assertDontSeeText(trans('general.force_checkin'));
     }
 }
-
