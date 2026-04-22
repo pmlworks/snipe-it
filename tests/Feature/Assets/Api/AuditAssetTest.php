@@ -60,6 +60,53 @@ class AuditAssetTest extends TestCase
         $this->assertEquals($future, $asset->next_audit_date);
     }
 
+    public function test_legacy_asset_audit_defaults_to_asset_tag_when_audit_by_field_is_not_sent()
+    {
+        $asset = Asset::factory()->create();
+        $future = now()->addMonths(2)->toDateString();
+
+        $this->actingAsForApi(User::factory()->auditAssets()->create())
+            ->postJson(route('api.asset.audit.legacy'), [
+                // Simulates the new quickscan form where audit_key is posted
+                // and the dropdown may remain on default.
+                'audit_key' => $asset->asset_tag,
+                'next_audit_date' => $future,
+                'note' => 'default asset tag',
+            ])
+            ->assertStatusMessageIs('success')
+            ->assertJsonPath('payload.id', $asset->id)
+            ->assertJsonPath('payload.audit_by_field', 'Asset Tag')
+            ->assertJsonPath('payload.audit_key', (string) $asset->asset_tag)
+            ->assertStatus(200);
+
+        $asset->refresh();
+        $this->assertEquals($future, $asset->next_audit_date);
+    }
+
+    public function test_legacy_asset_audit_can_find_asset_by_serial_when_selected()
+    {
+        $this->settings->enableUniqueSerialNumbers();
+
+        $asset = Asset::factory()->create(['serial' => 'SERIAL-ABC-123']);
+        $future = now()->addMonths(2)->toDateString();
+
+        $this->actingAsForApi(User::factory()->auditAssets()->create())
+            ->postJson(route('api.asset.audit.legacy'), [
+                'audit_by_field' => 'serial',
+                'audit_key' => $asset->serial,
+                'next_audit_date' => $future,
+                'note' => 'serial lookup',
+            ])
+            ->assertStatusMessageIs('success')
+            ->assertJsonPath('payload.id', $asset->id)
+            ->assertJsonPath('payload.audit_by_field', 'Serial')
+            ->assertJsonPath('payload.audit_key', $asset->serial)
+            ->assertStatus(200);
+
+        $asset->refresh();
+        $this->assertEquals($future, $asset->next_audit_date);
+    }
+
     public function test_asset_audit_is_saved()
     {
         $asset = Asset::factory()->create(['next_audit_date' => now()->subMonth()->toDateString()]);
