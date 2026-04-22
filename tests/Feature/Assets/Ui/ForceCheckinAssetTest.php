@@ -3,6 +3,7 @@
 namespace Tests\Feature\Assets\Ui;
 
 use App\Models\Asset;
+use App\Models\Actionlog;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -20,18 +21,37 @@ class ForceCheckinAssetTest extends TestCase
     public function test_can_force_checkin_asset_with_orphaned_assigned_to_and_missing_type()
     {
         $asset = Asset::factory()->create();
+        $originalCheckinCounter = (int) $asset->checkin_counter;
         $asset->assigned_to = 999; // Non-existent ID
         $asset->assigned_type = null; // Missing type
-        $asset->save();
+        $asset->forceSave();
 
         $response = $this->actingAs(User::factory()->checkinAssets()->create())
             ->post(route('asset.checkin.force', $asset));
 
-        $response->assertRedirect(route('hardware.show', $asset));
+        $response->assertRedirect(route('hardware.show', $asset))
+            ->assertSessionHas('success');
 
         $asset->refresh();
         $this->assertNull($asset->assigned_to);
         $this->assertNull($asset->assigned_type);
+        $this->assertSame($originalCheckinCounter, (int) $asset->checkin_counter);
+
+        $this->assertDatabaseHas((new Actionlog)->getTable(), [
+            'item_type' => Asset::class,
+            'item_id' => $asset->id,
+            'action_type' => 'force checkin',
+        ]);
+
+        $forceCheckinLog = Actionlog::query()
+            ->where('item_type', Asset::class)
+            ->where('item_id', $asset->id)
+            ->where('action_type', 'force checkin')
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($forceCheckinLog);
+        $this->assertNull($forceCheckinLog->log_meta);
     }
 
     public function test_can_force_checkin_asset_with_hard_deleted_assigned_to()

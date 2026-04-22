@@ -14,7 +14,9 @@ class AssetOrphanedAssignmentTest extends TestCase
         $asset = Asset::factory()->create();
         $asset->assigned_to = 999;
         $asset->assigned_type = null;
-        $asset->save();
+        $asset->forceSave();
+
+        $asset->refresh();
 
         $this->assertTrue($asset->hasOrphanedAssignment());
     }
