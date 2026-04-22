@@ -24,14 +24,13 @@ class ActionlogController extends Controller
         $disk = config('filesystems.default');
         switch (config("filesystems.disks.$disk.driver")) {
 
-
             case 's3':
-                $file = 'private_uploads/signatures/' . $filename;
+                $file = 'private_uploads/signatures/'.$filename;
 
                 return redirect()->away(Storage::disk($disk)->temporaryUrl($file, now()->addMinutes(5)));
             default:
                 $this->authorize('view', Asset::class);
-                $file = config('app.private_uploads') . '/signatures/' . $filename;
+                $file = config('app.private_uploads').'/signatures/'.$filename;
                 $filetype = Helper::checkUploadIsImage($file);
 
                 $contents = file_get_contents($file, false, stream_context_create(['http' => ['ignore_errors' => true]]));

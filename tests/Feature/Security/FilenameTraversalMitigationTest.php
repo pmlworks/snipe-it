@@ -61,4 +61,3 @@ class FilenameTraversalMitigationTest extends TestCase
         $this->assertStringContainsString('ok', $response->streamedContent());
     }
 }
-
