@@ -206,7 +206,7 @@ class AssetCheckinController extends Controller
         $asset->assigned_type = null;
 
         if ($asset->save()) {
-            $asset->logForceCheckin(note: trans('general.force_checkin'));
+            $asset->logForceCheckin();
 
             return redirect()->route('hardware.show', $asset->id)
                 ->with('success', trans('admin/hardware/message.checkin.force_checkin_orphaned_success'));

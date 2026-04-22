@@ -422,7 +422,10 @@
             <x-box class="side-box expanded">
                 <x-info-panel :infoPanelObj="$asset" img_path="{{ app('assets_upload_url') }}">
                     <x-slot:buttons>
+
+                        @if ($asset->assignedTo=='')
                         <x-button.checkout permission="checkout" :item="$asset" :route="route('hardware.checkout.create', $asset->id)"/>
+                        @endif
 
                         @if (!$asset->hasOrphanedAssignment())
                             <x-button.checkin permission="checkin" :item="$asset" :route="route('hardware.checkin.create', $asset->id)"/>
