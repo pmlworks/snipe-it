@@ -4,10 +4,12 @@ namespace Tests\Feature\Reporting;
 
 use App\Models\Asset;
 use App\Models\Company;
+use App\Models\CustomField;
 use App\Models\ReportTemplate;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Testing\TestResponse;
+use Illuminate\Support\Facades\Crypt;
 use League\Csv\Reader;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\Group;
@@ -173,5 +175,36 @@ class CustomReportTest extends TestCase implements TestsPermissionsRequirement
             ->assertSeeTextInStreamedResponse('Asset C')
             ->assertSeeTextInStreamedResponse('Asset D')
             ->assertDontSeeTextInStreamedResponse('Asset E');
+    }
+
+    public function test_custom_report_decrypts_encrypted_custom_fields_when_user_has_permission(): void
+    {
+        $customField = CustomField::factory()->encrypt()->create();
+        $columnName = $customField->db_column_name();
+
+        $asset = Asset::factory()->create(['name' => 'Encrypted Asset']);
+        $asset->{$columnName} = Crypt::encrypt('super-secret-value');
+        $asset->save();
+
+        $user = User::factory()->create([
+            'permissions' => json_encode([
+                'reports.view' => '1',
+                'assets.view.encrypted_custom_fields' => '1',
+            ]),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->post('reports/custom', [
+                'asset_name' => '1',
+                $columnName => '1',
+            ])
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8');
+
+        $records = collect(Reader::createFromString($response->streamedContent())->getRecords())
+            ->flatten()
+            ->filter();
+
+        $this->assertTrue($records->contains('super-secret-value'));
     }
 }
