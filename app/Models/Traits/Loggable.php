@@ -304,6 +304,32 @@ trait Loggable
     }
 
     /**
+     * Logs a force checkin action for orphaned assignments.
+     *
+     * Force checkin only records an explicit action log entry and intentionally
+     * skips checkin counters and changed-field metadata.
+     *
+     * @return Actionlog
+     */
+    public function logForceCheckin($note = null)
+    {
+        $log = new Actionlog;
+
+        $log = $this->determineLogItemType($log);
+        $log->location_id = null;
+        $log->note = $note;
+        $log->action_date = date('Y-m-d H:i:s');
+
+        if (auth()->user()) {
+            $log->created_by = auth()->id();
+        }
+
+        $log->logaction('force checkin');
+
+        return $log;
+    }
+
+    /**
      * @author A. Gianotto <snipe@snipe.net>
      *
      * @since  [v4.0]

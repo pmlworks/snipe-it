@@ -185,4 +185,34 @@ class AssetCheckinController extends Controller
         // Redirect to the asset management page with error
         return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.checkin.error').$asset->getErrors());
     }
+
+    /**
+     * This would only be used if the target is actually hard-deleted
+     * and literally does not exist in the database anymore. This will null out the assigned_to
+     * and assigned_type fields, but will not trigger any events or do any of the other things that a
+     * normal checkin would do, since the target itself is now invalid.
+     */
+    public function forceCheckin(Asset $asset)
+    {
+
+        $this->authorize('checkin', $asset);
+
+        if (! $asset->hasOrphanedAssignment()) {
+            return redirect()->route('hardware.show', $asset->id)
+                ->with('error', trans('admin/hardware/message.checkin.force_checkin_not_orphaned'));
+        }
+
+        $asset->assigned_to = null;
+        $asset->assigned_type = null;
+
+        if ($asset->save()) {
+            $asset->logForceCheckin();
+
+            return redirect()->route('hardware.show', $asset->id)
+                ->with('success', trans('admin/hardware/message.checkin.force_checkin_orphaned_success'));
+        }
+
+        return redirect()->route('hardware.show', $asset->id)
+            ->with('error', trans('admin/hardware/message.checkin.force_checkin_error'));
+    }
 }

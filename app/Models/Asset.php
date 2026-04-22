@@ -1299,7 +1299,6 @@ class Asset extends Depreciable
         );
     }
 
-
     public function getAccessoryCost()
     {
         return (float) $this->accessories()->sum('purchase_cost');
@@ -2166,5 +2165,17 @@ class Asset extends Depreciable
         return $query->join('models', 'assets.model_id', '=', 'models.id')
             ->join('depreciations', 'models.depreciation_id', '=', 'depreciations.id')->where('models.depreciation_id', '=', $search);
 
+    }
+
+    /**
+     * Determines if the asset has an orphaned assignment where the assigned target no longer exists.
+     * This occurs when:
+     * 1. assigned_to is set but assigned_type is missing/null
+     * 2. assigned_to and assigned_type are both set, but the relationship cannot be resolved (target was hard-deleted)
+     */
+    public function hasOrphanedAssignment(): bool
+    {
+        return ($this->assigned_to && ! $this->assigned_type)
+            || ($this->assigned_to && $this->assigned_type && ! $this->assignedTo);
     }
 }
