@@ -39,6 +39,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
  * This class controls all actions related to assets for
@@ -1122,11 +1123,23 @@ class AssetsController extends Controller
             $dt = Carbon::now()->addMonths($settings->audit_interval)->toDateString();
         }
 
-        // Allow the asset tag to be passed in the payload (legacy method)
-        if ($request->filled('asset_tag')) {
+        $audit_by_field = $request->input('audit_by_field', 'asset_tag');
+        $audit_key = $request->input('audit_key', null);
+
+        // If they have selected to scan by serial, use that
+        if (($settings->unique_serial == '1') && ($audit_by_field == 'serial') && ($audit_key)) {
+            $asset = Asset::where('serial', '=', trim($audit_key))->first();
+
+            // If they have selected by asset tag, use that
+        } elseif (($audit_by_field == 'asset_tag') && ($audit_key)) {
+            $asset = Asset::where('asset_tag', '=', trim($audit_key))->first();
+
+            // Allow the asset tag to be passed in the payload (legacy method)
+        } elseif ($request->filled('asset_tag')) {
             $asset = Asset::where('asset_tag', '=', $request->input('asset_tag'))->first();
         }
 
+        // If none of the above were selected, fall back to the route-model-binding
         if ($asset) {
 
             $originalValues = $asset->getRawOriginal();
@@ -1148,7 +1161,9 @@ class AssetsController extends Controller
             // Set up the payload for re-display in the API response
             $payload = [
                 'id' => $asset->id,
-                'asset_tag' => $asset->asset_tag,
+                'asset_tag' => e($asset->asset_tag),
+                'audit_by_field' => e(Str::headline($audit_by_field)),
+                'audit_key' => e($audit_key),
                 'note' => e($request->input('note')),
                 'status_label' => e($asset->status?->display_name),
                 'status_type' => $asset->status?->getStatuslabelType(),
@@ -1223,8 +1238,13 @@ class AssetsController extends Controller
 
         }
 
+        $fail_payload = [
+            'audit_by_field' => e(Str::headline($audit_by_field)),
+            'audit_key' => e($audit_key),
+        ];
+
         // No matching asset for the asset tag that was passed.
-        return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.does_not_exist')), 200);
+        return response()->json(Helper::formatStandardApiResponse('error', $fail_payload, trans('admin/hardware/message.does_not_exist')), 200);
 
     }
 
