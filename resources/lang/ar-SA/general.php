@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'رفع صورة رمزية',
     'back' => 'الرجوع للخلف',
     'bad_data' => 'لم يتم العثور على شيء. ربما البيانات السيئة؟',
-    'bulkaudit' => 'تدقيق متعدد',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'حالة التدقيق',
     'bulk_checkout' => 'اخراج متعدد',
     'bulk_edit' => 'تحرير بالجملة',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'هذا التطبيق يعمل في وضع الإنتاج مع تمكين التصحيح. هذا يمكن أن يعرض البيانات الحساسة إذا كان التطبيق الخاص بك هو في متناول العالم الخارجي. تعطيل وضع التصحيح عن طريق تعيين قيمة <code>APP_DEBUG</code> في ملف <code>.env</code> إلى <code>false</code>.',
     'delete' => 'حذف',
     'delete_confirm' => 'هل أنت متأكد من حذف :المنتج؟',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'هل أنت متأكد من أنك ترغب في حذف :item؟ لا يمكن التراجع بعد الحذف.',
     'deleted' => 'تم حذفها',
     'delete_seats' => 'المقاعد المحذوفة',
     'deletion_failed' => 'فشل الحذف',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'توفير',
     'generate_labels' => 'إنشاء تسميات',
-    'github_markdown' => 'يتيح هذا الحقل <a href="https://help.github.com/articles/github-flavored-markdown/">بتطبيق نمط الكتابة من Github</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'المجموعات',
     'gravatar_email' => 'البريد الإلكتروني لخدمة Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>غيّر صورتك الرمزية في Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'رفع صورة',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'الحد الأقصى المسموح لحجم التصعيد هو :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'أنواع الملفات المسموحة هي jpg، webpp، png، gif، svg، tif. الحد الأقصى لحجم التصعيد المسموح به هو :size.',
     'unaccepted_image_type' => 'ملف الصورة هذا غير قابل للقراءة. أنواع الملفات المقبولة هي jpg، webpp، png، gif، svg. نوع هذا الملف هو: :mimetype.',
     'import' => 'استيراد',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'يمكنك العثور على صور التدقيق في علامة تبويب التاريخ في صفحة الأصول.',
     'no_email' => 'لا يوجد عنوان بريد إلكتروني مرتبط بهذا المستخدم',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'آخر مراجعة',
     'new' => 'الجديد!',
     'no_depreciation' => 'لا يوجد إستهلاك',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'جاهزة للتوزيع',
     'requested_date' => 'تاريخ الطلب',
     'requested_assets' => 'الأصول المطلوبة',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'العناصر المطلوبة',
     'request_canceled' => 'تم إلغاء الطلب',
     'request_item' => 'طلب هذا العنصر',
     'external_link_tooltip' => 'رابط خارجي إلى',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'الأصل الذي تم تعيينه لك ينتمي إلى شركة أخرى لذلك لا يمكنك قبوله أو رفضه، يرجى التحقق من المدير الخاص بك',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'تم الخروج إلى: الاسم الكامل',
         'checked_out_to_first_name' => 'تم الخروج إلى: الاسم الأول',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'إلحاق',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'أصل',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

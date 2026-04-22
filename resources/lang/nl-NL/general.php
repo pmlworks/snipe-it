@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Upload profielafbeelding',
     'back' => 'Terug',
     'bad_data' => 'Niks gevonden. Misschien verkeerde data?',
-    'bulkaudit' => 'Bulk Audit',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Audit Status',
     'bulk_checkout' => 'Bulk uitlevering',
     'bulk_edit' => 'Bulk bewerken',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Deze applicatie draait in productie modus met foutopsporing ingeschakeld. Dit kan betekenen dat mogelijk gevoelige gegevens zichtbaar zijn voor de buitenwereld. Schakel foutopsporing uit door de <code>APP_DEBUG</code> variabele in je <code>.env</code> bestand op <code>false</code> te zetten.',
     'delete' => 'Verwijder',
     'delete_confirm' => 'Weet u zeker dat u :item wilt verwijderen?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Weet je zeker dat je :item wilt verwijderen? Dit kan niet ongedaan worden gemaakt.',
     'deleted' => 'Verwijderd',
     'delete_seats' => 'Verwijderde plekken',
     'deletion_failed' => 'Verwijderen mislukt',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Genereer',
     'generate_labels' => 'Labels genereren',
-    'github_markdown' => 'Dit veld staat <a href="https://help.github.com/articles/github-flavored-markdown/">Github markdown</a> gebruik toe.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Groepen',
     'gravatar_email' => 'Gravatar E-mailadres',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Verander je avatar op Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Afbeelding uploaden',
     'filetypes_accepted_help' => 'Geaccepteerde bestandstype is :types. De maximale toegestane grootte is :size.|Geaccepteerde bestandstypen zijn :types. De maximale uploadgrootte is :size.',
     'filetypes_size_help' => 'De maximale uploadgrootte is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Geaccepteerde bestandstypen zijn jpg, webp, png, gif, svg en avif. De maximale toegestane bestandsgrootte is :size.',
     'unaccepted_image_type' => 'Dit afbeeldingsbestand is niet leesbaar. Geaccepteerde bestandstypen zijn jpg, webp, png, gif en svg. Het mimetype van dit bestand is: :mimetype.',
     'import' => 'Importeer',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Als u auditcontrole in uw organisatie gebruikt, dit wordt meestal automatisch berekend op basis van de asset&apos;s laatste audit datum en audit frequentie (in <code>Admin Instellingen &gt; Notificaties</code>) en u kunt dit leeg laten. U kunt hier handmatig deze datum instellen indien nodig, maar het moet later zijn dan de laatste audit datum. ',
     'audit_images_help' => 'U vindt audit afbeeldingen op het tabblad historie van het asset.',
     'no_email' => 'Er is geen e-mailadres gekoppeld aan deze gebruiker',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Laatste controle',
     'new' => 'nieuw!',
     'no_depreciation' => 'Geen afschrijving',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Klaar voor uitgifte',
     'requested_date' => 'Aangevraagde datum',
     'requested_assets' => 'Aangevraagd activa',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Aanvraagbare items',
     'request_canceled' => 'Aanvraag geannuleerd',
     'request_item' => 'Dit item aanvragen',
     'external_link_tooltip' => 'Externe link naar',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Een aan u toegewezen asset is eigendom van een ander bedrijf. U kunt dit dus niet accepteren of weigeren. Neem contact op met uw manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Uitgecheckt aan: Volledige naam',
         'checked_out_to_first_name' => 'Uitgecheckt aan: Voornaam',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Aanvullen',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Asset',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Notitie toevoegen',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Standaard',
-        'default_blue' => 'Standaard Blauw',
-        'blue_dark' => 'Blauw (Donkere Modus)',
-        'green' => 'Green',
-        'green_dark' => 'Groen (Donkere Modus)',
-        'red' => 'Red',
-        'red_dark' => 'Rood (Donkere Modus)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Oranje (Donkere Modus)',
-        'black' => 'Zwart',
-        'black_dark' => 'Zwart (Donkere Modus)',
-        'purple' => 'Paars',
-        'purple_dark' => 'Paars (Donkere Modus)',
-        'yellow' => 'Geel',
-        'yellow_dark' => 'Geel (Donkere Modus)',
-        'high_contrast' => 'Hoog Contrast',
-
     ],
 
     'select_all_none' => 'Selecteer/Deselecteer Alles',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

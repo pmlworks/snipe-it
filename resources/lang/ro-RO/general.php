@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Upload Avatar',
     'back' => 'Inapoi',
     'bad_data' => 'Nimic gasit. Poate date proaste?',
-    'bulkaudit' => 'Auditul în bloc',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Starea auditului',
     'bulk_checkout' => 'Comenzi în numerar',
     'bulk_edit' => 'Editare în masă',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Această aplicație rulează în modul de producție cu debugging activat. Acest lucru poate expune date sensibile dacă aplicația dvs. este accesibilă lumii exterioare. Dezactivați modul de depanare setând valoarea <code>APP_DEBUG</code> din fișierul <code>.env</code> la <code>false</code>.',
     'delete' => 'Sterge',
     'delete_confirm' => 'Sigur doriți să ștergeți :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Sigur doriți să ștergeți :item? Aceasta nu poate fi anulată.',
     'deleted' => 'Sters',
     'delete_seats' => 'Locurile șterse',
     'deletion_failed' => 'Ștergerea a eșuat',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Genereaza',
     'generate_labels' => 'Generează etichete',
-    'github_markdown' => 'Acest câmp acceptă <a href="https://help.github.com/articles/github-flavored-markdown/">Github aromed markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupuri',
     'gravatar_email' => 'Adresa E-mail Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Schimbă-ţi avatarul de pe Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Incarca poza',
     'filetypes_accepted_help' => 'Tipul de fișier acceptat este :types. Dimensiunea maximă permisă este :size.|Tipurile de fișiere acceptate sunt :types. Dimensiunea maximă de încărcare permisă este :size.',
     'filetypes_size_help' => 'Dimensiunea maximă de încărcare permisă este :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Tipurile de fișiere acceptate sunt jpg, webp, png, gif, svg și avif. Dimensiunea maximă de încărcare permisă este :size.',
     'unaccepted_image_type' => 'Acest fișier de imagine nu a putut fi citit. Tipurile de fișiere acceptate sunt jpg, webp, png, gif și svg. Amprenta acestui fișier este: :mimetype.',
     'import' => 'Import',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Dacă utilizați auditarea în organizația dvs., aceasta este de obicei calculată automat pe baza ultimei date de audit a activului și a frecvenței auditului (în <code>Setări Administrator &gt; Alerte</code>) și puteți lăsa acest câmp gol. Puteți seta manual această dată aici dacă este necesar, dar trebuie să fie ulterioară ultimei date de audit.',
     'audit_images_help' => 'Imaginile de audit le găsiți în fila de istoric a activului.',
     'no_email' => 'Nicio adresă de e-mail asociată cu acest utilizator',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Ultimul audit',
     'new' => 'nou!',
     'no_depreciation' => 'Fara depreciere',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Gata de lansare',
     'requested_date' => 'Data solicitării',
     'requested_assets' => 'Activele solicitate',
-    'requested_assets_menu' => 'Articole Solicitate',
+    'requested_assets_menu' => 'Articole Solicitabile',
     'request_canceled' => 'Cerere anulată',
     'request_item' => 'Solicită acest articol',
     'external_link_tooltip' => 'Link extern către',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Un activ atribuit dvs. aparține unei alte firme, astfel încât nu puteți accepta sau refuza acest lucru, vă rugăm să verificați cu managerul dvs.',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Verificat la: Numele complet',
         'checked_out_to_first_name' => 'Verificat la: Prenume',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Adăugare',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Activ',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Adaugă o notă',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Atribuit :name',
         'checkin_item' => 'Returnat :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Implicit Site',
-        'default_blue' => 'Albastru Implicit',
-        'blue_dark' => 'Albastru (Mod Întunecat)',
-        'green' => 'Green',
-        'green_dark' => 'Verde (Mod Întunecat)',
-        'red' => 'Red',
-        'red_dark' => 'Roșu (Mod Întunecat)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Portocaliu (Mod Întunecat)',
-        'black' => 'Negru',
-        'black_dark' => 'Negru (Mod Întunecat)',
-        'purple' => 'Mov',
-        'purple_dark' => 'Mov (Mod Întunecat)',
-        'yellow' => 'Galben',
-        'yellow_dark' => 'Galben (Mod Întunecat)',
-        'high_contrast' => 'Contrast Ridicat',
-
     ],
 
     'select_all_none' => 'Selectează/Deselectează Tot',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

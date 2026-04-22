@@ -15,6 +15,7 @@ return [
     'user_deleted_warning' => 'Cet utilisateur a été supprimé. Vous devez le restaurer pour pouvoir l\'éditer ou lui assigner de nouveaux actifs.',
     'ldap_not_configured' => 'L\'intégration LDAP n\'a pas été configuré pour cette installation .',
     'password_resets_sent' => 'Les utilisateurs sélectionnés qui sont activés et ont une adresse e-mail valide ont reçu un lien de réinitialisation du mot de passe.',
+    'not_activated' => 'This user cannot login, so they cannot accept assets via email.',
     'password_reset_sent' => 'Un lien de réinitialisation du mot de passe a été envoyé à :email!',
     'user_has_no_email' => 'Cet utilisateur n\'a pas renseigné d\'adresse e-mail dans son profil.',
     'log_record_not_found' => 'Impossible de trouver un enregistrement de log correspondant à cet utilisateur.',
@@ -30,6 +31,7 @@ return [
         'unsuspend' => 'L’utilisateur a été activé avec succès.',
         'restored' => 'L’utilisateur a été restauré avec succès.',
         'import' => 'Les utilisateurs ont été importés correctement.',
+        'acceptance_reminder_sent' => 'Acceptance reminder sent for :count pending item.|Acceptance reminder sent for :count pending items.',
     ],
 
     'error' => [
@@ -44,7 +46,7 @@ return [
         'delete_has_users_var' => 'Cet utilisateur gère toujours un autre utilisateur. Veuillez d\'abord sélectionner un autre gestionnaire pour cet utilisateur. Cet utilisateur gère toujours :count utilisateurs. Veuillez d\'abord sélectionner un autre gestionnaire.',
         'unsuspend' => 'Un problème a eu lieu pendant la réhabilitation de l\'utilisateur. Veuillez essayer à nouveau.',
         'import' => 'Il y a eu un problème lors de l\'importation des utilisateurs. Veuillez réessayer.',
-        'asset_already_accepted' => 'Cet actif a déjà été accepté.',
+        'asset_already_accepted' => 'This item has already been accepted.',
         'accept_or_decline' => 'Vous devez accepter ou refuser cet actif.',
         'cannot_delete_yourself' => 'Nous nous sentirions vraiment mal si vous vous supprimiez vous-même, s\'il vous plaît reconsidérer.',
         'incorrect_user_accepted' => 'Le bien que vous avez tenté d\'accepter ne vous avait pas été attribué.',
@@ -54,6 +56,7 @@ return [
         'ldap_could_not_get_entries' => 'Impossible d\'obtenir les entrées du serveur LDAP . S\'il vous plaît vérifier la configuration de votre serveur LDAP dans le fichier de configuration LDAP . <br> Erreur de serveur LDAP :',
         'password_ldap' => 'Le mot de passe de ce compte est géré par LDAP / Active Directory. Veuillez contacter votre service informatique pour changer votre mot de passe.',
         'multi_company_items_assigned' => 'This user has items assigned that belong to a different company. Please check them in or edit their company.',
+        'no_pending_acceptances' => 'This user has no pending acceptances to remind them about.',
     ],
 
     'deletefile' => [

@@ -90,7 +90,7 @@ return [
     'password' => 'Geslo',
     'password_reset' => 'Ponastavitev gesla',
     'read_the_terms' => 'Prosimo, preberite pogoje uporabe spodaj.',
-    'read_the_terms_and_click' => 'Prosimo, preberite spodnje pogoje uporabe in kliknite povezavo na dnu, da potrdite, da ste prebrali pogoje uporabe in se z njimi strinjate ter da ste prejeli sredstvo.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Zahtevano',
     'reset_link' => 'Povezava za ponastavitev gesla',

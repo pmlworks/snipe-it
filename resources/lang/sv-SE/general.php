@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Ladda upp avatar',
     'back' => 'Bakåt',
     'bad_data' => 'Inga resultat. Kanske felaktig data?',
-    'bulkaudit' => 'Massinventering',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Inventeringsstatus',
     'bulk_checkout' => 'Massutcheckning',
     'bulk_edit' => 'Massredigera',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Programmet körs i produktionsläge med debugging aktiverat. Detta kan exponera känslig data om ditt system är tillgängligt för omvärlden. Inaktivera felsökningsläge genom att ange värdet <code>APP_DEBUG</code> i filen <code>.env</code> till <code>false</code>.',
     'delete' => 'Ta bort',
     'delete_confirm' => 'Är du säker på att du vill radera :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Är du säker på att du vill radera :item? Detta kan inte ångras.',
     'deleted' => 'Raderad',
     'delete_seats' => 'Borttagna säten',
     'deletion_failed' => 'Borttagning misslyckad.',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generera',
     'generate_labels' => 'Generera etiketter',
-    'github_markdown' => 'Detta fält tillåter <a href="https://help.github.com/articles/github-flavored-markdown/">Github-genererad markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupper',
     'gravatar_email' => 'E-postadress för Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Ändra din avatar på Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Ladda upp bild',
     'filetypes_accepted_help' => 'Tillåtna filtyper är :types. Maximalt tillåten storlek är :size.|Tillåtna filtyper är :types. Maximalt tillåten uppladdningsstorlek är :size.',
     'filetypes_size_help' => 'Maximalt tillåten uppladdningsstorlek är :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Tillåtna filtyper är jpg, webp, png, gif, svg och avif. Maximalt tillåten uppladdningsstorlek är :size.',
     'unaccepted_image_type' => 'Denna bildfil kunde inte läsas. Godkända filtyper är jpg, webp, png, gif, och svg. Filens mimetyp är: :mimetype.',
     'import' => 'Importera',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Om du använder inventeringsverktyget i din verksamhet så beräknas detta vanligtvis automatiskt baserat på tillgången&apos;s senaste inventeringsdatum och inventeringsintervall (i <code>Admininställningar &gt; Aviseringar</code>) och du kan således lämna detta tomt. Du kan manuellt ställa in detta datum här om du behöver, men det måste vara senare än det senaste inventeringsdatumet. ',
     'audit_images_help' => 'Du kan hitta bilder för inventering i tillgångens historikflik.',
     'no_email' => 'Ingen e-postadress kopplad till den här användaren',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Senaste inventering',
     'new' => 'ny!',
     'no_depreciation' => 'Ingen värdeminskning',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Redo för leverans',
     'requested_date' => 'Begärt datum',
     'requested_assets' => 'Begärda tillgångar',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Begärbara objekt',
     'request_canceled' => 'Förfrågan avbruten',
     'request_item' => 'Begär detta objekt',
     'external_link_tooltip' => 'Extern länk till',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'En tillgång tilldelad till dig tillhör ett annat företag så att du inte kan acceptera eller neka det, vänligen kontrollera detta med din ansvarige',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Utcheckad till: Fullständigt namn',
         'checked_out_to_first_name' => 'Utcheckad till: Förnamn',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Lägg till',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Tillgång',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Lägg till en anteckning',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Markera/Avmarkera alla',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

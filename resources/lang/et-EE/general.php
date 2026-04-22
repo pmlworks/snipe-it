@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Lae profiilipilt',
     'back' => 'Tagasi',
     'bad_data' => 'Ei leitud midagi. Võib-olla on halbu andmeid?',
-    'bulkaudit' => 'Hulgiaudit',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Auditi olek',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Hulgiredigeerimine',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'See rakendus töötab tootmisrežiimis, kus silumisvõimalused on lubatud. See võib avaldada tundlikke andmeid, kui teie rakendus on välismaailmale juurdepääsetav. Keela debugrežiim, määrates <code>APP_DEBUG</code> väärtuse oma <code>.env</code> failis <code>false</code>.',
     'delete' => 'Kustuta',
     'delete_confirm' => 'Kas olete kindel, et soovite kustutada :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Kas olete kindel, et soovite kustutada :item? Seda toimingut ei saa tagasi võtta.',
     'deleted' => 'Kustutatud',
     'delete_seats' => 'Kustutatud istmed',
     'deletion_failed' => 'Kustutamine ebaõnnestus',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Genereeri',
     'generate_labels' => 'Genereeri sildid',
-    'github_markdown' => 'See väli lubab <a href="https://help.github.com/articles/github-flavored-markdown/">Githubi maitsestatud markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupid',
     'gravatar_email' => 'Gravatari e-maili aadress',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Muuda oma avatari leheküljel Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Laadi pilt üles',
     'filetypes_accepted_help' => 'Aktsepteeritud failitüüp on: :types. Maksimaalne lubatud suurus on: :size." "Aktsepteeritud failitüübid on: :types. Maksimaalne lubatud üleslaadimise suurus on: :size.',
     'filetypes_size_help' => 'Maksimaalne lubatud üleslaadimise suurus on: :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Aktsepteeritud failitüübid on jpg, webp, png, gif, svg ja avif. Maksimaalne lubatud üleslaadimise suurus on: :size.',
     'unaccepted_image_type' => 'Seda pildifaili ei olnud võimalik lugeda. Aktsepteeritud failitüübid on jpg, webp, png, gif ja svg. Selle faili Mime-tüüp on: :mimetype.',
     'import' => 'Impordi',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Kui kasutate oma organisatsioonis auditeerimist, arvutatakse see tavaliselt automaatselt vara&apos; viimase auditi kuupäeva ja auditi sageduse (<code>Administraatori seaded &gt;> Teavitused</code>) alusel ning võite selle tühjaks jätta. Kui teil on vaja, saate selle kuupäeva siin käsitsi määrata, kuid see peab olema hilisem kui viimane auditi kuupäev. ',
     'audit_images_help' => 'Auditipildid leiate vara ajaloo vahekaardilt.',
     'no_email' => 'Selle kasutajaga ei ole seotud e-posti aadressi',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Viimane audit',
     'new' => 'uus!',
     'no_depreciation' => 'Amortisatsioon puudub',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Kasutamine valmis',
     'requested_date' => 'Taotletav kuupäev',
     'requested_assets' => 'Taotletavad vahendid',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Taotletavad mudelid',
     'request_canceled' => 'Taotlus tühistati',
     'request_item' => 'Taotle seda vara',
     'external_link_tooltip' => 'External link to',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Vahend',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

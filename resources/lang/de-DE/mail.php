@@ -90,7 +90,7 @@ return [
     'password' => 'Passwort',
     'password_reset' => 'Passwort zurücksetzen',
     'read_the_terms' => 'Bitte lesen Sie die nachfolgenden Nutzungsbedingungen.',
-    'read_the_terms_and_click' => 'Bitte lesen Sie die Nutzungsbedingungen unten, und klicken Sie auf den Link am unteren Ende, um zu bestätigen, dass Sie die Nutzungsbedingungen gelesen und akzeptiert haben und das Asset erhalten haben.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Klicken Sie hier, um die Nutzungsbedingungen zu überprüfen und den Artikel anzunehmen|Klicken Sie hier, um die Nutzungsbedingungen zu überprüfen und die Artikel zu akzeptieren',
     'requested' => 'Angefordert',
     'reset_link' => 'Ihr Link zum Zurücksetzen des Kennworts',

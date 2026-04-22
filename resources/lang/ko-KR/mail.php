@@ -90,7 +90,7 @@ return [
     'password' => '비밀번호',
     'password_reset' => '비밀번호 재설정',
     'read_the_terms' => '아래의 이용 약관을 읽어 보시기 바랍니다.',
-    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the asset.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => '요청됨',
     'reset_link' => '비밀번호 재설정 링크',

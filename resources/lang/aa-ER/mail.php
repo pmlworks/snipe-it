@@ -90,7 +90,7 @@ return [
     'password' => 'crwdns12728:0crwdne12728:0',
     'password_reset' => 'crwdns1750:0crwdne1750:0',
     'read_the_terms' => 'crwdns1751:0crwdne1751:0',
-    'read_the_terms_and_click' => 'crwdns12072:0crwdne12072:0',
+    'read_the_terms_and_click' => 'crwdns14694:0crwdne14694:0',
     'click_here_to_review_terms_and_accept_item' => 'crwdns14534:0crwdne14534:0',
     'requested' => 'crwdns12730:0crwdne12730:0',
     'reset_link' => 'crwdns1754:0crwdne1754:0',

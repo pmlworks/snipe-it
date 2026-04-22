@@ -90,7 +90,7 @@ return [
     'password' => 'Пароль',
     'password_reset' => 'Скидання Пароля',
     'read_the_terms' => 'Будь ласка, прочитайте умови використання нижче.',
-    'read_the_terms_and_click' => 'Будь ласка, прочитайте умови використання нижче, і натисніть на посилання внизу, щоб підтвердити, що Ви прочитали та згодні з умовами користування та отримали актив.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Запрошено користувачем',
     'reset_link' => 'Ваше посилання для скидання пароля',

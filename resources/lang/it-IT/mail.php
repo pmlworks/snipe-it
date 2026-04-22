@@ -90,7 +90,7 @@ return [
     'password' => 'Password',
     'password_reset' => 'Reimposta la password',
     'read_the_terms' => 'Leggi i termini di utilizzo qui sotto.',
-    'read_the_terms_and_click' => 'Leggi qui sotto i termini di utilizzo e fai clic sul link in basso per confermare di averli letti ed accettati e di aver quindi ricevuto il bene.',
+    'read_the_terms_and_click' => 'Si prega di leggere i termini di utilizzo qui sotto, e fare clic sul link in basso per confermare di aver letto e accettato le condizioni di utilizzo e di aver ricevuto l\'articolo.',
     'click_here_to_review_terms_and_accept_item' => 'Clicca qui per rivedere i termini di utilizzo e accettare l\'articolo|Clicca qui per rivedere i termini di utilizzo e accettare gli articoli',
     'requested' => 'Richiesto',
     'reset_link' => 'Il tuo link per reimpostare la password',

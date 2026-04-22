@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Avatar hochladen',
     'back' => 'Zurück',
     'bad_data' => 'Nichts gefunden. Möglicherweise ungültige Daten?',
-    'bulkaudit' => 'Massenprüfung',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Prüfstatus',
     'bulk_checkout' => 'Massenherausgabe',
     'bulk_edit' => 'Massenbearbeitung',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Diese Anwendung läuft im Produktionsmodus mit debugging aktiviert. Dies kann sensible Daten verfügbar machen, wenn Ihre Anwendung öffentlich zugänglich ist. Deaktiviere den Debug-Modus, indem du den <code>APP_DEBUG</code>-Wert in der <code>.env</code> Datei auf <code>false</code> setzt.',
     'delete' => 'Löschen',
     'delete_confirm' => 'Bist du sicher, dass du :item löschen möchtest?',
-    'delete_confirm_no_undo' => 'Bist Du sicher, dass Du :item löschen möchtest? Dies kann nicht rückgängig gemacht werden.',
+    'delete_confirm_no_undo' => 'Möchtest Du :item wirklich löschen? Dies kann nicht rückgängig gemacht werden.',
     'deleted' => 'Gelöscht',
     'delete_seats' => 'Gelöschte Lizenzen',
     'deletion_failed' => 'Löschen fehlgeschlagen',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>ste</sup> Herausgabe',
     'generate' => 'Generieren',
     'generate_labels' => 'Label generieren',
-    'github_markdown' => 'Dieses Feld akzeptiert <a href="https://help.github.com/articles/github-flavored-markdown/">Github Flavored markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Gruppen',
     'gravatar_email' => 'Gravatar E-Mail Adresse',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Ändere deinen Avatar auf Gravatar.com</small></a>.',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Wenn Sie Auditing in Ihrer Organisation verwenden, dies wird in der Regel automatisch anhand des letzten Prüfdatums und der Prüffrequenz (in <code>Admin-Einstellungen &gt; Alarme</code>) berechnet und Sie können dies leer lassen. Sie können dieses Datum hier manuell festlegen, wenn Sie es benötigen, aber es muss später als das letzte Prüfungsdatum sein. ',
     'audit_images_help' => 'Du kannst Prüfbilder in der Asset-Historie finden.',
     'no_email' => 'Keine E-Mail-Adresse mit diesem Benutzer verknüpft',
+    'no_value' => 'Kein Wert',
+    'device_eol' => 'Gerät EOL',
+    'na' => 'K/A',
     'last_audit' => 'Letzte Prüfung',
     'new' => 'Neu!',
     'no_depreciation' => 'Nicht abschreiben',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Bereit zum Herausgeben',
     'requested_date' => 'Anfragedatum',
     'requested_assets' => 'Angeforderte Assets',
-    'requested_assets_menu' => 'Angeforderte Gegenstände',
+    'requested_assets_menu' => 'Anforderbare Gegenstände',
     'request_canceled' => 'Anfrage abgebrochen',
     'request_item' => 'Gegenstand anfordern',
     'external_link_tooltip' => 'Externer Link zu',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Ein Asset, welches dir zugewiesen wurde, gehört einem anderen Unternehmen, sodass du es nicht akzeptieren oder ablehnen kannst. Bitte prüfe das mit deinem Vorgesetzten',
     'error_assets_already_checked_out' => 'Ein oder mehrere der Assets sind bereits ausgecheckt',
     'assigned_assets_removed' => 'Die folgenden wurden aus den ausgewählten Assets entfernt, weil sie bereits ausgecheckt sind',
+    'upload_files' => 'Dateien hochladen',
+    'uploaded_files' => 'Hochgeladene Dateien',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Herausgegeben an: Voller Name',
         'checked_out_to_first_name' => 'Herausgegeben an: Vorname',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Untergeordneter Standort',
     'append' => 'Anhängen',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Asset',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Notiz hinzufügen',
     ],
 
+    'last_note' => 'Letzte Notiz',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name hat noch zugehörige Gegenstände. Bitte entferne sie, bevor Du diesen :item löschst.',
         'assoc_assets' => ':item_name ist derzeit mit :asset_count asset(s) verknüpft und kann nicht gelöscht werden. Bitte aktualisiere Deine Assets, um diese :item nicht mehr zu referenzieren, und versuche es erneut.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => ':name herausgeben',
         'checkin_item' => ':name zurücknehmen',
-    ],
-
-    'skins' => [
-        'site_default' => 'Seiten Standard',
-        'default_blue' => 'Standard Blau',
-        'blue_dark' => 'Blau (Dunkler Modus)',
-        'green' => 'Grün',
-        'green_dark' => 'Grün (Dunkler Modus)',
-        'red' => 'Rot',
-        'red_dark' => 'Rot (Dunkler Modus)',
-        'orange' => 'orange',
-        'orange_dark' => 'Orange (Dunkler Modus)',
-        'black' => 'Schwarz',
-        'black_dark' => 'Schwarz (Dunkler Modus)',
-        'purple' => 'Lila',
-        'purple_dark' => 'Lila (Dunkler Modus)',
-        'yellow' => 'Gelb',
-        'yellow_dark' => 'Gelb (Dunkler Modus)',
-        'high_contrast' => 'Hoher Kontrast',
-
     ],
 
     'select_all_none' => 'Alle auswählen/abwählen',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 Monat|:count Monate',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

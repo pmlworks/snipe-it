@@ -90,7 +90,7 @@ return [
     'password' => 'Kata sandi',
     'password_reset' => 'Reset Password',
     'read_the_terms' => 'Silahkan baca syarat penggunaan di bawah ini.',
-    'read_the_terms_and_click' => 'Harap baca ketentuan penggunaan di bawah ini, dan klik tautan di bagian bawah untuk mengonfirmasi bahwa Anda telah membaca dan menyetujui ketentuan penggunaan, serta telah menerima aset tersebut.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Diminta',
     'reset_link' => 'Tautan Reset Sandi Anda',

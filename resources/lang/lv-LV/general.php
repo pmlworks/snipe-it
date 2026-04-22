@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Augšupielādēt Avatar',
     'back' => 'Atpakaļ',
     'bad_data' => 'Nekas nav atrasts. Varbūt slikti dati?',
-    'bulkaudit' => 'Lielapjoma audits',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Revīzijas statuss',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Lielapjoma rediģēšana',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Šī lietojumprogramma darbojas ražošanas režīmā ar iespējotu atkļūdošanu. Tas var pakļaut sensitīvus datus, ja jūsu pieteikums ir pieejams ārpasauli. Atspējošanas atkļūdošanas režīms, iestatot <code>APP_DEBUG</code> vērtību savam <code>.env</code> failam uz <code>false</code>.',
     'delete' => 'Dzēst',
     'delete_confirm' => 'Vai tiešām vēlaties dzēst :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Are you sure, you wish to delete :item? This cannot be undone.',
     'deleted' => 'Svītrots',
     'delete_seats' => 'Izdzēstās vietas',
     'deletion_failed' => 'Dzēšana neizdevās',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Izveidot',
     'generate_labels' => 'Ģenerēt birkas',
-    'github_markdown' => 'Šajā laukā tiek pieņemts <a href="https://help.github.com/articles/github-flavored-markdown/">Github pieņemtais marķējums</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupas',
     'gravatar_email' => 'Gravatar e-pasta adrese',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Izmaini savu tēlu Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Augšupielādēt attēlu',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'The maximum upload size allowed is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'Šis attēls nebija izmantojams. Atļautie failu tipi ir: jpg, webp, png, gif, and svg. Šī faila tips ir :mimetype.',
     'import' => 'Importēt',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ja Jūs organizācijā veicat auditu, tas tiek automātiski aprēķināts balstoties uz inventāra&apos; pēdējā audita datumu un audita biežumu (<code>Admin iestatījumi &gt; Paziņojumi</code>) un to šo atstāt tukšu. Jūs varat iestatīt šeit datumu, ja tas ir nepieciešams, bet tam jābūt pēc pēdējā audita datuma. ',
     'audit_images_help' => 'Jūs varat atrast audita attēlus inventāra Vēstures cilnē.',
     'no_email' => 'Šim lietotājam nav norādīta epasta adrese',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Pēdējais audits',
     'new' => 'jauns!',
     'no_depreciation' => 'Nav nolietojuma',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Gatavs izvietot',
     'requested_date' => 'Pieprasīšanas datums',
     'requested_assets' => 'Pieprasītais inventārs',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Pieprasāmās lietas',
     'request_canceled' => 'Pieprasījums atcelts',
     'request_item' => 'Pieprasīt šo lietu',
     'external_link_tooltip' => 'Ārējā saite',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Jums izsniegtais inventārs pieder citam uzņēmumam tapēc Jūs nevarat to pieņemt vai atteikties. Lūdzu sazinieties ar savu vadītāju',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Izsniegts: Vārds Uzvārds',
         'checked_out_to_first_name' => 'Izsniegts: Vārds',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Aktīvs',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

@@ -90,7 +90,7 @@ return [
     'password' => 'Parola',
     'password_reset' => 'Resetare parola',
     'read_the_terms' => 'Citiți termenii de utilizare de mai jos.',
-    'read_the_terms_and_click' => 'Vă rugăm să citiţi termenii de utilizare de mai jos, și faceți clic pe link-ul din partea de jos pentru a confirma că ați citit și sunteți de acord cu termenii de utilizare și ați primit activul.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Cereri',
     'reset_link' => 'Parola Resetare parolă',

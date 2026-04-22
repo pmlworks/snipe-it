@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Učitaj avatar',
     'back' => 'Nazad',
     'bad_data' => 'Ništa nije pronađeno. Možda loši podaci?',
-    'bulkaudit' => 'Skupna revizija',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status revizije',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Masovno uređivanje',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'This application is running in production mode with debugging enabled. This can expose sensitive data if your application is accessible to the outside world. Disable debug mode by setting the <code>APP_DEBUG</code> value in your <code>.env</code> file to <code>false</code>.',
     'delete' => 'Izbrisati',
     'delete_confirm' => 'Jeste li sigurni da želite izbrisati :item?',
-    'delete_confirm_no_undo' => 'Da li zaista želite da obrišete :item? Ovo nije moguće poništiti.',
+    'delete_confirm_no_undo' => 'Da li zaista, želite da obrišete :item? Ovo nije moguće poništiti.',
     'deleted' => 'Izbrisano',
     'delete_seats' => 'Izbrisana mesta',
     'deletion_failed' => 'Neuspelo brisanje',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1. zaduženje',
     'generate' => 'Generate',
     'generate_labels' => 'Generiši nalepnice',
-    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'Ovo polje prihvata <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Githab-ovu varijantu markdown-a</a>.',
     'groups' => 'Grupe',
     'gravatar_email' => 'Gravatar Email Address',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Promeni svoj avatar na Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Upload Image',
     'filetypes_accepted_help' => 'Prihvatljiv tip datoteke je :types. Maksimalno dozvoljena veličina je :size.| Prihvatljivi tipovi datoteka su :types. Maksimalno dozvoljena veličina za postavljanje je :size.',
     'filetypes_size_help' => 'Maksimalna dozvoljena veličina za otpremanje je :size.',
-    'image_filetypes_help' => 'Prihvatljivi tipovi datoteka su jpg, webp, png, gif, svg i avig. Maksimalna veličina datoteke je :size.',
+    'image_filetypes_help' => 'Prihvatljivi tipovi datoteka su jpg, webp, png, gif, svg i avif. Maksimalna veličina datoteke je :size.',
     'unaccepted_image_type' => 'Datoteka slike nije čitljiva. Prihvatljivi tipovi datoteka su jpg, webp, png, gif i svg. Mimetip ove datoteke je: :mimetype.',
     'import' => 'Import',
     'documentation' => 'Otvori dokumentaciju u novoj vezi',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ukoliko vršite popisivanje imovine u vašoj organizaciji, ovo se obično automatski izračunava na osnovu poslednjeg popisa i frekvencije popisivanja (u <code>Administratorska podešavanja &gt; Upozorenja</code>) i možete je ostaviti prazno. Ovde možete ručno navesti datum ukoliko je potrebno, ali mora biti kasniji od datuma poslednjeg popisa. ',
     'audit_images_help' => 'Slike sa popisa možete pronaći na kartici istorije imovine.',
     'no_email' => 'Nijedna adresa e-pošte nije povezana sa ovim korisnikom',
+    'no_value' => 'Nema vrednosti',
+    'device_eol' => 'Kraj podrške za uređaj',
+    'na' => 'N/D',
     'last_audit' => 'Poslednja revizija',
     'new' => 'novi!',
     'no_depreciation' => 'Nema amortizacije',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Spremna za raspoređivanje',
     'requested_date' => 'Datum zatraživanja',
     'requested_assets' => 'Zatražena imovina',
-    'requested_assets_menu' => 'Zatražene stavke',
+    'requested_assets_menu' => 'Zatraživa stavka',
     'request_canceled' => 'Zahtev je otkazan',
     'request_item' => 'Zatraži ovu stavku',
     'external_link_tooltip' => 'Eksterna veza do',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Imovina koja je vama zadužena pripada drugoj kompaniji i zato je ne možete prihvatiti niti odbiti. Molim vas proverite sa vašim nadređenim',
     'error_assets_already_checked_out' => 'Jedna ili više imovina su već zadužene',
     'assigned_assets_removed' => 'Sledeće je uklonjeno iz izabrane imovine jer je već zadužena',
+    'upload_files' => 'Pošalji datoteke',
+    'uploaded_files' => 'Poslate datoteke',
+    'sign_in_place' => 'Lično potpisivanje/prihvatanje',
+    'sign_in_place_help' => 'Potvrdite ovo polje ako je korisnik prisutan i želite da prihvati stavku i potpiše/prihvati EULA-u (kada je primenljivo) odmah.',
+    'unauthorized' => 'Neovlašćen ili neautentifikovan.',
     'importer' => [
         'checked_out_to_fullname' => 'Odjavljeno na: Puno ime',
         'checked_out_to_first_name' => 'Odjavljeno na: Ime',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Podlokacije',
     'append' => 'Nadoveži',
     'optional' => 'OPCIONO',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Imovina',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Dodaj napomenu',
     ],
 
+    'last_note' => 'Poslednja beleška',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name još uvek ima povezane stavke. Molim vas uklonite ih pre brisanja ove :item.',
         'assoc_assets' => ':item_name je trenutno povezana sa :asset_count imovine i ne može biti izbrisana. Molim vas izmenite vaše imovine da više nisu povezane sa ovom :item i pokušajte ponovo.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Zaduži :name',
         'checkin_item' => 'Razduži :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Podrazumevano za lokaciju',
-        'default_blue' => 'Podrazumevana plava',
-        'blue_dark' => 'Plava (tamni režim)',
-        'green' => 'Zelena',
-        'green_dark' => 'Zelena (tamni režim)',
-        'red' => 'Crvena',
-        'red_dark' => 'Crvena (tamni režim)',
-        'orange' => 'Narandžasta',
-        'orange_dark' => 'Narandžasta (tamni režim)',
-        'black' => 'Crna',
-        'black_dark' => 'Crna (tamni režim)',
-        'purple' => 'Ljubičasta',
-        'purple_dark' => 'Ljubičasta (tamni režim)',
-        'yellow' => 'Žuta',
-        'yellow_dark' => 'Žuta (tamni režim)',
-        'high_contrast' => 'Visoki kontrast',
-
     ],
 
     'select_all_none' => 'Izaberi sve/ništa',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 mesec|:count meseci',
+
+    'token_unrevoked' => 'API token je ponovno izdat',
+    'token_revoked' => 'API token je poništen',
 
 ];

@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Nahrať avatara',
     'back' => 'Späť',
     'bad_data' => 'Nič nebolo nájdené. Možno zadávate zlé dáta?',
-    'bulkaudit' => 'Hromadný audit',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Stav auditu',
     'bulk_checkout' => 'Hromadné odovzdanie',
     'bulk_edit' => 'Hromadná editácia',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Táto aplikácia beží v produkčnom režime s povoleným ladením. To môže odhaliť citlivé údaje, ak je vaša aplikácia dostupná z vonkajšieho sveta. Zakážte režim ladenia nastavením hodnoty <code>APP_DEBUG</code> v súbore <code>.env</code> na hodnotu <code>false</code>.',
     'delete' => 'Odstrániť',
     'delete_confirm' => 'Ste si istý, že chcete odstrániť :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Ste si istý, že chcete odstrániť :item? Táto akcia sa nedá vrátiť späť.',
     'deleted' => 'Odstránené',
     'delete_seats' => 'Odstránené licenčné miesta',
     'deletion_failed' => 'Vymazanie zlyhalo',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generovať',
     'generate_labels' => 'Generovať štítky',
-    'github_markdown' => 'V tomto poli je možné použiť <a href="https://help.github.com/articles/github-flavored-markdown/">Github variantu markdownu</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Skupiny',
     'gravatar_email' => 'Emailová adresa Gravatara',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Zmeniť avatar na Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Nahrať obrázok',
     'filetypes_accepted_help' => 'Akceptovaný typ súboru :types. Maximálna povolená veľkosť :size.|Akceptované typy súborov :types. Maximálna povolená veľkosť :size.',
     'filetypes_size_help' => 'Maximálna povolená veľkosť :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Povolené typy súborov sú jpg, webp, png, gif, svg, and avif. Maximálna veľkosť nahrávaného obrázku :size.',
     'unaccepted_image_type' => 'Obrázok nebol čitateľlný. Akceptované typy súborov sú jpg, webp, png, gif a svg. Nahratý obrázok je typu :mimetype.',
     'import' => 'Import',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ak používate auditovanie vo Vašej organizácií, toto je obvykle automaticky dopočítané na základe dátumu posledného auditu a frekvencie auditov (<code>Admin nastavenia &gt; Upozornenia</code>) a môžete ho ponechať prázdne. Ak potrebujete, možete tu zadať dátum ručne, musí byť ale neskorší ako dátum posledného auditu. ',
     'audit_images_help' => 'Obrázky auditov nájdete na záložke História.',
     'no_email' => 'K tomuto používateľovi nie je priradená žiadna e-mailová adresa',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Posledný audit',
     'new' => 'nový!',
     'no_depreciation' => 'Žiadne odpisovanie',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Pripravené na odovzdanie',
     'requested_date' => 'Dátum vyžiadania',
     'requested_assets' => 'Vyžiadaný majetok',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Vyžiadateľné položky',
     'request_canceled' => 'Požiadavka zrušená',
     'request_item' => 'Požiadať o túto položku',
     'external_link_tooltip' => 'Externé odkazy',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Priradený majetok patrí inej spoločnosti, takže nemôžete potvrdiť ani odmietnuť jeho prijatie, prosím kontaktujte svojho nadriadeného',
     'error_assets_already_checked_out' => 'Jeden alebo viacero majetkov je už odovzdaných',
     'assigned_assets_removed' => 'Nasledujúce položky boli odstránené z vybraných majetkov, pretože už sú odovzdané',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Odovzdané: Celé meno',
         'checked_out_to_first_name' => 'Odovzdané: Meno',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Podriadené lokality',
     'append' => 'Pripojiť',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Majetok',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Pridať poznámku',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name má stále priradené položky. Pred odstránením :item ich odstráňte.',
         'assoc_assets' => ':item_name je momentálne priradený k :asset_count položkám a nemožno ho odstrániť. Aktualizujte svoje položky tak, aby už neodkazovali na :item a skúste to znova.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

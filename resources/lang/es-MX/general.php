@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Cargar Avatar',
     'back' => 'Atrás',
     'bad_data' => 'No se ha encontrado nada. ¿Tal vez datos erróneos?',
-    'bulkaudit' => 'Auditoría masiva',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Estado de la auditoría',
     'bulk_checkout' => 'Asignación masiva',
     'bulk_edit' => 'Edición masiva',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Esta aplicación se está ejecutando en modo producción con depuración habilitada. Esto puede exponer datos sensibles si su aplicación es accedida desde el mundo exterior. Deshabilite el modo de depuración configurando el valor <code>APP_DEBUG</code> en su archivo <code>.env</code> a <code>false</code>.',
     'delete' => 'Borrar',
     'delete_confirm' => '¿Está seguro de que desea eliminar :item?',
-    'delete_confirm_no_undo' => '¿Está seguro de que desea eliminar :item? Esto no puede deshacerse.',
+    'delete_confirm_no_undo' => '¿Está seguro de que desea eliminar :item? Esto no se puede deshacer.',
     'deleted' => 'Borrado',
     'delete_seats' => 'Licencias eliminadas',
     'deletion_failed' => 'Error al eliminar',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generar',
     'generate_labels' => 'Generar etiquetas',
-    'github_markdown' => 'Este campo acepta el <a href="https://help.github.com/articles/github-flavored-markdown/">formateo flavored de GitHub</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupos',
     'gravatar_email' => 'Dirección de correo electrónico de Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Cambie su avatar en Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Cargar imagen',
     'filetypes_accepted_help' => 'El tipo de archivo aceptado es :types. El tamaño máximo permitido es :size.|Los tipos de archivo aceptados son :types. El tamaño máximo permitido para cargar es :size.',
     'filetypes_size_help' => 'El tamaño máximo permitido para cargar es :size.',
-    'image_filetypes_help' => 'Los tipos de archivo aceptados son jpg, webp, png, gif, svg, y avif. El tamaño máximo permitido para cargar es :size.',
+    'image_filetypes_help' => 'Los tipos de archivo aceptados son jpg, webp, png, gif, svg y avif. El tamaño máximo permitido es :size.',
     'unaccepted_image_type' => 'No fue posible leer este archivo de imagen. Tipos de archivo aceptados son jpg, webp, png, gif y svg. El mimetype de este archivo es: :mimetype.',
     'import' => 'Importar',
     'documentation' => 'Abrir documentación en un nuevo enlace',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Si utiliza auditoría en su organización, esto normalmente se calcula automáticamente en función de la última fecha de auditoría del activo y la frecuencia de auditoría (en <code>Configuración de administración &gt; Alertas</code>) y puede dejarlo en blanco. Puede establecer manualmente esta fecha aquí si lo necesita, pero debe ser posterior a la última fecha de auditoría. ',
     'audit_images_help' => 'Puede encontrar imágenes de auditoría en la pestaña Historial del activo.',
     'no_email' => 'No hay dirección de correo electrónico asociada a este usuario',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Última auditoría',
     'new' => '¡nuevo!',
     'no_depreciation' => 'No Amortizar',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Listo para asignar',
     'requested_date' => 'Fecha de solicitud',
     'requested_assets' => 'Activos solicitados',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Artículos que se pueden solicitar',
     'request_canceled' => 'Solicitud cancelada',
     'request_item' => 'Solicitar este elemento',
     'external_link_tooltip' => 'Enlace externo a',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Un activo asignado a usted pertenece a una compañía diferente por lo que no puede aceptarlo ni rechazarlo, por favor verifique con su supervisor',
     'error_assets_already_checked_out' => 'Uno o más de los activos ya están comprobados',
     'assigned_assets_removed' => 'Los siguientes fueron removidos de los activos seleccionados porque ya están entregados',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Asignado a: Nombre completo',
         'checked_out_to_first_name' => 'Asignado a: Nombre',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Añadir',
     'optional' => 'OPCIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Activo',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Agregar una nota',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => '',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Sitio por defecto',
-        'default_blue' => 'Azul por defecto',
-        'blue_dark' => 'Azul (modo oscuro)',
-        'green' => 'Verde',
-        'green_dark' => 'Verde (modo oscuro)',
-        'red' => 'Rojo',
-        'red_dark' => 'Rojo (Modo Oscuro)',
-        'orange' => 'Naranja',
-        'orange_dark' => 'Naranja (Modo oscuro)',
-        'black' => 'Negro',
-        'black_dark' => 'Negro (Modo Oscuro)',
-        'purple' => 'Morado',
-        'purple_dark' => 'Morado (Modo Oscuro)',
-        'yellow' => 'Amarillo',
-        'yellow_dark' => 'Amarillo (Modo oscuro)',
-        'high_contrast' => 'Alto contraste',
-
     ],
 
     'select_all_none' => 'Seleccionar/Deseleccionar todo',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 mes|:count meses',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

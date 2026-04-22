@@ -90,7 +90,7 @@ return [
     'password' => 'كلمة المرور',
     'password_reset' => 'إعادة تعيين كلمة المرور',
     'read_the_terms' => 'يرجى قراءة شروط الاستخدام أدناه.',
-    'read_the_terms_and_click' => 'يرجى قراءة شروط الاستخدام أدناه، وانقر على الرابط في الأسفل لتأكيد أنك تقرأ وتوافق على شروط الاستخدام، وقد استلمت الأصل.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'طلب',
     'reset_link' => 'رابط إعادة تعيين كلمة المرور',

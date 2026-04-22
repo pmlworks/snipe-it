@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'crwdns1029:0crwdne1029:0',
     'back' => 'crwdns1030:0crwdne1030:0',
     'bad_data' => 'crwdns1334:0crwdne1334:0',
-    'bulkaudit' => 'crwdns1915:0crwdne1915:0',
+    'bulkaudit' => 'crwdns14726:0crwdne14726:0',
     'bulkaudit_status' => 'crwdns1916:0crwdne1916:0',
     'bulk_checkout' => 'crwdns1667:0crwdne1667:0',
     'bulk_edit' => 'crwdns6105:0crwdne6105:0',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'crwdns1828:0crwdne1828:0',
     'delete' => 'crwdns1046:0crwdne1046:0',
     'delete_confirm' => 'crwdns2020:0crwdne2020:0',
-    'delete_confirm_no_undo' => 'crwdns14510:0crwdne14510:0',
+    'delete_confirm_no_undo' => 'crwdns14568:0crwdne14568:0',
     'deleted' => 'crwdns1047:0crwdne1047:0',
     'delete_seats' => 'crwdns1430:0crwdne1430:0',
     'deletion_failed' => 'crwdns6117:0crwdne6117:0',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => 'crwdns14484:0crwdne14484:0',
     'generate' => 'crwdns1140:0crwdne1140:0',
     'generate_labels' => 'crwdns6125:0crwdne6125:0',
-    'github_markdown' => 'crwdns1981:0crwdne1981:0',
+    'github_markdown' => 'crwdns14622:0crwdne14622:0',
     'groups' => 'crwdns1054:0crwdne1054:0',
     'gravatar_email' => 'crwdns1117:0crwdne1117:0',
     'gravatar_url' => 'crwdns6127:0crwdne6127:0',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'crwdns1058:0crwdne1058:0',
     'filetypes_accepted_help' => 'crwdns12622:0crwdne12622:0',
     'filetypes_size_help' => 'crwdns12624:0crwdne12624:0',
-    'image_filetypes_help' => 'crwdns14512:0crwdne14512:0',
+    'image_filetypes_help' => 'crwdns14570:0crwdne14570:0',
     'unaccepted_image_type' => 'crwdns11365:0crwdne11365:0',
     'import' => 'crwdns1411:0crwdne1411:0',
     'documentation' => 'crwdns14462:0crwdne14462:0',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'crwdns12196:0crwdne12196:0',
     'audit_images_help' => 'crwdns12198:0crwdne12198:0',
     'no_email' => 'crwdns12130:0crwdne12130:0',
+    'no_value' => 'crwdns14574:0crwdne14574:0',
+    'device_eol' => 'crwdns14576:0crwdne14576:0',
+    'na' => 'crwdns14578:0crwdne14578:0',
     'last_audit' => 'crwdns1920:0crwdne1920:0',
     'new' => 'crwdns1668:0crwdne1668:0',
     'no_depreciation' => 'crwdns1073:0crwdne1073:0',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'crwdns14338:0crwdne14338:0',
     'requested_date' => 'crwdns6149:0crwdne6149:0',
     'requested_assets' => 'crwdns6151:0crwdne6151:0',
-    'requested_assets_menu' => 'crwdns14524:0crwdne14524:0',
+    'requested_assets_menu' => 'crwdns14572:0crwdne14572:0',
     'request_canceled' => 'crwdns1703:0crwdne1703:0',
     'request_item' => 'crwdns12204:0crwdne12204:0',
     'external_link_tooltip' => 'crwdns12206:0crwdne12206:0',
@@ -558,6 +561,11 @@ return [
     'error_user_company_accept_view' => 'crwdns11787:0crwdne11787:0',
     'error_assets_already_checked_out' => 'crwdns13826:0crwdne13826:0',
     'assigned_assets_removed' => 'crwdns13830:0crwdne13830:0',
+    'upload_files' => 'crwdns14580:0crwdne14580:0',
+    'uploaded_files' => 'crwdns14582:0crwdne14582:0',
+    'sign_in_place' => 'crwdns14700:0crwdne14700:0',
+    'sign_in_place_help' => 'crwdns14702:0crwdne14702:0',
+    'unauthorized' => 'crwdns14714:0crwdne14714:0',
     'importer' => [
         'checked_out_to_fullname' => 'crwdns11639:0crwdne11639:0',
         'checked_out_to_first_name' => 'crwdns11641:0crwdne11641:0',
@@ -661,12 +669,16 @@ return [
     'child_locations' => 'crwdns13796:0crwdne13796:0',
     'append' => 'crwdns14416:0crwdne14416:0',
     'optional' => 'crwdns14448:0crwdne14448:0',
+    'audit_by_field' => 'crwdns14728:0crwdne14728:0',
+    'audit_by_field_help' => 'crwdns14730:0crwdne14730:0',
+    'audit_key' => 'crwdns14732:0crwdne14732:0',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'crwdns12878:0crwdne12878:0',
     ],
 
+    'last_note' => 'crwdns14584:0crwdne14584:0',
     'bulk_delete_associations' => [
         'general_assoc_warning' => 'crwdns13850:0crwdne13850:0',
         'assoc_assets' => 'crwdns13852:0crwdne13852:0',
@@ -688,26 +700,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'crwdns12916:0crwdne12916:0',
         'checkin_item' => 'crwdns12918:0crwdne12918:0',
-    ],
-
-    'skins' => [
-        'site_default' => 'crwdns13057:0crwdne13057:0',
-        'default_blue' => 'crwdns13059:0crwdne13059:0',
-        'blue_dark' => 'crwdns13061:0crwdne13061:0',
-        'green' => 'crwdns13758:0crwdne13758:0',
-        'green_dark' => 'crwdns13065:0crwdne13065:0',
-        'red' => 'crwdns13760:0crwdne13760:0',
-        'red_dark' => 'crwdns13069:0crwdne13069:0',
-        'orange' => 'crwdns13762:0crwdne13762:0',
-        'orange_dark' => 'crwdns13073:0crwdne13073:0',
-        'black' => 'crwdns13075:0crwdne13075:0',
-        'black_dark' => 'crwdns13077:0crwdne13077:0',
-        'purple' => 'crwdns13079:0crwdne13079:0',
-        'purple_dark' => 'crwdns13081:0crwdne13081:0',
-        'yellow' => 'crwdns13083:0crwdne13083:0',
-        'yellow_dark' => 'crwdns13085:0crwdne13085:0',
-        'high_contrast' => 'crwdns13087:0crwdne13087:0',
-
     ],
 
     'select_all_none' => 'crwdns12927:0crwdne12927:0',
@@ -752,5 +744,8 @@ return [
     ],
 
     'months_plural' => 'crwdns13470:0crwdne13470:0',
+
+    'token_unrevoked' => 'crwdns14654:0crwdne14654:0',
+    'token_revoked' => 'crwdns14656:0crwdne14656:0',
 
 ];

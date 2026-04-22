@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Soo rar Avatar',
     'back' => 'Dib u noqo',
     'bad_data' => 'Waxba lama helin Waxaa laga yaabaa in xog xun?',
-    'bulkaudit' => 'Hantidhawrka guud',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Xaaladda Hanti-dhawrka',
     'bulk_checkout' => 'Hubinta Buuxda',
     'bulk_edit' => 'Waxka bedelka badan',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Codsigan waxa uu ku shaqaynayaa qaabka wax soo saarka iyada oo la furayo cilladaha Tani waxay soo bandhigi kartaa xogta xasaasiga ah haddii codsigaaga la heli karo adduunka ka baxsan. Dami qaabka qaladka adoo dejinaya <code>APP_DEBUG</code> qiimaha ku jira <code>.env</code> faylka <code>beenta</code>.',
     'delete' => 'Tirtir',
     'delete_confirm' => 'Ma hubtaa inaad rabto inaad tirtirto :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Are you sure, you wish to delete :item? This cannot be undone.',
     'deleted' => 'La tirtiray',
     'delete_seats' => 'Kuraasta la tirtiray',
     'deletion_failed' => 'Tirtiridda waa fashilantay',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Abuur',
     'generate_labels' => 'Samee calaamado',
-    'github_markdown' => 'Goobtani waxay aqbashaa <href="https://help.github.com/articles/github-flavored-markdown/">Github summadaynta dhadhanka</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Kooxaha',
     'gravatar_email' => 'Ciwaanka iimaylka ee Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><yar>Ka beddel avatarkaaga Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Soo rar sawirka',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'The maximum upload size allowed is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'Sawirkan ma ahayn mid la akhriyi karo Noocyada faylalka la aqbalay waa jpg, webp, png, gif, iyo svg. Nooca faylkani waa: :mimetype.',
     'import' => 'Soo dejinta',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'No email address associated with this user',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Hantidhawrka u dambeeyay',
     'new' => 'cusub!',
     'no_depreciation' => 'Qiimo-dhimis ma jiro',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Diyaar u ah in la geeyo',
     'requested_date' => 'Taariikhda la codsaday',
     'requested_assets' => 'Hantida la codsaday',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'Codsiga waa la joojiyay',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
@@ -558,6 +561,11 @@ return [
     'error_user_company_accept_view' => 'Hanti laguu qoondeeyay waxaa iska leh shirkad kale si aadan aqbali karin mana u diidi kartid, fadlan la xiriir maamulahaaga',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Lagu hubiyay: Magaca oo buuxa',
         'checked_out_to_first_name' => 'Lagu Hubiyay: Magaca Koowaad',
@@ -661,12 +669,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Ku lifaaq',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Hantida',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -688,26 +700,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -752,5 +744,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

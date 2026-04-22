@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'アバターをアップロード',
     'back' => '戻る',
     'bad_data' => '存在しませんでした。データに誤りがあるかもしれません。',
-    'bulkaudit' => '一括監査',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => '監査ステータス',
     'bulk_checkout' => '一括チェックアウト',
     'bulk_edit' => '一括編集',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'このアプリケーションはデバッグモードがONのままプロダクションモードで実行されています。もしアプリケーションが外部からアクセス可能な場合、機密データが抜き取られる可能性があります。<code>.env</code>の<code>APP_DEBUG</code>を<code>false</code>にしてください。',
     'delete' => '削除',
     'delete_confirm' => ':item を削除してもよろしいですか？',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => ':itemを削除してもよろしいですか？これは元に戻すことはできません。',
     'deleted' => '削除しました。',
     'delete_seats' => 'ライセンスを削除',
     'deletion_failed' => '削除に失敗しました',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => '作成',
     'generate_labels' => 'ラベルを生成',
-    'github_markdown' => 'このフィールドでは <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>が利用可能です',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'グループ',
     'gravatar_email' => 'Gravatar のメールアドレス',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Gravatar.com</small> でアバターを変更</a>',
@@ -167,7 +167,7 @@ return [
     'image_upload' => '画像をアップロード',
     'filetypes_accepted_help' => 'アップロード可能なファイル形式は :types です。アップロード可能な最大サイズは :size です。|アップロード可能なファイル形式は :types です。アップロード可能な最大サイズは :size です。',
     'filetypes_size_help' => '許可されている最大アップロードサイズは :size です。',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => '使用できるファイルはjpg、png、gif、svgです。許可される最大ファイルサイズは:size です。',
     'unaccepted_image_type' => 'この画像ファイルは読み取れませんでした。受け入れられるファイルタイプはjpg、webp、png、gif、svgです。このファイルのmimetypeは:mimetypeです。',
     'import' => 'インポート',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'このユーザーに関連付けられているメールアドレスがありません',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => '前回の監査日',
     'new' => '新規',
     'no_depreciation' => '非減価償却資産',
@@ -271,7 +274,7 @@ return [
     'rtd' => '配備可能',
     'requested_date' => 'リクエスト日',
     'requested_assets' => '要求された資産',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'リクエストキャンセル',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'あなたに割り当てられた資産は別の会社に属しているので、受け入れたり拒否したりすることはできません。管理者に確認してください。',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'すでにチェックアウトされているため、選択した資産から次のものが削除されました',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'チェックアウトしました: フルネーム',
         'checked_out_to_first_name' => 'チェックアウトしました: 名前',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => '追加',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => '資産',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'メモを追加する',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'すべてを選択/選択解除',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

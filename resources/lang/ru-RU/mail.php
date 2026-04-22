@@ -90,7 +90,7 @@ return [
     'password' => 'Пароль',
     'password_reset' => 'Сброс пароля',
     'read_the_terms' => 'Пожалуйста, прочитайте условия использования ниже.',
-    'read_the_terms_and_click' => 'Пожалуйста, ознакомьтесь с нижеприведёнными условиями использования ПО и нажмите на ссылку внизу, чтобы подтвердить, что и соглашаетесь с условиями использования и получили актив.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Запрошено',
     'reset_link' => 'Ваша ссылка на сброс пароля',

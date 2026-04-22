@@ -90,7 +90,7 @@ return [
     'password' => '密码',
     'password_reset' => '密码重置',
     'read_the_terms' => '请阅读以下使用条款',
-    'read_the_terms_and_click' => '请阅读以下使用条款，然后点击底部的链接以确认您已经阅读并同意使用条款并且已经收到资产。',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => '已申请',
     'reset_link' => '您的密码重置链接',

@@ -90,7 +90,7 @@ return [
     'password' => 'Parole',
     'password_reset' => 'Paroles atiestatīšana',
     'read_the_terms' => 'Lūdzu, izlasiet lietošanas noteikumus zemāk.',
-    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the asset.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Pieprasīts',
     'reset_link' => 'Jūsu paroles atiestatīšanas saite',

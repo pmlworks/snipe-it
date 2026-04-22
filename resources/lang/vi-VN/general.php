@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Tải lên hình đại diện',
     'back' => 'Quay lại',
     'bad_data' => 'Không tìm thấy bất cứ gì. Có thể dữ liệu bị mất?',
-    'bulkaudit' => 'Kiểm toán hàng loạt',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Trạng thái kiểm tra',
     'bulk_checkout' => 'Thanh toán hàng loạt',
     'bulk_edit' => 'Chỉnh sửa hàng loạt',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Ứng dụng này đang chạy trong chế độ sản xuất với bật gỡ lỗi. Điều này có thể phơi bày dữ liệu nhạy cảm nếu ứng dụng của bạn có thể tiếp cận được với thế giới bên ngoài. Tắt chế độ gỡ lỗi bằng cách đặt giá trị <code>APP_DEBUG</code> trong tệp <code>.env</code> của bạn thành <code>false</code>.',
     'delete' => 'Xóa',
     'delete_confirm' => 'Bạn có chắc chắn muốn xoá trường này không?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Bạn có chắc chắn muốn xóa :item không? Hành động này không thể hoàn tác.',
     'deleted' => 'Đã xóa',
     'delete_seats' => 'Ghế đã Xóa',
     'deletion_failed' => 'Xoá không được',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Tạo ra',
     'generate_labels' => 'Tạo các nhãn tên',
-    'github_markdown' => 'Trường hợp được chấp thuận <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Nhóm',
     'gravatar_email' => 'Gravatar địa chỉ email',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Đổi hình đại diện của bạn tại Gravatar.com.</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Tải hình',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'The maximum upload size allowed is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'Tập tin hình ảnh không thể đọc được. Chỉ chấp nhận các kiểu tập tin là jpg, webp, png, gif, và svg.',
     'import' => 'Nhập',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Nếu bạn sử dụng chức năng kiểm kê trong tổ chức, mục này thường sẽ được hệ thống tự động tính toán dựa trên ngày kiểm kê gần nhất của tài sản và tần suất kiểm kê (thiết lập trong <code>Admin Settings > Alerts</code>), vì vậy bạn có thể để trống. Tuy nhiên, bạn vẫn có thể nhập ngày này thủ công nếu cần, nhưng ngày đó phải muộn hơn ngày kiểm kê gần nhất ',
     'audit_images_help' => 'Bạn có thể tìm thấy hình ảnh kiểm kê trong tab lịch sử của tài sản.',
     'no_email' => 'Không có địa chỉ email nào được liên kết với người dùng này',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Kiểm toán Lần cuối',
     'new' => 'Mới!',
     'no_depreciation' => 'Không khấu hao',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Sẵn sàng để cấp phát',
     'requested_date' => 'Ngày yêu cầu',
     'requested_assets' => 'Tài sản đã yêu cầu',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'Yêu cầu Đã Hủy',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
@@ -560,6 +563,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -663,12 +671,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Thêm vào',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Tài sản',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Thêm ghi ghú',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -690,26 +702,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -754,5 +746,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

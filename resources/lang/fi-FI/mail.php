@@ -90,7 +90,7 @@ return [
     'password' => 'Salasana',
     'password_reset' => 'Salasanan nollaus',
     'read_the_terms' => 'Lue alla olevat käyttöehdot.',
-    'read_the_terms_and_click' => 'Ole hyvä ja lue alla olevat käyttöehdot. ja klikkaa alareunassa olevaa linkkiä vahvistaaksesi, että olet lukenut ja hyväksynyt käyttöehdot, ja olet vastaanottanut käyttöomaisuuden.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Pyydetty',
     'reset_link' => 'Salasanasi resetointi-linkki',

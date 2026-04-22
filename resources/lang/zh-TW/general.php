@@ -54,7 +54,7 @@ return [
     'avatar_upload' => '上傳頭像',
     'back' => '返回',
     'bad_data' => '未發現任何東西，是否資料有誤？',
-    'bulkaudit' => '批次稽核',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => '稽核狀態',
     'bulk_checkout' => '批次借出',
     'bulk_edit' => '批次編輯',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => '此應用程式已開啟除錯模式， 如果開放外部存取可能造成敏感資料外洩。您可透過修改<code>.env</code>檔案中的參數<code>APP_DEBUG</code>，將值改為<code>false</code>關閉除錯模式。',
     'delete' => '刪除',
     'delete_confirm' => '您確定要刪除 :item 嗎？',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => '您確定要刪除 :item 嗎？此操作無法復原。',
     'deleted' => '刪除',
     'delete_seats' => '刪除授權',
     'deletion_failed' => '刪除失敗',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => '產生',
     'generate_labels' => '產生標籤',
-    'github_markdown' => '此欄位可以使用 <a href="https://help.github.com/articles/github-flavored-markdown/">Github 風格 markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => '群組',
     'gravatar_email' => 'Gravatar 頭像郵件地址',
     'gravatar_url' => '<a href="http://gravatar.com"><small>在 Gravatar.com 更改您的頭像</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => '上傳圖片',
     'filetypes_accepted_help' => '接受的檔案類行為 :types。允許的最大上傳大小為 :size。',
     'filetypes_size_help' => '上傳檔案大小上限為 :size。',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => '接受的檔案類型有 jpg、webp、png、gif 、svg 和 avif。允許的最大上傳大小為 :size。',
     'unaccepted_image_type' => '此影像無法被讀取。可接受的檔案格式為 jpg, webp, png, gif 以及 svg。此影像的 mimetype 為 :mimetype。',
     'import' => '匯入',
     'documentation' => '在新連結打開文件',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => '如果您在您的組織中使用盤點，這通常是根據上次資產盤點的日期和盤點頻率自動計算 ( 在<code>管理員設定 &gt; 警告</code>)，您可以留空。若有需要，您可以手動設定此日期，但必須晚於最後盤點日期。 ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => '沒有與此使用者關聯的電子郵件',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => '最後稽核日期',
     'new' => 'new!',
     'no_depreciation' => '永久',
@@ -271,7 +274,7 @@ return [
     'rtd' => '準備部署',
     'requested_date' => '申請日期',
     'requested_assets' => '申請的資產',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => '取消申請',
     'request_item' => 'Request this item',
     'external_link_tooltip' => '外部連結到',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => '借出給：全名',
         'checked_out_to_first_name' => '借出給：名字',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => '追加',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => '資產',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];
