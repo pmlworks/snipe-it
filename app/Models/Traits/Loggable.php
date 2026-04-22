@@ -324,7 +324,6 @@ trait Loggable
             $log->created_by = auth()->id();
         }
 
-
         $log->logaction('force checkin');
 
         return $log;
