@@ -18,6 +18,14 @@ class DenormalizedEolAndAddColumnForExplicitDateToAssets extends Migration
      */
     public function up()
     {
+
+        Schema::table('companies', function (Blueprint $table) {
+            if (!Schema::hasColumn('companies', 'deleted_at')) {
+                $table->softDeletes();
+            }
+        });
+
+
         Schema::table('assets', function (Blueprint $table) {
             if (! Schema::hasColumn('assets', 'eol_explicit')) {
                 $table->boolean('eol_explicit')->default(false)->after('asset_eol_date');
