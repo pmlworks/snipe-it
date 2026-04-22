@@ -1610,13 +1610,6 @@
                                             </a>
                                         </li>
                                     @endcan
-                                    @can('admin')
-                                        <li id="import-history-sidenav-option" {!! (request()->is('hardware/history') ? ' class="active"' : '') !!}>
-                                            <a href="{{ url('hardware/history') }}">
-                                                {{ trans('general.import-history') }}
-                                            </a>
-                                        </li>
-                                    @endcan
                                     @can('audit', \App\Models\Asset::class)
                                         <li id="bulk-audit-sidenav-option" {!! (request()->is('hardware/bulkaudit') ? ' class="active"' : '') !!}>
                                             <a href="{{ route('assets.bulkaudit') }}">
@@ -1624,6 +1617,15 @@
                                             </a>
                                         </li>
                                     @endcan
+
+                                    @can('admin')
+                                        <li id="import-history-sidenav-option" {!! (request()->is('hardware/history') ? ' class="active"' : '') !!}>
+                                            <a href="{{ url('hardware/history') }}">
+                                                {{ trans('general.import-history') }}
+                                            </a>
+                                        </li>
+                                    @endcan
+
                                 </ul>
                             </li>
                         @endcan
