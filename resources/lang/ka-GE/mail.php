@@ -90,7 +90,7 @@ return [
     'password' => 'პაროლი',
     'password_reset' => 'პაროლის განახლება',
     'read_the_terms' => 'გთხოვთ, წაიკითხოთ გამოყენების წესები ქვემოთ.',
-    'read_the_terms_and_click' => 'გთხოვთ, წაიკითხოთ გამოყენების წესები ქვემოთ და დააკლიკეთ ბმულს, რომ დაადასტუროთ, რომ წაიკითხეთ, თანხმობთ წესებს და მიიღეთ ინვენტარი.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'მოთხოვნილია',
     'reset_link' => 'თქვენი პაროლის განახლების ბმული',

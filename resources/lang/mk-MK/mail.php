@@ -90,7 +90,7 @@ return [
     'password' => 'Лозинка',
     'password_reset' => 'Ресетирање на лозинка',
     'read_the_terms' => 'Ве молиме прочитајте ги условите за употреба подолу.',
-    'read_the_terms_and_click' => 'Прочитајте ги Условите за употреба подолу, кликнете на линкот подолу за да потврдите дека сте прочитале и се сложувате со условите за користење, и сте примиле средства.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Побарано',
     'reset_link' => 'Вашата врска за ресетирање на лозинка',

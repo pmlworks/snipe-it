@@ -54,7 +54,7 @@ return [
     'avatar_upload' => '上传头像',
     'back' => '后退',
     'bad_data' => '未发现任何东西，是否数据错误？',
-    'bulkaudit' => '批量盘点',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => '盘点状态',
     'bulk_checkout' => '批量签出',
     'bulk_edit' => '批量编辑',
@@ -100,9 +100,9 @@ return [
     'created_at' => '新增于',
     'created_by' => '创建者',
     'record_created' => '记录已创建',
-    'updated_at' => 'Updated At',
+    'updated_at' => '更新于',
     'updated_before' => 'Updated Before',
-    'updated_plain' => 'Updated',
+    'updated_plain' => '已更新',
     'deleted_plain' => '已删除',
     'purchased_plain' => '已购买',
     'created_plain' => '创建',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => '此应用程序正在生产模式下运行，但启用了调试模式。 如果您的应用程序可以从外部访问，这可能会泄露敏感数据。 请通过将 <code>APP_DEBUG</code> 值在您的 <code>.env</code> 文件中设置为 <code>false</code> 来禁用调试模式。',
     'delete' => '刪除',
     'delete_confirm' => '您确定要删除 :item？',
-    'delete_confirm_no_undo' => '您确定要删除 :item？此操作无法撤消。',
+    'delete_confirm_no_undo' => '您确定要删除 :item吗？此操作无法撤消。',
     'deleted' => '已删除',
     'delete_seats' => '已移除席位',
     'deletion_failed' => '删除失败',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => '生成',
     'generate_labels' => '生成标签',
-    'github_markdown' => '该字段可以使用 <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown语法</a>',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => '分组',
     'gravatar_email' => 'Gravatar头像邮件地址',
     'gravatar_url' => '<a href="http://gravatar.com"><small>在 Gravatar.com</small></a> 更改您的头像。',
@@ -167,7 +167,7 @@ return [
     'image_upload' => '上传图片',
     'filetypes_accepted_help' => '可接受的文件类型是 :type 。允许的最大大小是 :size.|可接受的文件类型是 :type 。允许最大上传大小是 :size。',
     'filetypes_size_help' => '允许最大上传大小为 :size',
-    'image_filetypes_help' => '可接受的文件类型是jpg、webp、png、gif、svg和avif。允许的最大上传大小为 :size。',
+    'image_filetypes_help' => '可接受的文件类型是jpg, webp, png, gif, svg和avif。允许最大上传大小为 :size。',
     'unaccepted_image_type' => '此图像文件不可读。可接受的文件类型为jpg、webp、png、gif和svg。此文件的 mimetype 类型为：:mimetype。',
     'import' => '导入',
     'documentation' => '在新链接中打开文档',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => '如果您在您的组织中使用盘点，这通常是根据资产的上次盘点日期和盘点频率自动计算的( 在<code>Admin Settings &gt; Alerts</code>)，您可以留空。 如果需要您可以手动设置此日期，但必须晚于最后盘点日期。 ',
     'audit_images_help' => '您可以在资产的历史选项卡中找到盘点图片。',
     'no_email' => '没有与此用户关联的电子邮件地址',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => '上一次盘点',
     'new' => '新！',
     'no_depreciation' => '永久',
@@ -271,7 +274,7 @@ return [
     'rtd' => '待分配',
     'requested_date' => '申领日期',
     'requested_assets' => '已申领资产',
-    'requested_assets_menu' => '被请求的物品',
+    'requested_assets_menu' => '可申领名目',
     'request_canceled' => '取消请求',
     'request_item' => '申领此项',
     'external_link_tooltip' => '外部链接到',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => '分配给您的资产属于另一家公司，所以您不能接受或拒绝它，请与您的经理联系。',
     'error_assets_already_checked_out' => '一个或多个资产已签出',
     'assigned_assets_removed' => '下列资产已从选定的资产中移除，因为它们已被签出',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => '签出给: 全名',
         'checked_out_to_first_name' => '签出给: 名',
@@ -662,12 +670,16 @@ return [
     'child_locations' => '子位置',
     'append' => '追加',
     'optional' => '可选项',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => '资产',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => '添加备注',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name 仍然关联物品。请在删除此 :item 之前删除它们。',
         'assoc_assets' => ':item_name 目前与 :asset_count 个资产关联，不能删除。请更新您的assets 以不再关联此 :item ，然后重试。',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => '签出 :name',
         'checkin_item' => '归还 :name',
-    ],
-
-    'skins' => [
-        'site_default' => '站点默认',
-        'default_blue' => '默认蓝色',
-        'blue_dark' => '蓝色（深色模式）',
-        'green' => '绿色',
-        'green_dark' => '绿色（深色模式）',
-        'red' => '红色',
-        'red_dark' => '红色（深色模式）',
-        'orange' => '橙色',
-        'orange_dark' => '橙色（深色模式）',
-        'black' => '黑色',
-        'black_dark' => '黑色（深色模式）',
-        'purple' => '紫色',
-        'purple_dark' => '紫色（深色模式）',
-        'yellow' => '黄色',
-        'yellow_dark' => '黄色（深色模式）',
-        'high_contrast' => '高对比度',
-
     ],
 
     'select_all_none' => '选择/取消选择所有',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1月|:count 月',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

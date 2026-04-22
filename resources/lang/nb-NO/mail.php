@@ -90,7 +90,7 @@ return [
     'password' => 'Passord',
     'password_reset' => 'Tilbakestill passord',
     'read_the_terms' => 'Vennligst les bruksbetingelsene nedenfor.',
-    'read_the_terms_and_click' => 'Vennligst les vilkårene for bruk nedenfor. og klikk på lenken nederst for å bekrefte at du leser og godtar vilkårene for bruk, og har mottatt eiendelen.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Forespurt',
     'reset_link' => 'Lenke for tilbakestilling av passord',

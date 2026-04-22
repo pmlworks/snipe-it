@@ -90,7 +90,7 @@ return [
     'password' => 'கடவுச்சொல்',
     'password_reset' => 'கடவுச்சொல்லை மீட்டமை',
     'read_the_terms' => 'கீழே உள்ள விதிமுறைகளை தயவுசெய்து படித்துப் பாருங்கள்.',
-    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the asset.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'கோரப்பட்டது',
     'reset_link' => 'உங்கள் கடவுச்சொல்லை மீட்டமை இணைப்பு',

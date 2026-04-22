@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Uwchlwytho Avatar',
     'back' => 'Yn ôl',
     'bad_data' => 'Heb darganfod, Efallai data drwg?',
-    'bulkaudit' => 'Awdit swmp',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Statws Awdit',
     'bulk_checkout' => 'Nodi swmp allan',
     'bulk_edit' => 'Bulk Edit',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Mae\'r cymhwysiad hwn yn rhedeg yn y modd cynhyrchu gyda debugging wedi\'i alluogi. Gall hyn ddatgelu data sensitif os yw\'ch cais yn hygyrch i\'r byd y tu allan. Analluoga modd dadfygio trwy osod y <code>APP_DEBUG</code> gwerth yn <code>.env</code> ffeil i<code>false</code>.',
     'delete' => 'Dileu',
     'delete_confirm' => 'Ydych chi\'n sicr eich bod eisiau dileu\'r :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Are you sure, you wish to delete :item? This cannot be undone.',
     'deleted' => 'Wedi Dileu',
     'delete_seats' => 'Seddi wedi dileu',
     'deletion_failed' => 'Deletion failed',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Creu',
     'generate_labels' => 'Generate Labels',
-    'github_markdown' => 'Mae\'r maes yma yn derbyn<a href="https://help.github.com/articles/github-flavored-markdown/">markdown GitHub</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grŵpiau',
     'gravatar_email' => 'Cyfeiriad ebost Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Change your avatar at Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Uwchlwytho delwedd',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'The maximum upload size allowed is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'This image file was not readable. Accepted filetypes are jpg, webp, png, gif, and svg. The mimetype of this file is: :mimetype.',
     'import' => 'Mewnforio',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'No email address associated with this user',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Awdit diwethaf',
     'new' => 'newydd!',
     'no_depreciation' => 'Dim Dibrisiant',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Barod i\'w defnyddio',
     'requested_date' => 'Requested Date',
     'requested_assets' => 'Requested Assets',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'Cais wedi dileu',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Ased',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

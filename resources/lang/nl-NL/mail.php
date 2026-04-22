@@ -90,7 +90,7 @@ return [
     'password' => 'Wachtwoord',
     'password_reset' => 'Wachtwoord opnieuw instellen',
     'read_the_terms' => 'Lees alstublieft de onderstaande gebruiksovereenkomst.',
-    'read_the_terms_and_click' => 'Gelieve de onderstaande gebruiksvoorwaarden te lezen, en klik op de link onderaan om te bevestigen dat je de gebruiksvoorwaarden leest en accepteert en het bestand hebt ontvangen.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Aangevraagd',
     'reset_link' => 'Je Wachtwoord Herstel Link',

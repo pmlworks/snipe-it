@@ -90,7 +90,7 @@ return [
     'password' => 'Mật khẩu',
     'password_reset' => 'Đặt lại mật khẩu',
     'read_the_terms' => 'Vui lòng đọc các điều khoản sử dụng bên dưới.',
-    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the asset.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Đã yêu cầu',
     'reset_link' => 'Liên kết Đặt lại Mật khẩu của bạn',

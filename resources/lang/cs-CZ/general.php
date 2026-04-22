@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Nahrát avatara',
     'back' => 'Zpět',
     'bad_data' => 'Nic nebylo nalezeno. Možná zadáváte špatná data?',
-    'bulkaudit' => 'Hromadný audit',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Stav auditu',
     'bulk_checkout' => 'Hromadný výdej',
     'bulk_edit' => 'Hromadná úprava',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Výdej',
     'generate' => 'Vytvořit',
     'generate_labels' => 'Generovat štítky',
-    'github_markdown' => 'V kolonce je možné použít <a href="https://help.github.com/articles/github-flavored-markdown/">Github variantu markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Skupiny',
     'gravatar_email' => 'Emailová adresa Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Změňte svůj avatar na Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Nahrát obrázek',
     'filetypes_accepted_help' => 'Povolený typ souboru je :types. Maximální povolená velikost je :size.|Povolený typ souborů je :types. Maximální povolená velikost je :size.',
     'filetypes_size_help' => 'Maximální povolená velikost nahrávaného souboru je :size.',
-    'image_filetypes_help' => 'Povolené formáty: jpg, webp, png, gif, svg a avif. Max. velikost nahrávaného souboru je :size.',
+    'image_filetypes_help' => 'Povolené formáty: jpg, webp, png, gif, svg a avif. Max. velikost nahrávaného souboru: :size.',
     'unaccepted_image_type' => 'Soubor s obrázkem nebyl čitelný. Přijatelné druhy souborů jsou jpg, webp, png, gif, a svg. Tento soubor je druhu: :mimetype.',
     'import' => 'Import',
     'documentation' => 'Otevřít dokumentaci v novém odkazu',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Pokud ve své organizaci používáte audit, je tato hodnota obvykle automaticky vypočtena na základě data posledního auditu aktiva a frekvence auditů (v <code>Nastavení administrátora &gt; Upozornění</code>) a můžete ji ponechat prázdnou. V případě potřeby můžete toto datum nastavit zde ručně, ale musí být pozdější než datum posledního auditu. ',
     'audit_images_help' => 'Obrázky auditu najdete na kartě Historie aktiva.',
     'no_email' => 'K tomuto uživateli není přiřazena žádná e-mailová adresa',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Poslední audit',
     'new' => 'nový!',
     'no_depreciation' => 'Žádná amortizace',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Připraveno k přidělení',
     'requested_date' => 'Požadované datum',
     'requested_assets' => 'Vyžádaný majetek',
-    'requested_assets_menu' => 'Požadované položky',
+    'requested_assets_menu' => 'Položky, o které lze požádat',
     'request_canceled' => 'Žádost zrušena',
     'request_item' => 'Požádat o tuto položku',
     'external_link_tooltip' => 'Externí odkazy',
@@ -561,6 +564,11 @@ return [
     'error_user_company_accept_view' => 'Majetek přiřazený vám patří jiné společnosti, takže ho nemůžete přijmout ani odmítnout, zkontrolujte si prosím svůj manažer',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Odškrtnuto na: Celé jméno',
         'checked_out_to_first_name' => 'Odškrtnuto na: křestní jméno',
@@ -664,12 +672,16 @@ return [
     'child_locations' => 'Podřízená umístění',
     'append' => 'Připojit',
     'optional' => 'NEPOVINNÉ',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Majetek',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Přidat poznámku',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name stále obsahuje přidružené položky. Před smazáním tohoto :item je prosím odstraňte.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -691,26 +703,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Vydat :name',
         'checkin_item' => 'Převzít :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Výchozí nastavení webu',
-        'default_blue' => 'Modrá – výchozí',
-        'blue_dark' => 'Modrá (tmavý režim)',
-        'green' => 'Zelený',
-        'green_dark' => 'Zelená (tmavý režim)',
-        'red' => 'Červený',
-        'red_dark' => 'Červená (tmavý režim)',
-        'orange' => 'Oranžový',
-        'orange_dark' => 'Oranžová (tmavý režim)',
-        'black' => 'Černá',
-        'black_dark' => 'Černá (tmavý režim)',
-        'purple' => 'Fialová',
-        'purple_dark' => 'Fialová (tmavý režim)',
-        'yellow' => 'Žlutá',
-        'yellow_dark' => 'Žlutá (tmavý režim)',
-        'high_contrast' => 'Vysoký kontrast',
-
     ],
 
     'select_all_none' => 'Označit/odznačit vše',
@@ -755,5 +747,8 @@ return [
     ],
 
     'months_plural' => '1 měsíc|:count měsíců',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

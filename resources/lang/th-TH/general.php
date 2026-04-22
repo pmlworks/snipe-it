@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'อัพโหลดภาพประจำตัว',
     'back' => 'ย้อนกลับ',
     'bad_data' => 'ไม่พบข้อมูลใดๆ หรือข้อมูลอาจไม่ถูกต้อง?',
-    'bulkaudit' => 'การตรวจสอบเป็นกลุ่ม',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'สถานะการตรวจสอบ',
     'bulk_checkout' => 'Checkout เป็นกลุ่ม',
     'bulk_edit' => 'แก้ไขจำนวนมาก',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'แอ็พพลิเคชันนี้กำลังทำงานในโหมดการผลิตโดยเปิดใช้งานดีบัก ข้อมูลนี้สามารถเปิดเผยข้อมูลที่ละเอียดอ่อนหากแอปพลิเคชันของคุณสามารถเข้าถึงโลกภายนอกได้ ปิดใช้งานโหมดดีบั๊กโดยการตั้งค่า <code>APP_DEBUG</code> ในไฟล์ <code>.env</code> ของคุณเป็น <code>false</code>',
     'delete' => 'ลบ',
     'delete_confirm' => 'คุณแน่ใจหรือไม่ว่าต้องการลบ?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'คุณแน่ใจหรือไม่ที่จะลบ :item? ข้อมูลจะไม่สามารถกู้คืนได้',
     'deleted' => 'ลบแล้ว',
     'delete_seats' => 'ลบที่นั่งแล้ว',
     'deletion_failed' => 'การลบล้มเหลว',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'สร้าง',
     'generate_labels' => 'สร้างป้ายกำกับ',
-    'github_markdown' => 'ฟิลด์นี้ช่วยให้ <a href="https://help.github.com/articles/github-flavored-markdown/">Github markdown markdown</a>',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'กลุ่ม',
     'gravatar_email' => 'อีเมลแอดเดรส Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>ใช้รูปอวตาลของคุณจาก Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'อัพโหลดภาพ',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'ขนาดไฟล์ใหญ่สุดที่ให้อัพโหลดได้ :size',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'This image file was not readable. Accepted filetypes are jpg, webp, png, gif, and svg. The mimetype of this file is: :mimetype.',
     'import' => 'นำเข้า',
     'documentation' => 'เปิดเอกสารในลิงก์ใหม่',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => '',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'ไม่มีอีเมล์ที่เกี่ยวข้องกับผู้ใช้งานนี้',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'การตรวจสอบครั้งล่าสุด',
     'new' => 'ใหม่!',
     'no_depreciation' => 'ไม่มีค่าเสื่อมราคา',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'พร้อมใช้งาน',
     'requested_date' => 'วันที่ขอ',
     'requested_assets' => 'Requested Assets',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'คำขอยกเลิกแล้ว',
     'request_item' => 'แจ้งความต้องการสิ่งนี้',
     'external_link_tooltip' => 'ลิงก์ภายนอกไปยัง',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'เบิกจ่ายไปที่: ชื่อเต็ม',
         'checked_out_to_first_name' => 'เบิกจ่ายไปที่: ชื่อจริง',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'สถานที่ย่อย',
     'append' => 'เพิ่ม',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'สินทรัพย์',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'เพื่มบันทึก',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'เบิกจ่าย :name',
         'checkin_item' => 'ส่งคืน :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'ค่าปกติของเว็บไซต์',
-        'default_blue' => 'ฟ้า',
-        'blue_dark' => 'ฟ้า (โหมดมืด)',
-        'green' => 'เขียว',
-        'green_dark' => 'เขียว (โหมดมืด)',
-        'red' => 'แดง',
-        'red_dark' => 'แดง (โหมดมืด)',
-        'orange' => 'ส้ม',
-        'orange_dark' => 'ส้ม (โหมดมืด)',
-        'black' => 'ดำ',
-        'black_dark' => 'ดำ (โหมดมืด)',
-        'purple' => 'ม่วง',
-        'purple_dark' => 'ม่วง (โหมดมืด)',
-        'yellow' => 'เหลือง',
-        'yellow_dark' => 'เหลือง (โหมดมืด)',
-        'high_contrast' => 'ความคมชัดสูง',
-
     ],
 
     'select_all_none' => 'เลือก / ไม่เลือกทั้งหมด',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 เดือน|:count เดือน',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

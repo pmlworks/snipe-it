@@ -90,7 +90,7 @@ return [
     'password' => 'Parool',
     'password_reset' => 'Parooli taastamine',
     'read_the_terms' => 'Palun lugege allpool toodud kasutustingimusi.',
-    'read_the_terms_and_click' => 'Palun lugege läbi allpool toodud kasutustingimused ja klõpsake alloleval lingil kinnitamiseks, et lugesite läbi ja nõustute kasutustingimustega, ning olete vara kätte saanud.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Taotletud',
     'reset_link' => 'Teie salasõna lähtestamise link',

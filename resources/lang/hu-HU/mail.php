@@ -90,7 +90,7 @@ return [
     'password' => 'Jelszó',
     'password_reset' => 'Jelszó visszaállítása',
     'read_the_terms' => 'Kérjük, olvassa el az alábbi használati feltételeket.',
-    'read_the_terms_and_click' => 'Kérjük, a használati feltételek elolvasása után az alábbi linken erősítse meg annak elfogadását, és az eszköz átvételét.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Kérve',
     'reset_link' => 'Jelszó visszaállítása linkre',

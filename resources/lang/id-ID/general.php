@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Unggah avatar',
     'back' => 'Kembali',
     'bad_data' => 'Tidak di temukan. Kemungkinan data rusak?',
-    'bulkaudit' => 'Audit Massal',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status Audit',
     'bulk_checkout' => 'check-out masal',
     'bulk_edit' => 'Edit Massal',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Aplikasi ini berjalan dalam mode produksi dengan debugging diaktifkan. Hal ini dapat mengekspos data sensitif jika aplikasi Anda dapat diakses oleh dunia luar. Nonaktifkan mode debug dengan menetapkan nilai <code>APP_DEBUG</code> di file <code>.env</code> Anda ke <code>false</code>.',
     'delete' => 'Hapus',
     'delete_confirm' => 'Apakah Anda yakin untuk menghapus kategori ini?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Anda yakin ingin menghapus :item? Tindakan ini tidak dapat dibatalkan.',
     'deleted' => 'Dihapus',
     'delete_seats' => 'Lisensi di hapus',
     'deletion_failed' => 'Penghapusan gagal',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generate',
     'generate_labels' => 'Buat Label',
-    'github_markdown' => 'Kolom ini mengizinkan <a href="https://help.github.com/articles/github-flavored-markdown/">markup rasa Github</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Kelompok',
     'gravatar_email' => 'Alamat Gravatar Email',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Ubah avatar Anda di Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Unggah gambar',
     'filetypes_accepted_help' => 'Jenis berkas yang diterima adalah :types. Ukuran maksimum yang diizinkan adalah :size.|Jenis berkas yang diterima adalah :types. Ukuran maksimum yang diizinkan untuk diunggah adalah :size.',
     'filetypes_size_help' => 'Ukuran unggah maksimum yang diizinkan adalah :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Jenis berkas yang diterima adalah jpg, webp, png, gif, svg, dan avif. Ukuran unggah maksimum yang diizinkan adalah :size.',
     'unaccepted_image_type' => 'Pilihan file gambar ini tidak dapat dibaca. Jenis file yang diterima adalah jpg, webp, png, gif, dan svg. Tipe file ini adalah :mimetype.',
     'import' => 'Impor',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'Anda dapat menemukan gambar audit pada tab riwayat aset.',
     'no_email' => 'Tidak ada alamat email yang terkait dengan pengguna ini',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Audit terakhir',
     'new' => 'baru!',
     'no_depreciation' => 'Tidak ada penyusutan',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Siap digunakan',
     'requested_date' => 'Tanggal Permintaan',
     'requested_assets' => 'Aset yang Diminta',
-    'requested_assets_menu' => 'Barang Diterima',
+    'requested_assets_menu' => 'Barang Dapat Diminta',
     'request_canceled' => 'Permintaan Dibatalkan',
     'request_item' => 'Perminta barang ini',
     'external_link_tooltip' => 'Tautan eksternal ke',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Aset yang ditetapkan kepada Anda dimiliki oleh company lain sehingga Anda tidak dapat menerima maupun menolaknya, harap hubungi manajer Anda',
     'error_assets_already_checked_out' => 'Satu atau lebih aset sudah checkout',
     'assigned_assets_removed' => 'Berikut ini dihapus dari aset yang dipilih karena sudah diperiksa',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Dipinjam oleh: Nama Lengkap',
         'checked_out_to_first_name' => 'Dipinjam oleh: Nama Depan',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Lokasi Anak',
     'append' => 'Tambahkan',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Aset',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Tambah catatan',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name masih memiliki item terkait. Harap hapus item tersebut sebelum menghapus :item ini.',
         'assoc_assets' => ':Saat ini pemasok ini terkait dengan :asset_count aset dan tidak dapat dihapus. Harap perbarui aset Anda agar tidak lagi menggunakan pemasok ini sebagai referensi dan silakan coba lagi.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

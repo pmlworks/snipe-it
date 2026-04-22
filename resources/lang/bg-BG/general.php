@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Качване на аватар',
     'back' => 'Назад',
     'bad_data' => 'Няма резултати.',
-    'bulkaudit' => 'Групов одит',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Статус на одита',
     'bulk_checkout' => 'Общо отписване',
     'bulk_edit' => 'Групово редактиране',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Това приложение се изпълнява в режим на производство с разрешено отстраняване на грешки. Това може да изложи чувствителни данни, ако приложението ви е достъпно за външния свят. Забранете режим отстраняване на грешки чрез задаване на стойността <code>APP_DEBUF</code>  <code>.env</code> във файла <code>false</code>.',
     'delete' => 'Изтриване',
     'delete_confirm' => 'Сигурни ли сте, че желаете изтриването на :item?',
-    'delete_confirm_no_undo' => 'Сигурни ли сте че искате да изтриете :item? Това не може да бъде върнато на обратно.',
+    'delete_confirm_no_undo' => 'Сигурни ли сте, че искате да изтриете :item? Това не може да бъде върнато на обратно.',
     'deleted' => 'Изтрито',
     'delete_seats' => 'Изтрити работни места за лиценз',
     'deletion_failed' => 'Неуспешно изтриване',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>ви</sup> изписване',
     'generate' => 'Генериране',
     'generate_labels' => 'Генериране на етикети',
-    'github_markdown' => 'Това поле позволява въвеждането на <a href="https://help.github.com/articles/github-flavored-markdown/">Github вид markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Групи',
     'gravatar_email' => 'Gravatar email адрес',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Сменете си аватара на Gravatar.com</small></a>.',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ако използвате одит във вашата организация, това обикновено се изчислява автоматично въз основа на последната дата на одит на актива&apos; и честота на одит (в <code>Настройки на администратора &gt; Сигнали</code>) и можете да оставите това празно. Можете ръчно да зададете тази дата тук, ако е необходимо, но тя трябва да е по-късна от последната дата на одит. ',
     'audit_images_help' => 'Можете да намерите изображения за одит в раздела за история на актива.',
     'no_email' => 'Няма е-майл адрес към този потребител',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Последният одит',
     'new' => 'new!',
     'no_depreciation' => 'Без амортизация',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Готово за предоставяне',
     'requested_date' => 'Дата на заявката',
     'requested_assets' => 'Изискуеми активи',
-    'requested_assets_menu' => 'Изискани артикули',
+    'requested_assets_menu' => 'Изискуеми артикули',
     'request_canceled' => 'Заявка отменена',
     'request_item' => 'Поискайте този артикул',
     'external_link_tooltip' => 'Външна връзка към',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Актива заведен на вас пренадлежи към друга фирма, затова не можете да го приемете или откажете. Свържете се с вашият администратор',
     'error_assets_already_checked_out' => 'Един или повече от активите са вече изписани',
     'assigned_assets_removed' => 'Следните бяха премахнтати от избраните активи, защото са вече изписани',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Изписан на: Full Name',
         'checked_out_to_first_name' => 'Изписан на: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Под локаций',
     'append' => 'Добави',
     'optional' => 'ПО ЖЕЛАНИЕ',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Актив',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Добавете бележка',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name все още има свързани артикули. Моля премахнете ги преди да изтриете този :item.',
         'assoc_assets' => ':item_name е свързан към :asset_count артикула(и) и не може да бъде изтрит. Моля обновете вашите артикули, така че да не включват този :item и пробвайте отново.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Изпиши :name',
         'checkin_item' => 'Впиши :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Настройки по подразбиране на сайта',
-        'default_blue' => 'По подразбиране Синьо',
-        'blue_dark' => 'Синьо (тъмен режим)',
-        'green' => 'Зелено',
-        'green_dark' => 'Зелено (тъмен режим)',
-        'red' => 'Червено',
-        'red_dark' => 'Червено (тъмен режим)',
-        'orange' => 'Оранжево',
-        'orange_dark' => 'Оранжево (тъмен режим)',
-        'black' => 'Черно',
-        'black_dark' => 'Черно (тъмен режим)',
-        'purple' => 'Лилаво',
-        'purple_dark' => 'Лилаво (тъмен режим)',
-        'yellow' => 'Жълто',
-        'yellow_dark' => 'Жълто (тъмен режим)',
-        'high_contrast' => 'Висок контраст',
-
     ],
 
     'select_all_none' => 'Маркирай всички',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 месец|:count месеца',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

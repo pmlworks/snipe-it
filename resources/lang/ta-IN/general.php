@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Avatar பதிவேற்றவும்',
     'back' => 'மீண்டும்',
     'bad_data' => 'எதுவும் கிடைக்கவில்லை. மோசமான தரவு?',
-    'bulkaudit' => 'மொத்த ஆடிட்',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'தணிக்கை நிலை',
     'bulk_checkout' => 'மொத்த புதுப்பிப்பு',
     'bulk_edit' => 'மொத்த திருத்தம்',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'இயல்பான பிழைத்திருத்தத்துடன் இந்த பயன்பாட்டை உற்பத்தி முறையில் இயக்கும். வெளிப்புற உலகத்திற்கு உங்கள் பயன்பாடு அணுகக்கூடியதாக இருந்தால் இது முக்கியமான தரவுகளை அம்பலப்படுத்தலாம். உங்கள் <code>.env</code> கோப்பில் <code>false</code> இல் <code>APP_DEBUG</code> மதிப்பை அமைப்பதன் மூலம் பிழைத்திருத்த முடையை முடக்கு.',
     'delete' => 'அழி',
     'delete_confirm' => 'Are you sure you wish to delete :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Are you sure, you wish to delete :item? This cannot be undone.',
     'deleted' => 'நீக்கப்பட்ட',
     'delete_seats' => 'நீக்கப்பட்ட இடங்கள்',
     'deletion_failed' => 'Deletion failed',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'உருவாக்குதல்',
     'generate_labels' => 'Generate Labels',
-    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'குழுக்கள்',
     'gravatar_email' => 'Gravatar மின்னஞ்சல் முகவரி',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Change your avatar at Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'படத்தை பதிவேற்றம் செய்யவும்',
     'filetypes_accepted_help' => 'Accepted filetype is :types. The maximum size allowed is :size.|Accepted filetypes are :types. The maximum upload size allowed is :size.',
     'filetypes_size_help' => 'The maximum upload size allowed is :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Accepted Filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
     'unaccepted_image_type' => 'This image file was not readable. Accepted filetypes are jpg, webp, png, gif, and svg. The mimetype of this file is: :mimetype.',
     'import' => 'இறக்குமதி',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'No email address associated with this user',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'கடைசி ஆடிட்',
     'new' => 'புதிய!',
     'no_depreciation' => 'தேய்மானம் இல்லை',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'வரிசைப்படுத்த தயாராக உள்ளது',
     'requested_date' => 'Requested Date',
     'requested_assets' => 'Requested Assets',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'கோரிக்கை ரத்து செய்யப்பட்டது',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'இணைக்கவும்',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'சொத்து',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

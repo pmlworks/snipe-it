@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Avatar frissítése',
     'back' => 'Vissza',
     'bad_data' => 'Nincs találat. Talán rossz adat?',
-    'bulkaudit' => 'Tömeges ellenőrzés',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Audit állapot',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Tömeges szerkesztés',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Ez az alkalmazás gyártási módban fut, a hibakeresés engedélyezve. Ez érzékeny adatokat tárhat fel, ha az alkalmazás elérhető a külvilág számára. A hibakeresési mód letiltása a <code>APP_DEBUG</code> érték <code>.env</code> fájlban történő <code>false</code> fájlban történő beállításával.',
     'delete' => 'Törlés',
     'delete_confirm' => 'Biztos benne, hogy törölni akarja: :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Biztos benne, hogy törölni kívánja: :item? Ez a művelet nem vonható vissza.',
     'deleted' => 'Törölve',
     'delete_seats' => 'Törölt elemek',
     'deletion_failed' => 'A törlés nem sikerült',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> kiadása',
     'generate' => 'Létrehoz',
     'generate_labels' => 'Címkék generálása',
-    'github_markdown' => 'Ez a mező elfogadja a <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown-t</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Csoportok',
     'gravatar_email' => 'Gravatar email cím',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Változtassa meg avatarját a Gravatar.com-on</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Kép feltöltése',
     'filetypes_accepted_help' => 'Az elfogadott fájltípus: :types. A megengedett maximális feltöltési méret: :size.|Az elfogadott fájltípusok :types. A megengedett maximális feltöltési méret :size.',
     'filetypes_size_help' => 'A megengedett maximális feltöltési méret: :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Az elfogadott fájltípusok: jpg, webp, png, gif, svg, and avif. A megengedett maximális feltöltési méret: :size.',
     'unaccepted_image_type' => 'Ez a képfájl nem beolvasható. Az elfogadott fájltípusok: jpg, webp, png, gif és svg. A fájl kódolása: :mimetype.',
     'import' => 'Importálás',
     'documentation' => 'Dokumentáció megnyitása új hivatkozáson',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ha a szervezetük használ auditálást, akkor ez az érték rendszerint automatikusan kiszámításra kerül az eszköz legutóbbi audit dátuma és az audit gyakorisága alapján (lásd: <code>Admin Beállítások &gt; Riasztások</code>), így a mező üresen is hagyható. Szükség esetén a dátum manuálisan is megadható, de annak későbbinek kell lennie, mint a legutóbbi audit dátuma. ',
     'audit_images_help' => 'Az audit képek megtalálhatók az eszköz előzmények fülén.',
     'no_email' => 'Ehhez a felhasználóhoz nincs e-mail társítva',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Utolsó ellenőrzés',
     'new' => 'új!',
     'no_depreciation' => 'Nincs értékcsökkentés',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Kiadásra kész',
     'requested_date' => 'Kért időpont',
     'requested_assets' => 'Kért eszközök',
-    'requested_assets_menu' => 'Igényelt tételek',
+    'requested_assets_menu' => 'Igényelhető modellek',
     'request_canceled' => 'A kérelem törölve',
     'request_item' => 'Igénylés',
     'external_link_tooltip' => 'Külső hivatkozás :',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Egy hozzád rendelt eszköz egy másik céghez tartozik, így nem fogadhatod el vagy utasíthatod vissza, kérlek egyeztess a vezetőddel',
     'error_assets_already_checked_out' => 'Egyes eszközök már ki vannak adva',
     'assigned_assets_removed' => 'A következő eszközöket eltávolítottuk, mert már ki vannak adva',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Kiadva a következőnek: Full Name',
         'checked_out_to_first_name' => 'Kiadva a következőnek: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Belső helyszín',
     'append' => 'Hozzáillesztés',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Eszköz',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Adjon meg egy megjegyzést',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => ':name kiadása',
         'checkin_item' => ':name visszavétele',
-    ],
-
-    'skins' => [
-        'site_default' => 'Alapértelmezett',
-        'default_blue' => 'Alapértelmezett kék',
-        'blue_dark' => 'Kék (sötét mód)',
-        'green' => 'Zöld',
-        'green_dark' => 'Zöld (sötét mód)',
-        'red' => 'Piros',
-        'red_dark' => 'Piros (sötét mód)',
-        'orange' => 'Narancssárga',
-        'orange_dark' => 'Narancs (sötét mód)',
-        'black' => 'Fekete',
-        'black_dark' => 'Fekete (Sötét mód)',
-        'purple' => 'Lila',
-        'purple_dark' => 'Lila (sötét mód)',
-        'yellow' => 'Sárga',
-        'yellow_dark' => 'Sárga (sötét mód)',
-        'high_contrast' => 'Magas kontraszt',
-
     ],
 
     'select_all_none' => 'Összes kijelölése/kijelölés megszüntetése',
@@ -754,5 +746,8 @@ return [
     ],
 
     'months_plural' => '1 hónap|:count hónap',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

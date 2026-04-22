@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Avatar unka',
     'back' => 'Deebi\'i',
     'bad_data' => 'Waan hin argamne. Data badaa ta\'ee?',
-    'bulkaudit' => 'Qoranno Giga',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Haala Qorannoo',
     'bulk_checkout' => 'Checkout Giga',
     'bulk_edit' => 'Gabaasa Giga',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Kan duraa jiru.',
     'delete' => 'Haqaa',
     'delete_confirm' => 'Si eeyyamuu barbaadaa?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Si eeyyamuu barbaadaa? Kan kun hin deebi\'u.',
     'deleted' => 'Haqame',
     'delete_seats' => 'Teessoo Haqa',
     'deletion_failed' => 'Haqa dhabuun',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Uumuu',
     'generate_labels' => 'Uumuu Daangaa',
-    'github_markdown' => 'Kanaa gidduu seenaa <a href="https://help.github.com/articles/github-flavored-markdown/">GitHub flavored markdown</a>',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Groupee',
     'gravatar_email' => 'E-mail Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Avatar kee Gravatar.com irratti jijjiiri</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Suura Unkaa',
     'filetypes_accepted_help' => 'Bakka buusuu faayilota: :types. Guddina: :size.|Faayilota dabalamee: :types. Guddina maxxanfame: :size.',
     'filetypes_size_help' => 'Guddina maxxanfame: :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Faayilota armaan gadii qabdu: jpg, webp, png, gif, svg, fi avif. Guddina maxxanfame: :size.',
     'unaccepted_image_type' => 'Faayila suuraa kana hin qabne. Faayilota armaan gadii qabdu: jpg, webp, png, gif, fi svg. Mimetype faayil kana: :mimetype.',
     'import' => 'Gulaali',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Yammuu auditing arraba opzichte chiroon',
     'audit_images_help' => 'Suura qorannoo ishii tokkeeti',
     'no_email' => 'E-mail hin argamu',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Audit Dhaabaa',
     'new' => 'haaraa!',
     'no_depreciation' => 'Golaawwan hin jirree',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Tamsaasaaf Qophiidha',
     'requested_date' => 'Guyyaa gaafatame',
     'requested_assets' => 'Qabeenya gaafatame',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Gosoota mi\'a gaafatamuu dandahanii',
     'request_canceled' => 'Gaaffiin Haqame',
     'request_item' => 'Gaaffii dhiyeessi',
     'external_link_tooltip' => 'Gara geggeessituu alaatti',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Qabeenya',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

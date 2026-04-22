@@ -90,7 +90,7 @@ return [
     'password' => 'Lozinka',
     'password_reset' => 'Ponovno postavljanje zaporke',
     'read_the_terms' => 'Pročitajte uvjete upotrebe u nastavku.',
-    'read_the_terms_and_click' => 'Molimo pročitajte uvjete korištenja u nastavku i kliknite na poveznicu na dnu kako biste potvrdili da ste pročitali i da se slažete s uvjetima korištenja te da ste primili imovinu.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Traženi',
     'reset_link' => 'Vaša lozinka resetiraj vezu',

@@ -90,7 +90,7 @@ return [
     'password' => 'Senha',
     'password_reset' => 'Redefinir Senha',
     'read_the_terms' => 'Por favor, leia os termos de uso abaixo.',
-    'read_the_terms_and_click' => 'Por favor, leia os termos de uso abaixo, e clique no link na parte inferior para confirmar que você leu e concorda com os termos de uso, e recebeu o ativo.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Solicitado',
     'reset_link' => 'Seu Link de redefinição da senha',

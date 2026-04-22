@@ -90,7 +90,7 @@ return [
     'password' => 'Κωδικός Πρόσβασης',
     'password_reset' => 'Επαναφορά κωδικού πρόσβασης',
     'read_the_terms' => 'Παρακαλώ διαβάστε του παρακάτω όρους.',
-    'read_the_terms_and_click' => 'Παρακαλούμε διαβάστε τους όρους χρήσης παρακάτω, και κάντε κλικ στο σύνδεσμο στο κάτω μέρος για να επιβεβαιώσετε ότι διαβάζετε και συμφωνείτε με τους όρους χρήσης και έχετε λάβει το περιουσιακό στοιχείο.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Ζητήθηκαν',
     'reset_link' => 'Αποστολή συνδέσμου ακύρωσης κωδικού',

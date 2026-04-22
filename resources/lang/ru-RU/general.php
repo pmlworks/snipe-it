@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Загрузить аватар',
     'back' => 'Назад',
     'bad_data' => 'Ничего не найдено. Что-то неправильно ввели?',
-    'bulkaudit' => 'Массовый аудит',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Состояние аудита',
     'bulk_checkout' => 'Массовая выдача',
     'bulk_edit' => 'Массовое редактирование',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Это приложение выполняется в режиме с включенной отладкой. Это может нарушить конфиденциальность данных, если приложение доступно для внешнего мира. Отключите режим отладки, поменяв значение <code>APP_DEBUG</code> в файле <code>.env</code> на <code>false</code>.',
     'delete' => 'Удалить',
     'delete_confirm' => 'Вы действительно хотите удалить?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Вы уверены, что хотите удалить :item? Это действие нельзя отменить.',
     'deleted' => 'Удалено',
     'delete_seats' => 'Удаленные лицензии',
     'deletion_failed' => 'Не удалось удалить',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Сгенерировать',
     'generate_labels' => 'Сгенерировать метки',
-    'github_markdown' => 'Это поле поддерживает <a href="https://help.github.com/articles/github-flavored-markdown/">разметку markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Группы',
     'gravatar_email' => 'Адрес электронной почты Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Измените ваш аватар на Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Загрузить изображение',
     'filetypes_accepted_help' => 'Принимаемый тип файлов :types. Максимальный допустимый размер - :size.|Принимаемые типы файлов - :types. Максимальный допустимый размер загружаемых файлов - :size.',
     'filetypes_size_help' => 'Максимальный допустимый размер загружаемых файлов: size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Допустимые типы файлов - pg, webp, png, gif, и svg. Максимальный размер файла :size.',
     'unaccepted_image_type' => 'Нечитаемый файл изображения. Допустимые типы файлов: jpg, webp, png, gif и svg. Медиа тип этого файла: :mimetype.',
     'import' => 'Импорт',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Если Вы используете аудит в вашей организации, обычно значение вычисляется автоматически на основе даты последнего аудита актива&apos; и частоты аудита (в <code>Настройках Администратора &gt; Предупреждения</code>). Вы можете оставить это поле пустым. Если Вам нужно, Вы можете установить эту дату, но она должна быть позже последней даты аудита. ',
     'audit_images_help' => 'Вы можете найти изображения аудита на вкладке «История активов».',
     'no_email' => 'Нет адреса электронной почты, связанные с этим пользователем',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Последний аудит',
     'new' => 'новое!',
     'no_depreciation' => 'Нет аммортизации',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Актив, назначенный вам принадлежит другой компании, поэтому вы не можете принять или отклонить его, пожалуйста, проверьте с вашим менеджером',
     'error_assets_already_checked_out' => 'Один или несколько активов уже выданы',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Проверено на: Полное имя',
         'checked_out_to_first_name' => 'Перемещено на: Имя',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Дочерние места',
     'append' => 'Добавить',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Актив',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Добавить примечание',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Выдать :name',
         'checkin_item' => 'Вернуть :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Стандартный',
-        'default_blue' => 'Стандартный синий',
-        'blue_dark' => 'Синий (тёмный режим)',
-        'green' => 'Зеленый',
-        'green_dark' => 'Зелёный (темный режим)',
-        'red' => 'Красный',
-        'red_dark' => 'Красный (тёмный режим)',
-        'orange' => 'Оранжевый',
-        'orange_dark' => 'Оранжевый (тёмный режим)',
-        'black' => 'Чёрный',
-        'black_dark' => 'Чёрный (тёмный режим)',
-        'purple' => 'Фиолетовый',
-        'purple_dark' => 'Фиолетовый (тёмный режим)',
-        'yellow' => 'Жёлтый',
-        'yellow_dark' => 'Жёлтый (тёмный режим)',
-        'high_contrast' => 'Высокий контраст',
-
     ],
 
     'select_all_none' => 'Выбрать/Отменить выбор всех',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 месяц|:count месяцев',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

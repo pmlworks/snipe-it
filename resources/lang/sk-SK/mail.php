@@ -90,7 +90,7 @@ return [
     'password' => 'Heslo',
     'password_reset' => 'Reset hesla',
     'read_the_terms' => 'Prosím prečítajte si nižšie uvedené podmienky používania.',
-    'read_the_terms_and_click' => 'Prosím prečítajte si nižšie uvedené podmienky používania a kliknite na odkaz v dolnej časti pre potvrdenie, že ste si prečítali a súhlasili s podmienkami používania a prevzali majetok.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Vyžiadané',
     'reset_link' => 'Váš odkaz na resetovanie hesla',

@@ -90,7 +90,7 @@ return [
     'password' => 'Парола',
     'password_reset' => 'Нулиране на паролата',
     'read_the_terms' => 'Моля прочетете условията по-долу.',
-    'read_the_terms_and_click' => 'Моля прочетете условията за ползване по-долу и щракнете върху връзката в края, за да потвърдите че сте прочели и се съгласявате с условията на употреба и сте получили актива.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Щракнете тук за да приемете условията за ползване и приемете артикула|Щракнете тук за да приемете условията за ползване и приемете артикулите',
     'requested' => 'Изискан',
     'reset_link' => 'Вашата връзка за повторно задаване на паролата',

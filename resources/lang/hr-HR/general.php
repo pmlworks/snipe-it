@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Učitaj avatar',
     'back' => 'Nazad',
     'bad_data' => 'Ništa nije pronađeno. Možda loši podaci?',
-    'bulkaudit' => 'Skupna revizija',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status revizije',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Masovno uredi',
@@ -122,7 +122,7 @@ return [
     'debug_warning_text' => 'Ova se aplikacija izvodi u načinu rada s omogućenim uklanjanjem pogrešaka. To može otkriti osjetljive podatke ako je aplikacija dostupna vanjskom svijetu. Onemogućite način otklanjanja pogrešaka postavljanjem vrijednosti <code>APP_DEBUG</code> u <code>.env</code> datoteci na <code>false</code>.',
     'delete' => 'Izbrisati',
     'delete_confirm' => 'Jeste li sigurni da želite izbrisati :item?',
-    'delete_confirm_no_undo' => 'Are you sure you wish to delete :item? This cannot be undone.',
+    'delete_confirm_no_undo' => 'Da li ste sigurni da želite obrisati :item? Ova radnja se ne može poništiti.',
     'deleted' => 'izbrisana',
     'delete_seats' => 'Izbrisana mjesta',
     'deletion_failed' => 'Neuspješno brisanje',
@@ -154,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generirati',
     'generate_labels' => 'Izradi naljepnicu',
-    'github_markdown' => 'Ovo polje prihvaća <a href="https://help.github.com/articles/github-flavored-markdown/">označavanje na Github način</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'grupe',
     'gravatar_email' => 'Gravatar adresa e-pošte',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Promijeni svoj avatar na Gravatar.com</small></a>.',
@@ -167,7 +167,7 @@ return [
     'image_upload' => 'Prenesite sliku',
     'filetypes_accepted_help' => 'Prihvaćena vrsta datoteke je :types. Maksimalna dopuštena veličina je :size.|Prihvaćene vrste datoteka su :types. Maksimalna dopuštena veličina upload-a je :size.',
     'filetypes_size_help' => 'Maksimalna dozvoljena veličina upload-a je :size.',
-    'image_filetypes_help' => 'Accepted filetypes are jpg, webp, png, gif, svg, and avif. The maximum upload size allowed is :size.',
+    'image_filetypes_help' => 'Prihvaćene vrste datoteka su jpg, webp, png, gif, svg, i avif. Maksimalna dopuštena veličina upload-a je :size.',
     'unaccepted_image_type' => 'Datoteka sa slikom nije čitljiva. Prihvaćene vrste datoteka su jpg, webp, png, gif i svg. MIME tip ove datoteke je: :mimetype.',
     'import' => 'Uvoz',
     'documentation' => 'Open documentation in a new link',
@@ -224,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ako koristite reviziju u svojoj organizaciji, ovo se obično automatski izračunava na temelju posljednjeg datuma revizije inventarskih stavki i učestalosti revizije (u <code>Admin postavke &gt; Upozorenja</code>) i možete ovo ostaviti prazno. Ovdje možete ručno postaviti ovaj datum ako trebate, ali mora biti kasnije od posljednjeg datuma revizije ',
     'audit_images_help' => 'Možete pronaći revizijske slike na kartici povijesti inventarske stavke.',
     'no_email' => 'Ovaj korisnik nema dodijeljenu email adresu',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Posljednja revizija',
     'new' => 'novi!',
     'no_depreciation' => 'Nema amortizacije',
@@ -271,7 +274,7 @@ return [
     'rtd' => 'Spremni za implementaciju',
     'requested_date' => 'Datum zahtjeva',
     'requested_assets' => 'Zatražena Imovina',
-    'requested_assets_menu' => 'Zatraženi Predmeti',
+    'requested_assets_menu' => 'Predmeti koje je moguće zatražiti',
     'request_canceled' => 'Zahtjev je otkazan',
     'request_item' => 'Zatraži ovaj predmet',
     'external_link_tooltip' => 'Eksterni link do',
@@ -559,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -662,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Prikačiti',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Imovina',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -689,26 +701,6 @@ return [
     'breadcrumb_button_actions' => [
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
-    ],
-
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
     ],
 
     'select_all_none' => 'Select/Unselect All',
@@ -753,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

@@ -90,7 +90,7 @@ return [
     'password' => 'Ang Password',
     'password_reset' => 'Ang Pagbago ng Password',
     'read_the_terms' => 'Paki-basa sa mga tuntunin ng paggamit sa ibaba.',
-    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the asset.',
+    'read_the_terms_and_click' => 'Please read the terms of use below, and click on the link at the bottom to confirm that you read and agree to the terms of use, and have received the item.',
     'click_here_to_review_terms_and_accept_item' => 'Click here to review the terms of use and accept the item|Click here to review the terms of use and accept the items',
     'requested' => 'Ang Nirekwest',
     'reset_link' => 'Ang Link para sa Pag-reset ng Password',
