@@ -15,6 +15,8 @@ class ActionlogController extends Controller
 {
     public function displaySig($filename): RedirectResponse|Response|bool
     {
+        $filename = basename((string) $filename);
+
         // PHP doesn't let you handle file not found errors well with
         // file_get_contents, so we set the error reporting for just this class
         error_reporting(0);
@@ -22,13 +24,14 @@ class ActionlogController extends Controller
         $disk = config('filesystems.default');
         switch (config("filesystems.disks.$disk.driver")) {
 
+
             case 's3':
-                $file = 'private_uploads/signatures/'.$filename;
+                $file = 'private_uploads/signatures/' . $filename;
 
                 return redirect()->away(Storage::disk($disk)->temporaryUrl($file, now()->addMinutes(5)));
             default:
                 $this->authorize('view', Asset::class);
-                $file = config('app.private_uploads').'/signatures/'.$filename;
+                $file = config('app.private_uploads') . '/signatures/' . $filename;
                 $filetype = Helper::checkUploadIsImage($file);
 
                 $contents = file_get_contents($file, false, stream_context_create(['http' => ['ignore_errors' => true]]));
@@ -44,6 +47,7 @@ class ActionlogController extends Controller
 
     public function getStoredEula($filename): Response|BinaryFileResponse|RedirectResponse
     {
+        $filename = basename((string) $filename);
 
         if ($actionlog = Actionlog::where('filename', $filename)->with('user')->with('target')->firstOrFail()) {
 

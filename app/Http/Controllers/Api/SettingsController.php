@@ -292,6 +292,11 @@ class SettingsController extends Controller
      */
     public function downloadBackup($file): JsonResponse|BinaryFileResponse
     {
+        $file = $this->sanitizeBackupFilename($file);
+
+        if ($file === null) {
+            return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.file_not_found')), 404);
+        }
 
         $path = storage_path('app/backups');
 
@@ -334,5 +339,22 @@ class SettingsController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.file_not_found')), 404);
         }
 
+    }
+
+    private function sanitizeBackupFilename(mixed $filename): ?string
+    {
+        $filename = trim((string) $filename);
+
+        if ($filename === '' || str_contains($filename, "\0")) {
+            return null;
+        }
+
+        $sanitized = basename($filename);
+
+        if (($sanitized === '') || ($sanitized === '.') || ($sanitized === '..')) {
+            return null;
+        }
+
+        return ($sanitized === $filename) ? $sanitized : null;
     }
 }
