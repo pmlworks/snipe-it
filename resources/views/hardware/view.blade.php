@@ -423,7 +423,7 @@
                 <x-info-panel :infoPanelObj="$asset" img_path="{{ app('assets_upload_url') }}">
                     <x-slot:buttons>
 
-                        @if ($asset->assignedTo=='')
+                        @if (!$asset->assignedTo)
                         <x-button.checkout permission="checkout" :item="$asset" :route="route('hardware.checkout.create', $asset->id)"/>
                         @endif
 
