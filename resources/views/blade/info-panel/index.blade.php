@@ -504,7 +504,7 @@
 
         @if (isset($infoPanelObj->alert_on_response))
             <x-info-element>
-                @if ($infoPanelObj->require_acceptance == 1)
+                @if ($infoPanelObj->alert_on_response)
                     <x-icon type="checkmark" class="fa-fw text-success"  title="{{ trans('general.yes') }}"/>
                 @else
                     <x-icon type="x" class="fa-fw text-danger"  title="{{ trans('general.no') }}"/>
