@@ -148,11 +148,19 @@
                                 </x-data-row>
 
                                 <x-data-row :label="trans('general.permissions')">
-                                    @if (!empty($effectivePermissionsBySection))
+                                    @if ($user->isSuperUser())
+                                        <span class="label label-danger" data-tooltip="true" title="{{ trans('general.superuser_tooltip') }}">
+                                            <x-icon type="superadmin" style="padding-right: 5px;"/>{{ trans('general.superuser') }}
+                                        </span>
+                                    @elseif ($user->hasAccess('admin'))
+                                        <span class="label label-warning" data-tooltip="true" title="{{ trans('general.admin_tooltip') }}">
+                                            <x-icon type="superadmin" style="padding-right: 5px;"/>{{ trans('general.admin_user') }}
+                                        </span>
+                                    @elseif (!empty($effectivePermissionsBySection))
                                         @foreach ($effectivePermissionsBySection as $section => $permissions)
                                             @foreach ($permissions as $permission)
                                                 @if (($permission['status'] ?? 'allowed') === 'denied')
-                                                    <span class="label label-danger" data-tooltip="true" title="{{ $permission['source_label'] }}"><x-icon type="x" class="fa-fw"/> {{ $permission['permission'] }}</span>
+                                                    <span class="label label-danger denied-permission" data-tooltip="true" title="{{ $permission['source_label'] }}"><x-icon type="x" class="fa-fw"/> {{ $permission['permission'] }}</span>
                                                 @else
                                                     <span class="label label-success" data-tooltip="true" title="{{ $permission['source_label'] }}"><x-icon type="checkmark" class="fa-fw"/> {{ $permission['permission'] }}</span>
                                                 @endif
