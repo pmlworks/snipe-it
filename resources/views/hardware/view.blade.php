@@ -423,7 +423,11 @@
                 <x-info-panel :infoPanelObj="$asset" img_path="{{ app('assets_upload_url') }}">
                     <x-slot:buttons>
                         <x-button.checkout permission="checkout" :item="$asset" :route="route('hardware.checkout.create', $asset->id)"/>
-                        <x-button.checkin permission="checkin" :item="$asset" :route="route('hardware.checkin.create', $asset->id)"/>
+
+                        @if (!$asset->hasOrphanedAssignment())
+                            <x-button.checkin permission="checkin" :item="$asset" :route="route('hardware.checkin.create', $asset->id)"/>
+                        @endif
+
                         <x-button.edit :item="$asset" :route="route('hardware.edit', $asset->id)"/>
                         <x-button.clone :item="$asset" :route="route('clone/hardware', $asset->id)"/>
                         <x-button.note :item="$asset" :route="route('clone/hardware', $asset->id)"/>
