@@ -7,7 +7,7 @@
 @stop
 
 @section('header_right')
-    <x-button.info-panel-toggle/>
+    <x-button.info-panel-toggle hide-on-xs/>
 @endsection
 
 {{-- Page content --}}
