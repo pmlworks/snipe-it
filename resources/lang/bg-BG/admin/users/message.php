@@ -2,11 +2,11 @@
 
 return [
 
-    'accepted' => 'You have successfully accepted this item.',
-    'declined' => 'You have successfully declined this item.',
+    'accepted' => 'Вие приехте успешно този актив.',
+    'declined' => 'Вие отказахте този актив.',
     'bulk_manager_warn' => 'Вашите потребителски профили бяха обновени успешно, обаче вашето управителско вписване не беше запазено, защото управителят, които сте избрали бе в списъка с потребителски профили за промяна и потребителите не могат да бъдат свои управители. Моля изберете вашите потребителски профили отново, с изключение на управителя.',
     'user_exists' => 'Потребителят вече съществува!',
-    'cannot_delete' => 'User does not exist or you do not have permission to delete them.',
+    'cannot_delete' => 'Потребителят не съществува или нямате права да го изтриете.',
     'user_not_found' => 'Потребителят не съществува или нямате разрешение да го видите.',
     'user_login_required' => 'Полето за вход е задължително',
     'user_has_no_assets_assigned' => 'Няма заведени активи на този потребител.',
@@ -15,6 +15,7 @@ return [
     'user_deleted_warning' => 'Този потребител е изтрит. За да редактирате данните за него или да му зададете актив, трябва първо да възстановите потребителя.',
     'ldap_not_configured' => 'Интеграцията с LDAP не е конфигурирана за тази инсталация.',
     'password_resets_sent' => 'Избраните потребители, които са активирани и имат валиден е-майл адрес им беше изпратен линк за смяна на парола.',
+    'not_activated' => 'This user cannot login, so they cannot accept assets via email.',
     'password_reset_sent' => 'Изпратена е връзка за въстановяване на паролата до :email!',
     'user_has_no_email' => 'Този потребител няма е-майл адрес в неговия профил.',
     'log_record_not_found' => 'Не е намерен лог запис за този потребител.',
@@ -30,6 +31,7 @@ return [
         'unsuspend' => 'Потребителят активиран успешно.',
         'restored' => 'Потребителят е възстановен.',
         'import' => 'Потребителите заредени успешно.',
+        'acceptance_reminder_sent' => 'Acceptance reminder sent for :count pending item.|Acceptance reminder sent for :count pending items.',
     ],
 
     'error' => [
@@ -44,7 +46,7 @@ return [
         'delete_has_users_var' => 'Този потребител все още управлява друг потребител. Моля, първо изберете друг мениджър за този потребител.|Този потребител все още управлява :count потребители. Моля, първо изберете друг мениджър за тях.',
         'unsuspend' => 'Проблем при активирането на потребителя. Моля опитайте отново.',
         'import' => 'Проблем при зареждането на потребителите. Моля опитайте отново.',
-        'asset_already_accepted' => 'Този актив е вече приет.',
+        'asset_already_accepted' => 'This item has already been accepted.',
         'accept_or_decline' => 'Трябва да приемете или да откажете този актив.',
         'cannot_delete_yourself' => 'Ще се почувстваме много зле, ако се изтриете, моля, помислете отново.',
         'incorrect_user_accepted' => 'Активът, който се опитвате да приемете не е изписан към Вас.',
@@ -53,7 +55,8 @@ return [
         'ldap_could_not_search' => 'Проблем при търсенето в LDAP сървъра. Моля прегледайте конфигурацията на LDAP.<br/>Грешка от LDAP сървъра: ',
         'ldap_could_not_get_entries' => 'Проблем при извличането на резултат от LDAP сървъра. Моля прегледайте конфигурацията на LDAP.<br/>Грешка от LDAP сървъра:',
         'password_ldap' => 'Паролата за този профил се управлява от LDAP / Active Directory. Моля, свържете се с вашия ИТ отдел, за да промените паролата си.',
-        'multi_company_items_assigned' => 'This user has items assigned that belong to a different company. Please check them in or edit their company.',
+        'multi_company_items_assigned' => 'Този потребител претежава активи, които пренадлежат на друга фирма. Моля впишете ги обратно или редактирайте фирмата на активите.',
+        'no_pending_acceptances' => 'This user has no pending acceptances to remind them about.',
     ],
 
     'deletefile' => [

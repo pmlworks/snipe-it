@@ -106,7 +106,7 @@ return [
         'error' => 'Request was not successful, please try again.',
         'success' => 'Request successfully submitted.',
         'canceled' => 'Request successfully canceled.',
-        'cancel' => 'Cancel this item request',
+        'cancel' => 'यो वस्तुको अनुरोध रद्द गर्नुहोस्',
     ],
 
 ];

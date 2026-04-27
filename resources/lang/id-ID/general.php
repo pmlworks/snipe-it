@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Unggah avatar',
     'back' => 'Kembali',
     'bad_data' => 'Tidak di temukan. Kemungkinan data rusak?',
-    'bulkaudit' => 'Audit Massal',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status Audit',
     'bulk_checkout' => 'check-out masal',
     'bulk_edit' => 'Edit Massal',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Dibuat oleh',
     'record_created' => 'Rekam Dibuat',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'Dihapus',
     'purchased_plain' => 'Dibeli',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Dashboard',
     'data_source' => 'Sumber Data',
     'days' => 'hari',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Hari ke Audit Berikutnya',
     'date' => 'Tanggal',
     'debug_warning' => 'PERINGATAN!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Departemen',
     'deployed' => 'Dijalankan',
     'depreciation' => 'Penyusutan',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Penyusutan',
     'depreciation_report' => 'Laporan penyusutan',
     'details' => 'Rincian',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generate',
     'generate_labels' => 'Buat Label',
-    'github_markdown' => 'Kolom ini mengizinkan <a href="https://help.github.com/articles/github-flavored-markdown/">markup rasa Github</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Kelompok',
     'gravatar_email' => 'Alamat Gravatar Email',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Ubah avatar Anda di Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'Anda dapat menemukan gambar audit pada tab riwayat aset.',
     'no_email' => 'Tidak ada alamat email yang terkait dengan pengguna ini',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Audit terakhir',
     'new' => 'baru!',
     'no_depreciation' => 'Tidak ada penyusutan',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Siap digunakan',
     'requested_date' => 'Tanggal Permintaan',
     'requested_assets' => 'Aset yang Diminta',
-    'requested_assets_menu' => 'Barang Diterima',
+    'requested_assets_menu' => 'Barang Dapat Diminta',
     'request_canceled' => 'Permintaan Dibatalkan',
     'request_item' => 'Perminta barang ini',
     'external_link_tooltip' => 'Tautan eksternal ke',
     'save' => 'Simpan',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Pilih :thing... ', // this will eventually replace all of our other selects
     'select' => 'Pilih',
     'select_all' => 'Pilih Semua',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Langkah 3',
     'setup_step_4' => 'Langkah 4',
     'setup_config_check' => 'Peninjauan Konfigurasi',
-    'setup_create_database' => 'Membuat Tabel Database',
+    'setup_create_database' => 'Buat tabel basis data',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Berikutnya',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Aset yang ditetapkan kepada Anda dimiliki oleh company lain sehingga Anda tidak dapat menerima maupun menolaknya, harap hubungi manajer Anda',
     'error_assets_already_checked_out' => 'Satu atau lebih aset sudah checkout',
     'assigned_assets_removed' => 'Berikut ini dihapus dari aset yang dipilih karena sudah diperiksa',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Dipinjam oleh: Nama Lengkap',
         'checked_out_to_first_name' => 'Dipinjam oleh: Nama Depan',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Lokasi Anak',
     'append' => 'Tambahkan',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Aset',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Tambah catatan',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name masih memiliki item terkait. Harap hapus item tersebut sebelum menghapus :item ini.',
         'assoc_assets' => ':Saat ini pemasok ini terkait dengan :asset_count aset dan tidak dapat dihapus. Harap perbarui aset Anda agar tidak lagi menggunakan pemasok ini sebagai referensi dan silakan coba lagi.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

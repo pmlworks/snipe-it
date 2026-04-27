@@ -17,6 +17,7 @@ return [
     'name' => 'Название категории',
     'require_acceptance' => 'Требовать от пользователей подтверждения приёма активов в этой категории.',
     'required_acceptance' => 'Этому пользователю будет выслано электронное письмо со ссылкой для подтверждения получения этого предмета.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Пользователю будет отправлена копия пользовательского соглашения',
     'no_default_eula' => 'Не найдено пользовательского соглашения по умолчанию. Добавьте его в Настройках.',
     'update' => 'Обновить категорию',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Send Checkin Email',
     'import_eula_text' => 'EULA text',
     'import_category_type' => 'Тип категории',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];

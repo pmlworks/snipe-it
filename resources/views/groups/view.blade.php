@@ -23,7 +23,7 @@
         <x-page-column class="col-md-3 hidden-print">
 
             <x-box class="side-box expanded">
-                <x-box.info-panel :infoPanelObj="$group">
+                <x-info-panel :infoPanelObj="$group">
 
                     <x-slot:buttons>
                         <x-button :item="$group" permission="update" :route="route('groups.edit', $group->id)" class="btn-warning"/>
@@ -38,7 +38,7 @@
                         <p>{{ trans('admin/groups/titles.no_permissions') }}</p>
                     @endif
 
-                </x-box.info-panel>
+                </x-info-panel>
             </x-box>
         </x-page-column>
 

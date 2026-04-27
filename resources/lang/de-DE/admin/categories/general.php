@@ -17,6 +17,7 @@ return [
     'name' => 'Kategoriename',
     'require_acceptance' => 'Benutzer müssen bei Assets in dieser Kategorie Ihre Zustimmung bestätigen.',
     'required_acceptance' => 'Der Benutzer erhält eine E-Mail zur Bestätigung der Annahme des Gegenstands.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Dieser Benutzer erhält eine Kopie der EULA via Email',
     'no_default_eula' => 'Keine Standard EULA gefunden. Bitte fügen Sie eine in den Einstellungen hinzu.',
     'update' => 'Kategorie aktualisieren',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Rücknahme E-mail senden',
     'import_eula_text' => 'EULA Text',
     'import_category_type' => 'Kategorietyp',
+    'import_alert_on_response' => 'Warnung bei Antwort',
 
 ];

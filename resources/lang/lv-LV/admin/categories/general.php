@@ -17,6 +17,7 @@ return [
     'name' => 'Kategorijas nosaukums',
     'require_acceptance' => 'Pieprasīt lietotājiem apstiprināt šīs kategorijas aktīvu pieņemšanu.',
     'required_acceptance' => 'Šis lietotājs tiks nosūtīts pa e-pastu ar saiti, lai apstiprinātu šī vienuma pieņemšanu.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Šis lietotājs saņems EULA kopiju',
     'no_default_eula' => 'Nav atrasta galvenā noklusējuma EULA. Pievienot vienu sadaļā Iestatījumi.',
     'update' => 'Atjaunināt kategoriju',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Send Checkin Email',
     'import_eula_text' => 'EULA text',
     'import_category_type' => 'Category Type',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];

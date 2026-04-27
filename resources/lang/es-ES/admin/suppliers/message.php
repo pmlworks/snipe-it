@@ -19,9 +19,9 @@ return [
         'confirm' => '¿Está seguro de que desea eliminar este proveedor?',
         'error' => 'Hubo un problema al eliminar el proveedor, por favor inténtelo de nuevo.',
         'success' => 'Proveedor eliminado correctamente.',
-        'not_found' => 'Supplier not found.',
-        'bulk_success' => 'Suppliers were deleted successfully.',
-        'partial_success' => 'Supplier deleted successfully. See additional information below. | :count suppliers were deleted successfully. See additional information below.',
+        'not_found' => 'Proveedor no encontrado.',
+        'bulk_success' => 'Proveedor eliminado correctamente.',
+        'partial_success' => '.',
     ],
 
 ];

@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Ανεβάστε την εικόνα προφίλ σας',
     'back' => 'Προηγούμενο',
     'bad_data' => 'Δεν βρέθηκε τίποτα. Ίσως τα κακά δεδομένα;',
-    'bulkaudit' => 'Μαζικός έλεγχος',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Κατάσταση ελέγχου',
     'bulk_checkout' => 'Μαζικός έλεγχος',
     'bulk_edit' => 'Μαζική Επεξεργασία',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Δημιουργήθηκε Από',
     'record_created' => 'Η Εγγραφή Δημιουργήθηκε',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'Διαγράφηκε',
     'purchased_plain' => 'Αγοράστηκε',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Πίνακας ελέγχου',
     'data_source' => 'Data Source',
     'days' => 'ημέρες',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Ημέρες έως επόμενο έλεγχο',
     'date' => 'Ημερομηνία',
     'debug_warning' => 'Προσοχή!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Τμήμα',
     'deployed' => 'Έχουν αναπτυχθεί',
     'depreciation' => 'Αποσβέσεις',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Αποσβέσεις',
     'depreciation_report' => 'Αναφορά απόσβεσης',
     'details' => 'Λεπτομέρειες',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Δημιουργία',
     'generate_labels' => 'Δημιουργία Ετικετών',
-    'github_markdown' => 'Αυτό το πεδίο επιτρέπει <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Ομάδες',
     'gravatar_email' => 'Gravatar Email Διεύθυνση',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Άλλαξε το avatar σου στο Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'Καμία διεύθυνση ηλεκτρονικού ταχυδρομείου δεν συσχετίζεται με αυτόν το χρήστη',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Τελευταίος Έλεγχος',
     'new' => 'νεό!',
     'no_depreciation' => 'Δεν Αποσβέσεις',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Είστε έτοιμοι να αναπτύξετε',
     'requested_date' => 'Ημερομηνία Που Ζητήθηκε',
     'requested_assets' => 'Ζητούμενα Περιουσιακά Στοιχεία',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'Το αίτημα ακυρώθηκε',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
     'save' => 'Αποθήκευση',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Επιλέξτε :thing... ', // this will eventually replace all of our other selects
     'select' => 'Επιλογή',
     'select_all' => 'Επιλογή Όλων',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Βήμα 3',
     'setup_step_4' => '4Ο Βήμα.',
     'setup_config_check' => 'Έλεγχος Ρύθμισης',
-    'setup_create_database' => 'Δημιουργία Πινάκων Βάσης Δεδομένων',
+    'setup_create_database' => 'Create database tables',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Επόμενο',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Ένα περιουσιακό στοιχείο που σας έχει ανατεθεί ανήκει σε μια διαφορετική εταιρεία, έτσι δεν μπορείτε να το δεχτείτε ούτε να το αρνηθείτε, παρακαλώ ελέγξτε με το διαχειριστή σας',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Έλεγξε σε: Πλήρες Όνομα',
         'checked_out_to_first_name' => 'Έγινε έλεγχος σε: Όνομα',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Προσάρτηση',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Πάγιο',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

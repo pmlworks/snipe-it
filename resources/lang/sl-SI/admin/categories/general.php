@@ -17,6 +17,7 @@ return [
     'name' => 'Ime kategorije',
     'require_acceptance' => 'Uporabniki morajo potrditi sprejem sredstev v tej kategoriji.',
     'required_acceptance' => 'Ta uporabnik bo prejel po e-pošti povezavo za potrditev sprejema tega elementa.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Ta uporabnik bo po e-pošti prejel izvod EULA',
     'no_default_eula' => 'Ni privzete EULA. Dodajte eno v Nastavitvah.',
     'update' => 'Posodobi kategorijo',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Pošlji email za prijavo',
     'import_eula_text' => 'EULA besedilo',
     'import_category_type' => 'Vrsta kategorije',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];

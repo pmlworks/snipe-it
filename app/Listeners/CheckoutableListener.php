@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
+
 class CheckoutableListener
 {
     private array $skipNotificationsFor = [
@@ -79,6 +80,11 @@ class CheckoutableListener
         $shouldSendEmailToUser = $this->shouldSendCheckoutEmailToUser($event->checkoutable);
         $shouldSendEmailToAlertAddress = $this->shouldSendEmailToAlertAddress($acceptance);
         $shouldSendWebhookNotification = $this->shouldSendWebhookNotification();
+
+        if ($this->shouldSkipInitialAcceptanceEmail($event, $acceptance)) {
+            $shouldSendEmailToUser = false;
+            $shouldSendEmailToAlertAddress = false;
+        }
 
         if (! $shouldSendEmailToUser && ! $shouldSendEmailToAlertAddress && ! $shouldSendWebhookNotification) {
             return;
@@ -478,6 +484,15 @@ class CheckoutableListener
         }
 
         return false;
+    }
+
+    private function shouldSkipInitialAcceptanceEmail(CheckoutableCheckedOut $event, ?CheckoutAcceptance $acceptance): bool
+    {
+        if (! $event->signInPlace) {
+            return false;
+        }
+
+        return ($acceptance instanceof CheckoutAcceptance) || ! empty($event->checkoutable->getEula());
     }
 
     private function shouldSendEmailToAlertAddress($acceptance = null): bool

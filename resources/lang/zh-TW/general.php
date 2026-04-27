@@ -54,7 +54,7 @@ return [
     'avatar_upload' => '上傳頭像',
     'back' => '返回',
     'bad_data' => '未發現任何東西，是否資料有誤？',
-    'bulkaudit' => '批次稽核',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => '稽核狀態',
     'bulk_checkout' => '批次借出',
     'bulk_edit' => '批次編輯',
@@ -101,6 +101,7 @@ return [
     'created_by' => '建立者是',
     'record_created' => '記錄已建立',
     'updated_at' => '更新於',
+    'updated_before' => 'Updated Before',
     'updated_plain' => '已更新',
     'deleted_plain' => '刪除',
     'purchased_plain' => '已購買',
@@ -114,6 +115,7 @@ return [
     'dashboard' => '儀表板',
     'data_source' => '資料來源',
     'days' => '天',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => '下次稽核時間（天）',
     'date' => '日期',
     'debug_warning' => '警告！',
@@ -128,6 +130,7 @@ return [
     'department' => '部門',
     'deployed' => '已分配',
     'depreciation' => '折舊',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => '折舊',
     'depreciation_report' => '折舊報告',
     'details' => '詳細內容',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => '產生',
     'generate_labels' => '產生標籤',
-    'github_markdown' => '此欄位可以使用 <a href="https://help.github.com/articles/github-flavored-markdown/">Github 風格 markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => '群組',
     'gravatar_email' => 'Gravatar 頭像郵件地址',
     'gravatar_url' => '<a href="http://gravatar.com"><small>在 Gravatar.com 更改您的頭像</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => '如果您在您的組織中使用盤點，這通常是根據上次資產盤點的日期和盤點頻率自動計算 ( 在<code>管理員設定 &gt; 警告</code>)，您可以留空。若有需要，您可以手動設定此日期，但必須晚於最後盤點日期。 ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => '沒有與此使用者關聯的電子郵件',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => '最後稽核日期',
     'new' => 'new!',
     'no_depreciation' => '永久',
@@ -268,11 +274,12 @@ return [
     'rtd' => '準備部署',
     'requested_date' => '申請日期',
     'requested_assets' => '申請的資產',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => '取消申請',
     'request_item' => 'Request this item',
     'external_link_tooltip' => '外部連結到',
     'save' => '儲存',
+    'save_copy' => 'Save Copy',
     'select_var' => '選擇 :thing... ', // this will eventually replace all of our other selects
     'select' => '選擇',
     'select_all' => '全部選取',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => '步驟 3',
     'setup_step_4' => '步驟 4',
     'setup_config_check' => '檢查設定',
-    'setup_create_database' => '建立資料庫欄位',
+    'setup_create_database' => 'Create database tables',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => '下一頁',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => '借出給：全名',
         'checked_out_to_first_name' => '借出給：名字',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => '追加',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => '資產',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

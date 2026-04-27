@@ -97,8 +97,13 @@ $config = [
         ],
 
         'backup' => [
-            'driver' => env('PRIVATE_FILESYSTEM_DISK', 'local'),
-            'root' => storage_path('app'),
+            'driver' => env('BACKUP_FILESYSTEM_DRIVER', 'local'),
+            'key' => env('PRIVATE_AWS_ACCESS_KEY_ID'),
+            'secret' => env('PRIVATE_AWS_SECRET_ACCESS_KEY'),
+            'region' => env('PRIVATE_AWS_DEFAULT_REGION'),
+            'bucket' => env('PRIVATE_AWS_BUCKET'),
+            'root'   => env('BACKUP_FILESYSTEM_ROOT', storage_path('app')),
+            'visibility' => 'private',
         ],
 
     ],
@@ -108,6 +113,14 @@ $config = [
 // copy the selected PUBLIC_FILESYSTEM_DISK's configuration to the 'public' key for easy use
 // (by default, the PUBLIC_FILESYSTEM DISK is 'local_public', in the public/uploads directory)
 $config['disks']['public'] = $config['disks'][env('PUBLIC_FILESYSTEM_DISK', 'local_public')];
+
+// When PUBLIC_S3_PROXY is enabled, all "public" uploads are served through the application
+// instead of being accessed directly from S3. This allows using a single private S3 bucket
+// for all storage, with the app proxying requests for public files (images, logos, avatars).
+if (env('PUBLIC_S3_PROXY', false)) {
+    $config['disks']['public']['visibility'] = 'private';
+    $config['disks']['public']['url'] = env('APP_URL').'/storage-proxy';
+}
 
 // This is used to determine which files to accept, and also to populate the language strings for the upload-file blade
 $config['allowed_upload_extensions_array'] = [

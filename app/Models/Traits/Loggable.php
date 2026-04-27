@@ -14,6 +14,8 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Osama\LaravelTeamsNotification\TeamsNotification;
@@ -25,15 +27,88 @@ trait Loggable
     public ?bool $imported = false;
 
     /**
-     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
+     * @return MorphMany
      *
      * @since  [v3.4]
      *
-     * @return Actionlog
+     * @author Daniel Meltzer <dmeltzer.devel@gmail.com>
      */
     public function log()
     {
         return $this->morphMany(Actionlog::class, 'item');
+    }
+
+    public function history()
+    {
+
+        return $this->morphMany(Actionlog::class, 'item')
+            ->orWhere(function ($query) {
+                $query->where('target_type', '=', static::class)
+                    ->where('target_id', '=', $this->getKey());
+            });
+
+    }
+
+    public function getHistory(Request $request)
+    {
+        $allowed_columns = [
+            'id',
+            'created_at',
+            'target_id',
+            'created_by',
+            'accept_signature',
+            'action_type',
+            'note',
+            'remote_ip',
+            'user_agent',
+            'target_type',
+            'item_type',
+            'action_source',
+            'action_date',
+        ];
+
+        // Start with the polymorphic history relation so all filters and
+        // ordering are applied to the same query instance.
+        $history = $this->history();
+
+        if ($request->filled('search')) {
+            $history = $history->TextSearch(e($request->input('search')));
+        }
+
+        if ($request->filled('action_type')) {
+            $history = $history->where('action_type', '=', $request->input('action_type'));
+        }
+
+        if ($request->filled('created_by')) {
+            $history = $history->where('created_by', '=', $request->input('created_by'));
+        }
+
+        if ($request->filled('action_source')) {
+            $history = $history->where('action_source', '=', $request->input('action_source'));
+        }
+
+        if ($request->filled('remote_ip')) {
+            $history = $history->where('remote_ip', '=', $request->input('remote_ip'));
+        }
+
+        if ($request->filled('uploads')) {
+            $history = $history->whereNotNull('filename');
+        }
+
+        $order = ($request->input('order') == 'asc') ? 'asc' : 'desc';
+
+        switch ($request->input('sort')) {
+            case 'created_by':
+                $history = $history->OrderByCreatedBy($order);
+                break;
+            default:
+                $sort = in_array($request->input('sort'), $allowed_columns) ? e($request->input('sort')) : 'action_logs.created_at';
+                $history = $history->orderBy($sort, $order);
+                break;
+        }
+
+        return $history->forApiHistory();
+
     }
 
     public function setImported(bool $bool): void
@@ -105,7 +180,7 @@ trait Loggable
 
         $changed = [];
         $array_to_flip = array_keys($fields_array);
-        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin']);
+        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin', 'requestable']);
         $originalValues = array_intersect_key($originalValues, array_flip($array_to_flip));
 
         foreach ($originalValues as $key => $value) {
@@ -204,7 +279,7 @@ trait Loggable
         $changed = [];
 
         $array_to_flip = array_keys($fields_array);
-        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin']);
+        $array_to_flip = array_merge($array_to_flip, ['name', 'status_id', 'location_id', 'expected_checkin', 'requestable']);
 
         $originalValues = array_intersect_key($originalValues, array_flip($array_to_flip));
 
@@ -224,6 +299,32 @@ trait Loggable
         }
 
         $log->logaction('checkin from');
+
+        return $log;
+    }
+
+    /**
+     * Logs a force checkin action for orphaned assignments.
+     *
+     * Force checkin only records an explicit action log entry and intentionally
+     * skips checkin counters and changed-field metadata.
+     *
+     * @return Actionlog
+     */
+    public function logForceCheckin($note = null)
+    {
+        $log = new Actionlog;
+
+        $log = $this->determineLogItemType($log);
+        $log->location_id = null;
+        $log->note = $note;
+        $log->action_date = date('Y-m-d H:i:s');
+
+        if (auth()->user()) {
+            $log->created_by = auth()->id();
+        }
+
+        $log->logaction('force checkin');
 
         return $log;
     }

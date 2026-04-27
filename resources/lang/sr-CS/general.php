@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Učitaj avatar',
     'back' => 'Nazad',
     'bad_data' => 'Ništa nije pronađeno. Možda loši podaci?',
-    'bulkaudit' => 'Skupna revizija',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status revizije',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Masovno uređivanje',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Kreirao',
     'record_created' => 'Zapis kreiran',
     'updated_at' => 'Izmenjeno',
+    'updated_before' => 'Ažurirano pre',
     'updated_plain' => 'Izmenjeno',
     'deleted_plain' => 'Izbrisano',
     'purchased_plain' => 'Naručeno',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Dashboard',
     'data_source' => 'Izvor podataka',
     'days' => 'dana',
+    'days_ago' => 'dana ranije',
     'days_to_next_audit' => 'Dana do sledeće revizije',
     'date' => 'Datum',
     'debug_warning' => 'Upozorenje!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Department',
     'deployed' => 'Razmešteno',
     'depreciation' => 'Amortizacija',
+    'depreciation_type' => 'Tip amortizacije',
     'depreciations' => 'Amortizacije',
     'depreciation_report' => 'Izvještaj o amortizaciji',
     'details' => 'Detalji',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1. zaduženje',
     'generate' => 'Generate',
     'generate_labels' => 'Generiši nalepnice',
-    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'Ovo polje prihvata <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Githab-ovu varijantu markdown-a</a>.',
     'groups' => 'Grupe',
     'gravatar_email' => 'Gravatar Email Address',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Promeni svoj avatar na Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ukoliko vršite popisivanje imovine u vašoj organizaciji, ovo se obično automatski izračunava na osnovu poslednjeg popisa i frekvencije popisivanja (u <code>Administratorska podešavanja &gt; Upozorenja</code>) i možete je ostaviti prazno. Ovde možete ručno navesti datum ukoliko je potrebno, ali mora biti kasniji od datuma poslednjeg popisa. ',
     'audit_images_help' => 'Slike sa popisa možete pronaći na kartici istorije imovine.',
     'no_email' => 'Nijedna adresa e-pošte nije povezana sa ovim korisnikom',
+    'no_value' => 'Nema vrednosti',
+    'device_eol' => 'Kraj podrške za uređaj',
+    'na' => 'N/D',
     'last_audit' => 'Poslednja revizija',
     'new' => 'novi!',
     'no_depreciation' => 'Nema amortizacije',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Spremna za raspoređivanje',
     'requested_date' => 'Datum zatraživanja',
     'requested_assets' => 'Zatražena imovina',
-    'requested_assets_menu' => 'Zatražene stavke',
+    'requested_assets_menu' => 'Zatraživa stavka',
     'request_canceled' => 'Zahtev je otkazan',
     'request_item' => 'Zatraži ovu stavku',
     'external_link_tooltip' => 'Eksterna veza do',
     'save' => 'Sačuvaj',
+    'save_copy' => 'Sačuvaj kopiju',
     'select_var' => 'Izaberite :thing... ', // this will eventually replace all of our other selects
     'select' => 'Označi',
     'select_all' => 'Izaberi sve',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Korak 3',
     'setup_step_4' => 'Korak 4',
     'setup_config_check' => 'Provera podešavanja',
-    'setup_create_database' => 'Kreiraj tabele baze podataka',
+    'setup_create_database' => 'Napravi tabele baze podataka',
     'setup_create_admin' => 'Napravi administratora',
     'setup_next' => 'Sledeći',
     'setup_done' => 'Podešavanje je završno!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Imovina koja je vama zadužena pripada drugoj kompaniji i zato je ne možete prihvatiti niti odbiti. Molim vas proverite sa vašim nadređenim',
     'error_assets_already_checked_out' => 'Jedna ili više imovina su već zadužene',
     'assigned_assets_removed' => 'Sledeće je uklonjeno iz izabrane imovine jer je već zadužena',
+    'upload_files' => 'Pošalji datoteke',
+    'uploaded_files' => 'Poslate datoteke',
+    'sign_in_place' => 'Lično potpisivanje/prihvatanje',
+    'sign_in_place_help' => 'Potvrdite ovo polje ako je korisnik prisutan i želite da prihvati stavku i potpiše/prihvati EULA-u (kada je primenljivo) odmah.',
+    'unauthorized' => 'Neovlašćen ili neautentifikovan.',
     'importer' => [
         'checked_out_to_fullname' => 'Odjavljeno na: Puno ime',
         'checked_out_to_first_name' => 'Odjavljeno na: Ime',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Podlokacije',
     'append' => 'Nadoveži',
     'optional' => 'OPCIONO',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Imovina',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Dodaj napomenu',
     ],
 
+    'last_note' => 'Poslednja beleška',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name još uvek ima povezane stavke. Molim vas uklonite ih pre brisanja ove :item.',
         'assoc_assets' => ':item_name je trenutno povezana sa :asset_count imovine i ne može biti izbrisana. Molim vas izmenite vaše imovine da više nisu povezane sa ovom :item i pokušajte ponovo.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Izmeni :name',
         'checkout_item' => 'Zaduži :name',
         'checkin_item' => 'Razduži :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Podrazumevano za lokaciju',
-        'default_blue' => 'Podrazumevana plava',
-        'blue_dark' => 'Plava (tamni režim)',
-        'green' => 'Zelena',
-        'green_dark' => 'Zelena (tamni režim)',
-        'red' => 'Crvena',
-        'red_dark' => 'Crvena (tamni režim)',
-        'orange' => 'Narandžasta',
-        'orange_dark' => 'Narandžasta (tamni režim)',
-        'black' => 'Crna',
-        'black_dark' => 'Crna (tamni režim)',
-        'purple' => 'Ljubičasta',
-        'purple_dark' => 'Ljubičasta (tamni režim)',
-        'yellow' => 'Žuta',
-        'yellow_dark' => 'Žuta (tamni režim)',
-        'high_contrast' => 'Visoki kontrast',
-
-    ],
-
     'select_all_none' => 'Izaberi sve/ništa',
     'generic_model_not_found' => 'Taj :model nije pronađen ili vi nemate ovlašćenja da mu pristupite',
+    'report_not_editable' => 'Nemate ovlašćenja da menjate šablon ovog izveštaja',
     'deleted_models' => 'Obrisani modeli imovine',
     'deleted_users' => 'Obrisani korisnici',
     'cost_each' => ':amount svaki',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 mesec|:count meseci',
+
+    'token_unrevoked' => 'API token je ponovno izdat',
+    'token_revoked' => 'API token je poništen',
 
 ];

@@ -17,6 +17,7 @@ return [
     'name' => 'Nombre de la categoría',
     'require_acceptance' => 'Requerir a los usuarios que confirmen la aceptación de los elementos en esta categoría.',
     'required_acceptance' => 'Este usuario recibirá un correo electrónico con un enlace para confirmar la aceptación de este elemento.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Se enviará un correo electrónico a este usuario con una copia del acuerdo de uso',
     'no_default_eula' => 'No se encontró una definición del acuerdo de uso por defecto. Agregue uno en Configuración.',
     'update' => 'Actualizar categoría',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Enviar correo de recepción',
     'import_eula_text' => 'Texto del EULA',
     'import_category_type' => 'Tipo de categoría',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];

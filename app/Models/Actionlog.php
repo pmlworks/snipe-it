@@ -8,8 +8,8 @@ use App\Models\Traits\Searchable;
 use App\Presenters\ActionlogPresenter;
 use App\Presenters\Presentable;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -330,6 +330,27 @@ class Actionlog extends SnipeModel
     }
 
     /**
+     * Eager load history relations used by the API transformer to avoid N+1 queries.
+     */
+    public function scopeForApiHistory($query)
+    {
+        return $query->with([
+            'adminuser',
+            'location',
+            'item' => function (MorphTo $morphTo) {
+                $morphTo->morphWith([
+                    Asset::class => ['model'],
+                ]);
+            },
+            'target' => function (MorphTo $morphTo) {
+                $morphTo->morphWith([
+                    Asset::class => ['model'],
+                ]);
+            },
+        ]);
+    }
+
+    /**
      * Establishes the actionlog -> location relationship
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
@@ -423,39 +444,21 @@ class Actionlog extends SnipeModel
     /**
      * Calculate the date of the next audit
      *
-     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @return Datetime | string
      *
      * @since  [v4.0]
      *
-     * @return \Datetime
+     * @author [A. Gianotto] [<snipe@snipe.net>]
      */
     public function calcNextAuditDate($monthInterval = 12, $asset = null)
     {
         $last_audit_date = Carbon::parse($this->created_at);
         // If there is an asset-specific next date already given,
         if (($asset) && ($asset->next_audit_date)) {
-            return \Carbon::parse($asset->next_audit_date);
+            return Carbon::parse($asset->next_audit_date);
         }
 
-        return \Carbon::parse($last_audit_date)->addMonths($monthInterval)->toDateString();
-    }
-
-    /**
-     * Gets action logs in chronological order, excluding uploads
-     *
-     * @author Vincent Sposato <vincent.sposato@gmail.com>
-     *
-     * @since  v1.0
-     *
-     * @return Collection
-     */
-    public function getListingOfActionLogsChronologicalOrder()
-    {
-        return $this->all()
-            ->where('action_type', '!=', 'uploaded')
-            ->orderBy('item_id', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        return Carbon::parse($last_audit_date)->addMonths($monthInterval)->toDateString();
     }
 
     /**
@@ -553,8 +556,12 @@ class Actionlog extends SnipeModel
                 return 'private_uploads/assets/'.$this->filename;
             case AssetModel::class:
                 return 'private_uploads/models/'.$this->filename;
+            case Company::class:
+                return 'private_uploads/companies/'.$this->filename;
             case Consumable::class:
                 return 'private_uploads/consumables/'.$this->filename;
+            case Department::class:
+                return 'private_uploads/departments/'.$this->filename;
             case Component::class:
                 return 'private_uploads/components/'.$this->filename;
             case License::class:

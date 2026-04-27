@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Завантажити аватар',
     'back' => 'Назад',
     'bad_data' => 'Нічого не знайдено. Перевірте введені дані.',
-    'bulkaudit' => 'Масовий аудит',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Статус аудиту',
     'bulk_checkout' => 'Масово видати',
     'bulk_edit' => 'Масове редагування',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Створено користувачем',
     'record_created' => 'Запис створено',
     'updated_at' => 'Дата оновлення',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Оновлено',
     'deleted_plain' => 'Видалено',
     'purchased_plain' => 'Придбано',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Дашборд',
     'data_source' => 'Джерело даних',
     'days' => 'днів',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Дні до наступного аудиту',
     'date' => 'Дата',
     'debug_warning' => 'Попередження!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Відділ',
     'deployed' => 'Встановлено',
     'depreciation' => 'Амортизація',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Амортизація',
     'depreciation_report' => 'Звіт про амортизацію',
     'details' => 'Подробиці',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => 'Перша видача',
     'generate' => 'Згенерувати',
     'generate_labels' => 'Генерувати мітки',
-    'github_markdown' => 'Це поле приймає <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Групи',
     'gravatar_email' => 'Електронна адреса Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Змініть свій аватар на Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Якщо у вашій організації використовується аудит, ця дата зазвичай розраховується автоматично на основі останньої дати аудиту активу та частоти аудиту (в розділі <code>Налаштування адміністратора &gt; Сповіщення</code>), і ви можете залишити це поле порожнім. Якщо потрібно, ви можете вручну встановити цю дату тут, але вона має бути пізнішою за останню дату аудиту. ',
     'audit_images_help' => 'Ви можете знайти зображення аудиту в історії активів.',
     'no_email' => 'Немає адреси електронної пошти, пов\'язаної з цим користувачем',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Останній аудит',
     'new' => 'нове!',
     'no_depreciation' => 'Амортизація відсутня',
@@ -273,6 +279,7 @@ return [
     'request_item' => 'Запросити цю річ',
     'external_link_tooltip' => 'Зовнішнє посилання на',
     'save' => 'Зберегти',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Оберіть :thing... ', // this will eventually replace all of our other selects
     'select' => 'Обрати',
     'select_all' => 'Виділити все',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Актив, призначений вам належить інша компанія, так що ви не можете приймати і не приймати його, будь ласка, перевіряйте з вашим менеджером',
     'error_assets_already_checked_out' => 'Один або кілька активів вже видані',
     'assigned_assets_removed' => 'Наступні елементи були видалені з обраних активів, оскільки вони вже видані',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Перевірено на: Повне ім&#039;я',
         'checked_out_to_first_name' => 'Перевірено : Ім&#39;я',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Дочірні локації',
     'append' => 'Додати',
     'optional' => 'НАЛАШТУВАННЯ',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Актив',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Додати нотатку',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name все ще має пов\'язані об\'єкти. Будь ласка, видаліть їх, перш ніж видаляти цей :item.',
         'assoc_assets' => ':item_name наразі пов\'язаний з такою кількістю активів: :asset_count, тому не може бути видалений. Будь ласка, оновіть свої активи, щоб вони більше не посилалися на цей :item, і спробуйте знову.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Редагувати :name',
         'checkout_item' => 'Видати :name',
         'checkin_item' => 'Повернути :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Стандартний сайт',
-        'default_blue' => 'Синій стандартний',
-        'blue_dark' => 'Синій (темний режим)',
-        'green' => 'Зелений',
-        'green_dark' => 'Зелений (темний режим)',
-        'red' => 'Червоний',
-        'red_dark' => 'Червоний (темний режим)',
-        'orange' => 'Помаранчевий',
-        'orange_dark' => 'Оранжевий (Темний режим)',
-        'black' => 'Чорний',
-        'black_dark' => 'Чорний (Темний режим)',
-        'purple' => 'Фіолетовий',
-        'purple_dark' => 'Фіолетовий (Темний режим)',
-        'yellow' => 'Жовтий',
-        'yellow_dark' => 'Жовтий (Темний режим)',
-        'high_contrast' => 'Високий контраст',
-
-    ],
-
     'select_all_none' => 'Вибрати/відмінити все',
     'generic_model_not_found' => 'Не знайдено :model або ви не маєте дозволу на доступ до нього',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Видалені Моделі Активів',
     'deleted_users' => 'Видалені користувачі',
     'cost_each' => ':amount за одиницю',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 місяць|:count місяців',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

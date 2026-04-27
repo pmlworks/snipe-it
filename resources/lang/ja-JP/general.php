@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'アバターをアップロード',
     'back' => '戻る',
     'bad_data' => '存在しませんでした。データに誤りがあるかもしれません。',
-    'bulkaudit' => '一括監査',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => '監査ステータス',
     'bulk_checkout' => '一括チェックアウト',
     'bulk_edit' => '一括編集',
@@ -101,6 +101,7 @@ return [
     'created_by' => '作成者',
     'record_created' => 'レコードが作成されました',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => '削除しました。',
     'purchased_plain' => '購入済',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'ダッシュボード',
     'data_source' => 'データソース',
     'days' => '日間',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => '次の監査日',
     'date' => '日付',
     'debug_warning' => '警告!',
@@ -128,6 +130,7 @@ return [
     'department' => '部署',
     'deployed' => '配備済',
     'depreciation' => '減価償却',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => '減価償却',
     'depreciation_report' => '減価償却レポート',
     'details' => '詳細',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => '作成',
     'generate_labels' => 'ラベルを生成',
-    'github_markdown' => 'このフィールドでは <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>が利用可能です',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'グループ',
     'gravatar_email' => 'Gravatar のメールアドレス',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Gravatar.com</small> でアバターを変更</a>',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'このユーザーに関連付けられているメールアドレスがありません',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => '前回の監査日',
     'new' => '新規',
     'no_depreciation' => '非減価償却資産',
@@ -268,11 +274,12 @@ return [
     'rtd' => '配備可能',
     'requested_date' => 'リクエスト日',
     'requested_assets' => '要求された資産',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'リクエストキャンセル',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
     'save' => '保存',
+    'save_copy' => 'Save Copy',
     'select_var' => ':thingを選択してください。 ', // this will eventually replace all of our other selects
     'select' => '選択',
     'select_all' => 'すべて選択',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'あなたに割り当てられた資産は別の会社に属しているので、受け入れたり拒否したりすることはできません。管理者に確認してください。',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'すでにチェックアウトされているため、選択した資産から次のものが削除されました',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'チェックアウトしました: フルネーム',
         'checked_out_to_first_name' => 'チェックアウトしました: 名前',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => '追加',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => '資産',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'メモを追加する',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'すべてを選択/選択解除',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => '削除された資産モデル',
     'deleted_users' => 'Deleted Users',
     'cost_each' => '各:amount',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

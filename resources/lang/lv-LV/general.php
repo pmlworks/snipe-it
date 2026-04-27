@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Augšupielādēt Avatar',
     'back' => 'Atpakaļ',
     'bad_data' => 'Nekas nav atrasts. Varbūt slikti dati?',
-    'bulkaudit' => 'Lielapjoma audits',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Revīzijas statuss',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Lielapjoma rediģēšana',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Izveidoja',
     'record_created' => 'Ieraksts izceidots',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'Svītrots',
     'purchased_plain' => 'Iegādāts',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Informācijas panelis',
     'data_source' => 'Data Source',
     'days' => 'dienas',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Dienas līdz nākamajam auditam',
     'date' => 'Datums',
     'debug_warning' => 'Brīdinājums!',
@@ -128,6 +130,7 @@ return [
     'department' => 'nodaļa',
     'deployed' => 'Izvietota',
     'depreciation' => 'Nolietojums',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Nolietojums',
     'depreciation_report' => 'Amortizācijas atskaite',
     'details' => 'Detaļas',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Izveidot',
     'generate_labels' => 'Ģenerēt birkas',
-    'github_markdown' => 'Šajā laukā tiek pieņemts <a href="https://help.github.com/articles/github-flavored-markdown/">Github pieņemtais marķējums</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grupas',
     'gravatar_email' => 'Gravatar e-pasta adrese',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Izmaini savu tēlu Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ja Jūs organizācijā veicat auditu, tas tiek automātiski aprēķināts balstoties uz inventāra&apos; pēdējā audita datumu un audita biežumu (<code>Admin iestatījumi &gt; Paziņojumi</code>) un to šo atstāt tukšu. Jūs varat iestatīt šeit datumu, ja tas ir nepieciešams, bet tam jābūt pēc pēdējā audita datuma. ',
     'audit_images_help' => 'Jūs varat atrast audita attēlus inventāra Vēstures cilnē.',
     'no_email' => 'Šim lietotājam nav norādīta epasta adrese',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Pēdējais audits',
     'new' => 'jauns!',
     'no_depreciation' => 'Nav nolietojuma',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Gatavs izvietot',
     'requested_date' => 'Pieprasīšanas datums',
     'requested_assets' => 'Pieprasītais inventārs',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Pieprasāmās lietas',
     'request_canceled' => 'Pieprasījums atcelts',
     'request_item' => 'Pieprasīt šo lietu',
     'external_link_tooltip' => 'Ārējā saite',
     'save' => 'Saglabājiet',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Izvēlēties :thing... ', // this will eventually replace all of our other selects
     'select' => 'Izvēlieties',
     'select_all' => 'Atlasīt Visu',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => '3. Solis',
     'setup_step_4' => '4. Solis',
     'setup_config_check' => 'Konfigurācijas pārbaude',
-    'setup_create_database' => 'Izveidot Datubāzes Tabulas',
+    'setup_create_database' => 'Create database tables',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Nākamais',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Jums izsniegtais inventārs pieder citam uzņēmumam tapēc Jūs nevarat to pieņemt vai atteikties. Lūdzu sazinieties ar savu vadītāju',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Izsniegts: Vārds Uzvārds',
         'checked_out_to_first_name' => 'Izsniegts: Vārds',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Aktīvs',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

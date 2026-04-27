@@ -17,6 +17,7 @@ return [
     'name' => 'Назва категорії',
     'require_acceptance' => 'Вимагати, щоб користувачі підверджували прийняття активів в цій категорії.',
     'required_acceptance' => 'Користувачу відправиться email з лінком щоб він підтвердив прийняття активу.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Цей користувач буде відправлений на пошту копії EULA',
     'no_default_eula' => 'Основна EULA не знайдена. Додайте одненьку в налаштуваннях.',
     'update' => 'Оновити категорію',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Надіслати Email-сповіщення про повернення',
     'import_eula_text' => 'Текст ліцензійної угоди',
     'import_category_type' => 'Тип категорії',
+    'import_alert_on_response' => 'Сповіщення при відповіді',
 
 ];

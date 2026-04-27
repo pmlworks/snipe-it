@@ -1511,7 +1511,7 @@ class Helper
             case 'pt':
                 return (1 / 72) * static::getUnitConversionFactor('in');
             default:
-                throw new \InvalidArgumentException('Unit: \''.$unit.'\' is not supported');
+                throw new \InvalidArgumentException('Unit: '.e($unit).' is not supported');
 
                 return false;
         }
@@ -1629,10 +1629,20 @@ class Helper
 
         // return to assignment target
         if ($redirect_option == 'target') {
+            $userId = $request->assigned_user ?? $checkedInFrom;
+            $locationId = $request->assigned_location ?? $checkedInFrom;
+            $assetId = $request->assigned_asset ?? $checkedInFrom;
+
             return match ($checkout_to_type) {
-                'user' => redirect()->route('users.show', $request->assigned_user ?? $checkedInFrom),
-                'location' => redirect()->route('locations.show', $request->assigned_location ?? $checkedInFrom),
-                'asset' => redirect()->route('hardware.show', $request->assigned_asset ?? $checkedInFrom),
+                'user' => $userId
+                    ? redirect()->route('users.show', $userId)
+                    : redirect()->route('users.index'),
+                'location' => $locationId
+                    ? redirect()->route('locations.show', $locationId)
+                    : redirect()->route('locations.index'),
+                'asset' => $assetId
+                    ? redirect()->route('hardware.show', $assetId)
+                    : redirect()->route('hardware.index'),
             };
         }
 
@@ -1816,6 +1826,8 @@ class Helper
         $labelWidth = ($maxLabelWidthPerUnit * $labelSize) + $labelPadding;
         $valueX = $currentX + $labelWidth + $gap;
         $valueWidth = $usableWidth - $labelWidth - $gap;
+        $fullValueX = $currentX;
+        $fullValueWidth = $usableWidth;
 
         return compact(
             'scale',
@@ -1829,7 +1841,19 @@ class Helper
             'rowAdvance',
             'labelWidth',
             'valueX',
-            'valueWidth'
+            'valueWidth',
+            'fullValueX',
+            'fullValueWidth',
         );
+    }
+
+    public static function normalizeFullModelName($model): string
+    {
+        if (str_contains($model, 'App\\Models\\')) {
+            return $model;
+        }
+
+        return 'App\\Models\\'.ucwords($model);
+
     }
 }

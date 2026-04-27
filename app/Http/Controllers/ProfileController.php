@@ -251,6 +251,7 @@ class ProfileController extends Controller
 
     public function getStoredEula($filename): Response|BinaryFileResponse|RedirectResponse
     {
+        $filename = basename((string) $filename);
 
         $logentry = Actionlog::where('filename', $filename)->first();
 

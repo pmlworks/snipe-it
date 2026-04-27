@@ -7,21 +7,21 @@ return [
 
     'create' => [
         'error' => 'Tiekėjas nebuvo sukurtas, bandykite dar kartą.',
-        'success' => 'Tiekėjas sukurtas sėkmingai.',
+        'success' => 'Tiekėjas sėkmingai sukurtas.',
     ],
 
     'update' => [
         'error' => 'Tiekėjas nebuvo atnaujintas, bandykite dar kartą',
-        'success' => 'Tiekėjas atnaujintas sėkmingai.',
+        'success' => 'Tiekėjas sėkmingai atnaujintas.',
     ],
 
     'delete' => [
         'confirm' => 'Ar tikrai norite panaikinti šį tiekėją?',
         'error' => 'Bandant panaikinti tiekėją įvyko klaida. Bandykite dar kartą.',
-        'success' => 'Tiekėjas panaikintas sėkmingai.',
+        'success' => 'Tiekėjas sėkmingai panaikintas.',
         'not_found' => 'Tiekėjas nerastas.',
-        'bulk_success' => 'Tiekėjas sėkmingai ištrintas.',
-        'partial_success' => 'Tiekėjas sėkmingai ištrintas. Daugiau informacijos rasite žemiau. | :count tiekėjai (-ų) buvo sėkmingai ištrinti. Daugiau informacijos rasite žemiau.',
+        'bulk_success' => 'Tiekėjai sėkmingai panaikinti.',
+        'partial_success' => '.',
     ],
 
 ];

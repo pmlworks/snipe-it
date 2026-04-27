@@ -17,6 +17,7 @@ return [
     'name' => 'Kategorian nimi',
     'require_acceptance' => 'Vaadi käyttäjiä vahvistamaan hyväksyntä tämän kategorian laitteille.',
     'required_acceptance' => 'Käyttäjälle lähetetään sähköpostitse linkki nimikkeen hyväksymistä varten.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Käyttäjälle lähetetään sähköpostitse kopio käyttöehdoista',
     'no_default_eula' => 'Yleisiä käyttöehtoja ei löytynyt. Voit lisätä ne sovelluksen asetuksista.',
     'update' => 'Päivitä kategoria',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Send Checkin Email',
     'import_eula_text' => 'Käyttöehtojen teksti',
     'import_category_type' => 'Kategorian tyyppi',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];

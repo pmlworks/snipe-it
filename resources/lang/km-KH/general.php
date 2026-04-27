@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'បង្ហោះ Avatar',
     'back' => 'ត្រឡប់មកវិញ',
     'bad_data' => 'រកមិនឃើញអ្វីទេ។ ប្រហែលជាទិន្នន័យមិនល្អ?',
-    'bulkaudit' => 'សវនកម្មច្រើន',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'ស្ថានភាពសវនកម្ម',
     'bulk_checkout' => 'ការបញ្ចេញច្រើន',
     'bulk_edit' => 'កែសម្រួលជាដុំ',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'បង្កើត​ឡើង​ដោយ',
     'record_created' => 'បានបង្កើតកំណត់ត្រា',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'បានលុប',
     'purchased_plain' => 'បានទិញ',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'ផ្ទាំងគ្រប់គ្រង',
     'data_source' => 'ប្រភពទិន្នន័យ',
     'days' => 'ថ្ងៃ',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'ថ្ងៃទៅសវនកម្មបន្ទាប់',
     'date' => 'កាលបរិច្ឆេទ',
     'debug_warning' => 'ព្រមាន!',
@@ -128,6 +130,7 @@ return [
     'department' => 'នាយកដ្ឋាន',
     'deployed' => 'បានប្រើប្រាស់',
     'depreciation' => 'រំលោះ',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'ការរំលោះ',
     'depreciation_report' => 'របាយការណ៍រំលោះ',
     'details' => 'ព័ត៌មានលម្អិត',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'បង្កើត',
     'generate_labels' => 'បង្កើតស្លាក',
-    'github_markdown' => 'វាលនេះទទួលយក <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown</a>។',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'ក្រុម',
     'gravatar_email' => 'អាសយដ្ឋានអ៊ីមែល Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>ផ្លាស់ប្តូររូបតំណាងរបស់អ្នកនៅ Gravatar.com</small></a>។',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'ប្រសិនបើអ្នកប្រើសវនកម្មនៅក្នុងស្ថាប័នរបស់អ្នក ជាធម្មតាវាត្រូវបានគណនាដោយស្វ័យប្រវត្តិដោយផ្អែកលើកាលបរិច្ឆេទស&apos;វនកម្មចុងក្រោយរបស់ទ្រព្យសកម្ម និងប្រេកង់សវនកម្ម (នៅក្នុង <code>ការកំណត់អ្នកគ្រប់គ្រង &gt; ការជូនដំណឹង</code>) ហើយអ្នកអាចទុកវាឱ្យនៅទទេបាន។ អ្នកអាចកំណត់កាលបរិច្ឆេទនេះដោយដៃនៅទីនេះ ប្រសិនបើអ្នកត្រូវការ ប៉ុន្តែវាត្រូវតែយឺតជាងកាលបរិច្ឆេទសវនកម្មចុងក្រោយ។ ',
     'audit_images_help' => 'អ្នកអាចស្វែងរករូបភាពសវនកម្មនៅក្នុងផ្ទាំងប្រវត្តិរបស់ទ្រព្យសកម្ម។',
     'no_email' => 'គ្មានអាសយដ្ឋានអ៊ីមែលដែលពាក់ព័ន្ធជាមួយអ្នកប្រើប្រាស់នេះទេ។',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'សវនកម្មចុងក្រោយ',
     'new' => 'ថ្មី!',
     'no_depreciation' => 'គ្មានការរំលោះ',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'រួចរាល់អាចប្រើប្រាស់',
     'requested_date' => 'កាលបរិច្ឆេទដែលបានស្នើសុំ',
     'requested_assets' => 'ទ្រព្យសកម្មដែលបានស្នើសុំ',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'វត្ថុដែលអាចស្នើសុំបាន។',
     'request_canceled' => 'សំណើត្រូវបានលុបចោល',
     'request_item' => 'ស្នើសុំធាតុនេះ។',
     'external_link_tooltip' => 'តំណភ្ជាប់ទៅខាងក្រៅ',
     'save' => 'រក្សា​ទុក',
+    'save_copy' => 'Save Copy',
     'select_var' => 'ជ្រើសរើស៖ thing... ', // this will eventually replace all of our other selects
     'select' => 'ជ្រើសរើស',
     'select_all' => 'ជ្រើសរើសទាំងអស់។',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'ជំហានទី 3',
     'setup_step_4' => 'ជំហានទី 4',
     'setup_config_check' => 'ពិនិត្យការកំណត់រចនាសម្ព័ន្ធ',
-    'setup_create_database' => 'Create Database Tables',
+    'setup_create_database' => 'បង្កើតតារាងទិន្នន័យ',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'បន្ទាប់',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'ទ្រព្យសម្បត្តិដែលប្រគល់ឱ្យអ្នកជាកម្មសិទ្ធិរបស់ក្រុមហ៊ុនផ្សេង ដូច្នេះអ្នកមិនអាចទទួលយក ឬបដិសេធបានទេ សូមពិនិត្យជាមួយអ្នកគ្រប់គ្រងរបស់អ្នក',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'បានចេញយកទៅកាន់៖ ឈ្មោះពេញ',
         'checked_out_to_first_name' => 'បានចេញយកទៅកាន់៖ នាមខ្លួន',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'បន្ថែម',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'ទ្រព្យសកម្ម',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'បន្ថែមកំណត់ចំណាំ',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'កែសម្រួល :name',
         'checkout_item' => 'ការបញ្ចេញប្រើ:ឈ្មោះ',
         'checkin_item' => 'ការបង្វិលត្រឡប់:ឈ្មោះ',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'ជ្រើសរើស/មិនជ្រើសរើសទាំងអស់',
     'generic_model_not_found' => '៖ ម៉ូដែលនោះមិនត្រូវបានរកឃើញ ឬអ្នកមិនមានសិទ្ធិចូលប្រើវា',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'ម៉ូដែលទ្រព្យសម្បត្តិដែលបានលុប',
     'deleted_users' => 'អ្នកប្រើដែលបានលុប',
     'cost_each' => ':amount រាល់មួយ',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

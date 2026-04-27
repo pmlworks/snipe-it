@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Carica Avatar',
     'back' => 'Indietro',
     'bad_data' => 'Non è stato trovato nulla. Forse dati errati?',
-    'bulkaudit' => 'Controllo Inventario',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Stato Controllo Inventario',
     'bulk_checkout' => 'Assegnazione Massiva',
     'bulk_edit' => 'Modifica Massiva',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Creato da',
     'record_created' => 'Record creato',
     'updated_at' => 'Aggiornato il',
+    'updated_before' => 'Aggiornato Prima',
     'updated_plain' => 'Aggiornato',
     'deleted_plain' => 'Eliminato',
     'purchased_plain' => 'Acquistato il',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Cruscotto',
     'data_source' => 'Fonte dei Dati',
     'days' => 'giorni',
+    'days_ago' => 'giorni fa',
     'days_to_next_audit' => 'Giorni al prossimo controllo inventario',
     'date' => 'Data',
     'debug_warning' => 'Attenzione!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Reparto',
     'deployed' => 'Assegnati',
     'depreciation' => 'Deprezzamento',
+    'depreciation_type' => 'Tipo Deprezzamento',
     'depreciations' => 'Deprezzamenti',
     'depreciation_report' => 'Report Deprezzamento',
     'details' => 'Dettagli',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1° Assegnazione',
     'generate' => 'Genera',
     'generate_labels' => 'Genera Etichette',
-    'github_markdown' => 'Questo campo accetta <a href="https://help.github.com/articles/github-flavored-markdown/">Markdown di Github</a>.',
+    'github_markdown' => 'Questo campo accetta il markdown <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">in stile Github</a>.',
     'groups' => 'Gruppi',
     'gravatar_email' => 'Indirizzo Email Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Cambia il tuo avatar su Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Se usi la funzione per inventariare nella tua azienda, questo valore è calcolato automaticamente in base all\'ultima data di inventario del Bene e alla frequenza d\'inventario (in <code>Impostazioni Amministratore &gt; Notifiche</code>) e puoi lasciare questo campo vuoto. Qui puoi impostare manualmente questa data, se vuoi, ma deve essere successiva all\'ultima data d\'inventario. ',
     'audit_images_help' => 'Puoi trovare immagini d\'inventario nella scheda "Storico" del Bene.',
     'no_email' => 'Nessun indirizzo email associato a questo utente',
+    'no_value' => 'Nessun valore',
+    'device_eol' => 'EOL Dispositivo',
+    'na' => 'N/D',
     'last_audit' => 'Ultimo Controllo Inventario',
     'new' => 'nuovo!',
     'no_depreciation' => 'Nessun Deprezzamento',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Pronti per l\'assegnazione',
     'requested_date' => 'Data di richiesta',
     'requested_assets' => 'Beni richiesti',
-    'requested_assets_menu' => 'Oggetti richiesti',
+    'requested_assets_menu' => 'Oggetti richiedibili',
     'request_canceled' => 'Richiesta annullata',
     'request_item' => 'Richiedi questo articolo',
     'external_link_tooltip' => 'Collegamento esterno a',
     'save' => 'Salva',
+    'save_copy' => 'Salva Copia',
     'select_var' => 'Seleziona :thing... ', // this will eventually replace all of our other selects
     'select' => 'Seleziona',
     'select_all' => 'Seleziona tutto',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Un bene assegnato a te appartiene a un\'altra azienda. Non puoi accettarlo né rifiutarlo. Parlane col tuo manager',
     'error_assets_already_checked_out' => 'Uno o più tra questi Beni sono già stati assegnati',
     'assigned_assets_removed' => 'Questi beni sono stati rimossi dai selezionati perché sono già stati assegnati',
+    'upload_files' => 'Carica File',
+    'uploaded_files' => 'File Caricati',
+    'sign_in_place' => 'Firma/Accetta sul posto',
+    'sign_in_place_help' => 'Spunta la casella se hai l\'utente in presenza e vuoi fargli firmare subito per accettare l\'articolo e l\'EULA (se applicabile).',
+    'unauthorized' => 'Non autorizzato o Non autenticato.',
     'importer' => [
         'checked_out_to_fullname' => 'Assegnato a: Nome Cognome',
         'checked_out_to_first_name' => 'Assegnato a: Nome',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Sedi sottoposte',
     'append' => 'Aggiungi',
     'optional' => 'FACOLTATIVO',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Bene',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Aggiungere una nota',
     ],
 
+    'last_note' => 'Ultima Nota',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name ha ancora articoli associati. Rimuovili prima di eliminare questo :item.',
         'assoc_assets' => ':item_name al momento è associato con :asset_count Bene/i e non può essere eliminato. Aggiorna i tuoi Beni in modo che non si riferiscano più a questo :item, e poi riprova.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Modifica :name',
         'checkout_item' => 'Check-out di :name',
         'checkin_item' => 'Check-in di :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Predefinito',
-        'default_blue' => 'Blu Predefinito',
-        'blue_dark' => 'Blu (Tema Scuro)',
-        'green' => 'Verde',
-        'green_dark' => 'Verde (Tema Scuro)',
-        'red' => 'Rosso',
-        'red_dark' => 'Rosso (Tema Scuro)',
-        'orange' => 'Arancione',
-        'orange_dark' => 'Arancione (Tema Scuro)',
-        'black' => 'Nero',
-        'black_dark' => 'Nero (Tema Scuro)',
-        'purple' => 'Viola',
-        'purple_dark' => 'Viola (Tema Scuro)',
-        'yellow' => 'Giallo',
-        'yellow_dark' => 'Giallo (Tema Scuro)',
-        'high_contrast' => 'Alto Contrasto',
-
-    ],
-
     'select_all_none' => 'Seleziona/Deseleziona Tutto',
     'generic_model_not_found' => 'Il :model non è stato trovato o non hai il permesso di accederci',
+    'report_not_editable' => 'Non hai i permessi per modificare questo modello di report',
     'deleted_models' => 'Modelli di bene cancellati',
     'deleted_users' => 'Utenti cancellati',
     'cost_each' => ':amount ciascuno',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 mese|:count mesi',
+
+    'token_unrevoked' => 'Token API ripristinato',
+    'token_revoked' => 'Token API revocato',
 
 ];

@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Avatar frissítése',
     'back' => 'Vissza',
     'bad_data' => 'Nincs találat. Talán rossz adat?',
-    'bulkaudit' => 'Tömeges ellenőrzés',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Audit állapot',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Tömeges szerkesztés',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Készítette',
     'record_created' => 'Rekord létrehozva',
     'updated_at' => 'Frissítés dátuma',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Frissítve',
     'deleted_plain' => 'Törölve',
     'purchased_plain' => 'Megvásárolva',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Irányítópult',
     'data_source' => 'Adatforrás',
     'days' => 'napok',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Napok a következő ellenőrzéshez',
     'date' => 'Dátum',
     'debug_warning' => 'Figyelem!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Osztály',
     'deployed' => 'Telepített',
     'depreciation' => 'Értékcsökkenés',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Értékcsökkenések',
     'depreciation_report' => 'Értékcsökkenés riport',
     'details' => 'Részletek',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> kiadása',
     'generate' => 'Létrehoz',
     'generate_labels' => 'Címkék generálása',
-    'github_markdown' => 'Ez a mező elfogadja a <a href="https://help.github.com/articles/github-flavored-markdown/">Github flavored markdown-t</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Csoportok',
     'gravatar_email' => 'Gravatar email cím',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Változtassa meg avatarját a Gravatar.com-on</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ha a szervezetük használ auditálást, akkor ez az érték rendszerint automatikusan kiszámításra kerül az eszköz legutóbbi audit dátuma és az audit gyakorisága alapján (lásd: <code>Admin Beállítások &gt; Riasztások</code>), így a mező üresen is hagyható. Szükség esetén a dátum manuálisan is megadható, de annak későbbinek kell lennie, mint a legutóbbi audit dátuma. ',
     'audit_images_help' => 'Az audit képek megtalálhatók az eszköz előzmények fülén.',
     'no_email' => 'Ehhez a felhasználóhoz nincs e-mail társítva',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Utolsó ellenőrzés',
     'new' => 'új!',
     'no_depreciation' => 'Nincs értékcsökkentés',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Kiadásra kész',
     'requested_date' => 'Kért időpont',
     'requested_assets' => 'Kért eszközök',
-    'requested_assets_menu' => 'Igényelt tételek',
+    'requested_assets_menu' => 'Igényelhető modellek',
     'request_canceled' => 'A kérelem törölve',
     'request_item' => 'Igénylés',
     'external_link_tooltip' => 'Külső hivatkozás :',
     'save' => 'Mentés',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Kiválasztás :thing... ', // this will eventually replace all of our other selects
     'select' => 'Választ',
     'select_all' => 'Összes kijelölése',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Egy hozzád rendelt eszköz egy másik céghez tartozik, így nem fogadhatod el vagy utasíthatod vissza, kérlek egyeztess a vezetőddel',
     'error_assets_already_checked_out' => 'Egyes eszközök már ki vannak adva',
     'assigned_assets_removed' => 'A következő eszközöket eltávolítottuk, mert már ki vannak adva',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Kiadva a következőnek: Full Name',
         'checked_out_to_first_name' => 'Kiadva a következőnek: First Name',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Belső helyszín',
     'append' => 'Hozzáillesztés',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Eszköz',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Adjon meg egy megjegyzést',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => ':name szerkesztése',
         'checkout_item' => ':name kiadása',
         'checkin_item' => ':name visszavétele',
     ],
 
-    'skins' => [
-        'site_default' => 'Alapértelmezett',
-        'default_blue' => 'Alapértelmezett kék',
-        'blue_dark' => 'Kék (sötét mód)',
-        'green' => 'Zöld',
-        'green_dark' => 'Zöld (sötét mód)',
-        'red' => 'Piros',
-        'red_dark' => 'Piros (sötét mód)',
-        'orange' => 'Narancssárga',
-        'orange_dark' => 'Narancs (sötét mód)',
-        'black' => 'Fekete',
-        'black_dark' => 'Fekete (Sötét mód)',
-        'purple' => 'Lila',
-        'purple_dark' => 'Lila (sötét mód)',
-        'yellow' => 'Sárga',
-        'yellow_dark' => 'Sárga (sötét mód)',
-        'high_contrast' => 'Magas kontraszt',
-
-    ],
-
     'select_all_none' => 'Összes kijelölése/kijelölés megszüntetése',
     'generic_model_not_found' => 'A(z) :model nem található, vagy nincs jogosultsága a megtekintéséhez',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Törölt eszköz modellek',
     'deleted_users' => 'Törölt felhasználók',
     'cost_each' => ':amount egyenként',
@@ -750,5 +746,8 @@ return [
     ],
 
     'months_plural' => '1 hónap|:count hónap',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

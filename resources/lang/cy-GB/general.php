@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Uwchlwytho Avatar',
     'back' => 'Yn ôl',
     'bad_data' => 'Heb darganfod, Efallai data drwg?',
-    'bulkaudit' => 'Awdit swmp',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Statws Awdit',
     'bulk_checkout' => 'Nodi swmp allan',
     'bulk_edit' => 'Bulk Edit',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Crëwyd Gan',
     'record_created' => 'Record Created',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'Wedi Dileu',
     'purchased_plain' => 'Dyddiad Pwrcasu',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Dashfwrdd',
     'data_source' => 'Data Source',
     'days' => 'dyddiau',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Dyddiau tan yr awdit nesaf',
     'date' => 'Dyddiad',
     'debug_warning' => 'Rhybudd!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Adran',
     'deployed' => 'Mewn defnydd',
     'depreciation' => 'Dibrisiant',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Depreciations',
     'depreciation_report' => 'Adroddiad Dibrisiant',
     'details' => 'Manylion',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Creu',
     'generate_labels' => 'Generate Labels',
-    'github_markdown' => 'Mae\'r maes yma yn derbyn<a href="https://help.github.com/articles/github-flavored-markdown/">markdown GitHub</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Grŵpiau',
     'gravatar_email' => 'Cyfeiriad ebost Gravatar',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Change your avatar at Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'You can find audit images in the asset\'s history tab.',
     'no_email' => 'No email address associated with this user',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Awdit diwethaf',
     'new' => 'newydd!',
     'no_depreciation' => 'Dim Dibrisiant',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Barod i\'w defnyddio',
     'requested_date' => 'Requested Date',
     'requested_assets' => 'Requested Assets',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Requestable Items',
     'request_canceled' => 'Cais wedi dileu',
     'request_item' => 'Request this item',
     'external_link_tooltip' => 'External link to',
     'save' => 'Cadw',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Select :thing... ', // this will eventually replace all of our other selects
     'select' => 'Dewis',
     'select_all' => 'Dewis Popeth',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Step 3',
     'setup_step_4' => 'Step 4',
     'setup_config_check' => 'Configuration Check',
-    'setup_create_database' => 'Create Database Tables',
+    'setup_create_database' => 'Create database tables',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Nesaf',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Append',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Ased',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

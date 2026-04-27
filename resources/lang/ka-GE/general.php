@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'ავატარის ატვირთვა',
     'back' => 'უკან დაბრუნება',
     'bad_data' => 'მონაცემები ვერ მოიძებნა. არასწორი ინფორმაცია?',
-    'bulkaudit' => 'მასობრივი აუდიტი',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'აუდიტის სტატუსი',
     'bulk_checkout' => 'მასობრივი გატანა',
     'bulk_edit' => 'მასობრივი რედაქტირება',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'შექმნილია მომხმარებლის მიერ',
     'record_created' => 'ჩანაწერი შეიქმნა',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'წაშლილი',
     'purchased_plain' => 'ნაყიდია',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'საინფორმაციო დაფა',
     'data_source' => 'მონაცემების წყარო',
     'days' => 'დღე',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'მომდევნო აუდიტამდე დარჩენილი დღეები',
     'date' => 'თარიღი',
     'debug_warning' => 'გაფრთხილება!',
@@ -128,6 +130,7 @@ return [
     'department' => 'დეპარტამენტი',
     'deployed' => 'გაცემული',
     'depreciation' => 'ამორტიზაცია',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'ამორტიზაციები',
     'depreciation_report' => 'ამორტიზაციის ანგარიში',
     'details' => 'დეტალები',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'გენერირება',
     'generate_labels' => 'ლეიბლების გენერირება',
-    'github_markdown' => 'ეს ველი იღებს <a href="https://help.github.com/articles/github-flavored-markdown/">Github-ის Markdown-ს</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'ჯგუფები',
     'gravatar_email' => 'Gravatar ელ. ფოსტის მისამართი',
     'gravatar_url' => '<a href="http://gravatar.com"><small>შეცვალეთ თქვენი ავატარი Gravatar.com-ზე</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'თუ თქვენს ორგანიზაციაში გამოიყენება აუდიტი, ეს თარიღი ავტომატურად განისაზღვრება ბოლო აუდიტის თარიღისა და განსაზღვრული სიხშირის მიხედვით (<code>ადმინის პარამეტრები &gt; გაფრთხილებები</code>). შეგიძლიათ შეიყვანოთ ხელით, მაგრამ უნდა იყოს ბოლო აუდიტის თარიღზე გვიან.',
     'audit_images_help' => 'აუდიტის სურათები ხელმისაწვდომია ინვენტარის ისტორიის ჩანართში.',
     'no_email' => 'მომხმარებელს არ აქვს მითითებული ელფოსტა',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'ბოლო აუდიტი',
     'new' => 'ახალი!',
     'no_depreciation' => 'ამორტიზაცია არ გამოიყენება',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'მზადაა გასაცემად',
     'requested_date' => 'მოთხოვნის თარიღი',
     'requested_assets' => 'მოთხოვნილი ინვენტარი',
-    'requested_assets_menu' => 'მოთხოვნილი ინვენტარი',
+    'requested_assets_menu' => 'მოთხოვნადი ნივთები',
     'request_canceled' => 'მოთხოვნა გაუქმდა',
     'request_item' => 'მოთხოვნა ამ ერთეულზე',
     'external_link_tooltip' => 'გარე ბმული',
     'save' => 'შენახვა',
+    'save_copy' => 'Save Copy',
     'select_var' => 'აირჩიეთ :thing...', // this will eventually replace all of our other selects
     'select' => 'აირჩიეთ',
     'select_all' => 'ყველას არჩევა',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'ნაბიჯი 3',
     'setup_step_4' => 'ნაბიჯი 4',
     'setup_config_check' => 'კონფიგურაციის შემოწმება',
-    'setup_create_database' => 'Create Database Tables',
+    'setup_create_database' => 'მონაცემთა ბაზის ცხრილების შექმნა',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'შემდეგი',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'ინვენტარი, რომელიც მოგენიჭათ, ეკუთვნის სხვა კომპანიას, რის გამოც ვერ დაადასტურებთ ან უარყოფთ მიღებას. გთხოვთ, დაუკავშირდეთ თქვენს მენეჯერს.',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'გაცემულია: სრული სახელი',
         'checked_out_to_first_name' => 'გაცემულია: სახელი',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'მიმაგრება',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'ინვენტარი',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'შეიყვანეთ შენიშვნა',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'შეცვალე :name',
         'checkout_item' => 'გატანა: :name',
         'checkin_item' => 'დაბრუნება: :name',
     ],
 
-    'skins' => [
-        'site_default' => 'საიტის ნაგულისხმევი',
-        'default_blue' => 'ნაგულისხმევი ლურჯი',
-        'blue_dark' => 'ლურჯი (მუქი რეჟიმი)',
-        'green' => 'Green',
-        'green_dark' => 'მწვანე (მუქი რეჟიმი)',
-        'red' => 'Red',
-        'red_dark' => 'წითელი (მუქი რეჟიმი)',
-        'orange' => 'Orange',
-        'orange_dark' => 'ნარინჯისფერი (მუქი რეჟიმი)',
-        'black' => 'შავი',
-        'black_dark' => 'შავი (მუქი რეჟიმი)',
-        'purple' => 'იისფერი',
-        'purple_dark' => 'იისფერი (მუქი რეჟიმი)',
-        'yellow' => 'ყვითელი',
-        'yellow_dark' => 'ყვითელი (მუქი რეჟიმი)',
-        'high_contrast' => 'მაღალი კონტრასტი',
-
-    ],
-
     'select_all_none' => 'ყველას არჩევა/გაუქმება',
     'generic_model_not_found' => 'ამ :model -ს ვერ ვპოულობთ ან არ გაქვთ წვდომის უფლება',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'წაშლილი ინვენტარის მოდელები',
     'deleted_users' => 'წაშლილი მომხმარებლები',
     'cost_each' => ':amount თითოეული',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

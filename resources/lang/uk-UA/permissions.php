@@ -107,8 +107,49 @@ return [
     ],
     'accessoriesfiles' => [
         'name' => 'Керування файлами аксесуарів',
-        'note' => 'Дозволяє користувачеві завантажувати, викачувати та видаляти файли, пов’язані з аксесуарами.',
+        'note' => 'Allows the user to upload, download, and delete files associated with accessories. (This only makes sense with view privileges or higher.)',
     ],
+
+    'assetsfiles' => [
+        'name' => 'Manage Asset Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with assets. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'usersfiles' => [
+        'name' => 'Manage User Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with users. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'modelsfiles' => [
+        'name' => 'Manage Model Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with asset models on both the model view and the asset view screens. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'departmentsfiles' => [
+        'name' => 'Manage Department Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with departments. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'suppliersfiles' => [
+        'name' => 'Manage Supplier Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with suppliers. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'locationsfiles' => [
+        'name' => 'Manage Location Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with locations.(This only makes sense with view privileges or higher.)',
+    ],
+
+    'companiesfiles' => [
+        'name' => 'Manage Company Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with companies. (This only makes sense with view privileges or higher.)',
+    ],
+
+    'consumablesfiles' => [
+        'name' => 'Керування файлами витратних матеріалів',
+        'note' => 'Allows the user to upload, download, and delete files associated with consumables. (This only makes sense with view privileges or higher.)',
+    ],
+
     'consumables' => [
         'name' => 'Витратні матеріали',
         'note' => 'Надає доступ до розділу «Витратні матеріали» в додатку.',
@@ -129,10 +170,7 @@ return [
         'name' => 'Видавати витратні матеріали',
         'note' => 'Призначення витратних матеріалів зі складу шляхом їх видачі.',
     ],
-    'consumablesfiles' => [
-        'name' => 'Керування файлами витратних матеріалів',
-        'note' => 'Дозволяє користувачеві завантажувати, викачувати та видаляти файли, пов’язані з витратними матеріалами.',
-    ],
+
     'licenses' => [
         'name' => 'Ліцензії',
         'note' => 'Надає доступ до розділу «Ліцензії» в додатку.',
@@ -161,6 +199,11 @@ return [
         'name' => 'Керування файлами ліцензій',
         'note' => 'Дозволяє користувачеві завантажувати, викачувати та видаляти файли, пов’язані з ліцензіями.',
     ],
+    'componentsfiles' => [
+        'name' => 'Керування файлами компонентів',
+        'note' => 'Дозволяє користувачеві завантажувати, викачувати та видаляти файли, пов’язані з компонентами.',
+    ],
+
     'licenseskeys' => [
         'name' => 'Керування ліцензійними ключами',
         'note' => 'Дозволяє користувачеві переглядати ключі продуктів, пов’язані з ліцензіями.',
@@ -181,10 +224,7 @@ return [
     'componentsdelete' => [
         'name' => 'Видалення компонентів',
     ],
-    'componentsfiles' => [
-        'name' => 'Керування файлами компонентів',
-        'note' => 'Дозволяє користувачеві завантажувати, викачувати та видаляти файли, пов’язані з компонентами.',
-    ],
+
     'componentscheckout' => [
         'name' => 'Видача компонентів',
         'note' => 'Призначайте компоненти в інвентарі, видаючи їх.',
@@ -275,7 +315,7 @@ return [
         'name' => 'Видалення відділів',
     ],
     'locations' => [
-        'name' => 'Розташування',
+        'name' => 'Локації',
         'note' => 'Надає доступ до розділу «Локації» в додатку.',
     ],
     'locationsview' => [
@@ -387,37 +427,37 @@ return [
         'note' => 'Дозволяє користувачам редагувати локацію, пов’язану з їхнім власним обліковим записом.',
     ],
     'selfcheckout-assets' => [
-        'name' => 'Self Check Out Assets',
-        'note' => 'Allows users to check out assets to themselves without admin intervention.',
+        'name' => 'Активи для самостійного отримання',
+        'note' => 'Дозволяє користувачам видавати активи самим собі без втручання адміністратора.',
     ],
     'selfview-purchase-cost' => [
-        'name' => 'View Purchase Cost',
-        'note' => 'Allows users to view the purchase cost of items in their account view.',
+        'name' => 'Перегляд вартості придбання',
+        'note' => 'Дозволяє користувачам бачити вартість придбання об’єктів у режимі перегляду свого облікового запису.',
     ],
 
     'depreciations' => [
-        'name' => 'Depreciation Management',
-        'note' => 'Allows users to manage and view asset depreciation details.',
+        'name' => 'Керування амортизацією',
+        'note' => 'Дозволяє користувачам керувати деталями амортизації активів та переглядати їх.',
     ],
     'depreciationsview' => [
-        'name' => 'View Depreciation Details',
+        'name' => 'Перегляд деталей амортизації',
     ],
     'depreciationsedit' => [
-        'name' => 'Edit Depreciation Settings',
+        'name' => 'Редагування налаштувань амортизації',
     ],
     'depreciationsdelete' => [
-        'name' => 'Delete Depreciation Records',
+        'name' => 'Видалення записів про амортизацію',
     ],
     'depreciationscreate' => [
-        'name' => 'Create Depreciation Records',
+        'name' => 'Створення записів про амортизацію',
     ],
 
-    'grant_all' => 'Grant all permissions for :area',
-    'deny_all' => 'Deny all permissions for :area',
-    'inherit_all' => 'Inherit all permissions for :area from permission groups',
-    'grant' => 'Grant Permission for :area',
-    'deny' => 'Deny Permission for :area',
-    'inherit' => 'Inherit Permission for :area from permission groups',
-    'use_groups' => 'We strongly suggest using Permission Groups instead of assigning individual permissions for easier management.',
+    'grant_all' => 'Надати всі дозволи для :area',
+    'deny_all' => 'Заборонити всі дозволи для :area',
+    'inherit_all' => 'Успадкувати всі дозволи для :area від груп прав доступу',
+    'grant' => 'Надати дозвіл для :area',
+    'deny' => 'Заборонити дозвіл для :area',
+    'inherit' => 'Успадкувати дозвіл для :area від груп дозволів',
+    'use_groups' => 'Ми наполегливо рекомендуємо використовувати Групи дозволів замість призначення індивідуальних дозволів для полегшення керування.',
 
 ];

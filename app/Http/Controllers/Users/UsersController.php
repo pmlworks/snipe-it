@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Users;
 
+use App\Actions\Permissions\NormalizePermissionsPayloadAction;
+use App\Actions\Permissions\PreserveUnauthorizedPrivilegedPermissionsAction;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\SaveUserRequest;
+use App\Mail\UnacceptedAssetReminderMail;
 use App\Models\Actionlog;
 use App\Models\Asset;
+use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\Group;
 use App\Models\Setting;
@@ -20,6 +24,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -97,6 +102,8 @@ class UsersController extends Controller
     public function store(SaveUserRequest $request)
     {
         $this->authorize('create', User::class);
+
+        $authenticatedUser = auth()->user();
         $user = new User;
         // Username, email, and password need to be handled specially because the need to respect config values on an edit.
         $user->email = trim($request->input('email'));
@@ -130,26 +137,10 @@ class UsersController extends Controller
         $user->end_date = $request->input('end_date', null);
         $user->autoassign_licenses = $request->input('autoassign_licenses', 0);
 
-        // Strip out the superuser permission if the user isn't a superadmin
-        $permissions_array = $request->input('permission');
-
-        // Strip out the individual superuser permission if the API user isn't a superadmin
-        if (! auth()->user()->isSuperUser()) {
-
-            if ((is_array($permissions_array)) && (array_key_exists('superuser', $permissions_array))) {
-                unset($permissions_array['superuser']);
-            }
-        }
-
-        // Strip out the individual admin permission if the API user isn't an admin
-        if (! auth()->user()->isAdmin()) {
-
-            if ((is_array($permissions_array)) && (array_key_exists('admin', $permissions_array))) {
-                unset($permissions_array['admin']);
-            }
-        }
-
-        $user->permissions = json_encode($permissions_array);
+        $user->permissions = json_encode(PreserveUnauthorizedPrivilegedPermissionsAction::run(
+            requestedPermissions: NormalizePermissionsPayloadAction::run($request->input('permission')),
+            authenticatedUser: $authenticatedUser,
+        ));
 
         // we have to invoke the form request here to handle image uploads
         app(ImageUploadRequest::class)->handleImages($user, 600, 'avatar', 'avatars', 'avatar');
@@ -172,12 +163,8 @@ class UsersController extends Controller
 
             }
 
-            if ($request->filled('groups')) {
-                if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
-                    $user->groups()->sync($request->input('groups'));
-                }
-            } else {
-                $user->groups()->sync([]);
+            if (auth()->user()->can('canEditAuthFields', $user) && auth()->user()->can('editableOnDemo')) {
+                $user->groups()->sync($request->input('groups'));
             }
 
             return Helper::getRedirectOption($request, $user->id, 'Users')
@@ -255,6 +242,8 @@ class UsersController extends Controller
     {
         $this->authorize('update', $user);
 
+        $authenticatedUser = auth()->user();
+
         // This is a janky hack to prevent people from changing admin demo user data on the public demo.
         // The $ids 1 and 2 are special since they are seeded as superadmins in the demo seeder.
         // Thanks, jerks. You are why we can't have nice things. - snipe
@@ -271,21 +260,7 @@ class UsersController extends Controller
 
         $this->authorize('update', $user);
 
-        // Figure out of this user was an admin before this edit
-        $orig_permissions_array = $user->decodePermissions();
-        $orig_superuser = '0';
-        $orig_admin = '0';
-        if (is_array($orig_permissions_array)) {
-            if (array_key_exists('superuser', $orig_permissions_array)) {
-                $orig_superuser = $orig_permissions_array['superuser'];
-            }
-        }
-
-        if (is_array($orig_permissions_array)) {
-            if (array_key_exists('admin', $orig_permissions_array)) {
-                $orig_admin = $orig_permissions_array['admin'];
-            }
-        }
+        $orig_permissions_array = NormalizePermissionsPayloadAction::run($user->decodePermissions());
 
         // Update the user fields
 
@@ -335,20 +310,11 @@ class UsersController extends Controller
                 $user->password = bcrypt($request->input('password'));
             }
 
-            $permissions_array = $request->input('permission');
-
-            // Strip out the superuser permission if the user isn't a superadmin
-            if (! auth()->user()->isSuperUser()) {
-                unset($permissions_array['superuser']);
-                $permissions_array['superuser'] = $orig_superuser;
-            }
-
-            if ((! auth()->user()->isSuperUser()) && (! auth()->user()->isAdmin())) {
-                unset($permissions_array['admin']);
-                $permissions_array['admin'] = $orig_admin;
-            }
-
-            $user->permissions = json_encode($permissions_array);
+            $user->permissions = json_encode(PreserveUnauthorizedPrivilegedPermissionsAction::run(
+                requestedPermissions: NormalizePermissionsPayloadAction::run($request->input('permission')),
+                authenticatedUser: $authenticatedUser,
+                originalPermissions: $orig_permissions_array,
+            ));
 
             // Only save groups if the user is a superuser
             if (auth()->user()->isSuperUser()) {
@@ -473,6 +439,7 @@ class UsersController extends Controller
             'accessories',
             'licenses',
             'userloc',
+            'groups',
         ])
             ->withTrashed()
             ->find($user->id);
@@ -483,6 +450,7 @@ class UsersController extends Controller
         return view('users/view', [
             'user' => $user,
             'settings' => Setting::getSettings(),
+            'effectivePermissionsBySection' => $user->getEffectivePermissionsBySection(),
         ]);
     }
 
@@ -735,6 +703,48 @@ class UsersController extends Controller
 
         return redirect()->back()->with('error', trans('admin/users/message.user_not_found', ['id' => $id]));
 
+    }
+
+    /**
+     * Resend pending acceptance reminder email for a specific user.
+     */
+    public function resendAcceptanceReminder(User $user): RedirectResponse
+    {
+        $this->authorize('view', $user);
+
+        if (empty($user->email)) {
+            return redirect()->back()->with('error', trans('admin/users/message.user_has_no_email'));
+        }
+
+        if ($user->activated == '0') {
+            return redirect()->back()->with('error', trans('admin/users/message.not_activated'));
+        }
+
+        $pendingItems = $user->getAssignedItemsWithPendingAcceptance();
+
+        if ($pendingItems->isEmpty()) {
+            return redirect()->back()->with('warning', trans('admin/users/message.error.no_pending_acceptances'));
+        }
+
+        $firstAcceptance = CheckoutAcceptance::query()
+            ->forUser($user)
+            ->pending()
+            ->with('assignedTo')
+            ->first();
+
+        if (! $firstAcceptance) {
+            return redirect()->back()->with('warning', trans('admin/users/message.error.no_pending_acceptances'));
+        }
+
+        $mailable = new UnacceptedAssetReminderMail($firstAcceptance, $pendingItems->count());
+
+        if (! empty($user->locale)) {
+            $mailable->locale($user->locale);
+        }
+
+        Mail::to($user->email)->send($mailable);
+
+        return redirect()->back()->with('success', trans_choice('admin/users/message.success.acceptance_reminder_sent', $pendingItems->count(), ['count' => $pendingItems->count()]));
     }
 
     /**

@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'بارگذاری آواتار',
     'back' => 'بازگشت',
     'bad_data' => 'چیزی پیدا نشد. شاید داده بد است؟',
-    'bulkaudit' => 'حسابرسی فله',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'وضعیت حسابرسی',
     'bulk_checkout' => 'پرداخت بزرگ',
     'bulk_edit' => 'ویرایش دسته جمعی
@@ -104,6 +104,7 @@ return [
     'created_by' => 'ایجاد شده توسط',
     'record_created' => 'رکورد ایجاد شد',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'حذف شد',
     'purchased_plain' => 'خریداری شده',
@@ -120,6 +121,7 @@ return [
     'dashboard' => 'میز کار',
     'data_source' => 'منبع داده',
     'days' => 'روزها',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'روز به حسابرسی بعدی',
     'date' => 'تاریخ',
     'debug_warning' => 'هشدار!',
@@ -136,6 +138,7 @@ return [
     'department' => 'گروه',
     'deployed' => 'مستقر',
     'depreciation' => 'مستهلک کردن',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'استهلاک ها',
     'depreciation_report' => 'استهلاک گزارش',
     'details' => 'جزئیات',
@@ -162,7 +165,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'تولید',
     'generate_labels' => 'تولید برچسب ها',
-    'github_markdown' => 'این فیلد اجازه می دهد تا <a href="https://help.github.com/articles/github-flavored-markdown/">گیت هاب به سلیقه خود نشانه گذاری کند. markdown</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'گروه ها',
     'gravatar_email' => 'آدرس آواتار ایمیل ',
     'gravatar_url' => '<a href="http://gravatar.com"><small>آواتار خود را در Gravatar.com تغییر دهید</small></a>.',
@@ -236,6 +239,9 @@ return [
     'next_audit_date_help' => 'If you use auditing in your organization, this is usually automatically calculated based on the asset&apos;s last audit date and audit frequency (in <code>Admin Settings &gt; Alerts</code>) and you can leave this blank. You can manually set this date here if you need to, but it must be later than the last audit date. ',
     'audit_images_help' => 'شما میتوانید تصاویر حسابرسی را در تب تاریخچه دارایی پیدا کنید.',
     'no_email' => 'هیچ آدرس ایمیلی برای این کاربر انتخاب نشده است',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'آخرین حسابرسی',
     'new' => 'جدید!',
     'no_depreciation' => 'بدون استهلاک',
@@ -287,11 +293,12 @@ return [
     'requested_date' => 'تاریخ درخواست',
     'requested_assets' => 'دارایی های درخواستی
 ',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'آیتم های قابل درخواست',
     'request_canceled' => 'درخواست لغو شد',
     'request_item' => 'درخواست این آیتم',
     'external_link_tooltip' => 'لینک خارجی به',
     'save' => 'ذخیره کردن',
+    'save_copy' => 'Save Copy',
     'select_var' => 'انتخاب :thing... ', // this will eventually replace all of our other selects
     'select' => 'انتخاب',
     'select_all' => 'انتخاب همه',
@@ -421,7 +428,7 @@ return [
     'setup_step_4' => 'مرحله 4',
     'setup_config_check' => 'بررسی پیکربندی
 ',
-    'setup_create_database' => 'ایجاد جدول های پایگاه داده',
+    'setup_create_database' => 'Create database tables',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'بعدی',
     'setup_done' => 'Setup Complete!',
@@ -633,6 +640,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -736,12 +748,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'افزودن',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'دارایی',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -761,33 +777,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -827,5 +823,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

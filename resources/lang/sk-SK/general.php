@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Nahrať avatara',
     'back' => 'Späť',
     'bad_data' => 'Nič nebolo nájdené. Možno zadávate zlé dáta?',
-    'bulkaudit' => 'Hromadný audit',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Stav auditu',
     'bulk_checkout' => 'Hromadné odovzdanie',
     'bulk_edit' => 'Hromadná editácia',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Vytvoril',
     'record_created' => 'Záznam vytvorený',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'Odstránené',
     'purchased_plain' => 'Zakúpené',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'Prehľad',
     'data_source' => 'Zdroj dát',
     'days' => 'dni',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Do najbližšieho auditu',
     'date' => 'Dátum',
     'debug_warning' => 'Upozornenie!',
@@ -128,6 +130,7 @@ return [
     'department' => 'Oddelenie',
     'deployed' => 'Odovzdané',
     'depreciation' => 'Odpisovanie',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Odpisy',
     'depreciation_report' => 'Report odpisov',
     'details' => 'Detaily',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generovať',
     'generate_labels' => 'Generovať štítky',
-    'github_markdown' => 'V tomto poli je možné použiť <a href="https://help.github.com/articles/github-flavored-markdown/">Github variantu markdownu</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'Skupiny',
     'gravatar_email' => 'Emailová adresa Gravatara',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Zmeniť avatar na Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ak používate auditovanie vo Vašej organizácií, toto je obvykle automaticky dopočítané na základe dátumu posledného auditu a frekvencie auditov (<code>Admin nastavenia &gt; Upozornenia</code>) a môžete ho ponechať prázdne. Ak potrebujete, možete tu zadať dátum ručne, musí byť ale neskorší ako dátum posledného auditu. ',
     'audit_images_help' => 'Obrázky auditov nájdete na záložke História.',
     'no_email' => 'K tomuto používateľovi nie je priradená žiadna e-mailová adresa',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Posledný audit',
     'new' => 'nový!',
     'no_depreciation' => 'Žiadne odpisovanie',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Pripravené na odovzdanie',
     'requested_date' => 'Dátum vyžiadania',
     'requested_assets' => 'Vyžiadaný majetok',
-    'requested_assets_menu' => 'Requested Items',
+    'requested_assets_menu' => 'Vyžiadateľné položky',
     'request_canceled' => 'Požiadavka zrušená',
     'request_item' => 'Požiadať o túto položku',
     'external_link_tooltip' => 'Externé odkazy',
     'save' => 'Uložiť',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Vybrať :thing... ', // this will eventually replace all of our other selects
     'select' => 'Vybrať',
     'select_all' => 'Vybrať všetko',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Krok 3',
     'setup_step_4' => 'Krok 4',
     'setup_config_check' => 'Kontrola konfigurácie',
-    'setup_create_database' => 'Vytvoriť databázové tabuľky',
+    'setup_create_database' => 'Vytvoriť tabuľky v databáze',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Ďalší',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'Priradený majetok patrí inej spoločnosti, takže nemôžete potvrdiť ani odmietnuť jeho prijatie, prosím kontaktujte svojho nadriadeného',
     'error_assets_already_checked_out' => 'Jeden alebo viacero majetkov je už odovzdaných',
     'assigned_assets_removed' => 'Nasledujúce položky boli odstránené z vybraných majetkov, pretože už sú odovzdané',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Odovzdané: Celé meno',
         'checked_out_to_first_name' => 'Odovzdané: Meno',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Podriadené lokality',
     'append' => 'Pripojiť',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Majetok',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Pridať poznámku',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name má stále priradené položky. Pred odstránením :item ich odstráňte.',
         'assoc_assets' => ':item_name je momentálne priradený k :asset_count položkám a nemožno ho odstrániť. Aktualizujte svoje položky tak, aby už neodkazovali na :item a skúste to znova.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

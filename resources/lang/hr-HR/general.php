@@ -54,7 +54,7 @@ return [
     'avatar_upload' => 'Učitaj avatar',
     'back' => 'Nazad',
     'bad_data' => 'Ništa nije pronađeno. Možda loši podaci?',
-    'bulkaudit' => 'Skupna revizija',
+    'bulkaudit' => 'Scanner Bulk Audit',
     'bulkaudit_status' => 'Status revizije',
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Masovno uredi',
@@ -101,6 +101,7 @@ return [
     'created_by' => 'Izradio/la',
     'record_created' => 'Zapis izrađen',
     'updated_at' => 'Updated At',
+    'updated_before' => 'Updated Before',
     'updated_plain' => 'Updated',
     'deleted_plain' => 'izbrisana',
     'purchased_plain' => 'kupljen',
@@ -114,6 +115,7 @@ return [
     'dashboard' => 'kontrolna ploča',
     'data_source' => 'Izvor Podataka',
     'days' => 'dana',
+    'days_ago' => 'days ago',
     'days_to_next_audit' => 'Dani za sljedeću reviziju',
     'date' => 'Datum',
     'debug_warning' => 'Upozorenje!',
@@ -128,6 +130,7 @@ return [
     'department' => 'odjel',
     'deployed' => 'razmještene',
     'depreciation' => 'deprecijacija',
+    'depreciation_type' => 'Depreciation Type',
     'depreciations' => 'Amortizacija',
     'depreciation_report' => 'Izvješće o amortizaciji',
     'details' => 'Detalji',
@@ -151,7 +154,7 @@ return [
     'first_checkout' => '1<sup>st</sup> Checkout',
     'generate' => 'Generirati',
     'generate_labels' => 'Izradi naljepnicu',
-    'github_markdown' => 'Ovo polje prihvaća <a href="https://help.github.com/articles/github-flavored-markdown/">označavanje na Github način</a>.',
+    'github_markdown' => 'This field accepts <a href="https://help.github.com/articles/github-flavored-markdown/" target="_blank">Github flavored markdown</a>.',
     'groups' => 'grupe',
     'gravatar_email' => 'Gravatar adresa e-pošte',
     'gravatar_url' => '<a href="http://gravatar.com"><small>Promijeni svoj avatar na Gravatar.com</small></a>.',
@@ -221,6 +224,9 @@ return [
     'next_audit_date_help' => 'Ako koristite reviziju u svojoj organizaciji, ovo se obično automatski izračunava na temelju posljednjeg datuma revizije inventarskih stavki i učestalosti revizije (u <code>Admin postavke &gt; Upozorenja</code>) i možete ovo ostaviti prazno. Ovdje možete ručno postaviti ovaj datum ako trebate, ali mora biti kasnije od posljednjeg datuma revizije ',
     'audit_images_help' => 'Možete pronaći revizijske slike na kartici povijesti inventarske stavke.',
     'no_email' => 'Ovaj korisnik nema dodijeljenu email adresu',
+    'no_value' => 'No value',
+    'device_eol' => 'Device EOL',
+    'na' => 'N/A',
     'last_audit' => 'Posljednja revizija',
     'new' => 'novi!',
     'no_depreciation' => 'Nema amortizacije',
@@ -268,11 +274,12 @@ return [
     'rtd' => 'Spremni za implementaciju',
     'requested_date' => 'Datum zahtjeva',
     'requested_assets' => 'Zatražena Imovina',
-    'requested_assets_menu' => 'Zatraženi Predmeti',
+    'requested_assets_menu' => 'Predmeti koje je moguće zatražiti',
     'request_canceled' => 'Zahtjev je otkazan',
     'request_item' => 'Zatraži ovaj predmet',
     'external_link_tooltip' => 'Eksterni link do',
     'save' => 'Uštedjeti',
+    'save_copy' => 'Save Copy',
     'select_var' => 'Označi :thing...', // this will eventually replace all of our other selects
     'select' => 'Izaberi',
     'select_all' => 'Označi sve',
@@ -390,7 +397,7 @@ return [
     'setup_step_3' => 'Korak 3',
     'setup_step_4' => 'Korak 4',
     'setup_config_check' => 'Provjera konfiguracije',
-    'setup_create_database' => 'Create Database Tables',
+    'setup_create_database' => 'Kreiraj tabele baza podataka',
     'setup_create_admin' => 'Create an Admin User',
     'setup_next' => 'Sljedeći',
     'setup_done' => 'Setup Complete!',
@@ -555,6 +562,11 @@ return [
     'error_user_company_accept_view' => 'An Asset assigned to you belongs to a different company so you can\'t accept nor deny it, please check with your manager',
     'error_assets_already_checked_out' => 'One or more of the assets are already checked out',
     'assigned_assets_removed' => 'The following were removed from the selected assets because they are already checked out',
+    'upload_files' => 'Upload Files',
+    'uploaded_files' => 'Uploaded Files',
+    'sign_in_place' => 'Sign/Accept in place',
+    'sign_in_place_help' => 'Check this box if you have the user present and wish for them to accept the item and sign/accept the EULA (when applicable) right now.',
+    'unauthorized' => 'Unauthorized or unauthenticated.',
     'importer' => [
         'checked_out_to_fullname' => 'Checked Out to: Full Name',
         'checked_out_to_first_name' => 'Checked Out to: First Name',
@@ -658,12 +670,16 @@ return [
     'child_locations' => 'Child Locations',
     'append' => 'Prikačiti',
     'optional' => 'OPTIONAL',
+    'audit_by_field' => 'Audit by Field',
+    'audit_by_field_help' => 'Auditing by scanning serial numbers is only an available option if serial numbers are required to be unique in the Admin Settings.',
+    'audit_key' => 'Imovina',
 
     // Add form placeholders here
     'placeholders' => [
         'notes' => 'Add a note',
     ],
 
+    'last_note' => 'Last Note',
     'bulk_delete_associations' => [
         'general_assoc_warning' => ':item_name still has associated items. Please remove them before deleting this :item.',
         'assoc_assets' => ':item_name is currently associated with :asset_count asset(s) and cannot be deleted. Please update your assets to no longer reference this :item and try again.',
@@ -683,33 +699,13 @@ return [
     ],
 
     'breadcrumb_button_actions' => [
-        'edit_item' => 'Edit :name',
         'checkout_item' => 'Checkout :name',
         'checkin_item' => 'Checkin :name',
     ],
 
-    'skins' => [
-        'site_default' => 'Site Default',
-        'default_blue' => 'Default Blue',
-        'blue_dark' => 'Blue (Dark Mode)',
-        'green' => 'Green',
-        'green_dark' => 'Green (Dark Mode)',
-        'red' => 'Red',
-        'red_dark' => 'Red (Dark Mode)',
-        'orange' => 'Orange',
-        'orange_dark' => 'Orange (Dark Mode)',
-        'black' => 'Black',
-        'black_dark' => 'Black (Dark Mode)',
-        'purple' => 'Purple',
-        'purple_dark' => 'Purple (Dark Mode)',
-        'yellow' => 'Yellow',
-        'yellow_dark' => 'Yellow (Dark Mode)',
-        'high_contrast' => 'High Contrast',
-
-    ],
-
     'select_all_none' => 'Select/Unselect All',
     'generic_model_not_found' => 'That :model was not found or you do not have permission to access it',
+    'report_not_editable' => 'You do not have permission to edit this report template',
     'deleted_models' => 'Deleted Asset Models',
     'deleted_users' => 'Deleted Users',
     'cost_each' => ':amount each',
@@ -749,5 +745,8 @@ return [
     ],
 
     'months_plural' => '1 month|:count months',
+
+    'token_unrevoked' => 'API token reinstated',
+    'token_revoked' => 'API token revoked',
 
 ];

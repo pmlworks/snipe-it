@@ -17,6 +17,7 @@ return [
     'name' => 'Heiti vöruflokks',
     'require_acceptance' => 'Kerfjast þess að notendur samþykki viðtöku búnaðs í þessum flokki.',
     'required_acceptance' => 'Þessi notandi fær töluvpóst með hlekk til að staðfesta móttöku á þessum hlut.',
+    'global_signature_required_notice' => 'User signatures are currently required globally via the admin settings, so signatures will still be required regardless of this category setting if the item is checked out to a user (versus a location, etc).',
     'required_eula' => 'Þessi notandi fær tölvupóst með notendaskilmálum',
     'no_default_eula' => 'Fann enga sjálfgefna notendaskilmála. Vinsamlegast bættu þeim við í undir "Stillingar"',
     'update' => 'Breyta vöruflokk',
@@ -27,5 +28,6 @@ return [
     'import_checkin_email' => 'Send Checkin Email',
     'import_eula_text' => 'EULA text',
     'import_category_type' => 'Category Type',
+    'import_alert_on_response' => 'Alert on Response',
 
 ];
