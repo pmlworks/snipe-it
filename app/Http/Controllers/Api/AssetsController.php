@@ -1164,7 +1164,7 @@ class AssetsController extends Controller
                 'asset_tag' => e($asset->asset_tag),
                 'audit_by_field' => e(Str::headline($audit_by_field)),
                 'audit_key' => e($audit_key),
-                'note' => e($request->input('note')),
+                'note' => $request->filled('note') ? e($request->input('note')) : null,
                 'status_label' => e($asset->status?->display_name),
                 'status_type' => $asset->status?->getStatuslabelType(),
                 'next_audit_date' => Helper::getFormattedDateObject($asset->next_audit_date),
@@ -1205,7 +1205,7 @@ class AssetsController extends Controller
 
             // Validate the rest of the data before we turn off the event dispatcher
             if ($asset->isInvalid()) {
-                return response()->json(Helper::formatStandardApiResponse('error', ['asset_tag' => $asset->asset_tag], $asset->getErrors()));
+                return response()->json(Helper::formatStandardApiResponse('error', $payload, $asset->getErrors()));
             }
 
             /**
