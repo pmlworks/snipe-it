@@ -23,6 +23,9 @@ class EditMaintenanceTest extends TestCase
 
     public function test_can_update_maintenance()
     {
+        Storage::fake('public');
+        Storage::fake('local');
+
         $actor = User::factory()->superuser()->create();
         $asset = Asset::factory()->create();
         $maintenance = Maintenance::factory()->create(['asset_id' => $asset]);
@@ -38,6 +41,7 @@ class EditMaintenanceTest extends TestCase
                 'completion_date' => '2021-01-10',
                 'is_warranty' => 1,
                 'image' => UploadedFile::fake()->image('test_image.png'),
+                'file' => [UploadedFile::fake()->create('maintenance-update.pdf', 64, 'application/pdf')],
                 'cost' => '100.99',
                 'notes' => 'A note',
                 'url' => 'https://snipeitapp.com',
@@ -50,6 +54,16 @@ class EditMaintenanceTest extends TestCase
 
         // Assert file was stored...
         Storage::disk('public')->assertExists(app('maintenances_path').$maintenance->image);
+
+        $uploadedLog = Actionlog::query()
+            ->where('action_type', 'uploaded')
+            ->where('item_type', Maintenance::class)
+            ->where('item_id', $maintenance->id)
+            ->latest('id')
+            ->first();
+
+        $this->assertNotNull($uploadedLog);
+        Storage::disk('local')->assertExists('private_uploads/maintenances/'.$uploadedLog->filename);
 
         $this->assertDatabaseHas('maintenances', [
             'asset_id' => $asset->id,
@@ -65,7 +79,7 @@ class EditMaintenanceTest extends TestCase
             'cost' => '100.99',
         ]);
 
-        $this->assertHasTheseActionLogs($maintenance, ['create', 'update']);
+        $this->assertHasTheseActionLogs($maintenance, ['create', 'update', 'uploaded']);
 
         $updateLog = Actionlog::query()
             ->where('item_type', Maintenance::class)
