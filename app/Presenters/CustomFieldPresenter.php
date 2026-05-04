@@ -6,51 +6,44 @@ use App\Models\CustomField;
 
 final class CustomFieldPresenter
 {
-    private CustomField $field;
-
-    public function __construct(CustomField $field)
-    {
-        $this->field = $field;
-    }
-
     /**
      * @return string[]
      */
-    public function visibilityIconsArray(): array
+    public static function visibilityIconsArray(CustomField $field): array
     {
         $icons = [];
 
-        if ($this->field->display_checkout) {
+        if ($field->display_checkout) {
             $label = e(trans('admin/custom_fields/general.display_checkout'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fa-solid fa-rotate-left text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->display_checkin) {
+        if ($field->display_checkin) {
             $label = e(trans('admin/custom_fields/general.display_checkin'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fa-solid fa-rotate-right text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->display_audit) {
+        if ($field->display_audit) {
             $label = e(trans('admin/custom_fields/general.display_audit'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fas fa-clipboard-check text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->display_in_user_view) {
+        if ($field->display_in_user_view) {
             $label = e(trans('admin/custom_fields/general.display_in_user_view_table'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fas fa-user text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->show_in_listview) {
+        if ($field->show_in_listview) {
             $label = e(trans('admin/custom_fields/general.show_in_listview_short'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fas fa-list text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->show_in_email) {
+        if ($field->show_in_email) {
             $label = e(trans('admin/custom_fields/general.show_in_email_short'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fas fa-envelope text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
 
-        if ($this->field->show_in_requestable_list) {
+        if ($field->show_in_requestable_list) {
             $label = e(trans('admin/custom_fields/general.show_in_requestable_list_short'));
             $icons[] = '<span title="'.$label.'" data-tooltip="true"><i class="fa-solid fa-bell-concierge text-muted" aria-hidden="true"></i><span class="sr-only">'.$label.'</span></span>';
         }
@@ -58,8 +51,8 @@ final class CustomFieldPresenter
         return $icons;
     }
 
-    public function visibilityIcons(): string
+    public static function visibilityIcons(CustomField $field): string
     {
-        return implode(' ', $this->visibilityIconsArray());
+        return implode(' ', self::visibilityIconsArray($field));
     }
 }

@@ -84,19 +84,15 @@
 
           @endif
 
-              @php
-                  $fieldPresenter = new \App\Presenters\CustomFieldPresenter($field);
-              @endphp
-
-              @if (count($fieldPresenter->visibilityIconsArray()) > 0)
+              @if (count(\App\Presenters\CustomFieldPresenter::visibilityIconsArray($field)) > 0)
                   @if ($field->help_text != '')
                       <p class="help-block">
                           {{ $field->help_text }}
-                          <span class="custom-field-visibility-icons"><br>{!! $fieldPresenter->visibilityIcons() !!}</span>
+                          <br>{!! \App\Presenters\CustomFieldPresenter::visibilityIcons($field) !!}
                       </p>
                   @else
                       <div class="custom-field-visibility-icons">
-                          {!! $fieldPresenter->visibilityIcons() !!}
+                          {!! \App\Presenters\CustomFieldPresenter::visibilityIcons($field) !!}
                       </div>
                   @endif
               @elseif ($field->help_text != '')
