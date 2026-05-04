@@ -1,5 +1,6 @@
 <?php
-return array(
+
+return [
     'app_version' => 'v8.5.0-pre',
     'full_app_version' => 'v8.5.0-pre - build 22392-g5014b1c459',
     'build_version' => '22392',
@@ -7,4 +8,4 @@ return array(
     'hash_version' => 'g5014b1c459',
     'full_hash' => 'v8.5.0-pre-207-g5014b1c459',
     'branch' => 'develop',
-);
+];
