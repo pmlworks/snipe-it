@@ -4,6 +4,7 @@ namespace App\Models\Traits;
 
 use App\Models\Actionlog;
 use App\Models\Asset;
+use App\Models\ICompanyableChild;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\Location;
@@ -235,7 +236,22 @@ trait Loggable
             return $this->license?->company_id;
         }
 
-        return $this->company_id ?? null;
+        if (isset($this->company_id)) {
+            return $this->company_id;
+        }
+
+        // Companyable children (like Maintenance) inherit company visibility from parents.
+        if ($this instanceof ICompanyableChild) {
+            foreach ((array) $this->getCompanyableParents() as $parentRelation) {
+                $parent = $this->{$parentRelation} ?? null;
+
+                if (isset($parent?->company_id)) {
+                    return $parent->company_id;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -515,6 +531,7 @@ trait Loggable
         $log->created_by = auth()->id();
         $log->note = $note;
         $log->target_id = null;
+        $log->company_id = $this->resolveLoggableCompanyId();
         $log->created_at = date('Y-m-d H:i:s');
         $log->action_date = date('Y-m-d H:i:s');
         $log->filename = $filename;
