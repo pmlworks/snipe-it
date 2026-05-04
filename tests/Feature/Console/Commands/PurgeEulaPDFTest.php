@@ -1,6 +1,6 @@
 <?php
 
-namespace Feature\Console\Commands;
+namespace Tests\Feature\Console\Commands;
 
 use App\Models\Asset;
 use App\Models\CheckoutAcceptance;
