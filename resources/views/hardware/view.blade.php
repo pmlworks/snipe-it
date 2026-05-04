@@ -7,7 +7,7 @@
 @stop
 
 @section('header_right')
-    <x-button.info-panel-toggle/>
+    <x-button.info-panel-toggle hide-on-xs/>
 @endsection
 
 {{-- Page content --}}
@@ -240,7 +240,7 @@
                             @endif
 
 
-                            @if($asset->purchase_date || $asset->asset_eol_date || $asset->depreciated_date() || $asset->warranty_expires)
+                            @if(($asset->purchase_date && $asset->asset_eol_date) || $asset->depreciated_date() || $asset->warranty_expires)
                                 <x-well class="well-sm">
                                     @if($asset->purchase_date && $asset->asset_eol_date)
                                         <x-progressbar use_well="false" columns="12" text="{{ trans('general.device_eol') }}" :percent="$asset->eolProgressPercent()">
