@@ -50,23 +50,23 @@ class DepartmentsController extends Controller
         }
 
         if ($request->filled('name')) {
-            $departments->where('name', '=', $request->input('name'));
+            $departments->where('departments.name', '=', $request->input('name'));
         }
 
         if ($request->filled('company_id')) {
-            $departments->where('company_id', '=', $request->input('company_id'));
+            $departments->where('departments.company_id', '=', $request->input('company_id'));
         }
 
         if ($request->filled('manager_id')) {
-            $departments->where('manager_id', '=', $request->input('manager_id'));
+            $departments->where('departments.manager_id', '=', $request->input('manager_id'));
         }
 
         if ($request->filled('location_id')) {
-            $departments->where('location_id', '=', $request->input('location_id'));
+            $departments->where('departments.location_id', '=', $request->input('location_id'));
         }
 
         if ($request->filled('tag_color')) {
-            $departments->where('tag_color', '=', $request->input('departments.tag_color'));
+            $departments->where('departments.tag_color', '=', $request->input('tag_color'));
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits
