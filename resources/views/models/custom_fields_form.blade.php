@@ -91,7 +91,7 @@
                           <br>{!! \App\Presenters\CustomFieldPresenter::visibilityIcons($field) !!}
                       </p>
                   @else
-                      <div class="custom-field-visibility-icons">
+                      <div class="help-block">
                           {!! \App\Presenters\CustomFieldPresenter::visibilityIcons($field) !!}
                       </div>
                   @endif
