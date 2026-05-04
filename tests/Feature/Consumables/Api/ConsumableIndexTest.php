@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Consumables\Api;
 
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Consumable;
-use App\Models\Category;
 use App\Models\Location;
 use App\Models\Manufacturer;
 use App\Models\Supplier;

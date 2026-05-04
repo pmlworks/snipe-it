@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Components\Api;
 
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Component;
 use App\Models\Location;
 use App\Models\Manufacturer;
 use App\Models\Supplier;
-use App\Models\Category;
 use App\Models\User;
 use Tests\TestCase;
 
