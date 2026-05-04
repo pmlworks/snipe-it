@@ -28,14 +28,7 @@
                 <span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> {{ $message }}</span><br>
             @endforeach
         @endforeach
-
-        <x-input.textarea
-            name="file_notes"
-            :value="old('file_notes')"
-            placeholder="Notes (Optional)"
-            rows="3"
-            aria-label="file_notes"
-        />
+        
     </div>
 </div>
 
