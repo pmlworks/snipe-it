@@ -34,7 +34,6 @@ class Maintenance extends SnipeModel implements ICompanyableChild
 
     protected $with = ['asset', 'asset.company'];
 
-
     protected $table = 'maintenances';
 
     protected $rules = [

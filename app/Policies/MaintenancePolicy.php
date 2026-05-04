@@ -95,4 +95,3 @@ final class MaintenancePolicy
             || $user->hasAccess('activity.view');
     }
 }
-

@@ -77,4 +77,3 @@ class MaintenanceFileTest extends TestCase
         ]);
     }
 }
-
