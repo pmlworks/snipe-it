@@ -204,7 +204,7 @@ class SnipeSCIMConfig
                     })->withSubAttributes(
                         eloquent('value', 'email')->ensure('email', 'nullable'), //Weird, this 'needs' nullable to work?
                         new Constant('type', 'work'),
-                        new Constant('primary', true)->ensure('boolean')
+                        (new Constant('primary', true))->ensure('boolean')
                     )->ensure('array')
                         ->setMultiValued(true),
 
@@ -263,7 +263,7 @@ class SnipeSCIMConfig
                         }
 
                     })->withSubAttributes( // TODO: I suspect these 'sub-attributes' aren't being checked at all
-                        new Constant('value', 'email')->ensure('string'), // TODO - this is WRONG, but it works somehow? Probably because it's ignored
+                        (new Constant('value', 'email'))->ensure('string'), // TODO - this is WRONG, but it works somehow? Probably because it's ignored
                         new Constant('type', 'other'), // TODO uh, *also* wrong? but, again, seems to be ignored
                     )->ensure('array')
                         ->setMultiValued(true),
@@ -326,7 +326,7 @@ class SnipeSCIMConfig
                         eloquent('postalCode', 'zip'),
                         eloquent('country', 'country'),
                         new Constant('type', 'other'),
-                        new Constant('primary', true)->ensure('boolean')
+                        (new Constant('primary', true))->ensure('boolean')
                     )->ensure('array')
                         ->setMultiValued(true),
 
