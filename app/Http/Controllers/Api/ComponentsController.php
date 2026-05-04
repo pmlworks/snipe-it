@@ -80,7 +80,7 @@ class ComponentsController extends Controller
         }
 
         if ($request->filled('name')) {
-            $components->where('name', '=', $request->input('name'));
+            $components->where('components.name', '=', $request->input('name'));
         }
 
         if ($request->filled('company_id')) {
@@ -92,27 +92,27 @@ class ComponentsController extends Controller
         }
 
         if ($request->filled('category_id')) {
-            $components->where('category_id', '=', $request->input('category_id'));
+            $components->where('components.category_id', '=', $request->input('category_id'));
         }
 
         if ($request->filled('supplier_id')) {
-            $components->where('supplier_id', '=', $request->input('supplier_id'));
+            $components->where('components.supplier_id', '=', $request->input('supplier_id'));
         }
 
         if ($request->filled('manufacturer_id')) {
-            $components->where('manufacturer_id', '=', $request->input('manufacturer_id'));
+            $components->where('components.manufacturer_id', '=', $request->input('manufacturer_id'));
         }
 
         if ($request->filled('model_number')) {
-            $components->where('model_number', '=', $request->input('model_number'));
+            $components->where('components.model_number', '=', $request->input('model_number'));
         }
 
         if ($request->filled('location_id')) {
-            $components->where('location_id', '=', $request->input('location_id'));
+            $components->where('components.location_id', '=', $request->input('location_id'));
         }
 
         if ($request->filled('notes')) {
-            $components->where('notes', '=', $request->input('notes'));
+            $components->where('components.notes', '=', $request->input('notes'));
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits

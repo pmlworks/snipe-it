@@ -84,23 +84,23 @@ class AccessoriesController extends Controller
         }
 
         if ($request->filled('category_id')) {
-            $accessories->where('category_id', '=', $request->input('category_id'));
+            $accessories->where('accessories.category_id', '=', $request->input('category_id'));
         }
 
         if ($request->filled('manufacturer_id')) {
-            $accessories->where('manufacturer_id', '=', $request->input('manufacturer_id'));
+            $accessories->where('accessories.manufacturer_id', '=', $request->input('manufacturer_id'));
         }
 
         if ($request->filled('supplier_id')) {
-            $accessories->where('supplier_id', '=', $request->input('supplier_id'));
+            $accessories->where('accessories.supplier_id', '=', $request->input('supplier_id'));
         }
 
         if ($request->filled('location_id')) {
-            $accessories->where('location_id', '=', $request->input('location_id'));
+            $accessories->where('accessories.location_id', '=', $request->input('location_id'));
         }
 
         if ($request->filled('notes')) {
-            $accessories->where('notes', '=', $request->input('notes'));
+            $accessories->where('accessories.notes', '=', $request->input('notes'));
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits
