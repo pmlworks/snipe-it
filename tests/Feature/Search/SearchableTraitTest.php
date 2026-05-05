@@ -775,10 +775,10 @@ class SearchableTraitTest extends TestCase
     public function test_negation_filter_on_relation()
     {
         $apple = Manufacturer::factory()->create(['name' => 'Apple']);
-        $dell  = Manufacturer::factory()->create(['name' => 'Dell']);
+        $dell = Manufacturer::factory()->create(['name' => 'Dell']);
 
         $appleModel = AssetModel::factory()->create(['manufacturer_id' => $apple->id]);
-        $dellModel  = AssetModel::factory()->create(['manufacturer_id' => $dell->id]);
+        $dellModel = AssetModel::factory()->create(['manufacturer_id' => $dell->id]);
 
         Asset::factory()->create(['model_id' => $appleModel->id, 'asset_tag' => 'REL-001']);
         Asset::factory()->create(['model_id' => $dellModel->id,  'asset_tag' => 'REL-002']);
@@ -798,7 +798,7 @@ class SearchableTraitTest extends TestCase
      */
     public function test_negation_filter_on_custom_field()
     {
-        $field    = CustomField::factory()->cpu()->create();
+        $field = CustomField::factory()->cpu()->create();
         $dbColumn = $field->db_column_name();
 
         Asset::factory()->create([$dbColumn => '3.2GHz Intel Core i9', 'asset_tag' => 'CF-001']);
