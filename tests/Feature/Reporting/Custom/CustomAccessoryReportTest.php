@@ -40,11 +40,13 @@ class CustomAccessoryReportTest extends TestCase
         // Given there are saved templates for one user
         ReportTemplate::factory()->create(['type' => 'asset', 'name' => 'Another User: Asset']);
         ReportTemplate::factory()->create(['type' => 'accessory', 'name' => 'Another User: Accessory']);
+        ReportTemplate::factory()->create(['type' => 'component', 'name' => 'Another User: Component']);
 
         // When loading reports.custom.accessory while acting as another user that also has saved templates
         $user = User::factory()->canViewReports()
             ->has(ReportTemplate::factory(['type' => 'asset', 'name' => 'User: Asset']))
             ->has(ReportTemplate::factory(['type' => 'accessory', 'name' => 'User: Accessory']))
+            ->has(ReportTemplate::factory(['type' => 'component', 'name' => 'User: Component']))
             ->create();
 
         $response = $this->actingAs($user)->get(route('reports.custom.accessory'));
@@ -54,8 +56,10 @@ class CustomAccessoryReportTest extends TestCase
         // The user should only see their accessory template
         $this->assertTrue($viewTemplateNames->contains('User: Accessory'));
         $this->assertTrue($viewTemplateNames->doesntContain('User: Asset'));
+        $this->assertTrue($viewTemplateNames->doesntContain('User: Component'));
         $this->assertTrue($viewTemplateNames->doesntContain('Another User: Asset'));
         $this->assertTrue($viewTemplateNames->doesntContain('Another User: Accessory'));
+        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Component'));
     }
 
     public function test_custom_accessory_report()

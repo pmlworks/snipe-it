@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\ReportTemplate;
 use Illuminate\Http\Request;
 
-class CustomAccessoryReportController extends Controller
+class CustomComponentReportController extends Controller
 {
     public function show(Request $request)
     {
         $this->authorize('reports.view');
 
-        $report_templates = ReportTemplate::where('type', 'accessory')->orderBy('name')->get();
+        $report_templates = ReportTemplate::where('type', 'component')->orderBy('name')->get();
 
         // The view needs a template to render correctly, even if it is empty...
         $template = new ReportTemplate;
@@ -24,19 +24,18 @@ class CustomAccessoryReportController extends Controller
             $template->options = $request->old();
         }
 
-        return view('reports.custom.accessory', [
+        return view('reports.custom.component', [
             'report_templates' => $report_templates,
             'template' => $template,
         ]);
     }
 
-    public function run()
+    public function run(Request $request)
     {
         $this->authorize('reports.view');
 
         ini_set('max_execution_time', env('REPORT_TIME_LIMIT', 12000)); // 12000 seconds = 200 minutes
 
         $this->disableDebugbar();
-
     }
 }
