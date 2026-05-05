@@ -154,6 +154,12 @@ class CustomAccessoryReportTest extends TestCase
             ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.target_notes'));
     }
 
+    public function test_custom_accessory_report_content()
+    {
+        $this->markTestIncomplete();
+        // todo: might be merged with the test above
+    }
+
     public function test_custom_accessory_report_exclude_deleted()
     {
         $this->markTestIncomplete();
