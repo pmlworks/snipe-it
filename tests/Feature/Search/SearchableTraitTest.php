@@ -13,6 +13,7 @@ use App\Models\Statuslabel;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
+use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 /**
@@ -272,9 +273,8 @@ class SearchableTraitTest extends TestCase
 
     /**
      * Test User free-text search on attributes
-     *
-     * @group skip-flaky
      */
+    #[Group('skip-flaky')]
     public function test_user_free_text_search_on_attributes()
     {
         // Note: User search includes the acting user in results, making this test flaky
