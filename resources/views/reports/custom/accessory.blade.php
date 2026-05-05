@@ -37,7 +37,7 @@
 
             <form
                 method="POST"
-                action="{{ request()->routeIs('report-templates.edit') ? route('report-templates.update', $template) : route('reports.post-custom') }}"
+                action="{{ request()->routeIs('report-templates.edit') ? route('report-templates.update', $template) : route('reports.custom.accessory.run') }}"
                 accept-charset="UTF-8"
                 class="form-horizontal"
                 id="custom-report-form"
@@ -107,7 +107,7 @@
                             </label>
 
                             <label class="form-control">
-                                <input type="checkbox" name="asset_name" value="1" @checked($template->checkmarkValue('accessory_name')) />
+                                <input type="checkbox" name="accessory_name" value="1" @checked($template->checkmarkValue('accessory_name')) />
                                 {{ trans('admin/accessories/general.accessory_name') }}
                             </label>
 
@@ -295,7 +295,7 @@
                                     'fieldname' => 'by_category_id[]',
                                     'multiple' => 'true',
                                     'hide_new' => 'true',
-                                    'category_type' => 'asset',
+                                    'category_type' => 'accessories',
                                     'selected' => $template->selectValues('by_category_id', \App\Models\Category::class),
                             ])
 
@@ -595,7 +595,7 @@
                                 </a>
                                 <span data-tooltip="true" title="{{ trans('general.delete') }}">
                             <a href="#"
-                               class="btn btn-sm btn-danger btn-social btn-block delete-asset"
+                               class="btn btn-sm btn-danger btn-social btn-block delete-accessory"
                                data-toggle="modal"
                                data-title="{{ trans('general.delete') }}"
                                data-content="{{ trans('general.delete_confirm', ['item' => $template->name]) }}"
