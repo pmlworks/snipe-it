@@ -609,6 +609,7 @@ return [
     'search_operator' => 'Search operator',
     'and' => 'and',
     'action_source' => 'Action Source',
+    'search_tip' => 'Search tip: prefix a value with <code>!</code> or <code>not:</code> to exclude matches',
     'or' => 'or',
     'url' => 'URL',
     'phone' => 'Phone',

@@ -259,6 +259,8 @@
 
                 html.push("\n                    <div class=\"form-group row\">\n                        <label class=\"col-sm-4 control-label\">".concat(this.options.formatAdvancedSearchOperator(), "</label>\n                        <div class=\"col-sm-6\">\n                            <select class=\"form-control ").concat(this.constants.classes.input, "\" name=\"__advanced_search_operator\">\n                                <option value=\"and\"").concat(operator === 'and' ? ' selected' : '', ">" + advancedSearchAndText + "</option>\n                                <option value=\"or\"").concat(operator === 'or' ? ' selected' : '', ">" + advancedSearchOrText + "</option>\n                            </select>\n                        </div>\n                    </div>\n                "));
 
+                html.push('<div class="form-group row"><div class="col-sm-6 col-sm-offset-4"><p class="help-block" style="margin-bottom: 0;">{!! trans('general.search_tip') !!}</p></div></div>');
+
                 for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
                     var column = this.columns[columnIndex];
 
@@ -266,7 +268,7 @@
                         var title = $('<div/>').html(column.title).text().trim();
                         var value = filterColumnsPartial[column.field] || '';
 
-                        html.push("\n                            <div class=\"form-group row\">\n                                <label class=\"col-sm-4 control-label\">".concat(title, "</label>\n                                <div class=\"col-sm-6\">\n                                    <input type=\"text\" class=\"form-control ").concat(this.constants.classes.input, "\"\n                                        name=\"").concat(column.field, "\" placeholder=\"").concat(escapeAdvancedSearchValue(title), "\" value=\"").concat(escapeAdvancedSearchValue(value), "\">\n                                </div>\n                            </div>\n                        "));
+                        html.push("<div class=\"form-group row\"><label class=\"col-sm-4 control-label\">".concat(title, "</label><div class=\"col-sm-6\">\n<input type=\"text\" class=\"form-control ").concat(this.constants.classes.input, "\"\n                                        name=\"").concat(column.field, "\" placeholder=\"").concat(escapeAdvancedSearchValue(title), "\" value=\"").concat(escapeAdvancedSearchValue(value), "\">\n                                </div></div>"));
                     }
                 }
 
