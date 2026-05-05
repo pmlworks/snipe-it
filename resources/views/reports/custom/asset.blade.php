@@ -47,7 +47,7 @@
     <!-- Horizontal Form -->
         <div class="box box-default">
             <div class="box-header with-border">
-                @if (request()->routeIs('reports/custom') || request()->routeIs('report-templates.show'))
+                @if (request()->routeIs('reports/custom', 'report-templates.show'))
                     <h2 class="box-title" style="padding-top: 7px;">
                         {{ trans('general.customize_report') }}
                     </h2>
