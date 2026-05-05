@@ -56,9 +56,10 @@ trait Searchable
         $preparedSearch = $this->prepareSearchInput((string) $search);
         $terms = $preparedSearch['terms'];
         $filters = $preparedSearch['filters'];
+        $filterOperator = $preparedSearch['filter_operator'];
 
         if (! empty($filters)) {
-            return $this->applySearchFilters($query, $filters);
+            return $this->applySearchFilters($query, $filters, $filterOperator);
         }
 
         /**
@@ -101,13 +102,25 @@ trait Searchable
             return [
                 'terms' => [],
                 'filters' => $parsedFilters,
+                'filter_operator' => $this->resolveStructuredFilterOperator(),
             ];
         }
 
         return [
             'terms' => $this->prepeareSearchTerms($search),
             'filters' => [],
+            'filter_operator' => 'and',
         ];
+    }
+
+    /**
+     * Resolve the structured advanced-search operator from the current request.
+     */
+    private function resolveStructuredFilterOperator(): string
+    {
+        $operator = strtolower((string) request()->input('filter_operator', 'and'));
+
+        return $operator === 'or' ? 'or' : 'and';
     }
 
     /**
@@ -174,82 +187,100 @@ trait Searchable
      *
      * @param  array<string, string>  $filters
      */
-    private function applySearchFilters(Builder $query, array $filters): Builder
+    private function applySearchFilters(Builder $query, array $filters, string $filterOperator = 'and'): Builder
+    {
+        if ($filterOperator === 'or') {
+            $query->where(function (Builder $filterQuery) use ($filters) {
+                foreach ($filters as $filterKey => $filterValue) {
+                    $this->applySingleSearchFilter($filterQuery, $filterKey, $filterValue, 'or');
+                }
+            });
+
+            return $query;
+        }
+
+        foreach ($filters as $filterKey => $filterValue) {
+            $this->applySingleSearchFilter($query, $filterKey, $filterValue);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply a single structured filter using the provided boolean operator.
+     */
+    private function applySingleSearchFilter(Builder $query, string $filterKey, string $filterValue, string $boolean = 'and'): Builder
     {
         $searchableAttributes = $this->getSearchableAttributes();
         $searchableCounts = $this->getSearchableCounts();
         $searchableRelations = $this->getSearchableRelations();
         $table = $this->getTable();
+        $whereMethod = $boolean === 'or' ? 'orWhere' : 'where';
 
-        foreach ($filters as $filterKey => $filterValue) {
-            if (in_array($filterKey, $searchableAttributes, true)) {
-                $query->where($table.'.'.$filterKey, 'LIKE', '%'.$filterValue.'%');
+        if (in_array($filterKey, $searchableAttributes, true)) {
+            $query->{$whereMethod}($table.'.'.$filterKey, 'LIKE', '%'.$filterValue.'%');
 
-                continue;
+            return $query;
+        }
+
+        if (in_array($filterKey, $searchableCounts, true)) {
+            return $this->applyCountAliasFilter($query, $filterKey, $filterValue, $boolean);
+        }
+
+        // Check if this is a custom field (only for Assets - for *now*).
+        // Only db_column keys (e.g. "_snipeit_cpu_4") are accepted to avoid
+        // collisions with standard attributes or relation filter keys.
+        if ($this instanceof Asset) {
+            $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
+
+            if ($dbColumn !== null) {
+                $query->{$whereMethod}($table.'.'.$dbColumn, 'LIKE', '%'.$filterValue.'%');
+
+                return $query;
             }
+        }
 
-            if (in_array($filterKey, $searchableCounts, true)) {
-                $query = $this->applyCountAliasFilter($query, $filterKey, $filterValue);
+        $resolvedRelationKey = $this->resolveSearchableRelationKey($filterKey, $searchableRelations);
 
-                continue;
-            }
+        if ($resolvedRelationKey === null) {
+            return $query;
+        }
 
-            // Check if this is a custom field (only for Assets - for *now*).
-            // Only db_column keys (e.g. "_snipeit_cpu_4") are accepted to avoid
-            // collisions with standard attributes or relation filter keys.
-            if ($this instanceof Asset) {
-                $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
+        if ($this->isAssignedToRelationKey($resolvedRelationKey)) {
+            return $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $filterValue, $boolean);
+        }
 
-                if ($dbColumn !== null) {
-                    $query->where($table.'.'.$dbColumn, 'LIKE', '%'.$filterValue.'%');
+        $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
+        $relationMethod = $boolean === 'or' ? 'orWhereHas' : 'whereHas';
+
+        $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $filterValue) {
+            $relationTable = $this->getRelationTable($resolvedRelationKey);
+            $firstConditionAdded = false;
+
+            foreach ($relationColumns as $relationColumn) {
+                if (! $firstConditionAdded) {
+                    $relationQuery->where($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
+                    $firstConditionAdded = true;
 
                     continue;
                 }
+
+                $relationQuery->orWhere($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
             }
 
-            $resolvedRelationKey = $this->resolveSearchableRelationKey($filterKey, $searchableRelations);
-
-            if ($resolvedRelationKey === null) {
-                continue;
+            if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
+                $relationQuery->orWhereRaw(
+                    $this->buildMultipleColumnSearch(
+                        [
+                            'users.first_name',
+                            'users.last_name',
+                            'users.display_name',
+                        ]
+                    ),
+                    ["%{$filterValue}%"]
+                );
             }
-
-            if ($this->isAssignedToRelationKey($resolvedRelationKey)) {
-                $query = $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $filterValue);
-
-                continue;
-            }
-
-            $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
-
-            $query->whereHas($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $filterValue) {
-                $relationTable = $this->getRelationTable($resolvedRelationKey);
-                $firstConditionAdded = false;
-
-                foreach ($relationColumns as $relationColumn) {
-                    if (! $firstConditionAdded) {
-                        $relationQuery->where($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
-                        $firstConditionAdded = true;
-
-                        continue;
-                    }
-
-                    $relationQuery->orWhere($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
-                }
-
-                if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
-                    $relationQuery->orWhereRaw(
-                        $this->buildMultipleColumnSearch(
-                            [
-                                'users.first_name',
-                                'users.last_name',
-                                'users.display_name',
-                            ]
-                        ),
-                        ["%{$filterValue}%"]
-                    );
-                }
-            });
-        }
+        });
 
         return $query;
     }
@@ -303,7 +334,7 @@ trait Searchable
     /**
      * Apply filters for assignees with type-specific searchable columns.
      */
-    private function applyAssignedToRelationFilter(Builder $query, string $relationKey, string $filterValue): Builder
+    private function applyAssignedToRelationFilter(Builder $query, string $relationKey, string $filterValue, string $boolean = 'and'): Builder
     {
         $relationName = $this->resolveAssignedToRelationName();
 
@@ -311,7 +342,9 @@ trait Searchable
             return $query;
         }
 
-        return $query->whereHasMorph(
+        $relationMethod = $boolean === 'or' ? 'orWhereHasMorph' : 'whereHasMorph';
+
+        return $query->{$relationMethod}(
             $relationName,
             [User::class, Asset::class, Location::class],
             function (Builder $assigneeQuery, string $assigneeType) use ($filterValue) {
@@ -384,13 +417,15 @@ trait Searchable
     /**
      * Apply filtering on computed count aliases (for example withCount aliases).
      */
-    private function applyCountAliasFilter(Builder $query, string $countAlias, string $filterValue): Builder
+    private function applyCountAliasFilter(Builder $query, string $countAlias, string $filterValue, string $boolean = 'and'): Builder
     {
+        $havingMethod = $boolean === 'or' ? 'orHaving' : 'having';
+
         if (is_numeric($filterValue)) {
-            return $query->having($countAlias, '=', (int) $filterValue);
+            return $query->{$havingMethod}($countAlias, '=', (int) $filterValue);
         }
 
-        return $query->having($countAlias, 'LIKE', '%'.$filterValue.'%');
+        return $query->{$havingMethod}($countAlias, 'LIKE', '%'.$filterValue.'%');
     }
 
     /**

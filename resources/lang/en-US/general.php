@@ -606,6 +606,8 @@ return [
     'action_permission_denied' => 'You do not have permission to :action :item_type ID :id',
     'action_permission_generic' => 'You do not have permission to :action this :item_type',
     'edit' => 'edit',
+    'search_operator' => 'Search operator',
+    'and' => 'and',
     'action_source' => 'Action Source',
     'or' => 'or',
     'url' => 'URL',

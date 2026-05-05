@@ -13,6 +13,225 @@
 <script nonce="{{ csrf_token() }}">
     $(function () {
 
+        if (!$.fn.bootstrapTable || $.fn.bootstrapTable.__snipeAdvancedSearchPatched) {
+            return;
+        }
+
+        $.fn.bootstrapTable.__snipeAdvancedSearchPatched = true;
+
+        var BootstrapTable = $.BootstrapTable;
+        var baseBootstrapTablePrototype = Object.getPrototypeOf(BootstrapTable.prototype);
+        var baseInitSearch = baseBootstrapTablePrototype.initSearch;
+        var defaultAdvancedSearchOperator = 'and';
+        var advancedSearchSearchText = @json(trans('general.search'));
+        var advancedSearchCancelText = @json(trans('button.cancel'));
+        var advancedSearchOperatorLabel = @json(trans('general.search_operator'));
+        var advancedSearchAndText = @json(trans('general.and'));
+        var advancedSearchOrText = @json(trans('general.or'));
+
+            var escapeAdvancedSearchValue = function (value) {
+                return $('<div/>').text(value == null ? '' : value).html();
+            };
+
+            Object.assign($.fn.bootstrapTable.locales, {
+                formatAdvancedCloseButton: function () {
+                    return advancedSearchSearchText;
+                },
+                formatAdvancedCancelButton: function () {
+                    return advancedSearchCancelText;
+                },
+                formatAdvancedSearchOperator: function () {
+                    return advancedSearchOperatorLabel;
+                }
+            });
+
+            Object.assign($.fn.bootstrapTable.defaults, {
+                advancedSearchOperator: defaultAdvancedSearchOperator,
+                formatAdvancedCloseButton: $.fn.bootstrapTable.locales.formatAdvancedCloseButton,
+                formatAdvancedCancelButton: $.fn.bootstrapTable.locales.formatAdvancedCancelButton,
+                formatAdvancedSearchOperator: $.fn.bootstrapTable.locales.formatAdvancedSearchOperator
+            });
+
+            BootstrapTable.prototype.getAdvancedSearchOperator = function () {
+                var operator = (this.advancedSearchOperator || this.options.advancedSearchOperator || this.$el.data('advanced-search-filter-operator') || defaultAdvancedSearchOperator).toString().toLowerCase();
+
+                return operator === 'or' ? 'or' : 'and';
+            };
+
+            BootstrapTable.prototype.setAdvancedSearchOperator = function (operator) {
+                this.advancedSearchOperator = operator === 'or' ? 'or' : 'and';
+                this.$el.data('advanced-search-filter-operator', this.advancedSearchOperator);
+            };
+
+            BootstrapTable.prototype.collectAdvancedSearchFormData = function () {
+                var filters = {};
+                var operator = defaultAdvancedSearchOperator;
+
+                $.each(this.$toolbarModal.find('.toolbar-model-form').serializeArray(), function (index, field) {
+                    var value = $.trim(field.value);
+
+                    if (field.name === '__advanced_search_operator') {
+                        operator = value.toLowerCase() === 'or' ? 'or' : 'and';
+
+                        return;
+                    }
+
+                    if (value !== '') {
+                        filters[field.name] = value;
+                    }
+                });
+
+                return {
+                    filters: filters,
+                    operator: operator
+                };
+            };
+
+            BootstrapTable.prototype.applyAdvancedSearch = function () {
+                var toolbarState = this.collectAdvancedSearchFormData();
+
+                this.filterColumnsPartial = toolbarState.filters;
+                this.setAdvancedSearchOperator(toolbarState.operator);
+
+                if (this.options.sidePagination !== 'server') {
+                    this.options.pageNumber = 1;
+                    this.initSearch();
+                    this.updatePagination();
+                    this.trigger('column-advanced-search', this.filterColumnsPartial, this.getAdvancedSearchOperator());
+                }
+
+                this.hideToolbarModal();
+            };
+
+            BootstrapTable.prototype.cancelAdvancedSearch = function () {
+                this.hideToolbarModal();
+            };
+
+            BootstrapTable.prototype.createToolbarForm = function () {
+                var filterColumnsPartial = this.filterColumnsPartial || {};
+                var html = ["<form class=\"form-horizontal toolbar-model-form\" action=\"".concat(this.options.actionForm, "\">")];
+                var operator = this.getAdvancedSearchOperator();
+
+                html.push("\n                    <div class=\"form-group row\">\n                        <label class=\"col-sm-4 control-label\">".concat(this.options.formatAdvancedSearchOperator(), "</label>\n                        <div class=\"col-sm-6\">\n                            <select class=\"form-control ").concat(this.constants.classes.input, "\" name=\"__advanced_search_operator\">\n                                <option value=\"and\"").concat(operator === 'and' ? ' selected' : '', ">" + advancedSearchAndText + "</option>\n                                <option value=\"or\"").concat(operator === 'or' ? ' selected' : '', ">" + advancedSearchOrText + "</option>\n                            </select>\n                        </div>\n                    </div>\n                "));
+
+                for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
+                    var column = this.columns[columnIndex];
+
+                    if (!column.checkbox && column.visible && column.searchable) {
+                        var title = $('<div/>').html(column.title).text().trim();
+                        var value = filterColumnsPartial[column.field] || '';
+
+                        html.push("\n                            <div class=\"form-group row\">\n                                <label class=\"col-sm-4 control-label\">".concat(title, "</label>\n                                <div class=\"col-sm-6\">\n                                    <input type=\"text\" class=\"form-control ").concat(this.constants.classes.input, "\"\n                                        name=\"").concat(column.field, "\" placeholder=\"").concat(escapeAdvancedSearchValue(title), "\" value=\"").concat(escapeAdvancedSearchValue(value), "\">\n                                </div>\n                            </div>\n                        "));
+                    }
+                }
+
+                html.push('</form>');
+
+                return html.join('');
+            };
+
+            BootstrapTable.prototype.initAdvancedSearchFooter = function () {
+                var _this = this;
+                var $footer = this.$toolbarModal.find('.toolbar-modal-footer');
+                var $templateButton = $footer.find('.toolbar-modal-close').first();
+                var tagName = ($templateButton.prop('tagName') || 'button').toLowerCase();
+                var baseClass = ($templateButton.attr('class') || '').replace(/\btoolbar-modal-close\b/g, '').trim();
+
+                var createFooterButton = function (text, extraClass) {
+                    var $button = $('<' + tagName + '>').addClass($.trim(baseClass + ' ' + extraClass)).html(text);
+
+                    if (tagName === 'button') {
+                        $button.attr('type', 'button');
+                    }
+
+                    if (tagName === 'a') {
+                        $button.attr('href', 'javascript:void(0)');
+                    }
+
+                    return $button;
+                };
+
+                var $cancelButton = createFooterButton(this.options.formatAdvancedCancelButton(), 'toolbar-modal-cancel');
+                var $searchButton = createFooterButton(this.options.formatAdvancedCloseButton(), 'toolbar-modal-search');
+
+                $footer.empty().append($cancelButton, $searchButton);
+
+                $cancelButton.off('click').on('click', function (event) {
+                    event.preventDefault();
+                    _this.cancelAdvancedSearch();
+                });
+
+                $searchButton.off('click').on('click', function (event) {
+                    event.preventDefault();
+                    _this.applyAdvancedSearch();
+                });
+            };
+
+            BootstrapTable.prototype.initToolbarModalBody = function () {
+                var _this = this;
+
+                this.$toolbarModal.find('.toolbar-modal-title').html(this.options.formatAdvancedSearch());
+                this.$toolbarModal.find('.toolbar-modal-body')
+                    .html(this.createToolbarForm())
+                    .off('submit', '.toolbar-model-form')
+                    .on('submit', '.toolbar-model-form', function (event) {
+                        event.preventDefault();
+                        _this.applyAdvancedSearch();
+                    });
+
+                this.initAdvancedSearchFooter();
+            };
+
+            BootstrapTable.prototype.initSearch = function () {
+                var _this = this;
+
+                baseInitSearch.apply(this, arguments);
+
+                if (!this.options.advancedSearch || this.options.sidePagination === 'server') {
+                    return;
+                }
+
+                var filters = $.isEmptyObject(this.filterColumnsPartial) ? null : this.filterColumnsPartial;
+
+                if (!filters) {
+                    return;
+                }
+
+                var operator = this.getAdvancedSearchOperator();
+
+                this.data = this.data.filter(function (item, index) {
+                    var matches = [];
+                    var matchFound = false;
+                    var allMatched = true;
+
+                    $.each(filters, function (key, value) {
+                        var searchValue = value.toLowerCase();
+                        var formattedValue = item[key];
+                        var headerIndex = _this.header.fields.indexOf(key);
+                        var isMatch;
+
+                        formattedValue = $.fn.bootstrapTable.utils.calculateObjectValue(_this.header, _this.header.formatters[headerIndex], [formattedValue, item, index], formattedValue);
+
+                        if (_this.header.formatters[headerIndex]) {
+                            formattedValue = $('<div>').html(formattedValue).text();
+                        }
+
+                        isMatch = headerIndex !== -1 && (typeof formattedValue === 'string' || typeof formattedValue === 'number') && "".concat(formattedValue).toLowerCase().includes(searchValue);
+
+                        matches.push(isMatch);
+                        matchFound = matchFound || isMatch;
+                        allMatched = allMatched && isMatch;
+                    });
+
+                    if (!matches.length) {
+                        return true;
+                    }
+
+                    return operator === 'or' ? matchFound : allMatched;
+                });
+
+                this.unsortedData = this.data.slice();
+            };
 
         var blockedFields = "searchable,sortable,switchable,title,visible,formatter,class".split(",");
 
@@ -38,10 +257,8 @@
             }
         }
 
-        // Run the function on page load
-        $(document).ready(function () {
-            resize();
-        });
+        // Run once on initial ready (already inside top-level ready block)
+        resize();
 
         // Watch for window resize events
         $(window).on('resize', function () {
@@ -93,6 +310,8 @@
 
 
 
+            $(this).data('advanced-search-filter-operator', data_with_default('advanced-search-operator', 'and'));
+
             $(this).bootstrapTable({
 
                 ajaxOptions: {
@@ -104,6 +323,7 @@
                 // buttonsPrefix: "btn",
                 addrbar: {{ (config('session.bs_table_addrbar') == 'true') ? 'true' : 'false'}}, // deeplink search phrases, sorting, etc
                 advancedSearch: data_with_default('advanced-search', true),
+                advancedSearchOperator: data_with_default('advanced-search-operator', 'and'),
                 buttonsClass: "tableButton tableButton btn-theme hidden-print",
                 buttonsOrder: [
                     'columns',
@@ -162,6 +382,11 @@
                             newParams[i] = params[i];
                         }
                     }
+
+                    if (newParams.filter) {
+                        newParams.filter_operator = $(table).data('advanced-search-filter-operator') || data_with_default('advanced-search-operator', 'and');
+                    }
+
                     return newParams;
                 },
                 formatLoadingMessage: function () {
@@ -247,6 +472,9 @@
             });
 
         });
+
+        bindBulkEditSelectionHandler();
+        initializeBootstrapTableSearchUi();
     });
 
 
@@ -1992,7 +2220,7 @@
         return value
     }
 
-    $(function () {
+    function bindBulkEditSelectionHandler() {
         $('#bulkEdit').click(function () {
             var selectedIds = $('.snipe-table').bootstrapTable('getSelections');
             $.each(selectedIds, function(key,value) {
@@ -2000,9 +2228,9 @@
             });
 
         });
-    });
+    }
 
-    $(function() {
+    function initializeBootstrapTableSearchUi() {
 
         // This handles the search box highlighting on both ajax and client-side
         // bootstrap tables
@@ -2047,7 +2275,7 @@
 
 
         });
-    });
+    }
 
 </script>
     
