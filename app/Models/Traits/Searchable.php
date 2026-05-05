@@ -207,24 +207,68 @@ trait Searchable
     }
 
     /**
+     * Parse a raw filter value for an optional negation prefix.
+     *
+     * Supported negation syntax (case-insensitive prefix):
+     *   - "!flarb"    → negate = true, value = "flarb"
+     *   - "not:flarb" → negate = true, value = "flarb"
+     *
+     * Used by applySingleSearchFilter so callers can pass values like
+     * {"gleeb": "!flarb"} or {"gleeb": "not:flarb"} in the filter JSON.
+     *
+     * @return array{value: string, negate: bool}
+     */
+    private function parseFilterValue(string $raw): array
+    {
+        if (str_starts_with($raw, '!')) {
+            return ['value' => substr($raw, 1), 'negate' => true];
+        }
+
+        if (str_starts_with(strtolower($raw), 'not:')) {
+            return ['value' => substr($raw, 4), 'negate' => true];
+        }
+
+        return ['value' => $raw, 'negate' => false];
+    }
+
+    /**
      * Apply a single structured filter using the provided boolean operator.
+     *
+     * Negation: if the filter value is prefixed with "!" or "not:", the filter
+     * uses NOT LIKE (for attributes/custom fields) or whereDoesntHave (for
+     * relations), effectively excluding records matching the value.
+     *
+     * For relation filters, negation uses NOT LIKE inside whereHas, meaning
+     * "has a related record where the column does NOT contain the value".
+     * Records with no related record (e.g. unassigned assets) are excluded;
+     * use a plain empty-string filter if you need to match NULLs.
      */
     private function applySingleSearchFilter(Builder $query, string $filterKey, string $filterValue, string $boolean = 'and'): Builder
     {
+        $parsed = $this->parseFilterValue($filterValue);
+        $value = $parsed['value'];
+        $negate = $parsed['negate'];
+
+        // Skip gracefully if stripping the prefix leaves an empty value.
+        if ($value === '') {
+            return $query;
+        }
+
         $searchableAttributes = $this->getSearchableAttributes();
         $searchableCounts = $this->getSearchableCounts();
         $searchableRelations = $this->getSearchableRelations();
         $table = $this->getTable();
         $whereMethod = $boolean === 'or' ? 'orWhere' : 'where';
+        $likeOperator = $negate ? 'NOT LIKE' : 'LIKE';
 
         if (in_array($filterKey, $searchableAttributes, true)) {
-            $query->{$whereMethod}($table.'.'.$filterKey, 'LIKE', '%'.$filterValue.'%');
+            $query->{$whereMethod}($table.'.'.$filterKey, $likeOperator, '%'.$value.'%');
 
             return $query;
         }
 
         if (in_array($filterKey, $searchableCounts, true)) {
-            return $this->applyCountAliasFilter($query, $filterKey, $filterValue, $boolean);
+            return $this->applyCountAliasFilter($query, $filterKey, $value, $boolean, $negate);
         }
 
         // Check if this is a custom field (only for Assets - for *now*).
@@ -234,7 +278,7 @@ trait Searchable
             $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
             if ($dbColumn !== null) {
-                $query->{$whereMethod}($table.'.'.$dbColumn, 'LIKE', '%'.$filterValue.'%');
+                $query->{$whereMethod}($table.'.'.$dbColumn, $likeOperator, '%'.$value.'%');
 
                 return $query;
             }
@@ -247,38 +291,41 @@ trait Searchable
         }
 
         if ($this->isAssignedToRelationKey($resolvedRelationKey)) {
-            return $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $filterValue, $boolean);
+            return $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $value, $boolean, $negate);
         }
 
         $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
         $relationMethod = $boolean === 'or' ? 'orWhereHas' : 'whereHas';
 
-        $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $filterValue) {
+        $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $value, $likeOperator) {
             $relationTable = $this->getRelationTable($resolvedRelationKey);
             $firstConditionAdded = false;
 
             foreach ($relationColumns as $relationColumn) {
                 if (! $firstConditionAdded) {
-                    $relationQuery->where($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
+                    $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
                     $firstConditionAdded = true;
 
                     continue;
                 }
 
-                $relationQuery->orWhere($relationTable.'.'.$relationColumn, 'LIKE', '%'.$filterValue.'%');
+                // For negation we AND the NOT LIKE conditions so all columns must not match.
+                // For normal LIKE we OR them so any column matching is sufficient.
+                $likeOperator === 'NOT LIKE'
+                    ? $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%')
+                    : $relationQuery->orWhere($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
             }
 
             if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
-                $relationQuery->orWhereRaw(
-                    $this->buildMultipleColumnSearch(
-                        [
-                            'users.first_name',
-                            'users.last_name',
-                            'users.display_name',
-                        ]
-                    ),
-                    ["%{$filterValue}%"]
-                );
+                $concatSql = $this->buildMultipleColumnSearch([
+                    'users.first_name',
+                    'users.last_name',
+                    'users.display_name',
+                ]);
+
+                $likeOperator === 'NOT LIKE'
+                    ? $relationQuery->whereRaw(str_replace('LIKE', 'NOT LIKE', $concatSql), ["%{$value}%"])
+                    : $relationQuery->orWhereRaw($concatSql, ["%{$value}%"]);
             }
         });
 
@@ -333,8 +380,13 @@ trait Searchable
 
     /**
      * Apply filters for assignees with type-specific searchable columns.
+     *
+     * When $negate is true, NOT LIKE is used inside whereHasMorph, so results
+     * are records that have an assignee whose columns do NOT contain $filterValue.
+     * (Records with no assignee are excluded; they do not satisfy "has an assignee
+     * where column NOT LIKE '%value%'".)
      */
-    private function applyAssignedToRelationFilter(Builder $query, string $relationKey, string $filterValue, string $boolean = 'and'): Builder
+    private function applyAssignedToRelationFilter(Builder $query, string $relationKey, string $filterValue, string $boolean = 'and', bool $negate = false): Builder
     {
         $relationName = $this->resolveAssignedToRelationName();
 
@@ -342,12 +394,13 @@ trait Searchable
             return $query;
         }
 
+        $likeOperator = $negate ? 'NOT LIKE' : 'LIKE';
         $relationMethod = $boolean === 'or' ? 'orWhereHasMorph' : 'whereHasMorph';
 
         return $query->{$relationMethod}(
             $relationName,
             [User::class, Asset::class, Location::class],
-            function (Builder $assigneeQuery, string $assigneeType) use ($filterValue) {
+            function (Builder $assigneeQuery, string $assigneeType) use ($filterValue, $likeOperator, $negate) {
                 $columns = $this->getAssigneeColumnsByType($assigneeType);
 
                 if (empty($columns)) {
@@ -359,20 +412,25 @@ trait Searchable
 
                 foreach ($columns as $column) {
                     if (! $firstConditionAdded) {
-                        $assigneeQuery->where($table.'.'.$column, 'LIKE', '%'.$filterValue.'%');
+                        $assigneeQuery->where($table.'.'.$column, $likeOperator, '%'.$filterValue.'%');
                         $firstConditionAdded = true;
 
                         continue;
                     }
 
-                    $assigneeQuery->orWhere($table.'.'.$column, 'LIKE', '%'.$filterValue.'%');
+                    // For negation, AND the conditions (all columns must not match).
+                    // For normal LIKE, OR them (any column matching is sufficient).
+                    $negate
+                        ? $assigneeQuery->where($table.'.'.$column, $likeOperator, '%'.$filterValue.'%')
+                        : $assigneeQuery->orWhere($table.'.'.$column, $likeOperator, '%'.$filterValue.'%');
                 }
 
                 if ($assigneeType === User::class) {
-                    $assigneeQuery->orWhereRaw(
-                        $this->buildMultipleColumnSearch(['users.first_name', 'users.last_name']),
-                        ["%{$filterValue}%"]
-                    );
+                    $concatSql = $this->buildMultipleColumnSearch(['users.first_name', 'users.last_name']);
+
+                    $negate
+                        ? $assigneeQuery->whereRaw(str_replace('LIKE', 'NOT LIKE', $concatSql), ["%{$filterValue}%"])
+                        : $assigneeQuery->orWhereRaw($concatSql, ["%{$filterValue}%"]);
                 }
             }
         );
@@ -417,15 +475,19 @@ trait Searchable
     /**
      * Apply filtering on computed count aliases (for example withCount aliases).
      */
-    private function applyCountAliasFilter(Builder $query, string $countAlias, string $filterValue, string $boolean = 'and'): Builder
+    private function applyCountAliasFilter(Builder $query, string $countAlias, string $filterValue, string $boolean = 'and', bool $negate = false): Builder
     {
         $havingMethod = $boolean === 'or' ? 'orHaving' : 'having';
 
         if (is_numeric($filterValue)) {
-            return $query->{$havingMethod}($countAlias, '=', (int) $filterValue);
+            $operator = $negate ? '!=' : '=';
+
+            return $query->{$havingMethod}($countAlias, $operator, (int) $filterValue);
         }
 
-        return $query->{$havingMethod}($countAlias, 'LIKE', '%'.$filterValue.'%');
+        $likeOperator = $negate ? 'NOT LIKE' : 'LIKE';
+
+        return $query->{$havingMethod}($countAlias, $likeOperator, '%'.$filterValue.'%');
     }
 
     /**

@@ -711,4 +711,106 @@ class SearchableTraitTest extends TestCase
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
     }
+
+    /**
+     * Test negation filter using "!" prefix on a direct attribute.
+     * filter={"name":"!Dell"} should return all assets whose name does NOT contain "Dell".
+     */
+    public function test_negation_filter_with_bang_prefix_on_attribute()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'NEG-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'NEG-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion', 'asset_tag' => 'NEG-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['name' => '!Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Test negation filter using "not:" prefix on a direct attribute.
+     * filter={"name":"not:Dell"} should behave identically to "!Dell".
+     */
+    public function test_negation_filter_with_not_prefix_on_attribute()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'NOTP-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'NOTP-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion', 'asset_tag' => 'NOTP-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['name' => 'not:Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Test that combining a positive filter and a negation filter works correctly.
+     * filter={"asset_tag":"COMBO","name":"!Dell"} should return assets tagged COMBO that
+     * are NOT named Dell.
+     */
+    public function test_combined_positive_and_negation_filters()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'COMBO-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'COMBO-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion',  'asset_tag' => 'OTHER-001']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['asset_tag' => 'COMBO', 'name' => '!Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Test negation filter on a relation attribute.
+     * filter={"manufacturer":"!Apple"} should return assets whose manufacturer does NOT
+     * contain "Apple".
+     */
+    public function test_negation_filter_on_relation()
+    {
+        $apple = Manufacturer::factory()->create(['name' => 'Apple']);
+        $dell  = Manufacturer::factory()->create(['name' => 'Dell']);
+
+        $appleModel = AssetModel::factory()->create(['manufacturer_id' => $apple->id]);
+        $dellModel  = AssetModel::factory()->create(['manufacturer_id' => $dell->id]);
+
+        Asset::factory()->create(['model_id' => $appleModel->id, 'asset_tag' => 'REL-001']);
+        Asset::factory()->create(['model_id' => $dellModel->id,  'asset_tag' => 'REL-002']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['manufacturer' => '!Apple']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Test negation filter on a custom field.
+     * filter={"_snipeit_cpu_X":"!Intel"} should return assets where the CPU field
+     * does NOT contain "Intel".
+     */
+    public function test_negation_filter_on_custom_field()
+    {
+        $field    = CustomField::factory()->cpu()->create();
+        $dbColumn = $field->db_column_name();
+
+        Asset::factory()->create([$dbColumn => '3.2GHz Intel Core i9', 'asset_tag' => 'CF-001']);
+        Asset::factory()->create([$dbColumn => '2.4GHz AMD Ryzen 7',   'asset_tag' => 'CF-002']);
+
+        Asset::flushCustomFieldFilterMap();
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode([$dbColumn => '!Intel']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
 }
