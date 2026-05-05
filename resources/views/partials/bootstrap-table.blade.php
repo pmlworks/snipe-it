@@ -1,5 +1,13 @@
 @push('css')
     <link rel="stylesheet" href="{{ url(mix('css/dist/bootstrap-table.css')) }}">
+    <style>
+        .advanced-search-tags { margin: 10px 0; }
+        .advanced-search-tags .tag { margin-right: 5px; }
+        .btn-advanced-search.active {
+            background-color: #e74c3c !important;
+            color: #fff !important;
+        }
+    </style>
 @endpush
 
 @push('js')
@@ -145,59 +153,75 @@
                 return $container;
             };
 
+            BootstrapTable.prototype.getAdvancedSearchButton = function () {
+                var $tableWrapper = this.$el.closest('.bootstrap-table');
+
+                if (!$tableWrapper.length) {
+                    return $();
+                }
+
+                // Try to find the button by data attribute first (most reliable)
+                var $button = $tableWrapper.find('button[data-toggle="advanced-search"]').first();
+
+                // Fallback: look in toolbar by the fa-search-plus icon
+                if (!$button.length) {
+                    $button = $tableWrapper.find('button:has(.fa-search-plus)').first();
+                }
+
+                return $button;
+            };
+
+            BootstrapTable.prototype.updateAdvancedSearchButtonState = function () {
+                var hasFilters = !$.isEmptyObject(this.filterColumnsPartial);
+                var $button = this.getAdvancedSearchButton();
+
+                if ($button.length) {
+                    $button.toggleClass('active', hasFilters);
+                }
+            };
+
             BootstrapTable.prototype.renderAdvancedSearchTags = function () {
                 var _this = this;
-                var $container = this.getAdvancedSearchTagsContainer();
+                var filters = this.filterColumnsPartial;
+                var $tagContainer = this.getAdvancedSearchTagsContainer();
 
-                if (!$container.length) {
+                if ($.isEmptyObject(filters)) {
+                    $tagContainer.empty();
+                    this.updateAdvancedSearchButtonState();
                     return;
                 }
 
-                var filters = $.isEmptyObject(this.filterColumnsPartial || {}) ? null : this.filterColumnsPartial;
+                var colMap = {};
+                this.columns.forEach(c => colMap[c.field] = c.title);
+                var op = this.getAdvancedSearchOperator();
+                var html = '<span class="label label-warning" style="margin-right:6px;display:inline-block;margin-bottom:6px;">' +
+                    advancedSearchOperatorLabel + ': ' + (op === 'or' ? advancedSearchOrText : advancedSearchAndText) + '</span>';
 
-                if (!filters) {
-                    $container.empty().hide();
-                    return;
-                }
-
-                var operatorText = this.getAdvancedSearchOperator() === 'or' ? advancedSearchOrText : advancedSearchAndText;
-                var html = ['<div class="advanced-search-tag-list">'];
-
-                html.push('<span class="label label-default" style="margin-right: 6px; display: inline-block; margin-bottom: 6px;">' +
-                    escapeAdvancedSearchValue(advancedSearchOperatorLabel) + ': ' + escapeAdvancedSearchValue(operatorText) + '</span>');
-
-                $.each(filters, function (fieldName, fieldValue) {
-                    html.push('<span class="label label-primary" style="margin-right: 6px; display: inline-block; margin-bottom: 6px;">' +
-                        '<strong>' + escapeAdvancedSearchValue(_this.getAdvancedSearchFieldTitle(fieldName)) + ':</strong> ' +
-                        escapeAdvancedSearchValue(fieldValue) +
-                        ' <a href="javascript:void(0)" class="snipe-advanced-search-tag-remove" data-field="' +
-                        escapeAdvancedSearchValue(fieldName) +
-                        '" style="color: #fff; margin-left: 6px; text-decoration: none;">&times;</a></span>');
+                Object.keys(filters).forEach(f => {
+                    html += '<span class="label label-primary" style="margin-right:6px;display:inline-block;margin-bottom:6px;"><b>' +
+                        (colMap[f] || f).replace(/<[^>]*>/g, '') + ':</b> ' + escapeAdvancedSearchValue(filters[f]) +
+                        ' <a href="javascript:void(0)" class="snipe-advanced-search-tag-remove" data-field="' + f +
+                        '" style="color:#fff;margin-left:6px;text-decoration:none;">&times;</a></span>';
                 });
 
-                html.push('</div>');
+                $tagContainer
+                    .html(html)
+                    .off('click.snipeAdvancedSearchTags')
+                    .on('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tag-remove', function (e) {
+                        e.preventDefault();
+                        var field = $(this).data('field');
+                        if (field && _this.filterColumnsPartial) {
+                            delete _this.filterColumnsPartial[field];
+                            _this.options.pageNumber = 1;
+                            _this.initSearch();
+                            _this.updatePagination();
+                            _this.trigger('column-advanced-search', _this.filterColumnsPartial, _this.getAdvancedSearchOperator());
 
-                $container
-                    .html(html.join(''))
-                    .show()
-                    .off('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tag-remove')
-                    .on('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tag-remove', function (event) {
-                        event.preventDefault();
-
-                        var fieldName = $(this).data('field');
-
-                        if (!fieldName || !_this.filterColumnsPartial || _this.filterColumnsPartial[fieldName] == null) {
-                            return;
+                            _this.renderAdvancedSearchTags();
                         }
-
-                        delete _this.filterColumnsPartial[fieldName];
-
-                        _this.options.pageNumber = 1;
-                        _this.initSearch();
-                        _this.updatePagination();
-                        _this.trigger('column-advanced-search', _this.filterColumnsPartial, _this.getAdvancedSearchOperator());
-                        _this.renderAdvancedSearchTags();
                     });
+
+                this.updateAdvancedSearchButtonState();
             };
 
             BootstrapTable.prototype.applyAdvancedSearch = function () {
@@ -214,6 +238,7 @@
                 }
 
                 this.renderAdvancedSearchTags();
+                this.updateAdvancedSearchButtonState();
 
                 this.hideToolbarModal();
             };
@@ -620,6 +645,25 @@
 
             if (bootstrapTableInstance && typeof bootstrapTableInstance.renderAdvancedSearchTags === 'function') {
                 bootstrapTableInstance.renderAdvancedSearchTags();
+            }
+
+            // Add btn-advanced-search class to the advanced search button for styling
+            if (bootstrapTableInstance) {
+                // Use a small delay to ensure toolbar is fully rendered
+                setTimeout(function () {
+                    var $advancedSearchBtn = bootstrapTableInstance.getAdvancedSearchButton();
+                    if ($advancedSearchBtn.length) {
+                        $advancedSearchBtn.addClass('btn-advanced-search');
+
+                        // Add data attribute if not present
+                        if (!$advancedSearchBtn.attr('data-toggle')) {
+                            $advancedSearchBtn.attr('data-toggle', 'advanced-search');
+                        }
+
+                        // Initialize button state
+                        bootstrapTableInstance.updateAdvancedSearchButtonState();
+                    }
+                }, 50);
             }
 
         });
@@ -2128,7 +2172,7 @@
         if ((value) && (value.url) && (value.inlineable)) {
 
             if (value.mediatype == 'image') {
-                return '<a href="' + value.url + '" data-toggle="lightbox" data-type="image"><img src="' + value.url + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive" alt=""></a>';
+                return '<a href="' + value.url + '?inline=true" data-toggle="lightbox" data-type="image"><img src="' + value.url + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive" alt=""></a>';
             } else if (value.mediatype == 'video') {
                 return '<a href="' + value.url + '?inline=true" data-toggle="lightbox" data-type="video"><video style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive"><source src="' + value.url + '?inline=true"></video></a>';
             } else if (value.mediatype == 'audio') {
@@ -2419,14 +2463,13 @@
 
         //  This is necessary to make the bootstrap tooltips work inside of the
         // wenzhixin/bootstrap-table formatters
-        $('#table').on('post-body.bs.table', function () {
+        $(document).on('post-body.bs.table', '.snipe-table', function () {
             $('[data-tooltip="true"]').tooltip({
                 container: 'body'
             });
-
-
         });
     }
+
 
 </script>
     
