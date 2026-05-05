@@ -10,7 +10,6 @@ use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\ComponentsTransformer;
 use App\Models\Asset;
 use App\Models\Component;
-use App\Models\ComponentAssignment;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
@@ -252,13 +251,11 @@ class ComponentsController extends Controller
     {
         $this->authorize('view', Asset::class);
 
-        $component_checkouts = ComponentAssignment::where('component_id', $component->id)->with('adminuser')->with('assets');
-
         $offset = request('offset', 0);
         $limit = $request->input('limit', 50);
 
         if ($request->filled('search')) {
-            $assets = $component_checkouts->assets()
+            $assets = $component->assets()
                 ->where(function ($query) use ($request) {
                     $search_str = '%'.$request->input('search').'%';
                     $query->where('name', 'like', $search_str)
