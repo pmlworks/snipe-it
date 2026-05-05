@@ -142,7 +142,7 @@
                             </label>
 
                             <label class="form-control">
-                                <input type="checkbox" name="supplier" value="1" @checked($template->checkmarkValue('quantity')) />
+                                <input type="checkbox" name="quantity" value="1" @checked($template->checkmarkValue('quantity')) />
                                 {{ trans('general.quantity') }}
                             </label>
 
@@ -162,7 +162,7 @@
                             </label>
 
                             <label class="form-control">
-                                <input type="checkbox" name="location" value="1" @checked($template->checkmarkValue('min_amount')) />
+                                <input type="checkbox" name="min_amount" value="1" @checked($template->checkmarkValue('min_amount')) />
                                 {{ trans('general.min_amt') }}
                             </label>
 
