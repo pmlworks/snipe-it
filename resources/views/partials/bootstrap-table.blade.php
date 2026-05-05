@@ -158,8 +158,24 @@
                 var _this = this;
                 var $footer = this.$toolbarModal.find('.toolbar-modal-footer');
                 var $templateButton = $footer.find('.toolbar-modal-close').first();
-                var tagName = ($templateButton.prop('tagName') || 'button').toLowerCase();
-                var baseClass = ($templateButton.attr('class') || '').replace(/\btoolbar-modal-close\b/g, '').trim();
+
+                if (!this._advancedSearchFooterButtonTagName) {
+                    this._advancedSearchFooterButtonTagName = ($templateButton.prop('tagName') || $footer.find('button,a').first().prop('tagName') || 'button').toLowerCase();
+                }
+
+                if (!this._advancedSearchFooterButtonBaseClass) {
+                    var buttonClassSource = ($templateButton.attr('class') || $footer.find('button,a').first().attr('class') || '');
+
+                    this._advancedSearchFooterButtonBaseClass = buttonClassSource
+                        .replace(/\btoolbar-modal-close\b/g, '')
+                        .replace(/\btoolbar-modal-cancel\b/g, '')
+                        .replace(/\btoolbar-modal-search\b/g, '')
+                        .replace(/\bpull-left\b/g, '')
+                        .trim();
+                }
+
+                var tagName = this._advancedSearchFooterButtonTagName;
+                var baseClass = this._advancedSearchFooterButtonBaseClass;
 
                 var createFooterButton = function (text, extraClass) {
                     var $button = $('<' + tagName + '>').addClass($.trim(baseClass + ' ' + extraClass)).html(text);
@@ -177,6 +193,9 @@
 
                 var $cancelButton = createFooterButton(this.options.formatAdvancedCancelButton(), 'toolbar-modal-cancel');
                 var $searchButton = createFooterButton(this.options.formatAdvancedCloseButton(), 'toolbar-modal-search');
+
+                // Keep cancel on the left for clearer primary/secondary action separation.
+                $cancelButton.addClass('pull-left');
 
                 $footer.empty().append($cancelButton, $searchButton);
 
@@ -417,6 +436,15 @@
                 },
                 formatLoadingMessage: function () {
                     return '<h2><x-icon type="spinner" /> {{ trans('general.loading') }} </h2>';
+                },
+                formatAdvancedCloseButton: function () {
+                    return advancedSearchSearchText;
+                },
+                formatAdvancedCancelButton: function () {
+                    return advancedSearchCancelText;
+                },
+                formatAdvancedSearchOperator: function () {
+                    return advancedSearchOperatorLabel;
                 },
                 icons: {
                     advancedSearchIcon: 'fas fa-search-plus',
