@@ -74,6 +74,91 @@ class CustomAccessoryReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Accessory B');
     }
 
+    public function test_custom_accessory_report_headers()
+    {
+        $this->markTestIncomplete();
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.accessory.run'), [
+                'id' => '1',
+                'company' => '1',
+                'accessory_name' => '1',
+                'manufacturer' => '1',
+                'model' => '1',
+                'category' => '1',
+                'purchase_date' => '1',
+                'purchase_cost' => '1',
+                'order' => '1',
+                'quantity' => '1',
+                'supplier' => '1',
+                'location' => '1',
+                'location_address' => '1',
+                'min_amount' => '1',
+                'checkout_date' => '1',
+                'created_at' => '1',
+                'updated_at' => '1',
+                'deleted_at' => '1',
+                'notes' => '1',
+                'assigned_to' => '1',
+                'username' => '1',
+                'user_company' => '1',
+                'email' => '1',
+                'employee_num' => '1',
+                'manager' => '1',
+                'department' => '1',
+                'title' => '1',
+                'phone' => '1',
+                'user_address' => '1',
+                'user_city' => '1',
+                'user_state' => '1',
+                'user_country' => '1',
+                'user_zip' => '1',
+                'target_notes' => '1',
+
+            ])->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertSeeTextInStreamedResponse(trans('general.id'))
+            ->assertSeeTextInStreamedResponse(trans('general.company'))
+            ->assertSeeTextInStreamedResponse(trans('admin/accessories/general.accessory_name'))
+            ->assertSeeTextInStreamedResponse(trans('general.manufacturer'))
+            ->assertSeeTextInStreamedResponse(trans('general.model_no'))
+            ->assertSeeTextInStreamedResponse(trans('general.category'))
+            ->assertSeeTextInStreamedResponse(trans('admin/licenses/table.purchase_date'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.cost'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.order'))
+            ->assertSeeTextInStreamedResponse(trans('general.quantity'))
+            ->assertSeeTextInStreamedResponse(trans('general.suppliers'))
+            ->assertSeeTextInStreamedResponse(trans('general.location'))
+            ->assertSeeTextInStreamedResponse(trans('general.address'))
+            ->assertSeeTextInStreamedResponse(trans('general.min_amt'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/table.checkout_date'))
+            ->assertSeeTextInStreamedResponse(trans('general.created_at'))
+            ->assertSeeTextInStreamedResponse(trans('general.updated_at'))
+            ->assertSeeTextInStreamedResponse(trans('general.deleted'))
+            ->assertSeeTextInStreamedResponse(trans('general.notes'))
+            ->assertSeeTextInStreamedResponse(trans('general.checked_out_to_fields'))
+            ->assertSeeTextInStreamedResponse(trans('admin/licenses/table.assigned_to'))
+            ->assertSeeTextInStreamedResponse(trans('admin/users/table.username'))
+            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.user_company'))
+            ->assertSeeTextInStreamedResponse(trans('admin/users/table.email'))
+            ->assertSeeTextInStreamedResponse(trans('general.employee_number'))
+            ->assertSeeTextInStreamedResponse(trans('admin/users/table.manager'))
+            ->assertSeeTextInStreamedResponse(trans('general.department'))
+            ->assertSeeTextInStreamedResponse(trans('admin/users/table.title'))
+            ->assertSeeTextInStreamedResponse(trans('admin/users/table.phone'))
+            ->assertSeeTextInStreamedResponse(trans('general.address'))
+            ->assertSeeTextInStreamedResponse(trans('general.city'))
+            ->assertSeeTextInStreamedResponse(trans('general.state'))
+            ->assertSeeTextInStreamedResponse(trans('general.country'))
+            ->assertSeeTextInStreamedResponse(trans('general.zip'))
+            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.target_notes'));
+    }
+
+    public function test_custom_accessory_report_exclude_deleted()
+    {
+        $this->markTestIncomplete();
+    }
+
     public function test_custom_accessory_report_adheres_to_company_scoping()
     {
         $this->markTestIncomplete();
