@@ -85,7 +85,7 @@ class CustomAssetReportTest extends TestCase
 
     public function test_custom_asset_report_adheres_to_company_scoping()
     {
-        [$companyA, $companyB] = Company::factory()->count(2)->create();
+        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
 
         Asset::factory()->for($companyA)->create(['name' => 'Asset A']);
         Asset::factory()->for($companyB)->create(['name' => 'Asset B']);
