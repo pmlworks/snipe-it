@@ -111,6 +111,95 @@
                 };
             };
 
+            BootstrapTable.prototype.getAdvancedSearchFieldTitle = function (fieldName) {
+                for (var i = 0; i < this.columns.length; i++) {
+                    var column = this.columns[i];
+
+                    if (column.field === fieldName) {
+                        return $('<div/>').html(column.title || fieldName).text().trim();
+                    }
+                }
+
+                return fieldName;
+            };
+
+            BootstrapTable.prototype.getAdvancedSearchTagsContainer = function () {
+                var $tableWrapper = this.$el.closest('.bootstrap-table');
+
+                if (!$tableWrapper.length) {
+                    return $();
+                }
+
+                var $container = $tableWrapper.children('.snipe-advanced-search-tags');
+
+                if (!$container.length) {
+                    $container = $('<div class="snipe-advanced-search-tags" style="margin: 8px 0;"></div>');
+
+                    if ($tableWrapper.children('.fixed-table-container').length) {
+                        $container.insertBefore($tableWrapper.children('.fixed-table-container').first());
+                    } else {
+                        $container.insertBefore(this.$el);
+                    }
+                }
+
+                return $container;
+            };
+
+            BootstrapTable.prototype.renderAdvancedSearchTags = function () {
+                var _this = this;
+                var $container = this.getAdvancedSearchTagsContainer();
+
+                if (!$container.length) {
+                    return;
+                }
+
+                var filters = $.isEmptyObject(this.filterColumnsPartial || {}) ? null : this.filterColumnsPartial;
+
+                if (!filters) {
+                    $container.empty().hide();
+                    return;
+                }
+
+                var operatorText = this.getAdvancedSearchOperator() === 'or' ? advancedSearchOrText : advancedSearchAndText;
+                var html = ['<div class="advanced-search-tag-list">'];
+
+                html.push('<span class="label label-default" style="margin-right: 6px; display: inline-block; margin-bottom: 6px;">' +
+                    escapeAdvancedSearchValue(advancedSearchOperatorLabel) + ': ' + escapeAdvancedSearchValue(operatorText) + '</span>');
+
+                $.each(filters, function (fieldName, fieldValue) {
+                    html.push('<span class="label label-primary" style="margin-right: 6px; display: inline-block; margin-bottom: 6px;">' +
+                        '<strong>' + escapeAdvancedSearchValue(_this.getAdvancedSearchFieldTitle(fieldName)) + ':</strong> ' +
+                        escapeAdvancedSearchValue(fieldValue) +
+                        ' <a href="javascript:void(0)" class="snipe-advanced-search-tag-remove" data-field="' +
+                        escapeAdvancedSearchValue(fieldName) +
+                        '" style="color: #fff; margin-left: 6px; text-decoration: none;">&times;</a></span>');
+                });
+
+                html.push('</div>');
+
+                $container
+                    .html(html.join(''))
+                    .show()
+                    .off('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tag-remove')
+                    .on('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tag-remove', function (event) {
+                        event.preventDefault();
+
+                        var fieldName = $(this).data('field');
+
+                        if (!fieldName || !_this.filterColumnsPartial || _this.filterColumnsPartial[fieldName] == null) {
+                            return;
+                        }
+
+                        delete _this.filterColumnsPartial[fieldName];
+
+                        _this.options.pageNumber = 1;
+                        _this.initSearch();
+                        _this.updatePagination();
+                        _this.trigger('column-advanced-search', _this.filterColumnsPartial, _this.getAdvancedSearchOperator());
+                        _this.renderAdvancedSearchTags();
+                    });
+            };
+
             BootstrapTable.prototype.applyAdvancedSearch = function () {
                 var toolbarState = this.collectAdvancedSearchFormData();
 
@@ -123,6 +212,8 @@
                     this.updatePagination();
                     this.trigger('column-advanced-search', this.filterColumnsPartial, this.getAdvancedSearchOperator());
                 }
+
+                this.renderAdvancedSearchTags();
 
                 this.hideToolbarModal();
             };
@@ -524,6 +615,12 @@
                 }
 
             });
+
+            var bootstrapTableInstance = $(this).data('bootstrap.table');
+
+            if (bootstrapTableInstance && typeof bootstrapTableInstance.renderAdvancedSearchTags === 'function') {
+                bootstrapTableInstance.renderAdvancedSearchTags();
+            }
 
         });
 
