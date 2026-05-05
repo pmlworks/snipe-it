@@ -132,7 +132,7 @@ class SnipeSCIMConfig
         return [
 
             // Set to 'null' to make use of auth.providers.users.model (App\User::class)
-            'class' => ScimUser::class,
+            'class' => SCIMUser::class,
             'singular' => 'User',
 
             // eager loading
