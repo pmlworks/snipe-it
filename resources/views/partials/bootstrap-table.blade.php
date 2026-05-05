@@ -1,13 +1,6 @@
 @push('css')
     <link rel="stylesheet" href="{{ url(mix('css/dist/bootstrap-table.css')) }}">
-    <style>
-        .advanced-search-tags { margin: 10px 0; }
-        .advanced-search-tags .tag { margin-right: 5px; }
-        .btn-advanced-search.active {
-            background-color: #e74c3c !important;
-            color: #fff !important;
-        }
-    </style>
+
 @endpush
 
 @push('js')
@@ -32,7 +25,7 @@
         var baseInitSearch = baseBootstrapTablePrototype.initSearch;
         var defaultAdvancedSearchOperator = 'and';
         var advancedSearchSearchText = @json(trans('general.search'));
-        var advancedSearchCancelText = @json(trans('button.cancel'));
+
         var advancedSearchOperatorLabel = @json(trans('general.search_operator'));
         var advancedSearchAndText = @json(trans('general.and'));
         var advancedSearchOrText = @json(trans('general.or'));
@@ -69,7 +62,7 @@
                     return advancedSearchSearchText;
                 },
                 formatAdvancedCancelButton: function () {
-                    return advancedSearchCancelText;
+                    return $.fn.bootstrapTable.defaults.formatClearSearch();
                 },
                 formatAdvancedSearchOperator: function () {
                     return advancedSearchOperatorLabel;
@@ -244,6 +237,18 @@
             };
 
             BootstrapTable.prototype.cancelAdvancedSearch = function () {
+                this.filterColumnsPartial = {};
+                this.options.pageNumber = 1;
+                this.initSearch();
+                this.updatePagination();
+                this.trigger('column-advanced-search', this.filterColumnsPartial, this.getAdvancedSearchOperator());
+                this.renderAdvancedSearchTags();
+                this.updateAdvancedSearchButtonState();
+                // Reset the form inputs so the fields appear empty when re-opened
+                if (this.$toolbarModal) {
+                    this.$toolbarModal.find('.toolbar-model-form')[0] && this.$toolbarModal.find('.toolbar-model-form')[0].reset();
+                    this.$toolbarModal.find('input[type="text"]').val('');
+                }
                 this.hideToolbarModal();
             };
 
@@ -557,7 +562,7 @@
                     return advancedSearchSearchText;
                 },
                 formatAdvancedCancelButton: function () {
-                    return advancedSearchCancelText;
+                    return $.fn.bootstrapTable.defaults.formatClearSearch();
                 },
                 formatAdvancedSearchOperator: function () {
                     return advancedSearchOperatorLabel;
