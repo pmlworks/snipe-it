@@ -8,46 +8,13 @@ use App\Models\CustomField;
 use App\Models\ReportTemplate;
 use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Testing\TestResponse;
 use League\Csv\Reader;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
 #[Group('custom-reporting')]
 class CustomAssetReportTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        TestResponse::macro(
-            'assertSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertTrue(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
-                        ->contains($needle)
-                );
-
-                return $this;
-            }
-        );
-
-        TestResponse::macro(
-            'assertDontSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertFalse(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
-                        ->contains($needle)
-                );
-
-                return $this;
-            }
-        );
-    }
-
     public function test_requires_permission_to_view_page()
     {
         $this->actingAs(User::factory()->create())

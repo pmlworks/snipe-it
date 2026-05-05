@@ -4,6 +4,7 @@ namespace Tests\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\TestResponse;
+use League\Csv\Reader;
 use PHPUnit\Framework\Assert;
 use RuntimeException;
 
@@ -11,6 +12,32 @@ trait CustomTestMacros
 {
     protected function registerCustomMacros()
     {
+        TestResponse::macro(
+            'assertSeeTextInStreamedResponse',
+            function (string $needle): self {
+                Assert::assertTrue(
+                    collect(Reader::createFromString($this->streamedContent())->getRecords())
+                        ->pluck(0)
+                        ->contains($needle)
+                );
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertDontSeeTextInStreamedResponse',
+            function (string $needle): self {
+                Assert::assertFalse(
+                    collect(Reader::createFromString($this->streamedContent())->getRecords())
+                        ->pluck(0)
+                        ->contains($needle)
+                );
+
+                return $this;
+            }
+        );
+
         $guardAgainstNullProperty = function (Model $model, string $property) {
             if (is_null($model->{$property})) {
                 throw new RuntimeException(
