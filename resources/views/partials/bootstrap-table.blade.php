@@ -28,6 +28,29 @@
         var advancedSearchOperatorLabel = @json(trans('general.search_operator'));
         var advancedSearchAndText = @json(trans('general.and'));
         var advancedSearchOrText = @json(trans('general.or'));
+        var advancedSearchOperatorStorageKey = 'snipeit.bs.table.advancedSearchOperator';
+
+        var normalizeAdvancedSearchOperator = function (operator) {
+            return (operator || defaultAdvancedSearchOperator).toString().toLowerCase() === 'or' ? 'or' : 'and';
+        };
+
+        var getStoredAdvancedSearchOperator = function () {
+            try {
+                var storedOperator = localStorage.getItem(advancedSearchOperatorStorageKey);
+
+                return storedOperator ? normalizeAdvancedSearchOperator(storedOperator) : null;
+            } catch (error) {
+                return null;
+            }
+        };
+
+        var storeAdvancedSearchOperator = function (operator) {
+            try {
+                localStorage.setItem(advancedSearchOperatorStorageKey, normalizeAdvancedSearchOperator(operator));
+            } catch (error) {
+                // Ignore storage errors (private mode/quota), fallback remains in-memory.
+            }
+        };
 
             var escapeAdvancedSearchValue = function (value) {
                 return $('<div/>').text(value == null ? '' : value).html();
@@ -53,14 +76,15 @@
             });
 
             BootstrapTable.prototype.getAdvancedSearchOperator = function () {
-                var operator = (this.advancedSearchOperator || this.options.advancedSearchOperator || this.$el.data('advanced-search-filter-operator') || defaultAdvancedSearchOperator).toString().toLowerCase();
+                var operator = this.advancedSearchOperator || this.options.advancedSearchOperator || this.$el.data('advanced-search-filter-operator') || getStoredAdvancedSearchOperator() || defaultAdvancedSearchOperator;
 
-                return operator === 'or' ? 'or' : 'and';
+                return normalizeAdvancedSearchOperator(operator);
             };
 
             BootstrapTable.prototype.setAdvancedSearchOperator = function (operator) {
-                this.advancedSearchOperator = operator === 'or' ? 'or' : 'and';
+                this.advancedSearchOperator = normalizeAdvancedSearchOperator(operator);
                 this.$el.data('advanced-search-filter-operator', this.advancedSearchOperator);
+                storeAdvancedSearchOperator(this.advancedSearchOperator);
             };
 
             BootstrapTable.prototype.collectAdvancedSearchFormData = function () {
@@ -310,7 +334,9 @@
 
 
 
-            $(this).data('advanced-search-filter-operator', data_with_default('advanced-search-operator', 'and'));
+            var initialAdvancedSearchOperator = getStoredAdvancedSearchOperator() || normalizeAdvancedSearchOperator(data_with_default('advanced-search-operator', defaultAdvancedSearchOperator));
+
+            $(this).data('advanced-search-filter-operator', initialAdvancedSearchOperator);
 
             $(this).bootstrapTable({
 
@@ -323,7 +349,7 @@
                 // buttonsPrefix: "btn",
                 addrbar: {{ (config('session.bs_table_addrbar') == 'true') ? 'true' : 'false'}}, // deeplink search phrases, sorting, etc
                 advancedSearch: data_with_default('advanced-search', true),
-                advancedSearchOperator: data_with_default('advanced-search-operator', 'and'),
+                advancedSearchOperator: initialAdvancedSearchOperator,
                 buttonsClass: "tableButton tableButton btn-theme hidden-print",
                 buttonsOrder: [
                     'columns',
