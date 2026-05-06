@@ -41,7 +41,7 @@ class CustomComponentReportController extends Controller
         $this->disableDebugbar();
 
         $response = new StreamedResponse(function () use ($request) {
-            Log::debug('Starting streamed response');
+            Log::debug('Starting streamed response for custom component report');
             Log::debug('CSV escaping is set to: '.config('app.escape_formulas'));
 
             // Open output stream
@@ -50,112 +50,11 @@ class CustomComponentReportController extends Controller
 
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            $header = [];
-
-            if ($request->filled('id')) {
-                $header[] = trans('general.id');
-            }
-
-            if ($request->filled('company')) {
-                $header[] = trans('general.company');
-            }
-
-            if ($request->filled('category')) {
-                $header[] = trans('general.category');
-            }
-
-            if ($request->filled('component_name')) {
-                $header[] = trans('admin/components/general.component_name');
-            }
-
-            if ($request->filled('manufacturer')) {
-                $header[] = trans('general.manufacturer');
-            }
-
-            if ($request->filled('model')) {
-                $header[] = trans('general.model_no');
-            }
-
-            if ($request->filled('serial')) {
-                $header[] = trans('general.serial_number');
-            }
-
-            if ($request->filled('purchase_date')) {
-                $header[] = trans('general.purchase_date');
-            }
-
-            if ($request->filled('quantity')) {
-                $header[] = trans('general.quantity');
-            }
-
-            if ($request->filled('min_amount')) {
-                $header[] = trans('general.min_amt');
-            }
-
-            if ($request->filled('unit_cost')) {
-                $header[] = trans('general.unit_cost');
-            }
-
-            if ($request->filled('order')) {
-                $header[] = trans('admin/hardware/form.order');
-            }
-
-            if ($request->filled('supplier')) {
-                $header[] = trans('general.suppliers');
-            }
-
-            if ($request->filled('location')) {
-                $header[] = trans('general.location');
-            }
-
-            if ($request->filled('location_address')) {
-                $header[] = trans('general.address');
-                $header[] = trans('general.address');
-                $header[] = trans('general.city');
-                $header[] = trans('general.state');
-                $header[] = trans('general.country');
-                $header[] = trans('general.zip');
-            }
-
-            if ($request->filled('checkout_date')) {
-                $header[] = trans('admin/hardware/table.checkout_date');
-            }
-
-            if ($request->filled('created_at')) {
-                $header[] = trans('general.created_at');
-            }
-
-            if ($request->filled('updated_at')) {
-                $header[] = trans('general.updated_at');
-            }
-
-            if ($request->filled('deleted_at')) {
-                $header[] = trans('general.deleted');
-            }
-
-            if ($request->filled('notes')) {
-                $header[] = trans('general.notes');
-            }
-
-            if ($request->filled('asset_name')) {
-                $header[] = trans('admin/hardware/form.name');
-            }
-
-            if ($request->filled('asset_tag')) {
-                $header[] = trans('admin/hardware/form.tag');
-            }
-
-            if ($request->filled('asset_company')) {
-                $header[] = trans('admin/reports/general.custom_export.asset_company');
-            }
-
-            if ($request->filled('asset_serial')) {
-                $header[] = trans('admin/reports/general.custom_export.asset_serial');
-            }
+            $headerRow = $this->generateHeaders($request);
 
             $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
             Log::debug('Starting headers: '.$executionTime);
-            fputcsv($handle, $header);
+            fputcsv($handle, $headerRow);
             $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
             Log::debug('Added headers: '.$executionTime);
 
@@ -170,5 +69,113 @@ class CustomComponentReportController extends Controller
         ]);
 
         return $response;
+    }
+
+    private function generateHeaders(Request $request): array
+    {
+        $header = [];
+
+        if ($request->filled('id')) {
+            $header[] = trans('general.id');
+        }
+
+        if ($request->filled('company')) {
+            $header[] = trans('general.company');
+        }
+
+        if ($request->filled('category')) {
+            $header[] = trans('general.category');
+        }
+
+        if ($request->filled('component_name')) {
+            $header[] = trans('admin/components/general.component_name');
+        }
+
+        if ($request->filled('manufacturer')) {
+            $header[] = trans('general.manufacturer');
+        }
+
+        if ($request->filled('model')) {
+            $header[] = trans('general.model_no');
+        }
+
+        if ($request->filled('serial')) {
+            $header[] = trans('general.serial_number');
+        }
+
+        if ($request->filled('purchase_date')) {
+            $header[] = trans('general.purchase_date');
+        }
+
+        if ($request->filled('quantity')) {
+            $header[] = trans('general.quantity');
+        }
+
+        if ($request->filled('min_amount')) {
+            $header[] = trans('general.min_amt');
+        }
+
+        if ($request->filled('unit_cost')) {
+            $header[] = trans('general.unit_cost');
+        }
+
+        if ($request->filled('order')) {
+            $header[] = trans('admin/hardware/form.order');
+        }
+
+        if ($request->filled('supplier')) {
+            $header[] = trans('general.suppliers');
+        }
+
+        if ($request->filled('location')) {
+            $header[] = trans('general.location');
+        }
+
+        if ($request->filled('location_address')) {
+            $header[] = trans('general.address');
+            $header[] = trans('general.address');
+            $header[] = trans('general.city');
+            $header[] = trans('general.state');
+            $header[] = trans('general.country');
+            $header[] = trans('general.zip');
+        }
+
+        if ($request->filled('checkout_date')) {
+            $header[] = trans('admin/hardware/table.checkout_date');
+        }
+
+        if ($request->filled('created_at')) {
+            $header[] = trans('general.created_at');
+        }
+
+        if ($request->filled('updated_at')) {
+            $header[] = trans('general.updated_at');
+        }
+
+        if ($request->filled('deleted_at')) {
+            $header[] = trans('general.deleted');
+        }
+
+        if ($request->filled('notes')) {
+            $header[] = trans('general.notes');
+        }
+
+        if ($request->filled('asset_name')) {
+            $header[] = trans('admin/hardware/form.name');
+        }
+
+        if ($request->filled('asset_tag')) {
+            $header[] = trans('admin/hardware/form.tag');
+        }
+
+        if ($request->filled('asset_company')) {
+            $header[] = trans('admin/reports/general.custom_export.asset_company');
+        }
+
+        if ($request->filled('asset_serial')) {
+            $header[] = trans('admin/reports/general.custom_export.asset_serial');
+        }
+
+        return $header;
     }
 }
