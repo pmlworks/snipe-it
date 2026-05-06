@@ -357,7 +357,7 @@ class SearchableTraitTest extends TestCase
     public function test_user_name_virtual_column_filter_negation_bang_prefix()
     {
         $ts = now()->timestamp;
-        $negUser  = User::factory()->create(['first_name' => 'NegFirst'.$ts,  'last_name' => 'NegLast'.$ts]);
+        $negUser = User::factory()->create(['first_name' => 'NegFirst'.$ts,  'last_name' => 'NegLast'.$ts]);
         $safeUser = User::factory()->create(['first_name' => 'SafeFirst'.$ts, 'last_name' => 'SafeLast'.$ts]);
 
         $response = $this->actingAsForApi(User::factory()->superuser()->create())
@@ -763,7 +763,7 @@ class SearchableTraitTest extends TestCase
     {
         $ts = now()->timestamp;
 
-        $withNotes    = Asset::factory()->create(['notes' => 'Some notes '.$ts]);
+        $withNotes = Asset::factory()->create(['notes' => 'Some notes '.$ts]);
         $withoutNotes = Asset::factory()->create(['notes' => null]);
 
         $superuser = User::factory()->viewAssets()->create();
@@ -800,7 +800,7 @@ class SearchableTraitTest extends TestCase
 
         $userWithName = User::factory()->create([
             'first_name' => 'VirtNullFirst'.$ts,
-            'last_name'  => 'VirtNullLast'.$ts,
+            'last_name' => 'VirtNullLast'.$ts,
         ]);
 
         $superuser = User::factory()->superuser()->create();
@@ -828,8 +828,8 @@ class SearchableTraitTest extends TestCase
     {
         $ts = now()->timestamp;
 
-        $supplier    = \App\Models\Supplier::factory()->create(['name' => 'RelNullSupplier'.$ts]);
-        $withSupplier    = Asset::factory()->create(['supplier_id' => $supplier->id]);
+        $supplier = Supplier::factory()->create(['name' => 'RelNullSupplier'.$ts]);
+        $withSupplier = Asset::factory()->create(['supplier_id' => $supplier->id]);
         $withoutSupplier = Asset::factory()->create(['supplier_id' => null]);
 
         $superuser = User::factory()->viewAssets()->create();
@@ -885,7 +885,7 @@ class SearchableTraitTest extends TestCase
     {
         $ts = now()->timestamp;
 
-        $exact  = Asset::factory()->create(['notes' => 'ExactNote'.$ts]);
+        $exact = Asset::factory()->create(['notes' => 'ExactNote'.$ts]);
         $partial = Asset::factory()->create(['notes' => 'ExactNote'.$ts.'SomeSuffix']);
         Asset::factory()->create(['notes' => 'Unrelated'.$ts]);
 
@@ -910,10 +910,10 @@ class SearchableTraitTest extends TestCase
     {
         $ts = now()->timestamp;
 
-        $exactSupplier   = \App\Models\Supplier::factory()->create(['name' => 'ExactSupplier'.$ts]);
-        $partialSupplier = \App\Models\Supplier::factory()->create(['name' => 'ExactSupplier'.$ts.'Extra']);
+        $exactSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts]);
+        $partialSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts.'Extra']);
 
-        $exactAsset   = Asset::factory()->create(['supplier_id' => $exactSupplier->id]);
+        $exactAsset = Asset::factory()->create(['supplier_id' => $exactSupplier->id]);
         $partialAsset = Asset::factory()->create(['supplier_id' => $partialSupplier->id]);
 
         $superuser = User::factory()->viewAssets()->create();
@@ -938,7 +938,7 @@ class SearchableTraitTest extends TestCase
     {
         $ts = now()->timestamp;
 
-        $exactUser   = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smith'.$ts]);
+        $exactUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smith'.$ts]);
         $partialUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smithson'.$ts]);
 
         $response = $this->actingAsForApi(User::factory()->superuser()->create())
@@ -959,7 +959,7 @@ class SearchableTraitTest extends TestCase
      */
     public function test_is_null_tokens_still_work_after_exact_match_addition()
     {
-        $withNotes    = Asset::factory()->create(['notes' => 'SomeValue'.now()->timestamp]);
+        $withNotes = Asset::factory()->create(['notes' => 'SomeValue'.now()->timestamp]);
         $withoutNotes = Asset::factory()->create(['notes' => null]);
 
         $superuser = User::factory()->viewAssets()->create();
@@ -1075,5 +1075,74 @@ class SearchableTraitTest extends TestCase
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Negation filter "!blah" on the "location" relation key for Assets
+     * should exclude assets with a location name containing "blah".
+     */
+    public function test_negation_filter_on_asset_location_relation()
+    {
+        $ts = now()->timestamp;
+
+        $blahLocation = Location::factory()->create(['name' => 'Blah Office '.$ts]);
+        $safeLocation = Location::factory()->create(['name' => 'Safe Office '.$ts]);
+
+        $blahAsset = Asset::factory()->create(['location_id' => $blahLocation->id]);
+        $safeAsset = Asset::factory()->create(['location_id' => $safeLocation->id]);
+
+        $response = $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['location' => '!Blah']),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // Asset in the "blah" location must NOT appear.
+        $this->assertNotContains((int) $blahAsset->id, $returnedIds);
+        // Asset in a different location MUST appear.
+        $this->assertContains((int) $safeAsset->id, $returnedIds);
+    }
+
+    /**
+     * Negation filter "!blah" on the "location" relation key for Users
+     * should exclude users whose location name contains "blah".
+     *
+     * The User model stores location via the "userloc" Eloquent relation
+     * (not "location"), so a "location" → "userloc" alias must be registered.
+     */
+    public function test_negation_filter_on_user_location_relation()
+    {
+        $ts = now()->timestamp;
+
+        $blahLocation = Location::factory()->create([
+            'name' => 'Blah Floor '.$ts,
+            'address' => 'Safe Address '.$ts,
+        ]);
+        $safeLocation = Location::factory()->create([
+            'name' => 'Safe Floor '.$ts,
+            // Regression guard: structured filter on "location" should not inspect address.
+            'address' => 'Blah Address '.$ts,
+        ]);
+
+        $blahUser = User::factory()->create(['location_id' => $blahLocation->id]);
+        $safeUser = User::factory()->create(['location_id' => $safeLocation->id]);
+        $nullLocationUser = User::factory()->create(['location_id' => null]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['location' => '!Blah']),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // The user in the "blah" location must NOT appear.
+        $this->assertNotContains((int) $blahUser->id, $returnedIds);
+        // The user in a safe location MUST appear.
+        $this->assertContains((int) $safeUser->id, $returnedIds);
+        // Users with no location should also be included for negated filters.
+        $this->assertContains((int) $nullLocationUser->id, $returnedIds);
     }
 }

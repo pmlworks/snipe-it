@@ -59,6 +59,8 @@ trait Searchable
         $filterOperator = $preparedSearch['filter_operator'];
 
         if (! empty($filters)) {
+            // Structured advanced-search filters are mutually exclusive with free-text terms.
+            // Once we detect structured payloads, we avoid the broad OR-based free-text path.
             return $this->applySearchFilters($query, $filters, $filterOperator);
         }
 
@@ -135,6 +137,7 @@ trait Searchable
         $payload = $search;
 
         if (str_starts_with($search, 'filter:')) {
+            // Some callers send filter payloads with an explicit "filter:" prefix.
             $payload = substr($search, 7);
         } elseif (! (str_starts_with($search, '{') && str_ends_with($search, '}'))) {
             return null;
@@ -160,6 +163,7 @@ trait Searchable
             $normalizedValue = trim((string) ($value ?? ''));
 
             if ($normalizedValue === '') {
+                // Ignore empty fields so clearing an input does not create noisy no-op filters.
                 continue;
             }
 
@@ -229,14 +233,17 @@ trait Searchable
         $lower = strtolower($raw);
 
         if ($lower === 'is:null') {
+            // Reserved token: interpreted as null-check operator, not exact match string.
             return ['value' => '', 'negate' => false, 'operator' => 'is_null'];
         }
 
         if ($lower === 'is:not_null') {
+            // Reserved token: interpreted as non-null check operator.
             return ['value' => '', 'negate' => false, 'operator' => 'is_not_null'];
         }
 
         if (str_starts_with($lower, 'is:')) {
+            // Generic exact-match prefix. This is checked after reserved is:null/is:not_null tokens.
             $exactValue = substr($raw, 3);
 
             return ['value' => $exactValue, 'negate' => false, 'operator' => 'exact'];
@@ -314,6 +321,8 @@ trait Searchable
                 // Exact match on the full CONCAT'd value, e.g. "John Smith" matches only
                 // users whose first_name + ' ' + last_name equals exactly "John Smith".
                 $concatSql = $this->buildMultipleColumnSearch($qualifiedColumns);
+                // buildMultipleColumnSearch intentionally returns a fragment ending in "LIKE ?";
+                // for exact matches we rewrite only the operator and keep the same SQL scaffold.
                 $concatSql = str_replace(' LIKE ?', ' = ?', $concatSql);
                 $rawMethod = $boolean === 'or' ? 'orWhereRaw' : 'whereRaw';
                 $query->{$rawMethod}($concatSql, [$value]);
@@ -342,6 +351,8 @@ trait Searchable
             $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
             if ($dbColumn !== null) {
+                // Structured custom-field filters currently support LIKE/NOT LIKE semantics only.
+                // (No exact/is:null operators for custom fields yet.)
                 $query->{$whereMethod}($table.'.'.$dbColumn, $likeOperator, '%'.$value.'%');
 
                 return $query;
@@ -358,7 +369,53 @@ trait Searchable
             return $this->applyAssignedToRelationFilter($query, $resolvedRelationKey, $value, $boolean, $negate);
         }
 
-        $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
+        $relationColumns = $this->getStructuredFilterRelationColumns(
+            filterKey: $filterKey,
+            resolvedRelationKey: $resolvedRelationKey,
+            searchableRelations: $searchableRelations,
+        );
+
+        // For negated relation filters (e.g. location: !dam), include rows with
+        // no related record as well as rows with related records that do not match.
+        // This aligns advanced-search behavior with user expectation for "not X".
+        if ($operator !== 'exact' && $likeOperator === 'NOT LIKE') {
+            $compoundMethod = $boolean === 'or' ? 'orWhere' : 'where';
+
+            $query->{$compoundMethod}(function (Builder $compoundQuery) use ($resolvedRelationKey, $relationColumns, $value): void {
+                // Critical behavior: "not X" on relations should include records with no relation.
+                // Example: location=!dam should include users without a location.
+                $compoundQuery->doesntHave($resolvedRelationKey)
+                    ->orWhereHas($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $value): void {
+                        $relationTable = $this->getRelationTable($resolvedRelationKey);
+                        $firstConditionAdded = false;
+
+                        foreach ($relationColumns as $relationColumn) {
+                            if (! $firstConditionAdded) {
+                                $relationQuery->where($relationTable.'.'.$relationColumn, 'NOT LIKE', '%'.$value.'%');
+                                $firstConditionAdded = true;
+
+                                continue;
+                            }
+
+                            // For negation we AND the NOT LIKE conditions so all columns must not match.
+                            $relationQuery->where($relationTable.'.'.$relationColumn, 'NOT LIKE', '%'.$value.'%');
+                        }
+
+                        if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
+                            $concatSql = $this->buildMultipleColumnSearch([
+                                'users.first_name',
+                                'users.last_name',
+                                'users.display_name',
+                            ]);
+
+                            $relationQuery->whereRaw(str_replace('LIKE', 'NOT LIKE', $concatSql), ["%{$value}%"]);
+                        }
+                    });
+            });
+
+            return $query;
+        }
+
         $relationMethod = $boolean === 'or' ? 'orWhereHas' : 'whereHas';
 
         $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $value, $likeOperator, $operator) {
@@ -593,9 +650,9 @@ trait Searchable
         if (in_array($filterKey, $searchableAttributes, true)) {
             $method = match (true) {
                 $isNull && $boolean === 'or' => 'orWhereNull',
-                $isNull                      => 'whereNull',
-                $boolean === 'or'            => 'orWhereNotNull',
-                default                      => 'whereNotNull',
+                $isNull => 'whereNull',
+                $boolean === 'or' => 'orWhereNotNull',
+                default => 'whereNotNull',
             };
 
             $query->{$method}($table.'.'.$filterKey);
@@ -942,6 +999,36 @@ trait Searchable
     }
 
     /**
+     * Get structured-filter relation columns for a given filter key.
+     *
+     * By default, this uses all configured searchable relation columns for the
+     * resolved relation key. Models can narrow specific advanced-search fields
+     * via $searchableRelationFilterColumns, keyed by the incoming filter key
+     * shown in the UI/API (for example: 'location' => ['name']).
+     *
+     * @param  array<string, array<int, string>>  $searchableRelations
+     * @return array<int, string>
+     */
+    private function getStructuredFilterRelationColumns(string $filterKey, string $resolvedRelationKey, array $searchableRelations): array
+    {
+        $defaultColumns = (array) ($searchableRelations[$resolvedRelationKey] ?? []);
+
+        $overrides = $this->searchableRelationFilterColumns ?? [];
+
+        if (! array_key_exists($filterKey, $overrides)) {
+            return $defaultColumns;
+        }
+
+        $overrideColumns = array_values(array_filter((array) $overrides[$filterKey], 'is_string'));
+
+        // Keep only columns that are actually searchable on the resolved relation,
+        // so model-level overrides cannot accidentally reference unknown columns.
+        $validColumns = array_values(array_intersect($overrideColumns, $defaultColumns));
+
+        return $validColumns !== [] ? $validColumns : $defaultColumns;
+    }
+
+    /**
      * Get the table name of a relation.
      *
      * This method loops over a relation name,
@@ -998,6 +1085,9 @@ trait Searchable
      */
     private function buildMultipleColumnSearch(array $columns): string
     {
+        // This method deliberately returns only an SQL fragment ending with "LIKE ?"
+        // so callers can reuse it and swap operators (NOT LIKE / =) without duplicating
+        // driver-specific CONCAT syntax.
         $mappedColumns = collect($columns)->map(fn ($column) => DB::getTablePrefix().$column)->toArray();
 
         $driver = config('database.connections.'.config('database.default').'.driver');
