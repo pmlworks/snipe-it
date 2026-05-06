@@ -175,5 +175,43 @@ trait CustomTestMacros
                 return $this;
             }
         );
+
+        TestResponse::macro(
+            'assertSeeTextInStreamedResponse',
+            function (array|string $needles): self {
+                if (! is_array($needles)) {
+                    $needles = [$needles];
+                }
+
+                $records = collect(Reader::createFromString($this->streamedContent())->getRecords())->flatten();
+
+                foreach ($needles as $needle) {
+                    Assert::assertTrue(
+                        $records->contains($needle)
+                    );
+                }
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertDontSeeTextInStreamedResponse',
+            function (array|string $needles): self {
+                if (! is_array($needles)) {
+                    $needles = [$needles];
+                }
+
+                $records = collect(Reader::createFromString($this->streamedContent())->getRecords())->flatten();
+
+                foreach ($needles as $needle) {
+                    Assert::assertFalse(
+                        $records->contains($needle)
+                    );
+                }
+
+                return $this;
+            }
+        );
     }
 }
