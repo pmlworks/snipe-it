@@ -242,7 +242,7 @@
                                     'fieldname' => 'by_category_id[]',
                                     'multiple' => 'true',
                                     'hide_new' => 'true',
-                                    'category_type' => 'components',
+                                    'category_type' => 'component',
                                     'selected' => $template->selectValues('by_category_id', \App\Models\Category::class),
                             ])
 
