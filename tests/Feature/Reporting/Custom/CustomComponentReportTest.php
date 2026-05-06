@@ -93,36 +93,55 @@ class CustomComponentReportTest extends TestCase
                 'asset_tag' => '1',
                 'asset_company' => '1',
                 'asset_serial' => '1',
-            ])->assertOk()
+            ])
+            ->assertOk()
             ->assertHeader('content-type', 'text/csv; charset=utf-8')
-            ->assertSeeTextInStreamedResponse(trans('general.id'))
-            ->assertSeeTextInStreamedResponse(trans('general.company'))
-            ->assertSeeTextInStreamedResponse(trans('general.category'))
-            ->assertSeeTextInStreamedResponse(trans('admin/components/general.component_name'))
-            ->assertSeeTextInStreamedResponse(trans('general.manufacturer'))
-            ->assertSeeTextInStreamedResponse(trans('general.model_no'))
-            ->assertSeeTextInStreamedResponse(trans('general.serial_number'))
-            ->assertSeeTextInStreamedResponse(trans('general.purchase_date'))
-            ->assertSeeTextInStreamedResponse(trans('general.quantity'))
-            ->assertSeeTextInStreamedResponse(trans('general.min_amt'))
-            ->assertSeeTextInStreamedResponse(trans('general.unit_cost'))
-            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.order'))
-            ->assertSeeTextInStreamedResponse(trans('general.suppliers'))
-            ->assertSeeTextInStreamedResponse(trans('general.location'))
-            ->assertSeeTextInStreamedResponse(trans('general.address'))
-            ->assertSeeTextInStreamedResponse(trans('general.city'))
-            ->assertSeeTextInStreamedResponse(trans('general.state'))
-            ->assertSeeTextInStreamedResponse(trans('general.country'))
-            ->assertSeeTextInStreamedResponse(trans('general.zip'))
-            ->assertSeeTextInStreamedResponse(trans('admin/hardware/table.checkout_date'))
-            ->assertSeeTextInStreamedResponse(trans('general.created_at'))
-            ->assertSeeTextInStreamedResponse(trans('general.updated_at'))
-            ->assertSeeTextInStreamedResponse(trans('general.deleted'))
-            ->assertSeeTextInStreamedResponse(trans('general.notes'))
-            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.name'))
-            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.tag'))
-            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.asset_company'))
-            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.asset_serial'));
+            ->assertSeeTextInStreamedResponse([
+                trans('general.id'),
+                trans('general.company'),
+                trans('general.category'),
+                trans('admin/components/general.component_name'),
+                trans('general.manufacturer'),
+                trans('general.model_no'),
+                trans('general.serial_number'),
+                trans('general.purchase_date'),
+                trans('general.quantity'),
+                trans('general.min_amt'),
+                trans('general.unit_cost'),
+                trans('admin/hardware/form.order'),
+                trans('general.suppliers'),
+                trans('general.location'),
+                trans('general.address'),
+                trans('general.city'),
+                trans('general.state'),
+                trans('general.country'),
+                trans('general.zip'),
+                trans('admin/hardware/table.checkout_date'),
+                trans('general.created_at'),
+                trans('general.updated_at'),
+                trans('general.deleted'),
+                trans('general.notes'),
+                trans('admin/hardware/form.name'),
+                trans('admin/hardware/form.tag'),
+                trans('admin/reports/general.custom_export.asset_company'),
+                trans('admin/reports/general.custom_export.asset_serial'),
+            ]);
+    }
+
+    public function test_omitted_columns_are_excluded_from_report_headers()
+    {
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), [
+                'id' => '1',
+                'component_name' => '1',
+                // company and category intentionally omitted
+            ])
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertDontSeeTextInStreamedResponse([
+                trans('general.company'),
+                trans('general.category'),
+            ]);
     }
 
     public function test_custom_component_report_content()
