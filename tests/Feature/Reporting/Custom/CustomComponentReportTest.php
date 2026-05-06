@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Component;
 use App\Models\ReportTemplate;
 use App\Models\User;
+use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
 
@@ -65,33 +66,32 @@ class CustomComponentReportTest extends TestCase
 
     public function test_custom_component_report_headers()
     {
-        $this->actingAs(User::factory()->canViewReports()->create())
-            ->post(route('reports.custom.component.run'), [
-                'id' => '1',
-                'company' => '1',
-                'category' => '1',
-                'component_name' => '1',
-                'manufacturer' => '1',
-                'model' => '1',
-                'serial' => '1',
-                'purchase_date' => '1',
-                'quantity' => '1',
-                'min_amount' => '1',
-                'unit_cost' => '1',
-                'order' => '1',
-                'supplier' => '1',
-                'location' => '1',
-                'location_address' => '1',
-                'checkout_date' => '1',
-                'created_at' => '1',
-                'updated_at' => '1',
-                'deleted_at' => '1',
-                'notes' => '1',
-                'asset_name' => '1',
-                'asset_tag' => '1',
-                'asset_company' => '1',
-                'asset_serial' => '1',
-            ])
+        $this->sendRequest([
+            'id' => '1',
+            'company' => '1',
+            'category' => '1',
+            'component_name' => '1',
+            'manufacturer' => '1',
+            'model' => '1',
+            'serial' => '1',
+            'purchase_date' => '1',
+            'quantity' => '1',
+            'min_amount' => '1',
+            'unit_cost' => '1',
+            'order' => '1',
+            'supplier' => '1',
+            'location' => '1',
+            'location_address' => '1',
+            'checkout_date' => '1',
+            'created_at' => '1',
+            'updated_at' => '1',
+            'deleted_at' => '1',
+            'notes' => '1',
+            'asset_name' => '1',
+            'asset_tag' => '1',
+            'asset_company' => '1',
+            'asset_serial' => '1',
+        ])
             ->assertOk()
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse([
@@ -128,12 +128,11 @@ class CustomComponentReportTest extends TestCase
 
     public function test_omitted_columns_are_excluded_from_report_headers()
     {
-        $this->actingAs(User::factory()->canViewReports()->create())
-            ->post(route('reports.custom.component.run'), [
-                'id' => '1',
-                'component_name' => '1',
-                // company and category intentionally omitted
-            ])
+        $this->sendRequest([
+            'id' => '1',
+            'component_name' => '1',
+            // company and category intentionally omitted
+        ])
             ->assertOk()
             ->assertCsvHeader()
             ->assertDontSeeTextInStreamedResponse([
@@ -156,13 +155,12 @@ class CustomComponentReportTest extends TestCase
             )
             ->create();
 
-        $this->actingAs(User::factory()->canViewReports()->create())
-            ->post(route('reports.custom.component.run'), [
-                'company' => '1',
-                'by_company_id' => [
-                    $companyA->id,
-                ],
-            ])
+        $this->sendRequest([
+            'company' => '1',
+            'by_company_id' => [
+                $companyA->id,
+            ],
+        ])
             ->assertOk()
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Component for Company A')
@@ -183,15 +181,12 @@ class CustomComponentReportTest extends TestCase
             )
             ->create();
 
-        $data = [
+        $this->sendRequest([
             'category' => '1',
             'by_category_id' => [
                 $categoryA->id,
             ],
-        ];
-
-        $this->actingAs(User::factory()->canViewReports()->create())
-            ->post(route('reports.custom.component.run'), $data)
+        ])
             ->assertOk()
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Category for Company A')
@@ -291,5 +286,11 @@ class CustomComponentReportTest extends TestCase
     public function test_custom_component_report_adheres_to_company_scoping()
     {
         $this->markTestIncomplete();
+    }
+
+    private function sendRequest(array $data): TestResponse
+    {
+        return $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), $data);
     }
 }
