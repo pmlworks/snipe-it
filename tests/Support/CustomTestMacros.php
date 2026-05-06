@@ -4,6 +4,7 @@ namespace Tests\Support;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\TestResponse;
+use League\Csv\Reader;
 use PHPUnit\Framework\Assert;
 use RuntimeException;
 
@@ -144,6 +145,32 @@ trait CustomTestMacros
                         "Response messages did not contain the key: {$key}"
                     );
                 }
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertSeeTextInStreamedResponse',
+            function (string $needle) {
+                Assert::assertTrue(
+                    collect(Reader::createFromString($this->streamedContent())->getRecords())
+                        ->pluck(0)
+                        ->contains($needle)
+                );
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertDontSeeTextInStreamedResponse',
+            function (string $needle) {
+                Assert::assertFalse(
+                    collect(Reader::createFromString($this->streamedContent())->getRecords())
+                        ->pluck(0)
+                        ->contains($needle)
+                );
 
                 return $this;
             }
