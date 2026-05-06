@@ -67,7 +67,62 @@ class CustomComponentReportTest extends TestCase
 
     public function test_custom_component_report_headers()
     {
-        $this->markTestIncomplete();
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), [
+                'id' => '1',
+                'company' => '1',
+                'category' => '1',
+                'component_name' => '1',
+                'manufacturer' => '1',
+                'model' => '1',
+                'serial' => '1',
+                'purchase_date' => '1',
+                'quantity' => '1',
+                'min_amount' => '1',
+                'unit_cost' => '1',
+                'order' => '1',
+                'supplier' => '1',
+                'location' => '1',
+                'location_address' => '1',
+                'checkout_date' => '1',
+                'created_at' => '1',
+                'updated_at' => '1',
+                'deleted_at' => '1',
+                'notes' => '1',
+                'asset_name' => '1',
+                'asset_tag' => '1',
+                'asset_company' => '1',
+                'asset_serial' => '1',
+            ])->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertSeeTextInStreamedResponse(trans('general.id'))
+            ->assertSeeTextInStreamedResponse(trans('general.company'))
+            ->assertSeeTextInStreamedResponse(trans('general.category'))
+            ->assertSeeTextInStreamedResponse(trans('admin/components/general.component_name'))
+            ->assertSeeTextInStreamedResponse(trans('general.manufacturer'))
+            ->assertSeeTextInStreamedResponse(trans('general.model_no'))
+            ->assertSeeTextInStreamedResponse(trans('general.serial_number'))
+            ->assertSeeTextInStreamedResponse(trans('general.purchase_date'))
+            ->assertSeeTextInStreamedResponse(trans('general.quantity'))
+            ->assertSeeTextInStreamedResponse(trans('general.min_amt'))
+            ->assertSeeTextInStreamedResponse(trans('general.unit_cost'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.order'))
+            ->assertSeeTextInStreamedResponse(trans('general.suppliers'))
+            ->assertSeeTextInStreamedResponse(trans('general.location'))
+            ->assertSeeTextInStreamedResponse(trans('general.address'))
+            ->assertSeeTextInStreamedResponse(trans('general.city'))
+            ->assertSeeTextInStreamedResponse(trans('general.state'))
+            ->assertSeeTextInStreamedResponse(trans('general.country'))
+            ->assertSeeTextInStreamedResponse(trans('general.zip'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/table.checkout_date'))
+            ->assertSeeTextInStreamedResponse(trans('general.created_at'))
+            ->assertSeeTextInStreamedResponse(trans('general.updated_at'))
+            ->assertSeeTextInStreamedResponse(trans('general.deleted'))
+            ->assertSeeTextInStreamedResponse(trans('general.notes'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.name'))
+            ->assertSeeTextInStreamedResponse(trans('admin/hardware/form.tag'))
+            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.asset_company'))
+            ->assertSeeTextInStreamedResponse(trans('admin/reports/general.custom_export.asset_serial'));
     }
 
     public function test_custom_component_report_content()
