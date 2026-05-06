@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Models\Component;
 use App\Models\ReportTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use League\Csv\EscapeFormula;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CustomComponentReportController extends Controller
@@ -55,6 +57,64 @@ class CustomComponentReportController extends Controller
             Log::debug('Adding headers: '.$this->getExecutionTime());
             fputcsv($handle, $headerRow);
             Log::debug('Added headers: '.$this->getExecutionTime());
+
+            $components = Component::select('components.*')
+                ->with([
+                    'category',
+                    'company',
+                ]);
+
+            $simpleConstraints = [
+                'by_company_id' => 'components.company_id',
+                'by_category_id' => 'components.category_id',
+            ];
+
+            foreach ($simpleConstraints as $formKey => $column) {
+                if ($request->filled($formKey)) {
+                    $components->whereIn($column, $request->input($formKey));
+                }
+            }
+
+            $components->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
+
+                Log::debug('Walking results: '.$this->getExecutionTime());
+
+                $count = 0;
+
+                $formatter = new EscapeFormula('`');
+
+                foreach ($components as $component) {
+                    $count++;
+                    $row = [];
+
+                    if ($request->filled('id')) {
+                        $row[] = $component->id;
+                    }
+
+                    if ($request->filled('company')) {
+                        $row[] = $component?->company?->name;
+                    }
+
+                    if ($request->filled('category')) {
+                        $row[] = $component?->category?->name;
+                    }
+
+                    if ($request->filled('component_name')) {
+                        $row[] = $component->name;
+                    }
+
+                    // CSV_ESCAPE_FORMULAS is set to false in the .env
+                    if (config('app.escape_formulas') === false) {
+                        fputcsv($handle, $row);
+
+                        // CSV_ESCAPE_FORMULAS is set to true or is not set in the .env
+                    } else {
+                        fputcsv($handle, $formatter->escapeRecord($row));
+                    }
+
+                    Log::debug('-- Record '.$count.' Component ID:'.$component->id.' in '.$this->getExecutionTime());
+                }
+            });
 
             // Close the output stream
             fclose($handle);

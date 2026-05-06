@@ -10,6 +10,7 @@ use App\Models\Manufacturer;
 use App\Models\ReportTemplate;
 use App\Models\Supplier;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -17,6 +18,14 @@ use Tests\TestCase;
 #[Group('custom-reporting')]
 class CustomComponentReportTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // todo: remove
+        Model::preventLazyLoading();
+    }
+
     public function test_requires_permission_to_view_page()
     {
         $this->actingAs(User::factory()->create())
@@ -144,10 +153,38 @@ class CustomComponentReportTest extends TestCase
             ]);
     }
 
-    public function test_custom_limiting_by_company()
+    public function test_custom_component_report_contents()
     {
         $this->markTestIncomplete();
+    }
 
+    public function test_limiting_by_category()
+    {
+        [$categoryA, $categoryB] = Category::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['category_id' => $categoryA->id, 'name' => 'Component for Category A'],
+                ['category_id' => $categoryB->id, 'name' => 'Component for Category B'],
+            )
+            ->create();
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'category' => '1',
+            'by_category_id' => [
+                $categoryA->id,
+            ],
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component for Category A')
+            ->assertDontSeeTextInStreamedResponse('Component for Category B');
+    }
+
+    public function test_limiting_by_company()
+    {
         [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
 
         Component::factory()
@@ -159,35 +196,10 @@ class CustomComponentReportTest extends TestCase
             ->create();
 
         $this->sendRequest([
+            'component_name' => '1',
             'company' => '1',
             'by_company_id' => [
                 $companyA->id,
-            ],
-        ])
-            ->assertOk()
-            ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Company A')
-            ->assertDontSeeTextInStreamedResponse('Component for Company B');
-    }
-
-    public function test_limiting_by_category()
-    {
-        $this->markTestIncomplete();
-
-        [$categoryA, $categoryB] = Category::factory()->count(2)->create()->all();
-
-        Component::factory()
-            ->count(2)
-            ->sequence(
-                ['category_type' => $categoryA->id, 'name' => 'Component for Category A'],
-                ['category_type' => $categoryB->id, 'name' => 'Component for Category B'],
-            )
-            ->create();
-
-        $this->sendRequest([
-            'category' => '1',
-            'by_category_id' => [
-                $categoryA->id,
             ],
         ])
             ->assertOk()
@@ -211,6 +223,7 @@ class CustomComponentReportTest extends TestCase
             ->create();
 
         $this->sendRequest([
+            'component_name' => '1',
             'manufacturer' => '1',
             'by_manufacturer_id' => [
                 $manufacturerA->id,
@@ -237,6 +250,7 @@ class CustomComponentReportTest extends TestCase
             ->create();
 
         $this->sendRequest([
+            'component_name' => '1',
             'supplier' => '1',
             'by_supplier_id' => [
                 $supplierA->id,
@@ -263,6 +277,7 @@ class CustomComponentReportTest extends TestCase
             ->create();
 
         $this->sendRequest([
+            'component_name' => '1',
             'location' => '1',
             'by_location_id' => [
                 $locationA->id,
@@ -299,6 +314,7 @@ class CustomComponentReportTest extends TestCase
         Component::factory()->create(['model_number' => 'MODEL-002']);
 
         $this->sendRequest([
+            'component_name' => '1',
             'model' => '1',
             'by_model_number' => 'MODEL-001',
         ])
@@ -316,6 +332,7 @@ class CustomComponentReportTest extends TestCase
         Component::factory()->create(['order_number' => 'ORD-002']);
 
         $this->sendRequest([
+            'component_name' => '1',
             'order' => '1',
             'by_order_number' => 'ORD-001',
         ])
