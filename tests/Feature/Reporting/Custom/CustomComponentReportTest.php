@@ -5,7 +5,10 @@ namespace Tests\Feature\Reporting\Custom;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Component;
+use App\Models\Location;
+use App\Models\Manufacturer;
 use App\Models\ReportTemplate;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Group;
@@ -189,58 +192,209 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Category for Company A')
-            ->assertDontSeeTextInStreamedResponse('Category for Company B');
+            ->assertSeeTextInStreamedResponse('Component for Company A')
+            ->assertDontSeeTextInStreamedResponse('Component for Company B');
     }
 
     public function test_limiting_by_manufacturer()
     {
         $this->markTestIncomplete();
+
+        [$manufacturerA, $manufacturerB] = Manufacturer::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['manufacturer_id' => $manufacturerA->id, 'name' => 'Component for Manufacturer A'],
+                ['manufacturer_id' => $manufacturerB->id, 'name' => 'Component for Manufacturer B'],
+            )
+            ->create();
+
+        $this->sendRequest([
+            'manufacturer' => '1',
+            'by_manufacturer_id' => [
+                $manufacturerA->id,
+            ],
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component for Manufacturer A')
+            ->assertDontSeeTextInStreamedResponse('Component for Manufacturer B');
     }
 
     public function test_limiting_by_supplier()
     {
         $this->markTestIncomplete();
+
+        [$supplierA, $supplierB] = Supplier::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['supplier_id' => $supplierA->id, 'name' => 'Component for Supplier A'],
+                ['supplier_id' => $supplierB->id, 'name' => 'Component for Supplier B'],
+            )
+            ->create();
+
+        $this->sendRequest([
+            'supplier' => '1',
+            'by_supplier_id' => [
+                $supplierA->id,
+            ],
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component for Supplier A')
+            ->assertDontSeeTextInStreamedResponse('Component for Supplier B');
     }
 
     public function test_limiting_by_location()
     {
         $this->markTestIncomplete();
+
+        [$locationA, $locationB] = Location::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['location_id' => $locationA->id, 'name' => 'Component for Location A'],
+                ['location_id' => $locationB->id, 'name' => 'Component for Location B'],
+            )
+            ->create();
+
+        $this->sendRequest([
+            'location' => '1',
+            'by_location_id' => [
+                $locationA->id,
+            ],
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component for Location A')
+            ->assertDontSeeTextInStreamedResponse('Component for Location B');
     }
 
     public function test_limiting_by_name()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['name' => 'RAM']);
+        Component::factory()->create(['name' => 'Hard Drive']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'by_name' => 'RAM',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('RAM')
+            ->assertDontSeeTextInStreamedResponse('Hard Drive');
     }
 
     public function test_limiting_by_model_number()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['model_number' => 'MODEL-001']);
+        Component::factory()->create(['model_number' => 'MODEL-002']);
+
+        $this->sendRequest([
+            'model' => '1',
+            'by_model_number' => 'MODEL-001',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('MODEL-001')
+            ->assertDontSeeTextInStreamedResponse('MODEL-002');
     }
 
     public function test_limiting_by_order_number()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['order_number' => 'ORD-001']);
+        Component::factory()->create(['order_number' => 'ORD-002']);
+
+        $this->sendRequest([
+            'order' => '1',
+            'by_order_number' => 'ORD-001',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('ORD-001')
+            ->assertDontSeeTextInStreamedResponse('ORD-002');
     }
 
     public function test_limiting_by_purchase_date()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['name' => 'Component A', 'purchase_date' => '2024-01-15']);
+        Component::factory()->create(['name' => 'Component B', 'purchase_date' => '2024-06-15']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'purchase_start' => '2024-01-01',
+            'purchase_end' => '2024-03-31',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_quantity()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['name' => 'Component A', 'qty' => 5]);
+        Component::factory()->create(['name' => 'Component B', 'qty' => 50]);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'quantity_cost_start' => 1,
+            'quantity_cost_end' => 10,
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_minimum_quantity()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['name' => 'Component A', 'min_amt' => 2]);
+        Component::factory()->create(['name' => 'Component B', 'min_amt' => 20]);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'min_quantity_cost_start' => 1,
+            'min_quantity_cost_end' => 5,
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_unit_cost()
     {
         $this->markTestIncomplete();
+
+        Component::factory()->create(['name' => 'Component A', 'purchase_cost' => 10.00]);
+        Component::factory()->create(['name' => 'Component B', 'purchase_cost' => 500.00]);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'unit_cost_start' => 1,
+            'unit_cost_end' => 50,
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_checkout_date()
@@ -251,16 +405,63 @@ class CustomComponentReportTest extends TestCase
     public function test_limiting_by_created_at()
     {
         $this->markTestIncomplete();
+
+        $this->travel(-60)->days(function () {
+            Component::factory()->create(['name' => 'Component A']);
+        });
+
+        Component::factory()->create(['name' => 'Component B']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'created_start' => now()->subDays(90)->toDateString(),
+            'created_end' => now()->subDays(30)->toDateString(),
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_updated_at()
     {
         $this->markTestIncomplete();
+
+        $this->travel(-60)->days(function () {
+            Component::factory()->create(['name' => 'Component A']);
+        });
+
+        Component::factory()->create(['name' => 'Component B']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'last_updated_start' => now()->subDays(90)->toDateString(),
+            'last_updated_end' => now()->subDays(30)->toDateString(),
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_updated_before()
     {
         $this->markTestIncomplete();
+
+        $this->travel(-60)->days(function () {
+            Component::factory()->create(['name' => 'Component A']);
+        });
+
+        Component::factory()->create(['name' => 'Component B']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'last_updated_before' => 30,
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_excluding_deleted_components()
