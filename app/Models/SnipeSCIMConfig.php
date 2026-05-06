@@ -302,11 +302,11 @@ class SnipeSCIMConfig
                                 // addresses[type eq "work"]
                                 $matches = null;
                                 if (!preg_match('/^.+\[type eq "([a-zA-Z]+)"](?:\.([a-zA-Z]+))?$/', (string)$path, $matches)) {
-                                    throw new \Exception("Unknown path type '$path'");
+                                    throw new SCIMException("Unknown path type '$path'")->setCode(422);
                                 }
                                 $type = $matches[1];
                                 if ($type != 'work') {
-                                    throw new \Exception("Unknown object type '$type'");
+                                    throw new SCIMException("Unknown object type '$type'")->setCode(422);
                                 }
                                 $attribute = array_key_exists(2, $matches) ? $matches[2] : null;
                                 if (array_key_exists($attribute, self::$addressmap)) {
@@ -315,7 +315,7 @@ class SnipeSCIMConfig
                                 }
 
 
-                                throw new \Exception("path for update $path");
+                                throw new SCIMException("Could not handle path for update $path")->setCode(422);
                             }
                         }
 
