@@ -161,7 +161,8 @@ trait CustomTestMacros
 
                 foreach ($needles as $needle) {
                     Assert::assertTrue(
-                        $records->contains($needle)
+                        $records->contains($needle),
+                        "Expected '{$needle}' was not found"
                     );
                 }
 
@@ -180,7 +181,8 @@ trait CustomTestMacros
 
                 foreach ($needles as $needle) {
                     Assert::assertFalse(
-                        $records->contains($needle)
+                        $records->contains($needle),
+                        "Unexpected '{$needle}' included"
                     );
                 }
 
