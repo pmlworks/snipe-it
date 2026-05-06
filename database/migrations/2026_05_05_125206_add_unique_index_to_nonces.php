@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
 
-        Artisan::call("saml:clear_expired_nonces");
+        Artisan::call('saml:clear_expired_nonces');
         Schema::table('saml_nonces', function (Blueprint $table) {
             $table->dropIndex(['nonce']);
             $table->unique('nonce');
