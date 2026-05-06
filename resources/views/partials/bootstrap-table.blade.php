@@ -254,12 +254,22 @@
 
             BootstrapTable.prototype.createToolbarForm = function () {
                 var filterColumnsPartial = this.filterColumnsPartial || {};
-                var html = ["<form class=\"form-horizontal toolbar-model-form\" action=\"".concat(this.options.actionForm, "\">")];
+                var html = [`<form class="form-horizontal toolbar-model-form" action="${this.options.actionForm}">`];
                 var operator = this.getAdvancedSearchOperator();
 
-                html.push("\n                    <div class=\"form-group row\">\n                        <label class=\"col-sm-4 control-label\">".concat(this.options.formatAdvancedSearchOperator(), "</label>\n                        <div class=\"col-sm-6\">\n                            <select class=\"form-control ").concat(this.constants.classes.input, "\" name=\"__advanced_search_operator\">\n                                <option value=\"and\"").concat(operator === 'and' ? ' selected' : '', ">" + advancedSearchAndText + "</option>\n                                <option value=\"or\"").concat(operator === 'or' ? ' selected' : '', ">" + advancedSearchOrText + "</option>\n                            </select>\n                        </div>\n                    </div>\n                "));
+                html.push('<div class="form-group row"><div class="col-sm-12"><p class="help-block"><i class="fa fa-solid fa-lightbulb text-info" aria-hidden="true"></i> {!! trans('general.search_tip') !!}</p></div></div>');
 
-                html.push('<div class="form-group row"><div class="col-sm-6 col-sm-offset-4"><p class="help-block" style="margin-bottom: 0;">{!! trans('general.search_tip') !!}</p></div></div>');
+                html.push(`
+                    <div class="form-group row">
+                        <label class="col-sm-4 control-label">${this.options.formatAdvancedSearchOperator()}</label>
+                        <div class="col-sm-6">
+                            <select class="form-control ${this.constants.classes.input}" name="__advanced_search_operator">
+                                <option value="and"${operator === 'and' ? ' selected' : ''}>${advancedSearchAndText}</option>
+                                <option value="or"${operator === 'or' ? ' selected' : ''}>${advancedSearchOrText}</option>
+                            </select>
+                        </div>
+                    </div>
+                `);
 
                 for (var columnIndex = 0; columnIndex < this.columns.length; columnIndex++) {
                     var column = this.columns[columnIndex];
@@ -268,7 +278,20 @@
                         var title = $('<div/>').html(column.title).text().trim();
                         var value = filterColumnsPartial[column.field] || '';
 
-                        html.push("<div class=\"form-group row\"><label class=\"col-sm-4 control-label\">".concat(title, "</label><div class=\"col-sm-6\">\n<input type=\"text\" class=\"form-control ").concat(this.constants.classes.input, "\"\n                                        name=\"").concat(column.field, "\" placeholder=\"").concat(escapeAdvancedSearchValue(title), "\" value=\"").concat(escapeAdvancedSearchValue(value), "\">\n                                </div></div>"));
+                        html.push(`
+                            <div class="form-group row">
+                                <label class="col-sm-4 control-label">${title}</label>
+                                <div class="col-sm-6">
+                                    <input
+                                        type="text"
+                                        class="form-control ${this.constants.classes.input}"
+                                        name="${column.field}"
+                                        placeholder="${escapeAdvancedSearchValue(title)}"
+                                        value="${escapeAdvancedSearchValue(value)}"
+                                    >
+                                </div>
+                            </div>
+                        `);
                     }
                 }
 
