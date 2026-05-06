@@ -333,6 +333,71 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * "name" is a virtual column on User (CONCAT of first_name + last_name).
+     * A positive filter should match on concatenated full name.
+     */
+    public function test_user_name_virtual_column_filter_positive()
+    {
+        $ts = now()->timestamp;
+        User::factory()->create(['first_name' => 'VirtFirst'.$ts, 'last_name' => 'VirtLast'.$ts]);
+        User::factory()->create(['first_name' => 'Other'.$ts, 'last_name' => 'Person'.$ts]);
+
+        $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['name' => 'VirtFirst'.$ts]),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * A negated "name" filter using the "!" prefix should exclude matching users,
+     * returning only those whose full name does NOT contain the term.
+     */
+    public function test_user_name_virtual_column_filter_negation_bang_prefix()
+    {
+        $ts = now()->timestamp;
+        $negUser = User::factory()->create(['first_name' => 'NegFirst'.$ts,  'last_name' => 'NegLast'.$ts]);
+        $safeUser = User::factory()->create(['first_name' => 'SafeFirst'.$ts, 'last_name' => 'SafeLast'.$ts]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['name' => '!NegFirst'.$ts]),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // The matched (negated) user must not appear in results.
+        $this->assertNotContains((int) $negUser->id, $returnedIds);
+
+        // The safe user should appear in results.
+        $this->assertContains((int) $safeUser->id, $returnedIds);
+    }
+
+    /**
+     * A negated "name" filter using the "not:" prefix should behave identically to "!".
+     */
+    public function test_user_name_virtual_column_filter_negation_not_colon_prefix()
+    {
+        $ts = now()->timestamp;
+        User::factory()->create(['first_name' => 'NotFirst'.$ts, 'last_name' => 'NotLast'.$ts]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['name' => 'not:NotFirst'.$ts]),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertNotContains(
+            (int) User::where('first_name', 'NotFirst'.$ts)->value('id'),
+            $returnedIds
+        );
+    }
+
+    /**
      * Test Category free-text search on attributes
      */
     public function test_category_free_text_search_on_attributes()
@@ -691,6 +756,106 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * "is:null" on a direct nullable attribute should match rows where that column is NULL.
+     * "is:not_null" should match rows where it is not NULL.
+     */
+    public function test_is_null_filter_on_nullable_attribute()
+    {
+        $ts = now()->timestamp;
+
+        $withNotes = Asset::factory()->create(['notes' => 'Some notes '.$ts]);
+        $withoutNotes = Asset::factory()->create(['notes' => null]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        // is:null → only the asset with no notes
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $withoutNotes->id, $returnedIds);
+        $this->assertNotContains((int) $withNotes->id, $returnedIds);
+
+        // is:not_null → only the asset with notes
+        $response2 = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedIds2 = collect($response2->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $withNotes->id, $returnedIds2);
+        $this->assertNotContains((int) $withoutNotes->id, $returnedIds2);
+    }
+
+    /**
+     * "is:not_null" on the User virtual "name" column should match users where
+     * at least one constituent column (first_name, last_name) is not null.
+     * All factory-created users have a first_name, so they should all appear.
+     */
+    public function test_is_null_filter_on_virtual_name_column()
+    {
+        $ts = now()->timestamp;
+
+        $userWithName = User::factory()->create([
+            'first_name' => 'VirtNullFirst'.$ts,
+            'last_name' => 'VirtNullLast'.$ts,
+        ]);
+
+        $superuser = User::factory()->superuser()->create();
+
+        // is:not_null → users with at least first_name set should be returned.
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.users.index', ['filter' => json_encode(['name' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // The user with an actual name must appear.
+        $this->assertContains((int) $userWithName->id, $returnedIds);
+
+        // The acting superuser itself also has a name, so it should appear too.
+        $this->assertContains((int) $superuser->id, $returnedIds);
+    }
+
+    /**
+     * "is:null" on a searchable relation key should return records that have no
+     * related record (equivalent to doesntHave).
+     * "is:not_null" should return only records that have a related record.
+     */
+    public function test_is_null_filter_on_relation_key()
+    {
+        $ts = now()->timestamp;
+
+        $supplier = Supplier::factory()->create(['name' => 'RelNullSupplier'.$ts]);
+        $withSupplier = Asset::factory()->create(['supplier_id' => $supplier->id]);
+        $withoutSupplier = Asset::factory()->create(['supplier_id' => null]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        // is:null on supplier → assets with no supplier
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['supplier' => 'is:null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $withoutSupplier->id, $returnedIds);
+        $this->assertNotContains((int) $withSupplier->id, $returnedIds);
+
+        // is:not_null on supplier → assets with a supplier
+        $response2 = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['supplier' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedIds2 = collect($response2->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $withSupplier->id, $returnedIds2);
+        $this->assertNotContains((int) $withoutSupplier->id, $returnedIds2);
+    }
+
+    /**
      * Test custom field partial match via filter.
      */
     public function test_custom_field_filter_partial_match()
@@ -710,5 +875,274 @@ class SearchableTraitTest extends TestCase
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * "is:{value}" on a direct attribute should match records where the column equals
+     * the value exactly — no partial/wildcard matching.
+     */
+    public function test_exact_match_filter_on_direct_attribute()
+    {
+        $ts = now()->timestamp;
+
+        $exact = Asset::factory()->create(['notes' => 'ExactNote'.$ts]);
+        $partial = Asset::factory()->create(['notes' => 'ExactNote'.$ts.'SomeSuffix']);
+        Asset::factory()->create(['notes' => 'Unrelated'.$ts]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        // is:ExactNote{ts} should only return the exact match, not the partial one.
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:ExactNote'.$ts])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $exact->id, $returnedIds);
+        $this->assertNotContains((int) $partial->id, $returnedIds);
+    }
+
+    /**
+     * "is:{value}" on a relation key should match records where the related model's
+     * column equals the value exactly.
+     */
+    public function test_exact_match_filter_on_relation()
+    {
+        $ts = now()->timestamp;
+
+        $exactSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts]);
+        $partialSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts.'Extra']);
+
+        $exactAsset = Asset::factory()->create(['supplier_id' => $exactSupplier->id]);
+        $partialAsset = Asset::factory()->create(['supplier_id' => $partialSupplier->id]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['supplier' => 'is:ExactSupplier'.$ts]),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $exactAsset->id, $returnedIds);
+        $this->assertNotContains((int) $partialAsset->id, $returnedIds);
+    }
+
+    /**
+     * "is:{value}" on the User virtual "name" column should match only users whose
+     * CONCAT(first_name, ' ', last_name) equals the value exactly.
+     */
+    public function test_exact_match_filter_on_virtual_name_column()
+    {
+        $ts = now()->timestamp;
+
+        $exactUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smith'.$ts]);
+        $partialUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smithson'.$ts]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['name' => 'is:John'.$ts.' Smith'.$ts]),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $exactUser->id, $returnedIds);
+        $this->assertNotContains((int) $partialUser->id, $returnedIds);
+    }
+
+    /**
+     * Confirm that the reserved "is:null" and "is:not_null" tokens are still honoured
+     * as null checks even after adding generic "is:{value}" exact-match support.
+     */
+    public function test_is_null_tokens_still_work_after_exact_match_addition()
+    {
+        $withNotes = Asset::factory()->create(['notes' => 'SomeValue'.now()->timestamp]);
+        $withoutNotes = Asset::factory()->create(['notes' => null]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        // is:null should still mean IS NULL, not exact match on the string "null".
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $withoutNotes->id, $returnedIds);
+        $this->assertNotContains((int) $withNotes->id, $returnedIds);
+    }
+
+    /**
+     * Test negation filter using "!" prefix on a direct attribute.
+     * filter={"name":"!Dell"} should return all assets whose name does NOT contain "Dell".
+     */
+    public function test_negation_filter_with_bang_prefix_on_attribute()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'NEG-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'NEG-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion', 'asset_tag' => 'NEG-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['name' => '!Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Test negation filter using "not:" prefix on a direct attribute.
+     * filter={"name":"not:Dell"} should behave identically to "!Dell".
+     */
+    public function test_negation_filter_with_not_prefix_on_attribute()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'NOTP-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'NOTP-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion', 'asset_tag' => 'NOTP-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['name' => 'not:Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Test that combining a positive filter and a negation filter works correctly.
+     * filter={"asset_tag":"COMBO","name":"!Dell"} should return assets tagged COMBO that
+     * are NOT named Dell.
+     */
+    public function test_combined_positive_and_negation_filters()
+    {
+        Asset::factory()->create(['name' => 'MacBook Pro', 'asset_tag' => 'COMBO-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'COMBO-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion',  'asset_tag' => 'OTHER-001']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['asset_tag' => 'COMBO', 'name' => '!Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Test negation filter on a relation attribute.
+     * filter={"manufacturer":"!Apple"} should return assets whose manufacturer does NOT
+     * contain "Apple".
+     */
+    public function test_negation_filter_on_relation()
+    {
+        $apple = Manufacturer::factory()->create(['name' => 'Apple']);
+        $dell = Manufacturer::factory()->create(['name' => 'Dell']);
+
+        $appleModel = AssetModel::factory()->create(['manufacturer_id' => $apple->id]);
+        $dellModel = AssetModel::factory()->create(['manufacturer_id' => $dell->id]);
+
+        Asset::factory()->create(['model_id' => $appleModel->id, 'asset_tag' => 'REL-001']);
+        Asset::factory()->create(['model_id' => $dellModel->id,  'asset_tag' => 'REL-002']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['manufacturer' => '!Apple']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Test negation filter on a custom field.
+     * filter={"_snipeit_cpu_X":"!Intel"} should return assets where the CPU field
+     * does NOT contain "Intel".
+     */
+    public function test_negation_filter_on_custom_field()
+    {
+        $field = CustomField::factory()->cpu()->create();
+        $dbColumn = $field->db_column_name();
+
+        Asset::factory()->create([$dbColumn => '3.2GHz Intel Core i9', 'asset_tag' => 'CF-001']);
+        Asset::factory()->create([$dbColumn => '2.4GHz AMD Ryzen 7',   'asset_tag' => 'CF-002']);
+
+        Asset::flushCustomFieldFilterMap();
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode([$dbColumn => '!Intel']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Negation filter "!blah" on the "location" relation key for Assets
+     * should exclude assets with a location name containing "blah".
+     */
+    public function test_negation_filter_on_asset_location_relation()
+    {
+        $ts = now()->timestamp;
+
+        $blahLocation = Location::factory()->create(['name' => 'Blah Office '.$ts]);
+        $safeLocation = Location::factory()->create(['name' => 'Safe Office '.$ts]);
+
+        $blahAsset = Asset::factory()->create(['location_id' => $blahLocation->id]);
+        $safeAsset = Asset::factory()->create(['location_id' => $safeLocation->id]);
+
+        $response = $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['location' => '!Blah']),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // Asset in the "blah" location must NOT appear.
+        $this->assertNotContains((int) $blahAsset->id, $returnedIds);
+        // Asset in a different location MUST appear.
+        $this->assertContains((int) $safeAsset->id, $returnedIds);
+    }
+
+    /**
+     * Negation filter "!blah" on the "location" relation key for Users
+     * should exclude users whose location name contains "blah".
+     *
+     * The User model stores location via the "userloc" Eloquent relation
+     * (not "location"), so a "location" → "userloc" alias must be registered.
+     */
+    public function test_negation_filter_on_user_location_relation()
+    {
+        $ts = now()->timestamp;
+
+        $blahLocation = Location::factory()->create([
+            'name' => 'Blah Floor '.$ts,
+            'address' => 'Safe Address '.$ts,
+        ]);
+        $safeLocation = Location::factory()->create([
+            'name' => 'Safe Floor '.$ts,
+            // Regression guard: structured filter on "location" should not inspect address.
+            'address' => 'Blah Address '.$ts,
+        ]);
+
+        $blahUser = User::factory()->create(['location_id' => $blahLocation->id]);
+        $safeUser = User::factory()->create(['location_id' => $safeLocation->id]);
+        $nullLocationUser = User::factory()->create(['location_id' => null]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.users.index', [
+                'filter' => json_encode(['location' => '!Blah']),
+            ]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        // The user in the "blah" location must NOT appear.
+        $this->assertNotContains((int) $blahUser->id, $returnedIds);
+        // The user in a safe location MUST appear.
+        $this->assertContains((int) $safeUser->id, $returnedIds);
+        // Users with no location should also be included for negated filters.
+        $this->assertContains((int) $nullLocationUser->id, $returnedIds);
     }
 }
