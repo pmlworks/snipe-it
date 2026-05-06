@@ -182,6 +182,20 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     ];
 
     /**
+     * Virtual column aliases that map a single filter key to a set of real columns
+     * searched via CONCAT (SQL) so that, for example, filtering by "name" searches
+     * across both first_name and last_name together.
+     *
+     * Because "name" is not a real column on the users table we cannot add it to
+     * $searchableAttributes; this map bridges that gap for structured filter queries.
+     *
+     * @var array<string, list<string>>
+     */
+    protected $searchableVirtualColumns = [
+        'name' => ['first_name', 'last_name'],
+    ];
+
+    /**
      * This sets the name property on the user. It's not a real field in the database
      * (since we use first_name and last_name), but the Laravel mailable method
      * uses this to determine the name of the user to send emails to.

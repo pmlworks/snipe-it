@@ -207,28 +207,50 @@ trait Searchable
     }
 
     /**
-     * Parse a raw filter value for an optional negation prefix.
+     * Parse a raw filter value for an optional negation, null-check, or exact-match prefix.
      *
-     * Supported negation syntax (case-insensitive prefix):
-     *   - "!flarb"    → negate = true, value = "flarb"
-     *   - "not:flarb" → negate = true, value = "flarb"
+     * Supported syntax:
+     *   - "!flarb"      → operator = not_like,    value = "flarb"
+     *   - "not:flarb"   → operator = not_like,    value = "flarb"
+     *   - "is:null"     → operator = is_null,      value = ""   (reserved token)
+     *   - "is:not_null" → operator = is_not_null,  value = ""   (reserved token)
+     *   - "is:flarb"    → operator = exact,        value = "flarb"  (exact equality)
      *
-     * Used by applySingleSearchFilter so callers can pass values like
-     * {"gleeb": "!flarb"} or {"gleeb": "not:flarb"} in the filter JSON.
+     * `is:null` and `is:not_null` are checked before the generic `is:` prefix so they always
+     * resolve to their dedicated null-check operators regardless of casing.
      *
-     * @return array{value: string, negate: bool}
+     * The legacy `negate` boolean is preserved alongside `operator` so that
+     * existing callers that only check `negate` still work correctly.
+     *
+     * @return array{value: string, negate: bool, operator: string}
      */
     private function parseFilterValue(string $raw): array
     {
+        $lower = strtolower($raw);
+
+        if ($lower === 'is:null') {
+            return ['value' => '', 'negate' => false, 'operator' => 'is_null'];
+        }
+
+        if ($lower === 'is:not_null') {
+            return ['value' => '', 'negate' => false, 'operator' => 'is_not_null'];
+        }
+
+        if (str_starts_with($lower, 'is:')) {
+            $exactValue = substr($raw, 3);
+
+            return ['value' => $exactValue, 'negate' => false, 'operator' => 'exact'];
+        }
+
         if (str_starts_with($raw, '!')) {
-            return ['value' => substr($raw, 1), 'negate' => true];
+            return ['value' => substr($raw, 1), 'negate' => true, 'operator' => 'not_like'];
         }
 
-        if (str_starts_with(strtolower($raw), 'not:')) {
-            return ['value' => substr($raw, 4), 'negate' => true];
+        if (str_starts_with($lower, 'not:')) {
+            return ['value' => substr($raw, 4), 'negate' => true, 'operator' => 'not_like'];
         }
 
-        return ['value' => $raw, 'negate' => false];
+        return ['value' => $raw, 'negate' => false, 'operator' => 'like'];
     }
 
     /**
@@ -248,6 +270,13 @@ trait Searchable
         $parsed = $this->parseFilterValue($filterValue);
         $value = $parsed['value'];
         $negate = $parsed['negate'];
+        $operator = $parsed['operator'];
+
+        // IS NULL / IS NOT NULL are handled before value-based filtering,
+        // because there is no meaningful value to pass to LIKE for them.
+        if ($operator === 'is_null' || $operator === 'is_not_null') {
+            return $this->applyNullFilter($query, $filterKey, $operator === 'is_null', $boolean);
+        }
 
         // Skip gracefully if stripping the prefix leaves an empty value.
         if ($value === '') {
@@ -262,7 +291,42 @@ trait Searchable
         $likeOperator = $negate ? 'NOT LIKE' : 'LIKE';
 
         if (in_array($filterKey, $searchableAttributes, true)) {
-            $query->{$whereMethod}($table.'.'.$filterKey, $likeOperator, '%'.$value.'%');
+            if ($operator === 'exact') {
+                $query->{$whereMethod}($table.'.'.$filterKey, '=', $value);
+            } else {
+                $query->{$whereMethod}($table.'.'.$filterKey, $likeOperator, '%'.$value.'%');
+            }
+
+            return $query;
+        }
+
+        // Handle virtual columns — keys that are not real DB columns but map to a set
+        // of real columns searched via CONCAT (e.g. "name" → first_name + last_name on User).
+        $virtualColumns = $this->getSearchableVirtualColumns();
+
+        if (array_key_exists($filterKey, $virtualColumns)) {
+            $qualifiedColumns = array_map(
+                fn ($col) => $table.'.'.$col,
+                $virtualColumns[$filterKey]
+            );
+
+            if ($operator === 'exact') {
+                // Exact match on the full CONCAT'd value, e.g. "John Smith" matches only
+                // users whose first_name + ' ' + last_name equals exactly "John Smith".
+                $concatSql = $this->buildMultipleColumnSearch($qualifiedColumns);
+                $concatSql = str_replace(' LIKE ?', ' = ?', $concatSql);
+                $rawMethod = $boolean === 'or' ? 'orWhereRaw' : 'whereRaw';
+                $query->{$rawMethod}($concatSql, [$value]);
+            } else {
+                $concatSql = $this->buildMultipleColumnSearch($qualifiedColumns);
+
+                if ($negate) {
+                    $concatSql = str_replace(' LIKE ?', ' NOT LIKE ?', $concatSql);
+                }
+
+                $rawMethod = $boolean === 'or' ? 'orWhereRaw' : 'whereRaw';
+                $query->{$rawMethod}($concatSql, ['%'.$value.'%']);
+            }
 
             return $query;
         }
@@ -297,23 +361,33 @@ trait Searchable
         $relationColumns = (array) $searchableRelations[$resolvedRelationKey];
         $relationMethod = $boolean === 'or' ? 'orWhereHas' : 'whereHas';
 
-        $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $value, $likeOperator) {
+        $query->{$relationMethod}($resolvedRelationKey, function (Builder $relationQuery) use ($resolvedRelationKey, $relationColumns, $value, $likeOperator, $operator) {
             $relationTable = $this->getRelationTable($resolvedRelationKey);
             $firstConditionAdded = false;
 
             foreach ($relationColumns as $relationColumn) {
                 if (! $firstConditionAdded) {
-                    $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
+                    if ($operator === 'exact') {
+                        $relationQuery->where($relationTable.'.'.$relationColumn, '=', $value);
+                    } else {
+                        $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
+                    }
                     $firstConditionAdded = true;
 
                     continue;
                 }
 
-                // For negation we AND the NOT LIKE conditions so all columns must not match.
-                // For normal LIKE we OR them so any column matching is sufficient.
-                $likeOperator === 'NOT LIKE'
-                    ? $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%')
-                    : $relationQuery->orWhere($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
+                if ($operator === 'exact') {
+                    // For exact matches across multiple columns, OR them — any column matching
+                    // the exact value is sufficient (e.g. name OR slug).
+                    $relationQuery->orWhere($relationTable.'.'.$relationColumn, '=', $value);
+                } elseif ($likeOperator === 'NOT LIKE') {
+                    // For negation we AND the NOT LIKE conditions so all columns must not match.
+                    $relationQuery->where($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
+                } else {
+                    // For normal LIKE we OR them so any column matching is sufficient.
+                    $relationQuery->orWhere($relationTable.'.'.$relationColumn, $likeOperator, '%'.$value.'%');
+                }
             }
 
             if (($resolvedRelationKey === 'adminuser') || ($resolvedRelationKey === 'user')) {
@@ -323,9 +397,14 @@ trait Searchable
                     'users.display_name',
                 ]);
 
-                $likeOperator === 'NOT LIKE'
-                    ? $relationQuery->whereRaw(str_replace('LIKE', 'NOT LIKE', $concatSql), ["%{$value}%"])
-                    : $relationQuery->orWhereRaw($concatSql, ["%{$value}%"]);
+                if ($operator === 'exact') {
+                    $concatSql = str_replace(' LIKE ?', ' = ?', $concatSql);
+                    $relationQuery->orWhereRaw($concatSql, [$value]);
+                } elseif ($likeOperator === 'NOT LIKE') {
+                    $relationQuery->whereRaw(str_replace('LIKE', 'NOT LIKE', $concatSql), ["%{$value}%"]);
+                } else {
+                    $relationQuery->orWhereRaw($concatSql, ["%{$value}%"]);
+                }
             }
         });
 
@@ -488,6 +567,85 @@ trait Searchable
         $likeOperator = $negate ? 'NOT LIKE' : 'LIKE';
 
         return $query->{$havingMethod}($countAlias, $likeOperator, '%'.$filterValue.'%');
+    }
+
+    /**
+     * Apply an IS NULL / IS NOT NULL filter for the given filter key.
+     *
+     * Supported targets:
+     *
+     *   Direct attributes  → WHERE col IS [NOT] NULL
+     *
+     *   Virtual columns    → IS NULL:     all constituent columns must be null
+     *                        IS NOT NULL: at least one constituent column must not be null
+     *
+     *   Relation keys      → IS NULL:     doesntHave (no related record)
+     *                        IS NOT NULL: whereHas   (has a related record)
+     *
+     * Any unrecognised key is silently ignored.
+     */
+    private function applyNullFilter(Builder $query, string $filterKey, bool $isNull, string $boolean = 'and'): Builder
+    {
+        $table = $this->getTable();
+        $searchableAttributes = $this->getSearchableAttributes();
+
+        // Direct attribute column.
+        if (in_array($filterKey, $searchableAttributes, true)) {
+            $method = match (true) {
+                $isNull && $boolean === 'or' => 'orWhereNull',
+                $isNull                      => 'whereNull',
+                $boolean === 'or'            => 'orWhereNotNull',
+                default                      => 'whereNotNull',
+            };
+
+            $query->{$method}($table.'.'.$filterKey);
+
+            return $query;
+        }
+
+        // Virtual columns (e.g. 'name' → ['first_name', 'last_name'] on User).
+        $virtualColumns = $this->getSearchableVirtualColumns();
+
+        if (array_key_exists($filterKey, $virtualColumns)) {
+            $qualifiedColumns = array_map(
+                fn ($col) => $table.'.'.$col,
+                $virtualColumns[$filterKey]
+            );
+
+            if ($isNull) {
+                // All constituent columns must be null (= no name at all).
+                foreach ($qualifiedColumns as $col) {
+                    $query->whereNull($col);
+                }
+            } else {
+                // At least one constituent column must have a value.
+                $query->where(function (Builder $sub) use ($qualifiedColumns): void {
+                    foreach ($qualifiedColumns as $col) {
+                        $sub->orWhereNotNull($col);
+                    }
+                });
+            }
+
+            return $query;
+        }
+
+        // Relation key: no related record = "null", has a related record = "not null".
+        $searchableRelations = $this->getSearchableRelations();
+        $resolvedRelationKey = $this->resolveSearchableRelationKey($filterKey, $searchableRelations);
+
+        if ($resolvedRelationKey !== null && ! $this->isAssignedToRelationKey($resolvedRelationKey)) {
+            if ($isNull) {
+                $method = $boolean === 'or' ? 'orDoesntHave' : 'doesntHave';
+                $query->{$method}($resolvedRelationKey);
+            } else {
+                $method = $boolean === 'or' ? 'orWhereHas' : 'whereHas';
+                $query->{$method}($resolvedRelationKey);
+            }
+
+            return $query;
+        }
+
+        return $query;
     }
 
     /**
@@ -748,6 +906,20 @@ trait Searchable
     private function getSearchableCounts(): array
     {
         return $this->searchableCounts ?? [];
+    }
+
+    /**
+     * Get virtual column aliases defined on the model.
+     *
+     * These are filter keys that map to a set of real columns searched via
+     * CONCAT — for example, "name" → ['first_name', 'last_name'] on User,
+     * because "name" is not a real database column on that table.
+     *
+     * @return array<string, list<string>>
+     */
+    private function getSearchableVirtualColumns(): array
+    {
+        return $this->searchableVirtualColumns ?? [];
     }
 
     /**
