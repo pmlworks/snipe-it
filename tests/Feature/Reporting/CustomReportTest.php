@@ -88,30 +88,26 @@ class CustomReportTest extends TestCase implements TestsPermissionsRequirement
 
         $this->actingAs($superUser)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyA)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyB)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->settings->enableMultipleFullCompanySupport();
 
         $this->actingAs($superUser)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyA)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
             ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertDontSeeTextInStreamedResponse('Asset B');
+            ->assertDontSeeTextInStreamedResponse(['Asset B']);
 
         $this->actingAs($userInCompanyB)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])

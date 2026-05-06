@@ -152,12 +152,18 @@ trait CustomTestMacros
 
         TestResponse::macro(
             'assertSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertTrue(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->flatten()
-                        ->contains($needle)
-                );
+            function (array|string $needles): self {
+                if (! is_array($needles)) {
+                    $needles = [$needles];
+                }
+
+                $records = collect(Reader::createFromString($this->streamedContent())->getRecords())->flatten();
+
+                foreach ($needles as $needle) {
+                    Assert::assertTrue(
+                        $records->contains($needle)
+                    );
+                }
 
                 return $this;
             }
@@ -165,12 +171,18 @@ trait CustomTestMacros
 
         TestResponse::macro(
             'assertDontSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertFalse(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->flatten()
-                        ->contains($needle)
-                );
+            function (array|string $needles): self {
+                if (! is_array($needles)) {
+                    $needles = [$needles];
+                }
+
+                $records = collect(Reader::createFromString($this->streamedContent())->getRecords())->flatten();
+
+                foreach ($needles as $needle) {
+                    Assert::assertFalse(
+                        $records->contains($needle)
+                    );
+                }
 
                 return $this;
             }
