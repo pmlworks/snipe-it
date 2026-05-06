@@ -187,5 +187,14 @@ trait CustomTestMacros
                 return $this;
             }
         );
+
+        TestResponse::macro(
+            'assertCsvHeader',
+            function () {
+                $this->assertHeader('content-type', 'text/csv; charset=utf-8');
+
+                return $this;
+            }
+        );
     }
 }

@@ -93,7 +93,7 @@ class CustomComponentReportTest extends TestCase
                 'asset_serial' => '1',
             ])
             ->assertOk()
-            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse([
                 trans('general.id'),
                 trans('general.company'),
@@ -135,7 +135,7 @@ class CustomComponentReportTest extends TestCase
                 // company and category intentionally omitted
             ])
             ->assertOk()
-            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertCsvHeader()
             ->assertDontSeeTextInStreamedResponse([
                 trans('general.company'),
                 trans('general.category'),
@@ -164,7 +164,7 @@ class CustomComponentReportTest extends TestCase
                 ],
             ])
             ->assertOk()
-            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Component for Company A')
             ->assertDontSeeTextInStreamedResponse('Component for Company B');
     }
@@ -193,7 +193,7 @@ class CustomComponentReportTest extends TestCase
         $this->actingAs(User::factory()->canViewReports()->create())
             ->post(route('reports.custom.component.run'), $data)
             ->assertOk()
-            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Category for Company A')
             ->assertDontSeeTextInStreamedResponse('Category for Company B');
     }
