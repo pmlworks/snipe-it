@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Reporting\Custom;
 
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Component;
 use App\Models\ReportTemplate;
@@ -171,6 +172,30 @@ class CustomComponentReportTest extends TestCase
     public function test_limiting_by_category()
     {
         $this->markTestIncomplete();
+
+        [$categoryA, $categoryB] = Category::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['category_type' => $categoryA->id, 'name' => 'Component for Category A'],
+                ['category_type' => $categoryB->id, 'name' => 'Component for Category B'],
+            )
+            ->create();
+
+        $data = [
+            'category' => '1',
+            'by_category_id' => [
+                $categoryA->id,
+            ],
+        ];
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), $data)
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertSeeTextInStreamedResponse('Category for Company A')
+            ->assertDontSeeTextInStreamedResponse('Category for Company B');
     }
 
     public function test_limiting_by_manufacturer()
