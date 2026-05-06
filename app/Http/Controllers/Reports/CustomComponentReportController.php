@@ -52,15 +52,13 @@ class CustomComponentReportController extends Controller
 
             $headerRow = $this->generateHeaders($request);
 
-            $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-            Log::debug('Starting headers: '.$executionTime);
+            Log::debug('Adding headers: '.$this->getExecutionTime());
             fputcsv($handle, $headerRow);
-            $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
-            Log::debug('Added headers: '.$executionTime);
+            Log::debug('Added headers: '.$this->getExecutionTime());
 
             // Close the output stream
             fclose($handle);
-            $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
+            $executionTime = $this->getExecutionTime();
             Log::debug('-- SCRIPT COMPLETED IN '.$executionTime);
 
         }, 200, [
@@ -69,6 +67,11 @@ class CustomComponentReportController extends Controller
         ]);
 
         return $response;
+    }
+
+    private function getExecutionTime(): mixed
+    {
+        return microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
     }
 
     private function generateHeaders(Request $request): array
