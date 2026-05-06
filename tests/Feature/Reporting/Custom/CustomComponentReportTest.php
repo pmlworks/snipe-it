@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Reporting\Custom;
 
+use App\Models\Company;
+use App\Models\Component;
 use App\Models\ReportTemplate;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Group;
@@ -63,6 +65,28 @@ class CustomComponentReportTest extends TestCase
     public function test_custom_component_report()
     {
         $this->markTestIncomplete();
+
+        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['company_id' => $companyA->id, 'name' => 'Component for Company A'],
+                ['company_id' => $companyB->id, 'name' => 'Component for Company B'],
+            )
+            ->create();
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), [
+                'company' => '1',
+                'by_company_id' => [
+                    $companyA->id,
+                ],
+            ])
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertSeeTextInStreamedResponse('Component for Company A')
+            ->assertDontSeeTextInStreamedResponse('Component for Company B');
     }
 
     public function test_custom_component_report_headers()
