@@ -62,33 +62,6 @@ class CustomComponentReportTest extends TestCase
         $this->assertTrue($viewTemplateNames->doesntContain('Another User: Component'));
     }
 
-    public function test_custom_component_report()
-    {
-        $this->markTestIncomplete();
-
-        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
-
-        Component::factory()
-            ->count(2)
-            ->sequence(
-                ['company_id' => $companyA->id, 'name' => 'Component for Company A'],
-                ['company_id' => $companyB->id, 'name' => 'Component for Company B'],
-            )
-            ->create();
-
-        $this->actingAs(User::factory()->canViewReports()->create())
-            ->post(route('reports.custom.component.run'), [
-                'company' => '1',
-                'by_company_id' => [
-                    $companyA->id,
-                ],
-            ])
-            ->assertOk()
-            ->assertHeader('content-type', 'text/csv; charset=utf-8')
-            ->assertSeeTextInStreamedResponse('Component for Company A')
-            ->assertDontSeeTextInStreamedResponse('Component for Company B');
-    }
-
     public function test_custom_component_report_headers()
     {
         $this->actingAs(User::factory()->canViewReports()->create())
@@ -168,7 +141,119 @@ class CustomComponentReportTest extends TestCase
             ]);
     }
 
-    public function test_custom_component_report_content()
+    public function test_custom_limiting_by_company()
+    {
+        $this->markTestIncomplete();
+
+        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
+
+        Component::factory()
+            ->count(2)
+            ->sequence(
+                ['company_id' => $companyA->id, 'name' => 'Component for Company A'],
+                ['company_id' => $companyB->id, 'name' => 'Component for Company B'],
+            )
+            ->create();
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post(route('reports.custom.component.run'), [
+                'company' => '1',
+                'by_company_id' => [
+                    $companyA->id,
+                ],
+            ])
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8')
+            ->assertSeeTextInStreamedResponse('Component for Company A')
+            ->assertDontSeeTextInStreamedResponse('Component for Company B');
+    }
+
+    public function test_limiting_by_category()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_manufacturer()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_supplier()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_location()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_name()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_model_number()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_order_number()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_purchase_date()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_quantity()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_minimum_quantity()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_unit_cost()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_checkout_date()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_created_at()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_updated_at()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_updated_before()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_excluding_deleted_components()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_including_deleted_components()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_limiting_by_only_deleted_components()
     {
         $this->markTestIncomplete();
     }
