@@ -156,6 +156,8 @@ class CustomComponentReportTest extends TestCase
     public function test_custom_component_report_contents()
     {
         $this->markTestIncomplete();
+
+        // todo: ensure only the items checked are included in the output
     }
 
     public function test_limiting_by_category()
