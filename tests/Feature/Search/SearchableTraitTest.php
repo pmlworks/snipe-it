@@ -1145,4 +1145,56 @@ class SearchableTraitTest extends TestCase
         // Users with no location should also be included for negated filters.
         $this->assertContains((int) $nullLocationUser->id, $returnedIds);
     }
+
+    /**
+     * Regression: structured AND filter should honor model_number and location together.
+     */
+    public function test_asset_structured_filter_and_operator_with_model_number_and_location()
+    {
+        $locationA = Location::factory()->create(['name' => 'HQ-East']);
+        $locationB = Location::factory()->create(['name' => 'HQ-West']);
+        $manufacturer = Manufacturer::factory()->create(['name' => 'FilterCo']);
+
+        $modelMatch = AssetModel::factory()->create([
+            'manufacturer_id' => $manufacturer->id,
+            'model_number' => 'MODEL-111',
+        ]);
+
+        $modelOther = AssetModel::factory()->create([
+            'manufacturer_id' => $manufacturer->id,
+            'model_number' => 'MODEL-222',
+        ]);
+
+        // ✅ Matches both model_number and location.
+        Asset::factory()->create([
+            'asset_tag' => 'AND-MATCH-1',
+            'model_id' => $modelMatch->id,
+            'location_id' => $locationA->id,
+        ]);
+
+        // ❌ Matches location only.
+        Asset::factory()->create([
+            'asset_tag' => 'AND-LOC-ONLY',
+            'model_id' => $modelOther->id,
+            'location_id' => $locationA->id,
+        ]);
+
+        // ❌ Matches model_number only.
+        Asset::factory()->create([
+            'asset_tag' => 'AND-MODEL-ONLY',
+            'model_id' => $modelMatch->id,
+            'location_id' => $locationB->id,
+        ]);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode([
+                    'model_number' => 'MODEL-111',
+                    'location' => 'HQ-East',
+                ]),
+                'filter_operator' => 'and',
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
 }
