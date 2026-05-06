@@ -17,7 +17,7 @@ trait CustomTestMacros
             function (string $needle): self {
                 Assert::assertTrue(
                     collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
+                        ->flatten()
                         ->contains($needle)
                 );
 
@@ -30,7 +30,7 @@ trait CustomTestMacros
             function (string $needle): self {
                 Assert::assertFalse(
                     collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
+                        ->flatten()
                         ->contains($needle)
                 );
 
