@@ -1,13 +1,13 @@
 <?php
 
-namespace Feature\Console\Commands;
+namespace Tests\Feature\Console\Commands;
 
 use App\Models\Asset;
-use Tests\TestCase;
 use App\Models\CheckoutAcceptance;
 use App\Models\Company;
 use App\Models\User;
 use Storage;
+use Tests\TestCase;
 
 class PurgeEulaPDFTest extends TestCase
 {
@@ -77,7 +77,7 @@ class PurgeEulaPDFTest extends TestCase
         ]);
 
         $targetAcceptance = CheckoutAcceptance::factory()->create([
-            'checkoutable_type' => \App\Models\Asset::class,
+            'checkoutable_type' => Asset::class,
             'checkoutable_id' => $targetAsset->id,
             'assigned_to_id' => $userInTargetCompany->id,
             'signature_filename' => 'target-signature.png',
@@ -86,7 +86,7 @@ class PurgeEulaPDFTest extends TestCase
         ]);
 
         $otherAcceptance = CheckoutAcceptance::factory()->create([
-            'checkoutable_type' => \App\Models\Asset::class,
+            'checkoutable_type' => Asset::class,
             'checkoutable_id' => $otherAsset->id,
             'assigned_to_id' => $userInOtherCompany->id,
             'signature_filename' => 'other-signature.png',
@@ -177,7 +177,6 @@ class PurgeEulaPDFTest extends TestCase
             'stored_eula_file' => 'active-user-eula.pdf',
             'updated_at' => $intervalDate->copy()->subDay(),
         ]);
-
 
         $this->artisan('snipeit:purge-eula-pdfs', [
             '--older-than-days' => 0,
