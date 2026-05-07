@@ -9,9 +9,7 @@ use App\Models\ReportTemplate;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Testing\TestResponse;
 use League\Csv\Reader;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Concerns\TestsPermissionsRequirement;
 use Tests\TestCase;
@@ -19,37 +17,6 @@ use Tests\TestCase;
 #[Group('custom-reporting')]
 class CustomReportTest extends TestCase implements TestsPermissionsRequirement
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        TestResponse::macro(
-            'assertSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertTrue(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
-                        ->contains($needle)
-                );
-
-                return $this;
-            }
-        );
-
-        TestResponse::macro(
-            'assertDontSeeTextInStreamedResponse',
-            function (string $needle) {
-                Assert::assertFalse(
-                    collect(Reader::createFromString($this->streamedContent())->getRecords())
-                        ->pluck(0)
-                        ->contains($needle)
-                );
-
-                return $this;
-            }
-        );
-    }
-
     public function test_requires_permission()
     {
         $this->actingAs(User::factory()->create())
@@ -121,30 +88,26 @@ class CustomReportTest extends TestCase implements TestsPermissionsRequirement
 
         $this->actingAs($superUser)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyA)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyB)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->settings->enableMultipleFullCompanySupport();
 
         $this->actingAs($superUser)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
-            ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertSeeTextInStreamedResponse('Asset B');
+            ->assertSeeTextInStreamedResponse(['Asset A', 'Asset B']);
 
         $this->actingAs($userInCompanyA)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
             ->assertSeeTextInStreamedResponse('Asset A')
-            ->assertDontSeeTextInStreamedResponse('Asset B');
+            ->assertDontSeeTextInStreamedResponse(['Asset B']);
 
         $this->actingAs($userInCompanyB)
             ->post('reports/custom', ['asset_name' => '1', 'asset_tag' => '1', 'serial' => '1'])
