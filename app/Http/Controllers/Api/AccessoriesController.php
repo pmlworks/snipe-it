@@ -14,6 +14,7 @@ use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
+use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -155,6 +156,7 @@ class AccessoriesController extends Controller
     {
         $accessory = new Accessory;
         $accessory->fill($request->all());
+        $accessory->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $accessory = $request->handleImages($accessory);
 
         if ($accessory->save()) {
@@ -248,6 +250,7 @@ class AccessoriesController extends Controller
         $this->authorize('update', Accessory::class);
         $accessory = Accessory::findOrFail($id);
         $accessory->fill($request->all());
+        $accessory->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $accessory = $request->handleImages($accessory);
 
         if ($accessory->save()) {

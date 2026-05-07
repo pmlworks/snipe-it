@@ -9,6 +9,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Transformers\ActionlogsTransformer;
 use App\Http\Transformers\ComponentsTransformer;
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Component;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
@@ -165,6 +166,7 @@ class ComponentsController extends Controller
         $this->authorize('create', Component::class);
         $component = new Component;
         $component->fill($request->all());
+        $component->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $component = $request->handleImages($component);
 
         if ($component->save()) {
@@ -205,6 +207,7 @@ class ComponentsController extends Controller
         $this->authorize('update', Component::class);
         $component = Component::findOrFail($id);
         $component->fill($request->all());
+        $component->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $component = $request->handleImages($component);
 
         if ($component->save()) {
