@@ -262,8 +262,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_location()
     {
-        $this->markTestIncomplete();
-
         [$locationA, $locationB] = Location::factory()->count(2)->create()->all();
 
         Component::factory()

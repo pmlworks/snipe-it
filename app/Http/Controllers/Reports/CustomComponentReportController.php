@@ -64,6 +64,7 @@ class CustomComponentReportController extends Controller
                     'company',
                     'manufacturer',
                     'supplier',
+                    'location',
                 ]);
 
             $localConstraints = [
@@ -81,6 +82,7 @@ class CustomComponentReportController extends Controller
                 'by_category_id' => 'components.category_id',
                 'by_manufacturer_id' => 'components.manufacturer_id',
                 'by_supplier_id' => 'components.supplier_id',
+                'by_location_id' => 'components.location_id',
             ];
 
             foreach ($foreignConstraints as $formKey => $column) {
@@ -126,6 +128,10 @@ class CustomComponentReportController extends Controller
 
                     if ($request->filled('supplier')) {
                         $row[] = $component?->supplier->name;
+                    }
+
+                    if ($request->filled('location')) {
+                        $row[] = $component?->location->name;
                     }
 
                     // CSV_ESCAPE_FORMULAS is set to false in the .env
