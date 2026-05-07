@@ -149,21 +149,39 @@ class CustomComponentReportController extends Controller
                         $row[] = $component->model_number;
                     }
 
+                    // todo: serial
+                    // todo: purchase date
+                    // todo: quantity
+                    // todo: min quantity
+                    // todo: unit cost
+
+                    if ($request->filled('order')) {
+                        $row[] = $component->order_number;
+                    }
+
                     if ($request->filled('supplier')) {
                         $row[] = $component?->supplier->name;
                     }
 
                     if ($request->filled('location')) {
                         $row[] = $component?->location->name;
+                        // todo: address
+                        // todo: city
+                        // todo: state
+                        // todo: country
+                        // todo: zip
                     }
 
-                    if ($request->filled('name')) {
-                        $row[] = $component->name;
-                    }
+                    // todo: checkout date
+                    // todo: created_at
+                    // todo: updated at
+                    // todo: deleted
+                    // todo: notes
 
-                    if ($request->filled('order')) {
-                        $row[] = $component->order_number;
-                    }
+                    // todo: checkout to: asset name
+                    // todo: checkout to: asset tag
+                    // todo: checkout to: asset company
+                    // todo: checkout to: asset serial
 
                     // CSV_ESCAPE_FORMULAS is set to false in the .env
                     if (config('app.escape_formulas') === false) {
