@@ -177,6 +177,36 @@ class CustomReportTest extends TestCase implements TestsPermissionsRequirement
             ->assertDontSeeTextInStreamedResponse('Asset E');
     }
 
+    public function test_can_limit_custom_report_to_assigned_assets(): void
+    {
+        Asset::factory()->assignedToUser()->create(['name' => 'Assigned Asset']);
+        Asset::factory()->create(['name' => 'Unassigned Asset']);
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post('reports/custom', [
+                'asset_name' => '1',
+                'assignment_status' => 'assigned',
+            ])
+            ->assertOk()
+            ->assertSeeTextInStreamedResponse('Assigned Asset')
+            ->assertDontSeeTextInStreamedResponse('Unassigned Asset');
+    }
+
+    public function test_can_limit_custom_report_to_unassigned_assets(): void
+    {
+        Asset::factory()->assignedToUser()->create(['name' => 'Assigned Asset']);
+        Asset::factory()->create(['name' => 'Unassigned Asset']);
+
+        $this->actingAs(User::factory()->canViewReports()->create())
+            ->post('reports/custom', [
+                'asset_name' => '1',
+                'assignment_status' => 'unassigned',
+            ])
+            ->assertOk()
+            ->assertDontSeeTextInStreamedResponse('Assigned Asset')
+            ->assertSeeTextInStreamedResponse('Unassigned Asset');
+    }
+
     public function test_custom_report_decrypts_encrypted_custom_fields_when_user_has_permission(): void
     {
         $customField = CustomField::factory()->encrypt()->create();
