@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Component;
 use App\Models\ReportTemplate;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use League\Csv\EscapeFormula;
@@ -68,6 +69,20 @@ class CustomComponentReportController extends Controller
                     'supplier',
                 ]);
 
+            $components = $this->appendLocalConstraints($components, $request, [
+                'by_model_number' => 'components.model_number',
+                'by_name' => 'components.name',
+                'by_order_number' => 'components.order_number',
+            ]);
+
+            $components = $this->appendForeignConstraints($components, $request, [
+                'by_category_id' => 'components.category_id',
+                'by_company_id' => 'components.company_id',
+                'by_location_id' => 'components.location_id',
+                'by_manufacturer_id' => 'components.manufacturer_id',
+                'by_supplier_id' => 'components.supplier_id',
+            ]);
+
             if ($request->filled(['purchase_start', 'purchase_end'])) {
                 $components->whereBetween('components.purchase_date', [
                     $request->input('purchase_start'),
@@ -108,32 +123,6 @@ class CustomComponentReportController extends Controller
                 $last_updated_end = Carbon::parse($request->input('last_updated_end'))->endOfDay();
 
                 $components->whereBetween('components.updated_at', [$last_updated_start, $last_updated_end]);
-            }
-
-            $localConstraints = [
-                'by_model_number' => 'components.model_number',
-                'by_name' => 'components.name',
-                'by_order_number' => 'components.order_number',
-            ];
-
-            foreach ($localConstraints as $formKey => $column) {
-                if ($request->filled($formKey)) {
-                    $components->where($column, $request->input($formKey));
-                }
-            }
-
-            $foreignConstraints = [
-                'by_category_id' => 'components.category_id',
-                'by_company_id' => 'components.company_id',
-                'by_location_id' => 'components.location_id',
-                'by_manufacturer_id' => 'components.manufacturer_id',
-                'by_supplier_id' => 'components.supplier_id',
-            ];
-
-            foreach ($foreignConstraints as $formKey => $column) {
-                if ($request->filled($formKey)) {
-                    $components->whereIn($column, $request->input($formKey));
-                }
             }
 
             $components->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
@@ -349,5 +338,27 @@ class CustomComponentReportController extends Controller
         }
 
         return $header;
+    }
+
+    private function appendLocalConstraints(Builder $query, Request $request, array $constraints): Builder
+    {
+        foreach ($constraints as $formKey => $column) {
+            if ($request->filled($formKey)) {
+                $query->where($column, $request->input($formKey));
+            }
+        }
+
+        return $query;
+    }
+
+    private function appendForeignConstraints(Builder $query, Request $request, array $constraints): Builder
+    {
+        foreach ($constraints as $formKey => $column) {
+            if ($request->filled($formKey)) {
+                $query->whereIn($column, $request->input($formKey));
+            }
+        }
+
+        return $query;
     }
 }
