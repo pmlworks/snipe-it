@@ -83,47 +83,23 @@ class CustomComponentReportController extends Controller
                 'by_supplier_id' => 'components.supplier_id',
             ]);
 
-            if ($request->filled(['purchase_start', 'purchase_end'])) {
-                $purchase_start = Carbon::parse($request->input('purchase_start'))->startOfDay();
-                $purchase_end = Carbon::parse($request->input('purchase_end'))->endOfDay();
+            $query = $this->appendBoundaries($query, $request, [
+                // formKey => column
+                // _start and _end will be appended to the key
+                // ie: quantity_start|quantity_end => qty
+                'quantity' => 'qty',
+                'min_quantity' => 'min_amt',
+                'unit_cost' => 'purchase_cost',
+            ]);
 
-                $query->whereBetween('components.purchase_date', [$purchase_start, $purchase_end]);
-            }
-
-            if ($request->filled(['quantity_start', 'quantity_end'])) {
-                $query->whereBetween('components.qty', [
-                    $request->input('quantity_start'),
-                    $request->input('quantity_end'),
-                ]);
-            }
-
-            if ($request->filled(['min_quantity_start', 'min_quantity_end'])) {
-                $query->whereBetween('components.min_amt', [
-                    $request->input('min_quantity_start'),
-                    $request->input('min_quantity_end'),
-                ]);
-            }
-
-            if ($request->filled(['unit_cost_start', 'unit_cost_end'])) {
-                $query->whereBetween('components.purchase_cost', [
-                    $request->input('unit_cost_start'),
-                    $request->input('unit_cost_end'),
-                ]);
-            }
-
-            if (($request->filled('created_start')) && ($request->filled('created_end'))) {
-                $created_start = Carbon::parse($request->input('created_start'))->startOfDay();
-                $created_end = Carbon::parse($request->input('created_end'))->endOfDay();
-
-                $query->whereBetween('components.created_at', [$created_start, $created_end]);
-            }
-
-            if (($request->filled('last_updated_start')) && ($request->filled('last_updated_end'))) {
-                $last_updated_start = Carbon::parse($request->input('last_updated_start'))->startOfDay();
-                $last_updated_end = Carbon::parse($request->input('last_updated_end'))->endOfDay();
-
-                $query->whereBetween('components.updated_at', [$last_updated_start, $last_updated_end]);
-            }
+            $query = $this->appendDateBoundaries($query, $request, [
+                // formKey => column
+                // _start and _end will be appended to the key
+                // ie: purchase_start|purchase_end => purchase_date
+                'purchase' => 'purchase_date',
+                'created' => 'created_at',
+                'last_updated' => 'updated_at',
+            ]);
 
             $query->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
                 Log::debug('Walking results: '.$this->getExecutionTime());
@@ -356,6 +332,34 @@ class CustomComponentReportController extends Controller
         foreach ($constraints as $formKey => $column) {
             if ($request->filled($formKey)) {
                 $query->whereIn($column, $request->input($formKey));
+            }
+        }
+
+        return $query;
+    }
+
+    private function appendBoundaries(Builder $query, Request $request, array $mapping): Builder
+    {
+        foreach ($mapping as $formKey => $column) {
+            if ($request->filled(["{$formKey}_start", "{$formKey}_end"])) {
+                $query->whereBetween("components.{$column}", [
+                    $request->input("{$formKey}_start"),
+                    $request->input("{$formKey}_end"),
+                ]);
+            }
+        }
+
+        return $query;
+    }
+
+    private function appendDateBoundaries(Builder $query, Request $request, array $mapping): Builder
+    {
+        foreach ($mapping as $formKey => $column) {
+            if (($request->filled("{$formKey}_start")) && ($request->filled("{$formKey}_end"))) {
+                $start = Carbon::parse($request->input("{$formKey}_start"))->startOfDay();
+                $end = Carbon::parse($request->input("{$formKey}_end"))->endOfDay();
+
+                $query->whereBetween("components.{$column}", [$start, $end]);
             }
         }
 
