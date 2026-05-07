@@ -287,8 +287,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_name()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['name' => 'RAM']);
         Component::factory()->create(['name' => 'Hard Drive']);
 
