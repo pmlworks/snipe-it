@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Reports;
 use App\Http\Controllers\Controller;
 use App\Models\Component;
 use App\Models\ReportTemplate;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use League\Csv\EscapeFormula;
@@ -95,6 +96,13 @@ class CustomComponentReportController extends Controller
                 ]);
             }
 
+            if (($request->filled('created_start')) && ($request->filled('created_end'))) {
+                $created_start = Carbon::parse($request->input('created_start'))->startOfDay();
+                $created_end = Carbon::parse($request->input('created_end'))->endOfDay();
+
+                $components->whereBetween('components.created_at', [$created_start, $created_end]);
+            }
+
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',
@@ -181,6 +189,11 @@ class CustomComponentReportController extends Controller
 
                     // todo: checkout date
                     // todo: created_at
+
+                    if ($request->filled('created_at')) {
+                        $row[] = $component->created_at;
+                    }
+
                     // todo: updated at
                     // todo: deleted
                     // todo: notes
