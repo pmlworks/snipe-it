@@ -798,6 +798,14 @@ class ReportsController extends Controller
                 $assets->onlyTrashed();
             }
 
+            if ($request->input('assignment_status') === 'assigned') {
+                $assets->whereNotNull('assets.assigned_to');
+            }
+
+            if ($request->input('assignment_status') === 'unassigned') {
+                $assets->whereNull('assets.assigned_to');
+            }
+
             $assets->orderBy('assets.id', 'ASC')->chunk(500, function ($assets) use ($handle, $customfields, $request) {
 
                 $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];

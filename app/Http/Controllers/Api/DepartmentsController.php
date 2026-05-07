@@ -9,6 +9,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Transformers\DepartmentsTransformer;
 use App\Http\Transformers\SelectlistTransformer;
+use App\Models\Company;
 use App\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -111,6 +112,7 @@ class DepartmentsController extends Controller
     {
         $department = new Department;
         $department->fill($request->validated());
+        $department->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $department = $request->handleImages($department);
 
         $department->created_by = auth()->id();
@@ -155,6 +157,7 @@ class DepartmentsController extends Controller
         $this->authorize('update', Department::class);
         $department = Department::findOrFail($id);
         $department->fill($request->all());
+        $department->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $department = $request->handleImages($department);
 
         if ($department->save()) {

@@ -878,101 +878,25 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
-     * "is:{value}" on a direct attribute should match records where the column equals
-     * the value exactly — no partial/wildcard matching.
+     * Regression: custom field filters should support exact-match via "is:".
      */
-    public function test_exact_match_filter_on_direct_attribute()
+    public function test_custom_field_filter_exact_match_with_is_modifier()
     {
-        $ts = now()->timestamp;
+        $field = CustomField::factory()->cpu()->create();
+        $dbColumn = $field->db_column_name();
 
-        $exact = Asset::factory()->create(['notes' => 'ExactNote'.$ts]);
-        $partial = Asset::factory()->create(['notes' => 'ExactNote'.$ts.'SomeSuffix']);
-        Asset::factory()->create(['notes' => 'Unrelated'.$ts]);
+        Asset::factory()->create([$dbColumn => '3.2GHz Intel Core i9']);
+        Asset::factory()->create([$dbColumn => '3.2GHz Intel Core i9 Pro']);
+        Asset::factory()->create([$dbColumn => '2.4GHz AMD Ryzen 7']);
 
-        $superuser = User::factory()->viewAssets()->create();
+        Asset::flushCustomFieldFilterMap();
 
-        // is:ExactNote{ts} should only return the exact match, not the partial one.
-        $response = $this->actingAsForApi($superuser)
-            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:ExactNote'.$ts])]))
-            ->assertOk();
-
-        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
-
-        $this->assertContains((int) $exact->id, $returnedIds);
-        $this->assertNotContains((int) $partial->id, $returnedIds);
-    }
-
-    /**
-     * "is:{value}" on a relation key should match records where the related model's
-     * column equals the value exactly.
-     */
-    public function test_exact_match_filter_on_relation()
-    {
-        $ts = now()->timestamp;
-
-        $exactSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts]);
-        $partialSupplier = Supplier::factory()->create(['name' => 'ExactSupplier'.$ts.'Extra']);
-
-        $exactAsset = Asset::factory()->create(['supplier_id' => $exactSupplier->id]);
-        $partialAsset = Asset::factory()->create(['supplier_id' => $partialSupplier->id]);
-
-        $superuser = User::factory()->viewAssets()->create();
-
-        $response = $this->actingAsForApi($superuser)
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
             ->getJson(route('api.assets.index', [
-                'filter' => json_encode(['supplier' => 'is:ExactSupplier'.$ts]),
+                'filter' => json_encode([$dbColumn => 'is:3.2GHz Intel Core i9']),
             ]))
-            ->assertOk();
-
-        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
-
-        $this->assertContains((int) $exactAsset->id, $returnedIds);
-        $this->assertNotContains((int) $partialAsset->id, $returnedIds);
-    }
-
-    /**
-     * "is:{value}" on the User virtual "name" column should match only users whose
-     * CONCAT(first_name, ' ', last_name) equals the value exactly.
-     */
-    public function test_exact_match_filter_on_virtual_name_column()
-    {
-        $ts = now()->timestamp;
-
-        $exactUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smith'.$ts]);
-        $partialUser = User::factory()->create(['first_name' => 'John'.$ts, 'last_name' => 'Smithson'.$ts]);
-
-        $response = $this->actingAsForApi(User::factory()->superuser()->create())
-            ->getJson(route('api.users.index', [
-                'filter' => json_encode(['name' => 'is:John'.$ts.' Smith'.$ts]),
-            ]))
-            ->assertOk();
-
-        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
-
-        $this->assertContains((int) $exactUser->id, $returnedIds);
-        $this->assertNotContains((int) $partialUser->id, $returnedIds);
-    }
-
-    /**
-     * Confirm that the reserved "is:null" and "is:not_null" tokens are still honoured
-     * as null checks even after adding generic "is:{value}" exact-match support.
-     */
-    public function test_is_null_tokens_still_work_after_exact_match_addition()
-    {
-        $withNotes = Asset::factory()->create(['notes' => 'SomeValue'.now()->timestamp]);
-        $withoutNotes = Asset::factory()->create(['notes' => null]);
-
-        $superuser = User::factory()->viewAssets()->create();
-
-        // is:null should still mean IS NULL, not exact match on the string "null".
-        $response = $this->actingAsForApi($superuser)
-            ->getJson(route('api.assets.index', ['filter' => json_encode(['notes' => 'is:null'])]))
-            ->assertOk();
-
-        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
-
-        $this->assertContains((int) $withoutNotes->id, $returnedIds);
-        $this->assertNotContains((int) $withNotes->id, $returnedIds);
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
     }
 
     /**

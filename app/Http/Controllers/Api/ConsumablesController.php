@@ -155,6 +155,7 @@ class ConsumablesController extends Controller
         $this->authorize('create', Consumable::class);
         $consumable = new Consumable;
         $consumable->fill($request->all());
+        $consumable->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $consumable = $request->handleImages($consumable);
 
         if ($consumable->save()) {
@@ -194,6 +195,7 @@ class ConsumablesController extends Controller
         $this->authorize('update', Consumable::class);
         $consumable = Consumable::findOrFail($id);
         $consumable->fill($request->all());
+        $consumable->company_id = Company::getIdForCurrentUser($request->input('company_id'));
         $consumable = $request->handleImages($consumable);
 
         if ($consumable->save()) {
