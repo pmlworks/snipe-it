@@ -610,9 +610,15 @@
             keepEmptyValues: true,
         });
 
-
-        // created_start
         $('.created-range .input-daterange').datepicker({
+            clearBtn: true,
+            todayHighlight: true,
+            endDate:'0d',
+            format: 'yyyy-mm-dd',
+            keepEmptyValues: true,
+        });
+
+        $('.last_updated-range .input-daterange').datepicker({
             clearBtn: true,
             todayHighlight: true,
             endDate:'0d',

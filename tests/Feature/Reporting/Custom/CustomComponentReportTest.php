@@ -435,8 +435,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_updated_at()
     {
-        $this->markTestIncomplete();
-
         $this->travel(-60)->days(function () {
             Component::factory()->create(['name' => 'Component A']);
         });

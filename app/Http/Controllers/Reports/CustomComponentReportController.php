@@ -103,6 +103,13 @@ class CustomComponentReportController extends Controller
                 $components->whereBetween('components.created_at', [$created_start, $created_end]);
             }
 
+            if (($request->filled('last_updated_start')) && ($request->filled('last_updated_end'))) {
+                $last_updated_start = Carbon::parse($request->input('last_updated_start'))->startOfDay();
+                $last_updated_end = Carbon::parse($request->input('last_updated_end'))->endOfDay();
+
+                $components->whereBetween('components.updated_at', [$last_updated_start, $last_updated_end]);
+            }
+
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',
@@ -188,13 +195,15 @@ class CustomComponentReportController extends Controller
                     }
 
                     // todo: checkout date
-                    // todo: created_at
 
                     if ($request->filled('created_at')) {
                         $row[] = $component->created_at;
                     }
 
-                    // todo: updated at
+                    if ($request->filled('updated_at')) {
+                        $row[] = $component->updated_at;
+                    }
+
                     // todo: deleted
                     // todo: notes
 
