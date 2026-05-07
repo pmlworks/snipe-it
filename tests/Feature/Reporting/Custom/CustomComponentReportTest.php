@@ -237,8 +237,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_supplier()
     {
-        $this->markTestIncomplete();
-
         [$supplierA, $supplierB] = Supplier::factory()->count(2)->create()->all();
 
         Component::factory()
