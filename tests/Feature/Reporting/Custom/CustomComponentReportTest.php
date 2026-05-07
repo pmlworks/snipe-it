@@ -373,15 +373,13 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_minimum_quantity()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['name' => 'Component A', 'min_amt' => 2]);
         Component::factory()->create(['name' => 'Component B', 'min_amt' => 20]);
 
         $this->sendRequest([
             'component_name' => '1',
-            'min_quantity_cost_start' => 1,
-            'min_quantity_cost_end' => 5,
+            'min_quantity_start' => 1,
+            'min_quantity_end' => 5,
         ])
             ->assertOk()
             ->assertCsvHeader()

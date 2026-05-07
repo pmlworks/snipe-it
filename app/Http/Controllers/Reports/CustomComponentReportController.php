@@ -81,6 +81,13 @@ class CustomComponentReportController extends Controller
                 ]);
             }
 
+            if ($request->filled(['min_quantity_start', 'min_quantity_end'])) {
+                $components->whereBetween('components.min_amt', [
+                    $request->input('min_quantity_start'),
+                    $request->input('min_quantity_end'),
+                ]);
+            }
+
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',

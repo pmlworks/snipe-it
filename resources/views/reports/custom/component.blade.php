@@ -330,18 +330,18 @@
                             </div>
 
                             <!-- Min. Quantity -->
-                            <div class="form-group min_quantity-range{{ ($errors->has('min_quantity_cost_start') || $errors->has('min_quantity_cost_end')) ? ' has-error' : '' }}">
-                                <label for="min_quantity_cost_start" class="col-md-3 control-label">{{ trans('mail.min_QTY') }}</label>
+                            <div class="form-group min_quantity-range{{ ($errors->has('min_quantity_start') || $errors->has('min_quantity_end')) ? ' has-error' : '' }}">
+                                <label for="min_quantity_start" class="col-md-3 control-label">{{ trans('mail.min_QTY') }}</label>
                                 <div class="input-group col-md-7">
-                                    <input type="number" min="0" class="form-control" name="min_quantity_cost_start" aria-label="min_quantity_cost_start" value="{{ $template->textValue('min_quantity_cost_start', old('min_quantity_cost_start')) }}">
+                                    <input type="number" min="0" class="form-control" name="min_quantity_start" aria-label="min_quantity_start" value="{{ $template->textValue('min_quantity_start', old('min_quantity_start')) }}">
                                     <span class="input-group-addon"> - </span>
-                                    <input type="number" min="0" class="form-control" name="min_quantity_cost_end" aria-label="min_quantity_cost_end" value="{{ $template->textValue('min_quantity_cost_end', old('min_quantity_cost_end')) }}">
+                                    <input type="number" min="0" class="form-control" name="min_quantity_end" aria-label="min_quantity_end" value="{{ $template->textValue('min_quantity_end', old('min_quantity_end')) }}">
                                 </div>
 
-                                @if ($errors->has('min_quantity_cost_start') || $errors->has('min_quantity_cost_end'))
+                                @if ($errors->has('min_quantity_start') || $errors->has('min_quantity_end'))
                                     <div class="col-md-9 col-lg-offset-3">
-                                        {!! $errors->first('min_quantity_cost_start', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
-                                        {!! $errors->first('min_quantity_cost_end', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                        {!! $errors->first('min_quantity_start', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                        {!! $errors->first('min_quantity_end', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                                     </div>
                                 @endif
                             </div>
