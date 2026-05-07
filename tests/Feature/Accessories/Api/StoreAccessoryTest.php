@@ -47,7 +47,6 @@ class StoreAccessoryTest extends TestCase implements TestsFullMultipleCompaniesS
         ]);
     }
 
-
     public function test_can_store_accessory()
     {
         $category = Category::factory()->forAccessories()->create();
