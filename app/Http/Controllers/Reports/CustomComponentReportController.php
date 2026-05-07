@@ -67,6 +67,10 @@ class CustomComponentReportController extends Controller
                     'supplier',
                 ]);
 
+            if ($request->filled(['purchase_start', 'purchase_end'])) {
+                $components->whereBetween('components.purchase_date', [$request->input('purchase_start'), $request->input('purchase_end')]);
+            }
+
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',

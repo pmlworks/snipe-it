@@ -76,6 +76,13 @@ class CustomComponentReportTest extends TestCase
         $this->assertTrue($viewTemplateNames->doesntContain('Another User: Component'));
     }
 
+    public function test_custom_component_report_validation()
+    {
+        $this->markTestIncomplete();
+
+        // todo: purchase_start and purchase_end
+    }
+
     public function test_custom_component_report_headers()
     {
         $this->sendRequest([
@@ -334,8 +341,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_purchase_date()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['name' => 'Component A', 'purchase_date' => '2024-01-15']);
         Component::factory()->create(['name' => 'Component B', 'purchase_date' => '2024-06-15']);
 

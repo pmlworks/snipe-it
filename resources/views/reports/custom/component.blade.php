@@ -598,13 +598,13 @@
 
 @section('moar_scripts')
     <script>
-        // $('.purchase-range .input-daterange').datepicker({
-        //     clearBtn: true,
-        //     todayHighlight: true,
-        //     endDate: '0d',
-        //     format: 'yyyy-mm-dd',
-        //     keepEmptyValues: true,
-        // });
+        $('.purchase-range .input-daterange').datepicker({
+            clearBtn: true,
+            todayHighlight: true,
+            endDate: '0d',
+            format: 'yyyy-mm-dd',
+            keepEmptyValues: true,
+        });
 
         $("#checkAll").change(function () {
             $("#included_fields_wrapper input:checkbox").prop('checked', $(this).prop("checked"));
