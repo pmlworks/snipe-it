@@ -81,6 +81,12 @@ class CustomComponentReportTest extends TestCase
         $this->markTestIncomplete();
 
         // todo: purchase_start and purchase_end
+        // todo: quantity
+        // todo: min quantity
+        // todo: unit cost
+        // todo: checkout
+        // todo: created_at
+        // todo: updated_at
     }
 
     public function test_custom_component_report_headers()
