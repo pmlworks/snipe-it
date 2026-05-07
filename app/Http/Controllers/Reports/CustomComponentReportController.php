@@ -60,7 +60,7 @@ class CustomComponentReportController extends Controller
             fputcsv($handle, $headerRow);
             Log::debug('Added headers: '.$this->getExecutionTime());
 
-            $components = Component::select('components.*')
+            $query = Component::select('components.*')
                 ->with([
                     'category',
                     'company',
@@ -69,13 +69,13 @@ class CustomComponentReportController extends Controller
                     'supplier',
                 ]);
 
-            $components = $this->appendLocalConstraints($components, $request, [
+            $query = $this->appendLocalConstraints($query, $request, [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',
                 'by_order_number' => 'components.order_number',
             ]);
 
-            $components = $this->appendForeignConstraints($components, $request, [
+            $query = $this->appendForeignConstraints($query, $request, [
                 'by_category_id' => 'components.category_id',
                 'by_company_id' => 'components.company_id',
                 'by_location_id' => 'components.location_id',
@@ -84,28 +84,28 @@ class CustomComponentReportController extends Controller
             ]);
 
             if ($request->filled(['purchase_start', 'purchase_end'])) {
-                $components->whereBetween('components.purchase_date', [
+                $query->whereBetween('components.purchase_date', [
                     $request->input('purchase_start'),
                     $request->input('purchase_end'),
                 ]);
             }
 
             if ($request->filled(['quantity_start', 'quantity_end'])) {
-                $components->whereBetween('components.qty', [
+                $query->whereBetween('components.qty', [
                     $request->input('quantity_start'),
                     $request->input('quantity_end'),
                 ]);
             }
 
             if ($request->filled(['min_quantity_start', 'min_quantity_end'])) {
-                $components->whereBetween('components.min_amt', [
+                $query->whereBetween('components.min_amt', [
                     $request->input('min_quantity_start'),
                     $request->input('min_quantity_end'),
                 ]);
             }
 
             if ($request->filled(['unit_cost_start', 'unit_cost_end'])) {
-                $components->whereBetween('components.purchase_cost', [
+                $query->whereBetween('components.purchase_cost', [
                     $request->input('unit_cost_start'),
                     $request->input('unit_cost_end'),
                 ]);
@@ -115,17 +115,17 @@ class CustomComponentReportController extends Controller
                 $created_start = Carbon::parse($request->input('created_start'))->startOfDay();
                 $created_end = Carbon::parse($request->input('created_end'))->endOfDay();
 
-                $components->whereBetween('components.created_at', [$created_start, $created_end]);
+                $query->whereBetween('components.created_at', [$created_start, $created_end]);
             }
 
             if (($request->filled('last_updated_start')) && ($request->filled('last_updated_end'))) {
                 $last_updated_start = Carbon::parse($request->input('last_updated_start'))->startOfDay();
                 $last_updated_end = Carbon::parse($request->input('last_updated_end'))->endOfDay();
 
-                $components->whereBetween('components.updated_at', [$last_updated_start, $last_updated_end]);
+                $query->whereBetween('components.updated_at', [$last_updated_start, $last_updated_end]);
             }
 
-            $components->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
+            $query->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
                 Log::debug('Walking results: '.$this->getExecutionTime());
 
                 $count = 0;
