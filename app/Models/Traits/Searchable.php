@@ -244,7 +244,7 @@ trait Searchable
 
         if (str_starts_with($lower, 'is:')) {
             // Generic exact-match prefix. This is checked after reserved is:null/is:not_null tokens.
-            $exactValue = substr($raw, 3);
+            $exactValue = ltrim(substr($raw, 3));
 
             return ['value' => $exactValue, 'negate' => false, 'operator' => 'exact'];
         }
@@ -351,9 +351,11 @@ trait Searchable
             $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
             if ($dbColumn !== null) {
-                // Structured custom-field filters currently support LIKE/NOT LIKE semantics only.
-                // (No exact/is:null operators for custom fields yet.)
-                $query->{$whereMethod}($table.'.'.$dbColumn, $likeOperator, '%'.$value.'%');
+                if ($operator === 'exact') {
+                    $query->{$whereMethod}($table.'.'.$dbColumn, '=', $value);
+                } else {
+                    $query->{$whereMethod}($table.'.'.$dbColumn, $likeOperator, '%'.$value.'%');
+                }
 
                 return $query;
             }
@@ -645,6 +647,24 @@ trait Searchable
     {
         $table = $this->getTable();
         $searchableAttributes = $this->getSearchableAttributes();
+
+        // Custom field db_column key (Asset only).
+        if ($this instanceof Asset) {
+            $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
+
+            if ($dbColumn !== null) {
+                $method = match (true) {
+                    $isNull && $boolean === 'or' => 'orWhereNull',
+                    $isNull => 'whereNull',
+                    $boolean === 'or' => 'orWhereNotNull',
+                    default => 'whereNotNull',
+                };
+
+                $query->{$method}($table.'.'.$dbColumn);
+
+                return $query;
+            }
+        }
 
         // Direct attribute column.
         if (in_array($filterKey, $searchableAttributes, true)) {
