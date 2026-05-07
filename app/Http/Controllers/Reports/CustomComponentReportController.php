@@ -62,21 +62,32 @@ class CustomComponentReportController extends Controller
                 ->with([
                     'category',
                     'company',
+                    'manufacturer',
                 ]);
 
-            $simpleConstraints = [
-                'by_company_id' => 'components.company_id',
-                'by_category_id' => 'components.category_id',
+            $localConstraints = [
+                'by_model_number' => 'components.model_number',
             ];
 
-            foreach ($simpleConstraints as $formKey => $column) {
+            foreach ($localConstraints as $formKey => $column) {
+                if ($request->filled($formKey)) {
+                    $components->where($column, $request->input($formKey));
+                }
+            }
+
+            $foreignConstraints = [
+                'by_company_id' => 'components.company_id',
+                'by_category_id' => 'components.category_id',
+                'by_manufacturer_id' => 'components.manufacturer_id',
+            ];
+
+            foreach ($foreignConstraints as $formKey => $column) {
                 if ($request->filled($formKey)) {
                     $components->whereIn($column, $request->input($formKey));
                 }
             }
 
             $components->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
-
                 Log::debug('Walking results: '.$this->getExecutionTime());
 
                 $count = 0;
@@ -101,6 +112,14 @@ class CustomComponentReportController extends Controller
 
                     if ($request->filled('component_name')) {
                         $row[] = $component->name;
+                    }
+
+                    if ($request->filled('manufacturer')) {
+                        $row[] = $component?->manufacturer?->name;
+                    }
+
+                    if ($request->filled('model')) {
+                        $row[] = $component->model_number;
                     }
 
                     // CSV_ESCAPE_FORMULAS is set to false in the .env

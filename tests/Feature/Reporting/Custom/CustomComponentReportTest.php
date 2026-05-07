@@ -212,8 +212,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_manufacturer()
     {
-        $this->markTestIncomplete();
-
         [$manufacturerA, $manufacturerB] = Manufacturer::factory()->count(2)->create()->all();
 
         Component::factory()
@@ -235,6 +233,22 @@ class CustomComponentReportTest extends TestCase
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Component for Manufacturer A')
             ->assertDontSeeTextInStreamedResponse('Component for Manufacturer B');
+    }
+
+    public function test_limiting_by_model_number()
+    {
+        Component::factory()->create(['model_number' => 'MODEL-001']);
+        Component::factory()->create(['model_number' => 'MODEL-002']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'model' => '1',
+            'by_model_number' => 'MODEL-001',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('MODEL-001')
+            ->assertDontSeeTextInStreamedResponse('MODEL-002');
     }
 
     public function test_limiting_by_supplier()
@@ -306,24 +320,6 @@ class CustomComponentReportTest extends TestCase
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('RAM')
             ->assertDontSeeTextInStreamedResponse('Hard Drive');
-    }
-
-    public function test_limiting_by_model_number()
-    {
-        $this->markTestIncomplete();
-
-        Component::factory()->create(['model_number' => 'MODEL-001']);
-        Component::factory()->create(['model_number' => 'MODEL-002']);
-
-        $this->sendRequest([
-            'component_name' => '1',
-            'model' => '1',
-            'by_model_number' => 'MODEL-001',
-        ])
-            ->assertOk()
-            ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('MODEL-001')
-            ->assertDontSeeTextInStreamedResponse('MODEL-002');
     }
 
     public function test_limiting_by_order_number()
