@@ -62,9 +62,9 @@ class CustomComponentReportController extends Controller
                 ->with([
                     'category',
                     'company',
+                    'location',
                     'manufacturer',
                     'supplier',
-                    'location',
                 ]);
 
             $localConstraints = [
@@ -78,11 +78,11 @@ class CustomComponentReportController extends Controller
             }
 
             $foreignConstraints = [
-                'by_company_id' => 'components.company_id',
                 'by_category_id' => 'components.category_id',
+                'by_company_id' => 'components.company_id',
+                'by_location_id' => 'components.location_id',
                 'by_manufacturer_id' => 'components.manufacturer_id',
                 'by_supplier_id' => 'components.supplier_id',
-                'by_location_id' => 'components.location_id',
             ];
 
             foreach ($foreignConstraints as $formKey => $column) {
