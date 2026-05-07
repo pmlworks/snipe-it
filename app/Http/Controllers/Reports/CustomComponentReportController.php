@@ -88,6 +88,13 @@ class CustomComponentReportController extends Controller
                 ]);
             }
 
+            if ($request->filled(['unit_cost_start', 'unit_cost_end'])) {
+                $components->whereBetween('components.purchase_cost', [
+                    $request->input('unit_cost_start'),
+                    $request->input('unit_cost_end'),
+                ]);
+            }
+
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',

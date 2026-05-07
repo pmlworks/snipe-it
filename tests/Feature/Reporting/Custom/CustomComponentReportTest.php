@@ -395,8 +395,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_unit_cost()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['name' => 'Component A', 'purchase_cost' => 10.00]);
         Component::factory()->create(['name' => 'Component B', 'purchase_cost' => 500.00]);
 
