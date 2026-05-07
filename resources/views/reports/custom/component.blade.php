@@ -313,18 +313,18 @@
                             </div>
 
                             <!-- Quantity -->
-                            <div class="form-group quantity-range{{ ($errors->has('quantity_cost_start') || $errors->has('quantity_cost_end')) ? ' has-error' : '' }}">
-                                <label for="quantity_cost_start" class="col-md-3 control-label">{{ trans('general.quantity') }}</label>
+                            <div class="form-group quantity-range{{ ($errors->has('quantity_start') || $errors->has('quantity_end')) ? ' has-error' : '' }}">
+                                <label for="quantity_start" class="col-md-3 control-label">{{ trans('general.quantity') }}</label>
                                 <div class="input-group col-md-7">
-                                    <input type="number" min="0" class="form-control" name="quantity_cost_start" aria-label="quantity_cost_start" value="{{ $template->textValue('quantity_cost_start', old('quantity_cost_start')) }}">
+                                    <input type="number" min="0" class="form-control" name="quantity_start" aria-label="quantity_start" value="{{ $template->textValue('quantity_start', old('quantity_start')) }}">
                                     <span class="input-group-addon"> - </span>
-                                    <input type="number" min="0" class="form-control" name="quantity_cost_end" aria-label="quantity_cost_end" value="{{ $template->textValue('quantity_cost_end', old('quantity_cost_end')) }}">
+                                    <input type="number" min="0" class="form-control" name="quantity_end" aria-label="quantity_end" value="{{ $template->textValue('quantity_end', old('quantity_end')) }}">
                                 </div>
 
-                                @if ($errors->has('quantity_cost_start') || $errors->has('quantity_cost_end'))
+                                @if ($errors->has('quantity_start') || $errors->has('quantity_end'))
                                     <div class="col-md-9 col-lg-offset-3">
-                                        {!! $errors->first('quantity_cost_start', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
-                                        {!! $errors->first('quantity_cost_end', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                        {!! $errors->first('quantity_start', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                        {!! $errors->first('quantity_end', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                                     </div>
                                 @endif
                             </div>

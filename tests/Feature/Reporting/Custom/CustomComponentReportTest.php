@@ -357,15 +357,13 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_quantity()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['name' => 'Component A', 'qty' => 5]);
         Component::factory()->create(['name' => 'Component B', 'qty' => 50]);
 
         $this->sendRequest([
             'component_name' => '1',
-            'quantity_cost_start' => 1,
-            'quantity_cost_end' => 10,
+            'quantity_start' => 1,
+            'quantity_end' => 10,
         ])
             ->assertOk()
             ->assertCsvHeader()

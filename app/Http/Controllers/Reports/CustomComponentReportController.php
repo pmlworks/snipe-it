@@ -68,7 +68,17 @@ class CustomComponentReportController extends Controller
                 ]);
 
             if ($request->filled(['purchase_start', 'purchase_end'])) {
-                $components->whereBetween('components.purchase_date', [$request->input('purchase_start'), $request->input('purchase_end')]);
+                $components->whereBetween('components.purchase_date', [
+                    $request->input('purchase_start'),
+                    $request->input('purchase_end'),
+                ]);
+            }
+
+            if ($request->filled(['quantity_start', 'quantity_end'])) {
+                $components->whereBetween('components.qty', [
+                    $request->input('quantity_start'),
+                    $request->input('quantity_end'),
+                ]);
             }
 
             $localConstraints = [
