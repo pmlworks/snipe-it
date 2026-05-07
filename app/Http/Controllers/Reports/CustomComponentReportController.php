@@ -70,6 +70,7 @@ class CustomComponentReportController extends Controller
             $localConstraints = [
                 'by_model_number' => 'components.model_number',
                 'by_name' => 'components.name',
+                'by_order_number' => 'components.order_number',
             ];
 
             foreach ($localConstraints as $formKey => $column) {
@@ -137,6 +138,10 @@ class CustomComponentReportController extends Controller
 
                     if ($request->filled('name')) {
                         $row[] = $component->name;
+                    }
+
+                    if ($request->filled('order')) {
+                        $row[] = $component->order_number;
                     }
 
                     // CSV_ESCAPE_FORMULAS is set to false in the .env

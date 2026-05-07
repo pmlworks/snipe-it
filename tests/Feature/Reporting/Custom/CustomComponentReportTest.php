@@ -318,8 +318,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_order_number()
     {
-        $this->markTestIncomplete();
-
         Component::factory()->create(['order_number' => 'ORD-001']);
         Component::factory()->create(['order_number' => 'ORD-002']);
 
