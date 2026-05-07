@@ -84,10 +84,10 @@ class CustomComponentReportController extends Controller
             ]);
 
             if ($request->filled(['purchase_start', 'purchase_end'])) {
-                $query->whereBetween('components.purchase_date', [
-                    $request->input('purchase_start'),
-                    $request->input('purchase_end'),
-                ]);
+                $purchase_start = Carbon::parse($request->input('purchase_start'))->startOfDay();
+                $purchase_end = Carbon::parse($request->input('purchase_end'))->endOfDay();
+
+                $query->whereBetween('components.purchase_date', [$purchase_start, $purchase_end]);
             }
 
             if ($request->filled(['quantity_start', 'quantity_end'])) {
