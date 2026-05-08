@@ -852,7 +852,7 @@ class ReportsController extends Controller
                     }
 
                     if ($request->filled('purchase_date')) {
-                        $row[] = ($asset->purchase_date) ? $asset->purchase_date : '';
+                        $row[] = ($asset->purchase_date) ? $asset->purchase_date->format('Y-m-d') : '';
                     }
 
                     if ($request->filled('purchase_cost')) {
@@ -860,7 +860,7 @@ class ReportsController extends Controller
                     }
 
                     if ($request->filled('eol')) {
-                        $row[] = ($asset->asset_eol_date != '') ? $asset->asset_eol_date : '';
+                        $row[] = ($asset->asset_eol_date != '') ? $asset->asset_eol_date->format('Y-m-d') : '';
                     }
 
                     if ($request->filled('warranty')) {
