@@ -472,24 +472,49 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_excluding_deleted_components()
+    public function test_excluding_deleted_components()
     {
-        $this->markTestIncomplete();
+        Component::factory()->create(['name' => 'Deleted Component', 'deleted_at' => now()]);
+        Component::factory()->create(['name' => 'Active Component']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'deleted_components' => 'exclude_deleted',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Active Component')
+            ->assertDontSeeTextInStreamedResponse('Deleted Component');
     }
 
-    public function test_limiting_by_including_deleted_components()
+    public function test_including_deleted_components()
     {
-        $this->markTestIncomplete();
+        Component::factory()->create(['name' => 'Deleted Component', 'deleted_at' => now()]);
+        Component::factory()->create(['name' => 'Active Component']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'deleted_components' => 'include_deleted',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Active Component')
+            ->assertSeeTextInStreamedResponse('Deleted Component');
     }
 
-    public function test_limiting_by_only_deleted_components()
+    public function test_including_only_deleted_components()
     {
-        $this->markTestIncomplete();
-    }
+        Component::factory()->create(['name' => 'Deleted Component', 'deleted_at' => now()]);
+        Component::factory()->create(['name' => 'Active Component']);
 
-    public function test_custom_component_report_exclude_deleted()
-    {
-        $this->markTestIncomplete();
+        $this->sendRequest([
+            'component_name' => '1',
+            'deleted_components' => 'only_deleted',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertDontSeeTextInStreamedResponse('Active Component')
+            ->assertSeeTextInStreamedResponse('Deleted Component');
     }
 
     public function test_custom_component_report_adheres_to_company_scoping()

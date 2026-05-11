@@ -101,6 +101,14 @@ class CustomComponentReportController extends Controller
                 'last_updated' => 'updated_at',
             ]);
 
+            if ($request->input('deleted_components') === 'include_deleted') {
+                $query->withTrashed();
+            }
+
+            if ($request->input('deleted_components') === 'only_deleted') {
+                $query->onlyTrashed();
+            }
+
             $query->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
                 Log::debug('Walking results: '.$this->getExecutionTime());
 
