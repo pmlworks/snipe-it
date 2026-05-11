@@ -67,8 +67,8 @@
     <div class="row">
         <div class="col-md-12">
             <div class="well well-sm" style="margin-bottom:15px;">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
-                    <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
+                <form class="form-inline" style="margin-bottom: 10px;">
+                    <label style="font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
                     <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
                         <option value="7">{{ trans('general.last_n_days', ['days' => 7]) }}</option>
                         <option value="14">{{ trans('general.last_n_days', ['days' => 14]) }}</option>
@@ -84,72 +84,82 @@
                         <span class="input-group-addon">–</span>
                         <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
                     </div>
-                </div>
+                </form>
+
                 <div class="row" style="margin-bottom:-15px;">
                     <div class="col-lg-3 col-sm-6">
                         <a href="{{ route('reports.audit') }}">
-                            <div class="info-box">
-                                <span class="info-box-icon {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                                    <x-icon type="audit" />
-                                </span>
+                            <div class="info-box {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}">
+                                    <span class="info-box-icon" aria-hidden="true">
+                                        <x-icon type="audit"/>
+                                    </span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">{{ trans('general.audit_due') }} / {{ trans('general.audit_overdue') }}</span>
-                                    <span class="info-box-number">{{ number_format($audit_alert_count) }}</span>
-                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                    <span class="info-box-number">{{ number_format($audit_alert_count) }}
+                                            <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
+                                     </span>
+                                    <div class="progress" style="height:6px;">
                                         <div class="progress-bar" id="progress-audit" style="width: 0%"></div>
                                     </div>
-                                    <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
                                 </div>
                             </div>
                         </a>
+
                     </div>
                     <div class="col-lg-3 col-sm-6">
                         <a href="{{ url('reports/custom') }}">
-                            <div class="info-box">
-                                <span class="info-box-icon {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                                    <x-icon type="assets" />
-                                </span>
+                            <div class="info-box {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}">
+                                    <span class="info-box-icon " aria-hidden="true">
+                                        <x-icon type="assets"/>
+                                    </span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">{{ trans('general.checkin_due') }} / {{ trans('general.checkin_overdue') }}</span>
-                                    <span class="info-box-number">{{ number_format($checkin_alert_count) }}</span>
-                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                    <span class="info-box-number">{{ number_format($checkin_alert_count) }}
+                                        <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
+                                    </span>
+                                    <div class="progress" style="height:6px;">
                                         <div class="progress-bar" id="progress-checkin" style="width: 0%"></div>
                                     </div>
-                                    <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
+
                                 </div>
                             </div>
                         </a>
                     </div>
                     <div class="col-lg-3 col-sm-6">
                         <a href="{{ route('reports/unaccepted_assets') }}">
-                            <div class="info-box">
-                                <span class="info-box-icon {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}" aria-hidden="true">
-                                    <x-icon type="assets" />
-                                </span>
+                            <div class="info-box {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}">
+                                    <span class="info-box-icon" aria-hidden="true">
+                                        <x-icon type="assets"/>
+                                    </span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">{{ trans('general.unaccepted_asset_report') }}</span>
-                                    <span class="info-box-number">{{ number_format($pending_acceptance_count) }}</span>
-                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                    <span class="info-box-number">{{ number_format($pending_acceptance_count) }}
+                                    <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
+                                    </span>
+                                    <div class="progress" style="height:6px;">
                                         <div class="progress-bar" id="progress-acceptance" style="width: 0%"></div>
                                     </div>
-                                    <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
+
                                 </div>
                             </div>
                         </a>
                     </div>
                     <div class="col-lg-3 col-sm-6">
                         <a href="{{ url('reports/licenses') }}">
-                            <div class="info-box">
-                                <span class="info-box-icon {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                                    <x-icon type="licenses" />
-                                </span>
+                            <div class="info-box {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}">
+                                    <span class="info-box-icon" aria-hidden="true">
+                                        <x-icon type="licenses"/>
+                                    </span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">{{ trans('general.licenses_with_no_seats') }}</span>
-                                    <span class="info-box-number">{{ number_format($licenses_low_count) }}</span>
-                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                    <span class="info-box-number">
+                                        {{ number_format($licenses_low_count) }}
+                                        <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
+                                    </span>
+                                    <div class="progress" style="height:6px;">
                                         <div class="progress-bar" id="progress-licenses" style="width: 0%"></div>
                                     </div>
-                                    <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
+
                                 </div>
                             </div>
                         </a>
@@ -319,10 +329,19 @@
 @push('css')
 <style>
 .info-box .info-box-text { text-transform: none; }
-[data-theme="dark"] .info-box { background: var(--box-bg); color: #d2d6de; }
-[data-theme="dark"] .info-box .info-box-number,
-[data-theme="dark"] .info-box .info-box-text,
-[data-theme="dark"] .info-box .info-box-more { color: #d2d6de; }
+
+.info-box-more {
+    display: inline;
+    font-size: 70%;
+    font-weight: normal;
+    filter: brightness(95%);
+    
+}
+
+/*[data-theme="dark"] .info-box { background: var(--box-bg); color: #d2d6de; }*/
+/*[data-theme="dark"] .info-box .info-box-number,*/
+/*[data-theme="dark"] .info-box .info-box-text,*/
+/*[data-theme="dark"] .info-box .info-box-more { color: #d2d6de; }*/
 .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .chart-prev-note { font-size: 11px; font-style: italic; text-align: center; color: #999; margin: 4px 0 0; }
 
@@ -444,7 +463,7 @@ function trendPct(cur, prev) {
 }
 
 function setInfoBar(id, pct, prevLabel) {
-    $('#progress-' + id).css('width', pct + '%').css('background-color', isDark() ? '#60b0e0' : '#3c8dbc');
+    $('#progress-' + id).css('width', pct + '%');
     $('#progress-' + id + '-label').text(pct + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
 }
 
