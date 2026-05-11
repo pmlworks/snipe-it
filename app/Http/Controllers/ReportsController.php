@@ -56,6 +56,27 @@ class ReportsController extends Controller
         parent::__construct();
     }
 
+    public function index(): View
+    {
+        $this->authorize('reports.view');
+        $settings = Setting::getSettings();
+
+        $audit_alert_count = Asset::DueOrOverdueForAudit($settings)->count();
+        $checkin_alert_count = Asset::DueOrOverdueForCheckin($settings)->count();
+        $pending_acceptance_count = CheckoutAcceptance::pending()->count();
+        $licenses_low_count = License::withCount(['freeSeats as free_seats_count'])
+            ->get()
+            ->filter(fn ($l) => $l->free_seats_count <= 0)
+            ->count();
+
+        return view('reports/index', compact(
+            'audit_alert_count',
+            'checkin_alert_count',
+            'pending_acceptance_count',
+            'licenses_low_count',
+        ));
+    }
+
     /**
      * Returns a view that displays the accessories report.
      *

@@ -6,8 +6,16 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterRequest;
 use App\Http\Transformers\ActionlogsTransformer;
+use App\Models\Accessory;
 use App\Models\Actionlog;
+use App\Models\Asset;
+use App\Models\Component;
+use App\Models\Consumable;
+use App\Models\Maintenance;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class ReportsController extends Controller
@@ -124,5 +132,86 @@ class ReportsController extends Controller
 
         return response()->json((new ActionlogsTransformer)->transformActionlogs($actionlogs, $total), 200, ['Content-Type' => 'application/json;charset=utf8'], JSON_UNESCAPED_UNICODE);
 
+    }
+
+    /**
+     * Returns time-series data for the reports overview charts.
+     *
+     * Accepts ?days=N (preset, default 30) OR ?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD.
+     * Also returns the immediately preceding period of equal length for comparison lines.
+     */
+    public function activityChart(Request $request): JsonResponse
+    {
+        $this->authorize('reports.view');
+
+        $allowedDays = [7, 14, 30, 60, 90, 180, 365];
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $curStart = Carbon::parse($request->input('start_date'))->startOfDay();
+            $curEnd = Carbon::parse($request->input('end_date'))->endOfDay();
+            if ($curEnd->lt($curStart)) {
+                [$curStart, $curEnd] = [$curEnd, $curStart];
+            }
+            $days = max(1, (int) $curStart->diffInDays($curEnd) + 1);
+        } else {
+            $days = in_array((int) $request->input('days'), $allowedDays) ? (int) $request->input('days') : 30;
+            $curEnd = Carbon::today()->endOfDay();
+            $curStart = Carbon::today()->subDays($days - 1)->startOfDay();
+        }
+
+        $prevEnd = $curStart->copy()->subSecond()->endOfDay();
+        $prevStart = $prevEnd->copy()->subDays($days - 1)->startOfDay();
+
+        $buildDates = function (Carbon $start, Carbon $end): array {
+            $dates = [];
+            for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+                $dates[] = $d->toDateString();
+            }
+
+            return $dates;
+        };
+
+        $curDates = $buildDates($curStart, $curEnd);
+        $prevDates = $buildDates($prevStart, $prevEnd);
+
+        $pluckAction = function (string $actionType, Carbon $start, Carbon $end): array {
+            return Actionlog::where('action_type', $actionType)
+                ->whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
+        // Query a model's own table for created_at counts (catches API/import creates, not just UI)
+        $pluckCreated = function (string $modelClass, Carbon $start, Carbon $end): array {
+            return $modelClass::whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
+        $fill = fn (array $raw, array $dates) => array_map(fn ($d) => (int) ($raw[$d] ?? 0), $dates);
+
+        $datasets = [];
+        foreach ([
+            'checkouts' => fn ($s, $e) => $pluckAction('checkout', $s, $e),
+            'checkins' => fn ($s, $e) => $pluckAction('checkin from', $s, $e),
+            'new_assets' => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
+            'new_maintenances' => fn ($s, $e) => $pluckCreated(Maintenance::class, $s, $e),
+            'new_users' => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
+            'new_accessories' => fn ($s, $e) => $pluckCreated(Accessory::class, $s, $e),
+            'new_components' => fn ($s, $e) => $pluckCreated(Component::class, $s, $e),
+            'new_consumables' => fn ($s, $e) => $pluckCreated(Consumable::class, $s, $e),
+        ] as $key => $query) {
+            $datasets[$key] = $fill($query($curStart, $curEnd), $curDates);
+            $datasets['prev_'.$key] = $fill($query($prevStart, $prevEnd), $prevDates);
+        }
+
+        return response()->json(array_merge([
+            'labels' => array_map(fn ($d) => Carbon::parse($d)->format('M j'), $curDates),
+            'prev_label' => $prevStart->format('M j').' – '.$prevEnd->format('M j'),
+        ], $datasets));
     }
 }
