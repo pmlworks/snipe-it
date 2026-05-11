@@ -63,114 +63,141 @@
     </div>
 
 
-    {{-- Date Range Control --}}
+    {{-- Date Range Control + Stat Alert Cards --}}
     <div class="row">
         <div class="col-md-12">
-            <div class="well well-sm" style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
-                <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
-                    <option value="7">{{ trans('general.last_7_days') }}</option>
-                    <option value="14">{{ trans('general.last_14_days') }}</option>
-                    <option value="30" selected>{{ trans('general.last_30_days') }}</option>
-                    <option value="60">{{ trans('general.last_60_days') }}</option>
-                    <option value="90">{{ trans('general.last_90_days') }}</option>
-                    <option value="180">{{ trans('general.last_180_days') }}</option>
-                    <option value="365">{{ trans('general.last_365_days') }}</option>
-                    <option value="custom">{{ trans('general.custom_range') }}…</option>
-                </select>
-                <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
-                    <input type="text" id="chartStartDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
-                    <span class="input-group-addon">–</span>
-                    <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
+            <div class="well well-sm" style="margin-bottom:15px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                    <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
+                    <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
+                        <option value="7">{{ trans('general.last_7_days') }}</option>
+                        <option value="14">{{ trans('general.last_14_days') }}</option>
+                        <option value="30" selected>{{ trans('general.last_30_days') }}</option>
+                        <option value="60">{{ trans('general.last_60_days') }}</option>
+                        <option value="90">{{ trans('general.last_90_days') }}</option>
+                        <option value="180">{{ trans('general.last_180_days') }}</option>
+                        <option value="365">{{ trans('general.last_365_days') }}</option>
+                        <option value="custom">{{ trans('general.custom_range') }}…</option>
+                    </select>
+                    <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
+                        <input type="text" id="chartStartDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
+                        <span class="input-group-addon">–</span>
+                        <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom:-15px;">
+                    <div class="col-lg-3 col-sm-6">
+                        <a href="{{ route('reports.audit') }}">
+                            <div class="info-box">
+                                <span class="info-box-icon {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                                    <x-icon type="audit" />
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">{{ trans('general.audit_due') }} / {{ trans('general.audit_overdue') }}</span>
+                                    <span class="info-box-number">{{ number_format($audit_alert_count) }}</span>
+                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                        <div class="progress-bar" id="progress-audit" style="width: 0%"></div>
+                                    </div>
+                                    <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <a href="{{ url('reports/custom') }}">
+                            <div class="info-box">
+                                <span class="info-box-icon {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                                    <x-icon type="assets" />
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">{{ trans('general.checkin_due') }} / {{ trans('general.checkin_overdue') }}</span>
+                                    <span class="info-box-number">{{ number_format($checkin_alert_count) }}</span>
+                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                        <div class="progress-bar" id="progress-checkin" style="width: 0%"></div>
+                                    </div>
+                                    <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <a href="{{ route('reports/unaccepted_assets') }}">
+                            <div class="info-box">
+                                <span class="info-box-icon {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}" aria-hidden="true">
+                                    <x-icon type="assets" />
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">{{ trans('general.unaccepted_asset_report') }}</span>
+                                    <span class="info-box-number">{{ number_format($pending_acceptance_count) }}</span>
+                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                        <div class="progress-bar" id="progress-acceptance" style="width: 0%"></div>
+                                    </div>
+                                    <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <a href="{{ url('reports/licenses') }}">
+                            <div class="info-box">
+                                <span class="info-box-icon {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                                    <x-icon type="licenses" />
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">{{ trans('general.licenses_with_no_seats') }}</span>
+                                    <span class="info-box-number">{{ number_format($licenses_low_count) }}</span>
+                                    <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
+                                        <div class="progress-bar" id="progress-licenses" style="width: 0%"></div>
+                                    </div>
+                                    <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Row 1: Stat Alert Cards --}}
+
+    {{-- Users Box --}}
     <div class="row">
-
-        <div class="col-lg-3 col-sm-6">
-            <a href="{{ route('reports.audit') }}">
-                <div class="info-box">
-                    <span class="info-box-icon {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                        <x-icon type="audit" />
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ trans('general.audit_due') }} / {{ trans('general.audit_overdue') }}</span>
-                        <span class="info-box-number">{{ number_format($audit_alert_count) }}</span>
-                        <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
-                            <div class="progress-bar" id="progress-audit" style="width: 0%"></div>
-                        </div>
-                        <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
+        <div class="col-md-12">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h2 class="box-title"><x-icon type="users" /> {{ trans('general.users') }}</h2>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
-            </a>
-        </div>
-
-        <div class="col-lg-3 col-sm-6">
-            <a href="{{ url('reports/custom') }}">
-                <div class="info-box">
-                    <span class="info-box-icon {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                        <x-icon type="assets" />
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ trans('general.checkin_due') }} / {{ trans('general.checkin_overdue') }}</span>
-                        <span class="info-box-number">{{ number_format($checkin_alert_count) }}</span>
-                        <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
-                            <div class="progress-bar" id="progress-checkin" style="width: 0%"></div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="chart-title-row">
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!} / {!! trans('general.deleted_users') !!}</h4>
+                                <span class="chart-tools">
+                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-users" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
+                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-users" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
+                                </span>
+                            </div>
+                            <div class="chart-scroll">
+                                <div class="chart-inner" id="wrap-chart-users" style="position:relative; height:184px; min-width:100%;">
+                                    <canvas id="chart-users"></canvas>
+                                </div>
+                            </div>
                         </div>
-                        <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
-
-        <div class="col-lg-3 col-sm-6">
-            <a href="{{ route('reports/unaccepted_assets') }}">
-                <div class="info-box">
-                    <span class="info-box-icon {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}" aria-hidden="true">
-                        <x-icon type="assets" />
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ trans('general.unaccepted_asset_report') }}</span>
-                        <span class="info-box-number">{{ number_format($pending_acceptance_count) }}</span>
-                        <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
-                            <div class="progress-bar" id="progress-acceptance" style="width: 0%"></div>
-                        </div>
-                        <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-lg-3 col-sm-6">
-            <a href="{{ url('reports/licenses') }}">
-                <div class="info-box">
-                    <span class="info-box-icon {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
-                        <x-icon type="licenses" />
-                    </span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">{{ trans('general.licenses_with_no_seats') }}</span>
-                        <span class="info-box-number">{{ number_format($licenses_low_count) }}</span>
-                        <div class="progress" style="background-color: rgba(128,128,128,0.3); height:6px;">
-                            <div class="progress-bar" id="progress-licenses" style="width: 0%"></div>
-                        </div>
-                        <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-
     </div>
-
 
     {{-- Assets Box --}}
     <div class="row">
         <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.assets') }}</h2>
+                    <h2 class="box-title"><x-icon type="assets" /> {{ trans('general.assets') }}</h2>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
@@ -186,21 +213,21 @@
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-asset-checkouts" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-asset-checkouts" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-asset-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_assets_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-assets" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-assets" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-assets" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-assets" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-assets"></canvas>
                                 </div>
                             </div>
@@ -209,28 +236,28 @@
                     <div class="row" style="margin-top:20px;">
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_maintenances_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-maintenances" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-maintenances" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-maintenances" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-maintenances" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-maintenances"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_audits_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-audits" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-audits" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-audits" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-audits" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-audits"></canvas>
                                 </div>
                             </div>
@@ -246,7 +273,7 @@
         <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.components') }}</h2>
+                    <h2 class="box-title"><x-icon type="components" /> {{ trans('general.components') }}</h2>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
@@ -262,21 +289,21 @@
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-component-checkouts" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-component-checkouts" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-component-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_components_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-components" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-components" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-components" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-components" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-components"></canvas>
                                 </div>
                             </div>
@@ -292,7 +319,7 @@
         <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.consumables') }}</h2>
+                    <h2 class="box-title"><x-icon type="consumables" /> {{ trans('general.consumables') }}</h2>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
@@ -308,21 +335,21 @@
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-consumable-checkouts" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-consumable-checkouts" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-consumable-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_consumables_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-consumables" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-consumables" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-consumables" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-consumables" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-consumables"></canvas>
                                 </div>
                             </div>
@@ -338,7 +365,7 @@
         <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.licenses') }}</h2>
+                    <h2 class="box-title"><x-icon type="licenses" /> {{ trans('general.licenses') }}</h2>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
@@ -354,21 +381,21 @@
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-license-checkouts" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-license-checkouts" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-license-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_licenses_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-licenses" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-licenses" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-licenses" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-licenses" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-licenses"></canvas>
                                 </div>
                             </div>
@@ -384,7 +411,7 @@
         <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.accessories') }}</h2>
+                    <h2 class="box-title"><x-icon type="accessories" /> {{ trans('general.accessories') }}</h2>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
@@ -400,21 +427,21 @@
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-accessory-checkouts" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-accessory-checkouts" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-accessory-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.new_accessories_created') !!}</h4>
+                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
                                 <span class="chart-tools">
                                     <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-accessories" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
                                     <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-accessories" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
                                 </span>
                             </div>
                             <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-accessories" style="position:relative; height:160px; min-width:100%;">
+                                <div class="chart-inner" id="wrap-chart-accessories" style="position:relative; height:184px; min-width:100%;">
                                     <canvas id="chart-accessories"></canvas>
                                 </div>
                             </div>
@@ -608,6 +635,13 @@ function loadCharts(params) {
         dataType: 'json',
         success: function(d) {
             var p = d.prev_label;
+
+            // Users
+            makeChart2('chart-users',
+                d.labels, d.new_users, d.deleted_users, d.prev_new_users, d.prev_deleted_users,
+                '{!! trans('general.created_plain') !!}', '{!! trans('general.deleted_users') !!}',
+                c('checkin'), c('maintenance'), p
+            );
 
             // Info-box progress bars
             setInfoBar('audit',      trendPct(d.asset_checkouts,   d.prev_asset_checkouts),   p);

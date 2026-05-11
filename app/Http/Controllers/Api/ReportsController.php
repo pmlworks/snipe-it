@@ -14,6 +14,7 @@ use App\Models\Consumable;
 use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\Maintenance;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -216,6 +217,15 @@ class ReportsController extends Controller
                 ->toArray();
         };
 
+        $pluckDeletedUsers = function (Carbon $start, Carbon $end): array {
+            return User::onlyTrashed()
+                ->whereBetween('deleted_at', [$start, $end])
+                ->selectRaw('DATE(deleted_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
         // Catches both 'checkin' and 'checkin from' action types used across different item types.
         $pluckCheckinsByType = function (string $modelClass, Carbon $start, Carbon $end): array {
             return Actionlog::whereIn('action_type', ['checkin', 'checkin from'])
@@ -231,6 +241,8 @@ class ReportsController extends Controller
 
         $datasets = [];
         foreach ([
+            'new_users'     => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
+            'deleted_users' => fn ($s, $e) => $pluckDeletedUsers($s, $e),
             'asset_checkouts' => fn ($s, $e) => $pluckActionByType('checkout', Asset::class, $s, $e),
             'asset_checkins' => fn ($s, $e) => $pluckCheckinsByType(Asset::class, $s, $e),
             'new_assets' => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
