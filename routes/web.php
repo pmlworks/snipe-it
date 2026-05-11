@@ -459,7 +459,7 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
 
     Route::get('/', [ReportsController::class, 'index'])
         ->name('reports.index')
-        ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
             ->push(trans('general.reports'), route('reports.index')));
 
     Route::get('audit', [ReportsController::class, 'audit'])
@@ -509,7 +509,7 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
 
     Route::get('accessories', [ReportsController::class, 'getAccessoryReport'])
         ->name('reports/accessories')
-        ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
             ->push(trans('general.reports'), route('reports.index'))
             ->push(trans('general.accessory_report'), route('reports/accessories')));
 
