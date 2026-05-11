@@ -700,14 +700,21 @@ trait Searchable
             $dbColumn = $this->resolveCustomFieldDbColumn($filterKey);
 
             if ($dbColumn !== null) {
-                $method = match (true) {
-                    $isNull && $boolean === 'or' => 'orWhereNull',
-                    $isNull => 'whereNull',
-                    $boolean === 'or' => 'orWhereNotNull',
-                    default => 'whereNotNull',
-                };
+                $column = $table.'.'.$dbColumn;
 
-                $query->{$method}($table.'.'.$dbColumn);
+                $method = $boolean === 'or' ? 'orWhere' : 'where';
+
+                $query->{$method}(function (Builder $subQuery) use ($column, $isNull): void {
+                    if ($isNull) {
+                        $subQuery->whereNull($column)
+                            ->orWhere($column, '=', '');
+
+                        return;
+                    }
+
+                    $subQuery->whereNotNull($column)
+                        ->where($column, '!=', '');
+                });
 
                 return $query;
             }
@@ -715,14 +722,20 @@ trait Searchable
 
         // Direct attribute column.
         if (in_array($filterKey, $searchableAttributes, true)) {
-            $method = match (true) {
-                $isNull && $boolean === 'or' => 'orWhereNull',
-                $isNull => 'whereNull',
-                $boolean === 'or' => 'orWhereNotNull',
-                default => 'whereNotNull',
-            };
+            $column = $table.'.'.$filterKey;
+            $method = $boolean === 'or' ? 'orWhere' : 'where';
 
-            $query->{$method}($table.'.'.$filterKey);
+            $query->{$method}(function (Builder $subQuery) use ($column, $isNull): void {
+                if ($isNull) {
+                    $subQuery->whereNull($column)
+                        ->orWhere($column, '=', '');
+
+                    return;
+                }
+
+                $subQuery->whereNotNull($column)
+                    ->where($column, '!=', '');
+            });
 
             return $query;
         }
