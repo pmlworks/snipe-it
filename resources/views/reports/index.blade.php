@@ -67,7 +67,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="well well-sm" style="margin-bottom:15px;">
-                <form class="form-inline" style="margin-bottom: 10px;">
+                <form class="form-inline" style="margin-bottom: 10px; border-bottom: var(--box-header-bottom-border)">
                     <label style="font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
                     <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
                         <option value="7">{{ trans('general.last_n_days', ['days' => 7]) }}</option>
@@ -99,7 +99,7 @@
                                             <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
                                      </span>
                                     <div class="progress" style="height:6px;">
-                                        <div class="progress-bar" id="progress-audit" style="width: 0%"></div>
+                                        <div class="progress-bar" id="progress-audit" data-count="{{ $audit_alert_count }}" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
                                         <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
                                     </span>
                                     <div class="progress" style="height:6px;">
-                                        <div class="progress-bar" id="progress-checkin" style="width: 0%"></div>
+                                        <div class="progress-bar" id="progress-checkin" data-count="{{ $checkin_alert_count }}" style="width: 0%"></div>
                                     </div>
 
                                 </div>
