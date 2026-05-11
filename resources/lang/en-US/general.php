@@ -497,7 +497,7 @@ return [
     'assets' => 'Assets',
 
     'vs_prior_period' => 'vs. prior period',
-    'time_range' => 'Time Range',
+    'time_range' => 'Select Date Range',
     'last_n_days' => 'Last :days Days',
     'custom_range' => 'Custom Range',
     'download_chart' => 'Download Chart as PNG',
