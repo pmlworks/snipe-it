@@ -10,7 +10,7 @@
 @section('content')
 
     {{-- Row: Report Links --}}
-    <div class="row">
+    <div class="row" style="padding-bottom: 10px;">
 
         <div class="col-md-3 col-sm-6">
             <span href="{{ route('reports.activity') }}" class="btn btn-theme btn-block" style="margin-bottom: 10px; white-space: normal;">
@@ -160,296 +160,151 @@
     </div>
 
 
-    {{-- Users Box --}}
+    {{-- Row 1: Users + Assets --}}
     <div class="row">
-        <div class="col-md-12">
+
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="users" /> {{ trans('general.users') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-users" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-users" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!} / {!! trans('general.deleted_users') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-users" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-users" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-users" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-users"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-users" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-users"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Assets Box --}}
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="assets" /> {{ trans('general.assets') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-assets" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-assets" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.checkouts_checkins') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-asset-checkouts" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-asset-checkouts" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-asset-checkouts" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-asset-checkouts"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-assets" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-assets" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-assets" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-assets"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top:20px;">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-maintenances" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-maintenances" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-maintenances" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-maintenances"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-audits" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-audits" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-audits" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-audits"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-assets" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-assets"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    {{-- Components --}}
+    {{-- Row 2: Components + Consumables --}}
     <div class="row">
-        <div class="col-md-12">
+
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="components" /> {{ trans('general.components') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-components" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-components" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.checkouts_checkins') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-component-checkouts" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-component-checkouts" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-component-checkouts" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-component-checkouts"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-components" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-components" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-components" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-components"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-components" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-components"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Consumables --}}
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="consumables" /> {{ trans('general.consumables') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-consumables" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-consumables" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.checkouts_checkins') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-consumable-checkouts" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-consumable-checkouts" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-consumable-checkouts" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-consumable-checkouts"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-consumables" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-consumables" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-consumables" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-consumables"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-consumables" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-consumables"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    {{-- Licenses --}}
+    {{-- Row 3: Licenses + Accessories --}}
     <div class="row">
-        <div class="col-md-12">
+
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="licenses" /> {{ trans('general.licenses') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-licenses" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-licenses" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.checkouts_checkins') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-license-checkouts" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-license-checkouts" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-license-checkouts" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-license-checkouts"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-licenses" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-licenses" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-licenses" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-licenses"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-licenses" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-licenses"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Accessories --}}
-    <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title"><x-icon type="accessories" /> {{ trans('general.accessories') }}</h2>
                     <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-accessories" title="{{ trans('general.download_chart') }}">
+                            <i class="fa fa-download fa-fw"></i></button>
+                        <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-accessories" title="{{ trans('general.fullscreen') }}">
+                            <i class="fa fa-expand fa-fw"></i></button>
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.checkouts_checkins') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-accessory-checkouts" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-accessory-checkouts" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-accessory-checkouts" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-accessory-checkouts"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="chart-title-row">
-                                <h4 class="chart-title">{!! trans('general.created_plain') !!}</h4>
-                                <span class="chart-tools">
-                                    <button type="button" class="btn btn-box-tool chart-dl-btn" data-target="chart-accessories" title="{{ trans('general.download_chart') }}"><i class="fa fa-download fa-fw"></i></button>
-                                    <button type="button" class="btn btn-box-tool chart-fs-btn" data-target="chart-accessories" title="{{ trans('general.fullscreen') }}"><i class="fa fa-expand fa-fw"></i></button>
-                                </span>
-                            </div>
-                            <div class="chart-scroll">
-                                <div class="chart-inner" id="wrap-chart-accessories" style="position:relative; height:184px; min-width:100%;">
-                                    <canvas id="chart-accessories"></canvas>
-                                </div>
-                            </div>
+                    <div class="chart-scroll">
+                        <div class="chart-inner" id="wrap-chart-accessories" style="position:relative; height:184px; min-width:100%;">
+                            <canvas id="chart-accessories"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
 @stop
@@ -462,14 +317,6 @@
 [data-theme="dark"] .info-box .info-box-number,
 [data-theme="dark"] .info-box .info-box-text,
 [data-theme="dark"] .info-box .info-box-more { color: #d2d6de; }
-.chart-title-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 4px;
-}
-.chart-title { margin: 0; }
-.chart-tools { white-space: nowrap; }
 .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 /* Fullscreen: expand the chart-inner div to fill the screen */
@@ -484,7 +331,6 @@
 <script src="{{ url(mix('js/dist/Chart.min.js')) }}"></script>
 <script nonce="{{ csrf_token() }}">
 
-// Chart instances keyed by canvas ID for clean destroy/recreate
 var charts = {};
 var lastParams = { days: 30 };
 
@@ -496,8 +342,7 @@ function applyChartTheme() {
     Chart.defaults.global.defaultFontColor = isDark() ? '#cccccc' : '#666666';
 }
 
-// Fill canvas with the box-body background before each chart draw so lines
-// render against a solid surface rather than a transparent canvas in dark mode.
+// Fill canvas with the box-body background so lines are visible in dark mode.
 Chart.pluginService.register({
     beforeDraw: function (chart) {
         var el = chart.canvas.parentElement;
@@ -521,7 +366,18 @@ function getLineOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        legend: { position: 'bottom', labels: { boxWidth: 12, fontColor: fontColor } },
+        legend: {
+            position: 'bottom',
+            labels: {
+                boxWidth: 12,
+                fontColor: fontColor,
+                // Hide the previous-period (dashed) series from the legend —
+                // they're visible on the chart but would double the legend entries.
+                filter: function (item, data) {
+                    return !data.datasets[item.datasetIndex].isPrev;
+                },
+            },
+        },
         scales: {
             xAxes: [{ gridLines: { display: false }, ticks: { maxTicksLimit: 10, fontColor: fontColor } }],
             yAxes: [{ gridLines: { color: gridColor }, ticks: { beginAtZero: true, precision: 0, fontColor: fontColor } }]
@@ -541,47 +397,23 @@ function ds(label, data, color, isPrev) {
         pointHoverRadius: isPrev ? 3 : 5,
         fill:             false,
         tension:          0.3,
+        isPrev: isPrev,
     };
 }
 
-// Widen the canvas wrapper for long ranges so labels aren't squashed.
-// Each label gets at least 8px; below 61 labels the chart fills naturally.
-function applyScrollWidth(id, labelCount) {
+// series = [{ label, current, previous, color }, ...]
+function makeChartMulti(id, labels, series, prevPeriod) {
+    if (charts[id]) { charts[id].destroy(); }
     var wrap = document.getElementById('wrap-' + id);
-    if (!wrap) return;
-    wrap.style.width = labelCount > 60 ? (labelCount * 8) + 'px' : '';
-}
-
-function makeChart(id, labels, current, previous, label, prevPeriod, color) {
-    if (charts[id]) { charts[id].destroy(); }
-    applyScrollWidth(id, labels.length);
-    charts[id] = new Chart(document.getElementById(id), {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                ds(label,                           current,  color,                    false),
-                ds(label + ' (' + prevPeriod + ')', previous, hexToRgba(color, 0.5),   true),
-            ]
-        },
-        options: getLineOptions()
+    if (wrap) wrap.style.width = labels.length > 60 ? (labels.length * 8) + 'px' : '';
+    var datasets = [];
+    series.forEach(function (s) {
+        datasets.push(ds(s.label, s.current, s.color, false));
+        datasets.push(ds(s.label + ' (' + prevPeriod + ')', s.previous, hexToRgba(s.color, 0.5), true));
     });
-}
-
-function makeChart2(id, labels, d1, d2, prev1, prev2, label1, label2, color1, color2, prevPeriod) {
-    if (charts[id]) { charts[id].destroy(); }
-    applyScrollWidth(id, labels.length);
     charts[id] = new Chart(document.getElementById(id), {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                ds(label1,                           d1,   color1,                    false),
-                ds(label2,                           d2,   color2,                    false),
-                ds(label1 + ' (' + prevPeriod + ')', prev1, hexToRgba(color1, 0.5), true),
-                ds(label2 + ' (' + prevPeriod + ')', prev2, hexToRgba(color2, 0.5), true),
-            ]
-        },
+        data: {labels: labels, datasets: datasets},
         options: getLineOptions()
     });
 }
@@ -636,65 +468,147 @@ function loadCharts(params) {
         success: function(d) {
             var p = d.prev_label;
 
-            // Users
-            makeChart2('chart-users',
-                d.labels, d.new_users, d.deleted_users, d.prev_new_users, d.prev_deleted_users,
-                '{!! trans('general.created_plain') !!}', '{!! trans('general.deleted_users') !!}',
-                c('checkin'), c('maintenance'), p
-            );
-
             // Info-box progress bars
             setInfoBar('audit',      trendPct(d.asset_checkouts,   d.prev_asset_checkouts),   p);
             setInfoBar('checkin',    trendPct(d.asset_checkins,    d.prev_asset_checkins),    p);
             setInfoBar('acceptance', trendPct(d.asset_checkouts,   d.prev_asset_checkouts),   p);
             setInfoBar('licenses',   trendPct(d.license_checkouts, d.prev_license_checkouts), p);
 
-            // Assets
-            makeChart2('chart-asset-checkouts',
-                d.labels, d.asset_checkouts, d.asset_checkins, d.prev_asset_checkouts, d.prev_asset_checkins,
-                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
-                c('checkout'), c('checkin'), p
-            );
-            makeChart('chart-assets',       d.labels, d.new_assets,       d.prev_new_assets,       '{!! trans('general.assets') !!}',       p, c('asset'));
-            makeChart('chart-maintenances', d.labels, d.new_maintenances, d.prev_new_maintenances, '{!! trans('general.maintenances') !!}', p, c('maintenance'));
-            makeChart('chart-audits',       d.labels, d.new_audits,       d.prev_new_audits,       '{!! trans('general.audits') !!}',       p, c('audit'));
+            makeChartMulti('chart-users', d.labels, [
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_users,
+                    previous: d.prev_new_users,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.deleted_users') !!}',
+                    current: d.deleted_users,
+                    previous: d.prev_deleted_users,
+                    color: c('maintenance'),
+                },
+            ], p);
 
-            // Components
-            makeChart2('chart-component-checkouts',
-                d.labels, d.component_checkouts, d.component_checkins, d.prev_component_checkouts, d.prev_component_checkins,
-                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
-                c('checkout'), c('checkin'), p
-            );
-            makeChart('chart-components', d.labels, d.new_components, d.prev_new_components, '{!! trans('general.components') !!}', p, c('component'));
+            makeChartMulti('chart-assets', d.labels, [
+                {
+                    label: '{!! trans('general.checkouts') !!}',
+                    current: d.asset_checkouts,
+                    previous: d.prev_asset_checkouts,
+                    color: c('checkout'),
+                },
+                {
+                    label: '{!! trans('general.checkins') !!}',
+                    current: d.asset_checkins,
+                    previous: d.prev_asset_checkins,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_assets,
+                    previous: d.prev_new_assets,
+                    color: c('asset'),
+                },
+                {
+                    label: '{!! trans('general.maintenances') !!}',
+                    current: d.new_maintenances,
+                    previous: d.prev_new_maintenances,
+                    color: c('maintenance'),
+                },
+                {
+                    label: '{!! trans('general.audits') !!}',
+                    current: d.new_audits,
+                    previous: d.prev_new_audits,
+                    color: c('audit'),
+                },
+            ], p);
 
-            // Consumables
-            makeChart2('chart-consumable-checkouts',
-                d.labels, d.consumable_checkouts, d.consumable_checkins, d.prev_consumable_checkouts, d.prev_consumable_checkins,
-                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
-                c('checkout'), c('checkin'), p
-            );
-            makeChart('chart-consumables', d.labels, d.new_consumables, d.prev_new_consumables, '{!! trans('general.consumables') !!}', p, c('consumable'));
+            makeChartMulti('chart-components', d.labels, [
+                {
+                    label: '{!! trans('general.checkouts') !!}',
+                    current: d.component_checkouts,
+                    previous: d.prev_component_checkouts,
+                    color: c('checkout'),
+                },
+                {
+                    label: '{!! trans('general.checkins') !!}',
+                    current: d.component_checkins,
+                    previous: d.prev_component_checkins,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_components,
+                    previous: d.prev_new_components,
+                    color: c('component'),
+                },
+            ], p);
 
-            // Licenses
-            makeChart2('chart-license-checkouts',
-                d.labels, d.license_checkouts, d.license_checkins, d.prev_license_checkouts, d.prev_license_checkins,
-                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
-                c('checkout'), c('checkin'), p
-            );
-            makeChart('chart-licenses', d.labels, d.new_licenses, d.prev_new_licenses, '{!! trans('general.licenses') !!}', p, c('license'));
+            makeChartMulti('chart-consumables', d.labels, [
+                {
+                    label: '{!! trans('general.checkouts') !!}',
+                    current: d.consumable_checkouts,
+                    previous: d.prev_consumable_checkouts,
+                    color: c('checkout'),
+                },
+                {
+                    label: '{!! trans('general.checkins') !!}',
+                    current: d.consumable_checkins,
+                    previous: d.prev_consumable_checkins,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_consumables,
+                    previous: d.prev_new_consumables,
+                    color: c('consumable'),
+                },
+            ], p);
 
-            // Accessories
-            makeChart2('chart-accessory-checkouts',
-                d.labels, d.accessory_checkouts, d.accessory_checkins, d.prev_accessory_checkouts, d.prev_accessory_checkins,
-                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
-                c('checkout'), c('checkin'), p
-            );
-            makeChart('chart-accessories', d.labels, d.new_accessories, d.prev_new_accessories, '{!! trans('general.accessories') !!}', p, c('accessory'));
+            makeChartMulti('chart-licenses', d.labels, [
+                {
+                    label: '{!! trans('general.checkouts') !!}',
+                    current: d.license_checkouts,
+                    previous: d.prev_license_checkouts,
+                    color: c('checkout'),
+                },
+                {
+                    label: '{!! trans('general.checkins') !!}',
+                    current: d.license_checkins,
+                    previous: d.prev_license_checkins,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_licenses,
+                    previous: d.prev_new_licenses,
+                    color: c('license'),
+                },
+            ], p);
+
+            makeChartMulti('chart-accessories', d.labels, [
+                {
+                    label: '{!! trans('general.checkouts') !!}',
+                    current: d.accessory_checkouts,
+                    previous: d.prev_accessory_checkouts,
+                    color: c('checkout'),
+                },
+                {
+                    label: '{!! trans('general.checkins') !!}',
+                    current: d.accessory_checkins,
+                    previous: d.prev_accessory_checkins,
+                    color: c('checkin'),
+                },
+                {
+                    label: '{!! trans('general.created_plain') !!}',
+                    current: d.new_accessories,
+                    previous: d.prev_new_accessories,
+                    color: c('accessory'),
+                },
+            ], p);
         }
     });
 }
 
-// Preset dropdown
 $('#chartTimeRange').on('change', function() {
     if ($(this).val() === 'custom') {
         $('#customRangePicker').css('display', 'flex');
@@ -704,7 +618,6 @@ $('#chartTimeRange').on('change', function() {
     }
 });
 
-// Bootstrap datepicker
 $('#customRangePicker').datepicker({
     clearBtn: true,
     todayHighlight: true,
@@ -721,7 +634,6 @@ $('#customRangePicker').on('changeDate', function() {
     }
 });
 
-// Download chart as PNG
 $(document).on('click', '.chart-dl-btn', function() {
     var id    = $(this).data('target');
     var chart = charts[id];
@@ -732,7 +644,6 @@ $(document).on('click', '.chart-dl-btn', function() {
     a.click();
 });
 
-// Fullscreen chart
 $(document).on('click', '.chart-fs-btn', function() {
     var wrap = document.getElementById('wrap-' + $(this).data('target'));
     if (!wrap) return;
@@ -740,7 +651,6 @@ $(document).on('click', '.chart-fs-btn', function() {
     if (req) req.call(wrap);
 });
 
-// After exiting fullscreen, resize all charts back to their containers
 document.addEventListener('fullscreenchange', function() {
     if (!document.fullscreenElement) {
         $.each(charts, function(id, chart) { if (chart) chart.resize(); });
@@ -754,7 +664,6 @@ document.addEventListener('webkitfullscreenchange', function() {
 
 loadCharts({ days: 30 });
 
-// Reload charts when data-theme attribute changes on <html> (the app's dark mode mechanism)
 new MutationObserver(function () {
     loadCharts(lastParams);
 }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
