@@ -124,37 +124,29 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-asset-checkouts"></canvas>
-                                </div>
+                            <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-asset-checkouts"></canvas>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_assets_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-assets"></canvas>
-                                </div>
+                            <h4>{!! trans('general.new_assets_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-assets"></canvas>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="margin-top:20px;">
                         <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_maintenances_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-maintenances"></canvas>
-                                </div>
+                            <h4>{!! trans('general.new_maintenances_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-maintenances"></canvas>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_audits_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-audits"></canvas>
-                                </div>
+                            <h4>{!! trans('general.new_audits_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-audits"></canvas>
                             </div>
                         </div>
                     </div>
@@ -163,9 +155,9 @@
         </div>
     </div>
 
-    {{-- Components & Consumables --}}
+    {{-- Components, Consumables, Licenses & Accessories --}}
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3 col-sm-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.components') }}</h2>
@@ -174,22 +166,18 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="well">
-                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-component-checkouts"></canvas>
-                        </div>
+                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-component-checkouts"></canvas>
                     </div>
-                    <div class="well">
-                        <h4>{!! trans('general.new_components_created') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-components"></canvas>
-                        </div>
+                    <h4 style="margin-top:15px;">{!! trans('general.new_components_created') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-components"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3 col-sm-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.consumables') }}</h2>
@@ -198,26 +186,18 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="well">
-                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-consumable-checkouts"></canvas>
-                        </div>
+                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-consumable-checkouts"></canvas>
                     </div>
-                    <div class="well">
-                        <h4>{!! trans('general.new_consumables_created') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-consumables"></canvas>
-                        </div>
+                    <h4 style="margin-top:15px;">{!! trans('general.new_consumables_created') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-consumables"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    {{-- Licenses & Accessories --}}
-    <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3 col-sm-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.licenses') }}</h2>
@@ -226,22 +206,18 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="well">
-                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-license-checkouts"></canvas>
-                        </div>
+                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-license-checkouts"></canvas>
                     </div>
-                    <div class="well">
-                        <h4>{!! trans('general.new_licenses_created') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-licenses"></canvas>
-                        </div>
+                    <h4 style="margin-top:15px;">{!! trans('general.new_licenses_created') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-licenses"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-3 col-sm-6">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.accessories') }}</h2>
@@ -250,17 +226,13 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="well">
-                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-accessory-checkouts"></canvas>
-                        </div>
+                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-accessory-checkouts"></canvas>
                     </div>
-                    <div class="well">
-                        <h4>{!! trans('general.new_accessories_created') !!}</h4>
-                        <div style="position:relative; height:160px;">
-                            <canvas id="chart-accessories"></canvas>
-                        </div>
+                    <h4 style="margin-top:15px;">{!! trans('general.new_accessories_created') !!}</h4>
+                    <div style="position:relative; height:140px;">
+                        <canvas id="chart-accessories"></canvas>
                     </div>
                 </div>
             </div>
@@ -341,16 +313,26 @@
 
 // Chart instances keyed by canvas ID for clean destroy/recreate
 var charts = {};
+var lastParams = { days: 30 };
 
-var lineOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    legend: { position: 'bottom', labels: { boxWidth: 12 } },
-    scales: {
-        xAxes: [{ gridLines: { display: false }, ticks: { maxTicksLimit: 10 } }],
-        yAxes: [{ ticks: { beginAtZero: true, precision: 0 } }]
-    }
-};
+function isDark() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function getLineOptions() {
+    var dark = isDark();
+    var fontColor  = dark ? '#bbb' : '#666';
+    var gridColor  = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)';
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { position: 'bottom', labels: { boxWidth: 12, fontColor: fontColor } },
+        scales: {
+            xAxes: [{ gridLines: { display: false }, ticks: { maxTicksLimit: 10, fontColor: fontColor } }],
+            yAxes: [{ gridLines: { color: gridColor }, ticks: { beginAtZero: true, precision: 0, fontColor: fontColor } }]
+        }
+    };
+}
 
 function ds(label, data, color, isPrev) {
     return {
