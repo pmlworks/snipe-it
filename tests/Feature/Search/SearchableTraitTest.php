@@ -856,6 +856,41 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Regression: `assigned_to` is a polymorphic searchable relation key.
+     * `is:null` should return unassigned assets; `is:not_null` should return assigned assets.
+     */
+    public function test_is_null_filter_on_polymorphic_assigned_to_relation_key()
+    {
+        /** @var User $assignee */
+        $assignee = User::factory()->create();
+        $assignedAsset = Asset::factory()->assignedToUser($assignee)->create();
+        $unassignedAsset = Asset::factory()->create([
+            'assigned_to' => null,
+            'assigned_type' => null,
+        ]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['assigned_to' => 'is:null'])]))
+            ->assertOk();
+
+        $returnedNullIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $unassignedAsset->id, $returnedNullIds);
+        $this->assertNotContains((int) $assignedAsset->id, $returnedNullIds);
+
+        $response2 = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['assigned_to' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedNotNullIds = collect($response2->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $assignedAsset->id, $returnedNotNullIds);
+        $this->assertNotContains((int) $unassignedAsset->id, $returnedNotNullIds);
+    }
+
+    /**
      * Test custom field partial match via filter.
      */
     public function test_custom_field_filter_partial_match()
