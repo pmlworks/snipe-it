@@ -70,13 +70,13 @@
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
                     <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
                     <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
-                        <option value="7">{{ trans('general.last_7_days') }}</option>
-                        <option value="14">{{ trans('general.last_14_days') }}</option>
-                        <option value="30" selected>{{ trans('general.last_30_days') }}</option>
-                        <option value="60">{{ trans('general.last_60_days') }}</option>
-                        <option value="90">{{ trans('general.last_90_days') }}</option>
-                        <option value="180">{{ trans('general.last_180_days') }}</option>
-                        <option value="365">{{ trans('general.last_365_days') }}</option>
+                        <option value="7">{{ trans('general.last_n_days', ['days' => 7]) }}</option>
+                        <option value="14">{{ trans('general.last_n_days', ['days' => 14]) }}</option>
+                        <option value="30" selected>{{ trans('general.last_n_days', ['days' => 30]) }}</option>
+                        <option value="60">{{ trans('general.last_n_days', ['days' => 60]) }}</option>
+                        <option value="90">{{ trans('general.last_n_days', ['days' => 90]) }}</option>
+                        <option value="180">{{ trans('general.last_n_days', ['days' => 180]) }}</option>
+                        <option value="365">{{ trans('general.last_n_days', ['days' => 365]) }}</option>
                         <option value="custom">{{ trans('general.custom_range') }}…</option>
                     </select>
                     <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
@@ -181,6 +181,7 @@
                             <canvas id="chart-users"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-users"></p>
                 </div>
             </div>
         </div>
@@ -203,6 +204,7 @@
                             <canvas id="chart-assets"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-assets"></p>
                 </div>
             </div>
         </div>
@@ -230,6 +232,7 @@
                             <canvas id="chart-components"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-components"></p>
                 </div>
             </div>
         </div>
@@ -252,6 +255,7 @@
                             <canvas id="chart-consumables"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-consumables"></p>
                 </div>
             </div>
         </div>
@@ -279,6 +283,7 @@
                             <canvas id="chart-licenses"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-licenses"></p>
                 </div>
             </div>
         </div>
@@ -301,6 +306,7 @@
                             <canvas id="chart-accessories"></canvas>
                         </div>
                     </div>
+                    <p class="chart-prev-note" id="note-chart-accessories"></p>
                 </div>
             </div>
         </div>
@@ -318,6 +324,7 @@
 [data-theme="dark"] .info-box .info-box-text,
 [data-theme="dark"] .info-box .info-box-more { color: #d2d6de; }
 .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.chart-prev-note { font-size: 11px; font-style: italic; text-align: center; color: #999; margin: 4px 0 0; }
 
 /* Fullscreen: expand the chart-inner div to fill the screen */
 .chart-inner:fullscreen          { height: 100vh !important; width: 100vw !important; }
@@ -416,6 +423,8 @@ function makeChartMulti(id, labels, series, prevPeriod) {
         data: {labels: labels, datasets: datasets},
         options: getLineOptions()
     });
+    var note = document.getElementById('note-' + id);
+    if (note) note.textContent = '- - - - = ' + prevPeriod;
 }
 
 function hexToRgba(hex, alpha) {
