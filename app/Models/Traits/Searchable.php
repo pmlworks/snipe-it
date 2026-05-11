@@ -757,7 +757,26 @@ trait Searchable
         $searchableRelations = $this->getSearchableRelations();
         $resolvedRelationKey = $this->resolveSearchableRelationKey($filterKey, $searchableRelations);
 
-        if ($resolvedRelationKey !== null && ! $this->isAssignedToRelationKey($resolvedRelationKey)) {
+        if ($resolvedRelationKey !== null && $this->isAssignedToRelationKey($resolvedRelationKey)) {
+            $method = $boolean === 'or' ? 'orWhere' : 'where';
+            // Polymorphic assignment is present only when both columns are set; null matches either side missing.
+
+            if ($isNull) {
+                $query->{$method}(function (Builder $assigneeNullQuery) use ($table): void {
+                    $assigneeNullQuery->whereNull($table.'.assigned_to')
+                        ->orWhereNull($table.'.assigned_type');
+                });
+            } else {
+                $query->{$method}(function (Builder $assigneeNotNullQuery) use ($table): void {
+                    $assigneeNotNullQuery->whereNotNull($table.'.assigned_to')
+                        ->whereNotNull($table.'.assigned_type');
+                });
+            }
+
+            return $query;
+        }
+
+        if ($resolvedRelationKey !== null) {
             if ($isNull) {
                 $method = $boolean === 'or' ? 'orDoesntHave' : 'doesntHave';
                 $query->{$method}($resolvedRelationKey);
