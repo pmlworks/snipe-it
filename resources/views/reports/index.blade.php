@@ -155,9 +155,9 @@
         </div>
     </div>
 
-    {{-- Components, Consumables, Licenses & Accessories --}}
+    {{-- Components --}}
     <div class="row">
-        <div class="col-md-3 col-sm-6">
+        <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.components') }}</h2>
@@ -166,18 +166,28 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-component-checkouts"></canvas>
-                    </div>
-                    <h4 style="margin-top:15px;">{!! trans('general.new_components_created') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-components"></canvas>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-component-checkouts"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.new_components_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-components"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+    </div>
+
+    {{-- Consumables --}}
+    <div class="row">
+        <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.consumables') }}</h2>
@@ -186,18 +196,28 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-consumable-checkouts"></canvas>
-                    </div>
-                    <h4 style="margin-top:15px;">{!! trans('general.new_consumables_created') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-consumables"></canvas>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-consumable-checkouts"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.new_consumables_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-consumables"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+    </div>
+
+    {{-- Licenses --}}
+    <div class="row">
+        <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.licenses') }}</h2>
@@ -206,18 +226,28 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-license-checkouts"></canvas>
-                    </div>
-                    <h4 style="margin-top:15px;">{!! trans('general.new_licenses_created') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-licenses"></canvas>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-license-checkouts"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.new_licenses_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-licenses"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3 col-sm-6">
+    </div>
+
+    {{-- Accessories --}}
+    <div class="row">
+        <div class="col-md-12">
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h2 class="box-title">{{ trans('general.accessories') }}</h2>
@@ -226,13 +256,19 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <h4>{!! trans('general.checkouts_checkins') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-accessory-checkouts"></canvas>
-                    </div>
-                    <h4 style="margin-top:15px;">{!! trans('general.new_accessories_created') !!}</h4>
-                    <div style="position:relative; height:140px;">
-                        <canvas id="chart-accessories"></canvas>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-accessory-checkouts"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>{!! trans('general.new_accessories_created') !!}</h4>
+                            <div style="position:relative; height:160px;">
+                                <canvas id="chart-accessories"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -360,7 +396,7 @@ function makeChart(id, labels, current, previous, label, prevPeriod, color) {
                 ds(label + ' (' + prevPeriod + ')', previous, hexToRgba(color, 0.5), true),
             ]
         },
-        options: lineOptions
+        options: getLineOptions()
     });
 }
 
@@ -377,7 +413,7 @@ function makeChart2(id, labels, d1, d2, prev1, prev2, label1, label2, color1, co
                 ds(label2 + ' (' + prevPeriod + ')', prev2, hexToRgba(color2, 0.5), true),
             ]
         },
-        options: lineOptions
+        options: getLineOptions()
     });
 }
 
@@ -403,6 +439,7 @@ function setInfoBar(id, pct, prevLabel) {
 }
 
 function loadCharts(params) {
+    lastParams = params;
     $.ajax({
         type: 'GET',
         url: '{{ route('api.reports.activity.chart') }}',
@@ -491,6 +528,10 @@ $('#customRangePicker').on('changeDate', function() {
 });
 
 loadCharts({ days: 30 });
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+    loadCharts(lastParams);
+});
 
 </script>
 @endpush
