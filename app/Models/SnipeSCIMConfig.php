@@ -196,7 +196,12 @@ class SnipeSCIMConfig
                         public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             if ($value) {
-                                $object->email = $value[0]['value'];
+                                try {
+                                    $object->email = $value[0]['value'];
+                                } catch (\Exception $e) {
+                                    \Log::debug($e);
+                                    throw new SCIMException("Unknown email object:  '" . print_r($value, true) . "'", 422);
+                                }
                             } else {
                                 $object->email = null;
                             }
