@@ -111,30 +111,6 @@
     </div>
 
 
-    {{-- Date Range Control --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="well well-sm" style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
-                <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
-                <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
-                    <option value="7">{{ trans('general.last_7_days') }}</option>
-                    <option value="14">{{ trans('general.last_14_days') }}</option>
-                    <option value="30" selected>{{ trans('general.last_30_days') }}</option>
-                    <option value="60">{{ trans('general.last_60_days') }}</option>
-                    <option value="90">{{ trans('general.last_90_days') }}</option>
-                    <option value="180">{{ trans('general.last_180_days') }}</option>
-                    <option value="365">{{ trans('general.last_365_days') }}</option>
-                    <option value="custom">{{ trans('general.custom_range') }}…</option>
-                </select>
-                <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
-                    <input type="text" id="chartStartDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
-                    <span class="input-group-addon">–</span>
-                    <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
-                </div>
-            </div>
-        </div>
-    </div>
-
     {{-- Assets Box --}}
     <div class="row">
         <div class="col-md-12">
