@@ -790,6 +790,32 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Blank string values should be treated like empty content for direct string fields.
+     */
+    public function test_is_not_null_filter_excludes_blank_string_direct_attributes()
+    {
+        $populated = Asset::factory()->create([
+            'name' => 'Named Asset '.now()->timestamp,
+            'order_number' => 'PO-12345',
+        ]);
+        $blank = Asset::factory()->create([
+            'name' => '',
+            'order_number' => '',
+        ]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['order_number' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $populated->id, $returnedIds);
+        $this->assertNotContains((int) $blank->id, $returnedIds);
+    }
+
+    /**
      * "is:not_null" on the User virtual "name" column should match users where
      * at least one constituent column (first_name, last_name) is not null.
      * All factory-created users have a first_name, so they should all appear.
