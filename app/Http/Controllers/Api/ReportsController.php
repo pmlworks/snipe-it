@@ -11,6 +11,7 @@ use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\Component;
 use App\Models\Consumable;
+use App\Models\License;
 use App\Models\Maintenance;
 use App\Models\User;
 use Carbon\Carbon;
@@ -183,10 +184,22 @@ class ReportsController extends Controller
                 ->toArray();
         };
 
-        // Query a model's own table for created_at counts (catches API/import creates, not just UI)
+        // Query a model's own table for created_at counts (catches API/import creates, not just UI).
+        // Models with CompanyableTrait have a global scope applied automatically.
         $pluckCreated = function (string $modelClass, Carbon $start, Carbon $end): array {
             return $modelClass::whereBetween('created_at', [$start, $end])
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
+        // Maintenance has no company_id column and no CompanyableTrait, so scope through
+        // its asset relationship — whereHas('asset') applies Asset's FMCS global scope.
+        $pluckMaintenances = function (Carbon $start, Carbon $end): array {
+            return Maintenance::whereHas('asset')
+                ->whereBetween('maintenances.created_at', [$start, $end])
+                ->selectRaw('DATE(maintenances.created_at) as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date')
                 ->toArray();
@@ -196,14 +209,15 @@ class ReportsController extends Controller
 
         $datasets = [];
         foreach ([
-            'checkouts' => fn ($s, $e) => $pluckAction('checkout', $s, $e),
-            'checkins' => fn ($s, $e) => $pluckAction('checkin from', $s, $e),
-            'new_assets' => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
-            'new_maintenances' => fn ($s, $e) => $pluckCreated(Maintenance::class, $s, $e),
-            'new_users' => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
+            'checkouts'       => fn ($s, $e) => $pluckAction('checkout', $s, $e),
+            'checkins'        => fn ($s, $e) => $pluckAction('checkin from', $s, $e),
+            'new_assets'      => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
+            'new_maintenances'=> fn ($s, $e) => $pluckMaintenances($s, $e),
+            'new_users'       => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
             'new_accessories' => fn ($s, $e) => $pluckCreated(Accessory::class, $s, $e),
-            'new_components' => fn ($s, $e) => $pluckCreated(Component::class, $s, $e),
+            'new_components'  => fn ($s, $e) => $pluckCreated(Component::class, $s, $e),
             'new_consumables' => fn ($s, $e) => $pluckCreated(Consumable::class, $s, $e),
+            'new_licenses'    => fn ($s, $e) => $pluckCreated(License::class, $s, $e),
         ] as $key => $query) {
             $datasets[$key] = $fill($query($curStart, $curEnd), $curDates);
             $datasets['prev_'.$key] = $fill($query($prevStart, $prevEnd), $prevDates);

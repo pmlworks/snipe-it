@@ -105,60 +105,78 @@
 
                 <div class="box-body">
 
-                    {{-- Row A: Checkouts & Check-ins | New Assets --}}
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.checkouts_checkins') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-checkouts"></canvas>
+                            <div class="well">
+                                <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-checkouts"></canvas>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_assets_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-assets"></canvas>
+                            <div class="well">
+                                <h4>{!! trans('general.new_assets_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-assets"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <hr style="margin: 16px 0;">
-
-                    {{-- Row B: New Maintenances | New Users --}}
                     <div class="row">
                         <div class="col-md-6">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_maintenances_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-maintenances"></canvas>
+                            <div class="well">
+                                <h4>{!! trans('general.new_maintenances_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-maintenances"></canvas>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_users_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-users"></canvas>
+                            <div class="well">
+                                <h4>{!! trans('general.new_users_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-users"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <hr style="margin: 16px 0;">
-
-                    {{-- Row C: New Accessories | New Components | New Consumables --}}
                     <div class="row">
-                        <div class="col-md-4">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_accessories_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-accessories"></canvas>
+                        <div class="col-md-6">
+                            <div class="well">
+                                <h4>{!! trans('general.new_accessories_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-accessories"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_components_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-components"></canvas>
+                        <div class="col-md-6">
+                            <div class="well">
+                                <h4>{!! trans('general.new_components_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-components"></canvas>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <p class="text-muted" style="margin:0 0 4px; font-size:12px; text-transform:uppercase; letter-spacing:.05em;">{!! trans('general.new_consumables_created') !!}</p>
-                            <div style="position:relative; height:160px;">
-                                <canvas id="chart-consumables"></canvas>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="well">
+                                <h4>{!! trans('general.new_consumables_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-consumables"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="well">
+                                <h4>{!! trans('general.new_licenses_created') !!}</h4>
+                                <div style="position:relative; height:160px;">
+                                    <canvas id="chart-licenses"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -353,6 +371,11 @@ function loadCharts(params) {
             makeChart('chart-consumables',
                 d.labels, d.new_consumables, d.prev_new_consumables,
                 '{!! trans('general.consumables') !!}', p, '#ff851b'
+            );
+
+            makeChart('chart-licenses',
+                d.labels, d.new_licenses, d.prev_new_licenses,
+                '{!! trans('general.licenses') !!}', p, '#d81b60'
             );
         }
     });

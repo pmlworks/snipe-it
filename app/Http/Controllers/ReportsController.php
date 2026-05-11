@@ -63,7 +63,11 @@ class ReportsController extends Controller
 
         $audit_alert_count = Asset::DueOrOverdueForAudit($settings)->count();
         $checkin_alert_count = Asset::DueOrOverdueForCheckin($settings)->count();
-        $pending_acceptance_count = CheckoutAcceptance::pending()->count();
+        // CheckoutAcceptance has no company_id column; scope through the checkoutable
+        // relationship so each type's CompanyableTrait global scope is applied.
+        $pending_acceptance_count = CheckoutAcceptance::pending()
+            ->whereHasMorph('checkoutable', [Asset::class, LicenseSeat::class, Accessory::class, Component::class, Consumable::class])
+            ->count();
         $licenses_low_count = License::withCount(['freeSeats as free_seats_count'])
             ->get()
             ->filter(fn ($l) => $l->free_seats_count <= 0)
