@@ -185,10 +185,10 @@ class ReportsController extends Controller
                 ->toArray();
         };
 
-        // Query a model's own table for created_at counts (catches API/import creates, not just UI).
-        // Models with CompanyableTrait have a global scope applied automatically.
+        // withTrashed() ensures records deleted after creation still appear in their creation-period counts.
         $pluckCreated = function (string $modelClass, Carbon $start, Carbon $end): array {
-            return $modelClass::whereBetween('created_at', [$start, $end])
+            return $modelClass::withTrashed()
+                ->whereBetween('created_at', [$start, $end])
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date')
@@ -198,7 +198,8 @@ class ReportsController extends Controller
         // Maintenance has no company_id column and no CompanyableTrait, so scope through
         // its asset relationship — whereHas('asset') applies Asset's FMCS global scope.
         $pluckMaintenances = function (Carbon $start, Carbon $end): array {
-            return Maintenance::whereHas('asset')
+            return Maintenance::withTrashed()
+                ->whereHas('asset')
                 ->whereBetween('maintenances.created_at', [$start, $end])
                 ->selectRaw('DATE(maintenances.created_at) as date, COUNT(*) as count')
                 ->groupBy('date')
@@ -218,7 +219,8 @@ class ReportsController extends Controller
         };
 
         $pluckDeletedUsers = function (Carbon $start, Carbon $end): array {
-            return User::onlyTrashed()
+            return User::withTrashed()
+                ->whereNotNull('deleted_at')
                 ->whereBetween('deleted_at', [$start, $end])
                 ->selectRaw('DATE(deleted_at) as date, COUNT(*) as count')
                 ->groupBy('date')
@@ -241,7 +243,7 @@ class ReportsController extends Controller
 
         $datasets = [];
         foreach ([
-            'new_users'     => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
+            'new_users' => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
             'deleted_users' => fn ($s, $e) => $pluckDeletedUsers($s, $e),
             'asset_checkouts' => fn ($s, $e) => $pluckActionByType('checkout', Asset::class, $s, $e),
             'asset_checkins' => fn ($s, $e) => $pluckCheckinsByType(Asset::class, $s, $e),
