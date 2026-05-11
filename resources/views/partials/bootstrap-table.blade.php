@@ -368,6 +368,18 @@
                         _this.applyAdvancedSearch();
                     });
 
+                // Let Enter keypresses reuse the same submit path so keyboard users can apply filters quickly.
+                this.$toolbarModal.find('.toolbar-model-form')
+                    .off('keydown.snipeAdvancedSearch')
+                    .on('keydown.snipeAdvancedSearch', ':input', function (event) {
+                        if (event.key !== 'Enter' || $(event.target).is('textarea')) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        $(this).closest('form').trigger('submit');
+                    });
+
                 this.initAdvancedSearchFooter();
             };
 
