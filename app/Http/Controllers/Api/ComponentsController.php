@@ -11,6 +11,7 @@ use App\Http\Transformers\ComponentsTransformer;
 use App\Models\Asset;
 use App\Models\Company;
 use App\Models\Component;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
@@ -314,20 +315,30 @@ class ComponentsController extends Controller
         }
 
         if ($component->numRemaining() >= $request->input('assigned_qty')) {
+            $asset = Asset::withoutGlobalScopes()->find($request->input('assigned_to'));
 
-            $asset = Asset::find($request->input('assigned_to'));
-            $component->assigned_to = $request->input('assigned_to');
+            if (! $asset) {
+                return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.does_not_exist')));
+            }
 
-            $component->assets()->attach($component->id, [
-                'component_id' => $component->id,
-                'created_at' => Carbon::now(),
-                'assigned_qty' => $request->input('assigned_qty', 1),
-                'created_by' => auth()->id(),
-                'asset_id' => $request->input('assigned_to'),
-                'note' => $request->input('note'),
-            ]);
+            if ((Setting::getSettings()->full_multiple_companies_support == '1') && ($component->company_id !== $asset->company_id)) {
+                return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.error_user_company')));
+            }
 
-            $component->logCheckout($request->input('note'), $asset, null, [], $request->get('assigned_qty', 1));
+            DB::transaction(function () use ($component, $request, $asset): void {
+                $component->assigned_to = $request->input('assigned_to');
+
+                $component->assets()->attach($component->id, [
+                    'component_id' => $component->id,
+                    'created_at' => Carbon::now(),
+                    'assigned_qty' => $request->input('assigned_qty', 1),
+                    'created_by' => auth()->id(),
+                    'asset_id' => $request->input('assigned_to'),
+                    'note' => $request->input('note'),
+                ]);
+
+                $component->logCheckout($request->input('note'), $asset, null, [], $request->get('assigned_qty', 1));
+            });
 
             return response()->json(Helper::formatStandardApiResponse('success', null, trans('admin/components/message.checkout.success')));
         }
