@@ -1821,6 +1821,7 @@
 
                         @can('reports.view')
                             <li class="treeview{{ (request()->is('reports*') ? ' active' : '') }}">
+
                                 <a href="#" class="dropdown-toggle">
                                     <x-icon type="reports" class="fa-fw" />
                                     <span>{{ trans('general.reports') }}</span>
@@ -1828,6 +1829,11 @@
                                 </a>
 
                                 <ul class="treeview-menu">
+                                    <li {{!! (request()->is('reports') ? ' class="active"' : '') !!}}>
+                                        <a href="{{ route('reports.index') }}">
+                                            {{ trans('general.list_all') }}
+                                        </a>
+                                    </li>
                                     <li {{!! (request()->is('reports/activity') ? ' class="active"' : '') !!}}>
                                         <a href="{{ route('reports.activity') }}">
                                             {{ trans('general.activity_report') }}
