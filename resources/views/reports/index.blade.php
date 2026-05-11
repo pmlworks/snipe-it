@@ -430,53 +430,53 @@ function loadCharts(params) {
         success: function(d) {
             var p = d.prev_label;
 
-            setInfoBar('audit',      trendPct(d.checkouts,    d.prev_checkouts),    p);
-            setInfoBar('checkin',    trendPct(d.checkins,     d.prev_checkins),     p);
-            setInfoBar('acceptance', trendPct(d.checkouts,    d.prev_checkouts),    p);
-            setInfoBar('licenses',   trendPct(d.new_licenses, d.prev_new_licenses), p);
+            // Info-box progress bars
+            setInfoBar('audit',      trendPct(d.asset_checkouts,   d.prev_asset_checkouts),   p);
+            setInfoBar('checkin',    trendPct(d.asset_checkins,    d.prev_asset_checkins),    p);
+            setInfoBar('acceptance', trendPct(d.asset_checkouts,   d.prev_asset_checkouts),   p);
+            setInfoBar('licenses',   trendPct(d.license_checkouts, d.prev_license_checkouts), p);
 
-            makeChart2('chart-checkouts',
-                d.labels,
-                d.checkouts, d.checkins,
-                d.prev_checkouts, d.prev_checkins,
+            // Assets
+            makeChart2('chart-asset-checkouts',
+                d.labels, d.asset_checkouts, d.asset_checkins, d.prev_asset_checkouts, d.prev_asset_checkins,
                 '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
                 '#3c8dbc', '#00a65a', p
             );
+            makeChart('chart-assets',       d.labels, d.new_assets,       d.prev_new_assets,       '{!! trans('general.assets') !!}',       p, '#f39c12');
+            makeChart('chart-maintenances', d.labels, d.new_maintenances, d.prev_new_maintenances, '{!! trans('general.maintenances') !!}', p, '#dd4b39');
+            makeChart('chart-audits',       d.labels, d.new_audits,       d.prev_new_audits,       '{!! trans('general.audits') !!}',       p, '#605ca8');
 
-            makeChart('chart-assets',
-                d.labels, d.new_assets, d.prev_new_assets,
-                '{!! trans('general.assets') !!}', p, '#f39c12'
+            // Components
+            makeChart2('chart-component-checkouts',
+                d.labels, d.component_checkouts, d.component_checkins, d.prev_component_checkouts, d.prev_component_checkins,
+                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
+                '#3c8dbc', '#00a65a', p
             );
+            makeChart('chart-components', d.labels, d.new_components, d.prev_new_components, '{!! trans('general.components') !!}', p, '#39cccc');
 
-            makeChart('chart-maintenances',
-                d.labels, d.new_maintenances, d.prev_new_maintenances,
-                '{!! trans('general.maintenances') !!}', p, '#dd4b39'
+            // Consumables
+            makeChart2('chart-consumable-checkouts',
+                d.labels, d.consumable_checkouts, d.consumable_checkins, d.prev_consumable_checkouts, d.prev_consumable_checkins,
+                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
+                '#3c8dbc', '#00a65a', p
             );
+            makeChart('chart-consumables', d.labels, d.new_consumables, d.prev_new_consumables, '{!! trans('general.consumables') !!}', p, '#ff851b');
 
-            makeChart('chart-users',
-                d.labels, d.new_users, d.prev_new_users,
-                '{!! trans('general.users') !!}', p, '#605ca8'
+            // Licenses
+            makeChart2('chart-license-checkouts',
+                d.labels, d.license_checkouts, d.license_checkins, d.prev_license_checkouts, d.prev_license_checkins,
+                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
+                '#3c8dbc', '#00a65a', p
             );
+            makeChart('chart-licenses', d.labels, d.new_licenses, d.prev_new_licenses, '{!! trans('general.licenses') !!}', p, '#d81b60');
 
-            makeChart('chart-accessories',
-                d.labels, d.new_accessories, d.prev_new_accessories,
-                '{!! trans('general.accessories') !!}', p, '#00c0ef'
+            // Accessories
+            makeChart2('chart-accessory-checkouts',
+                d.labels, d.accessory_checkouts, d.accessory_checkins, d.prev_accessory_checkouts, d.prev_accessory_checkins,
+                '{!! trans('general.checkouts') !!}', '{!! trans('general.checkins') !!}',
+                '#3c8dbc', '#00a65a', p
             );
-
-            makeChart('chart-components',
-                d.labels, d.new_components, d.prev_new_components,
-                '{!! trans('general.components') !!}', p, '#39cccc'
-            );
-
-            makeChart('chart-consumables',
-                d.labels, d.new_consumables, d.prev_new_consumables,
-                '{!! trans('general.consumables') !!}', p, '#ff851b'
-            );
-
-            makeChart('chart-licenses',
-                d.labels, d.new_licenses, d.prev_new_licenses,
-                '{!! trans('general.licenses') !!}', p, '#d81b60'
-            );
+            makeChart('chart-accessories', d.labels, d.new_accessories, d.prev_new_accessories, '{!! trans('general.accessories') !!}', p, '#00c0ef');
         }
     });
 }
