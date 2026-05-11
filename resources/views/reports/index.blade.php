@@ -335,7 +335,7 @@
     font-size: 70%;
     font-weight: normal;
     filter: brightness(95%);
-    
+
 }
 
 /*[data-theme="dark"] .info-box { background: var(--box-bg); color: #d2d6de; }*/
@@ -406,7 +406,7 @@ function getLineOptions() {
         },
         scales: {
             xAxes: [{ gridLines: { display: false }, ticks: { maxTicksLimit: 10, fontColor: fontColor } }],
-            yAxes: [{ gridLines: { color: gridColor }, ticks: { beginAtZero: true, precision: 0, fontColor: fontColor } }]
+            yAxes: [{ gridLines: { color: gridColor }, ticks: { beginAtZero: true, suggestedMin: 0, precision: 0, fontColor: fontColor } }]
         }
     };
 }
@@ -464,7 +464,7 @@ function trendPct(cur, prev) {
 
 function setInfoBar(id, pct, prevLabel) {
     $('#progress-' + id).css('width', pct + '%');
-    $('#progress-' + id + '-label').text(pct + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
+    $('#progress-' + id + '-label').text('- ' + pct + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
 }
 
 var palette = {
