@@ -109,7 +109,7 @@
         </div>
 
         <div class="col-lg-3 col-sm-6">
-            <a href="{{ route('hardware.index') }}">
+            <a href="{{ url('reports/custom') }}">
                 <div class="info-box">
                     <span class="info-box-icon {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
                         <x-icon type="assets" />
