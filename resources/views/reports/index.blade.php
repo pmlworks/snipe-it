@@ -137,7 +137,7 @@
                                     <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
                                     </span>
                                     <div class="progress" style="height:6px;">
-                                        <div class="progress-bar" id="progress-acceptance" style="width: 0%"></div>
+                                        <div class="progress-bar" id="progress-acceptance" data-count="{{ $pending_acceptance_count }}" style="width: 0%"></div>
                                     </div>
 
                                 </div>
@@ -157,7 +157,7 @@
                                         <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
                                     </span>
                                     <div class="progress" style="height:6px;">
-                                        <div class="progress-bar" id="progress-licenses" style="width: 0%"></div>
+                                        <div class="progress-bar" id="progress-licenses" data-count="{{ $licenses_low_count }}" style="width: 0%"></div>
                                     </div>
 
                                 </div>
@@ -463,8 +463,11 @@ function trendPct(cur, prev) {
 }
 
 function setInfoBar(id, pct, prevLabel) {
-    $('#progress-' + id).css('width', pct + '%');
-    $('#progress-' + id + '-label').text('- ' + pct + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
+    var bar = document.getElementById('progress-' + id);
+    var count = bar ? parseInt(bar.getAttribute('data-count'), 10) : -1;
+    var show = (count === 0) ? 0 : pct;
+    $('#progress-' + id).css('width', show + '%');
+    $('#progress-' + id + '-label').text('- ' + show + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
 }
 
 var palette = {
