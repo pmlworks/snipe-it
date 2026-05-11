@@ -513,6 +513,8 @@ return [
     'last_180_days' => 'Last 180 Days',
     'last_365_days' => 'Last Year',
     'custom_range' => 'Custom Range',
+    'download_chart' => 'Download Chart as PNG',
+    'fullscreen' => 'Fullscreen',
     'pie_chart_type' => 'Dashboard Pie Chart Type',
     'hello_name' => 'Hello, :name!',
     'unaccepted_profile_warning' => 'You have one item requiring acceptance. Click here to accept or decline it | You have :count items requiring acceptance. Click here to accept or decline them',
