@@ -12,8 +12,8 @@ use App\Models\Asset;
 use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\License;
+use App\Models\LicenseSeat;
 use App\Models\Maintenance;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -205,19 +205,49 @@ class ReportsController extends Controller
                 ->toArray();
         };
 
+        // Filters by both action_type and item_type for per-category checkout/checkin counts.
+        $pluckActionByType = function (string $actionType, string $modelClass, Carbon $start, Carbon $end): array {
+            return Actionlog::where('action_type', $actionType)
+                ->where('item_type', $modelClass)
+                ->whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
+        // Catches both 'checkin' and 'checkin from' action types used across different item types.
+        $pluckCheckinsByType = function (string $modelClass, Carbon $start, Carbon $end): array {
+            return Actionlog::whereIn('action_type', ['checkin', 'checkin from'])
+                ->where('item_type', $modelClass)
+                ->whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+        };
+
         $fill = fn (array $raw, array $dates) => array_map(fn ($d) => (int) ($raw[$d] ?? 0), $dates);
 
         $datasets = [];
         foreach ([
-            'checkouts'       => fn ($s, $e) => $pluckAction('checkout', $s, $e),
-            'checkins'        => fn ($s, $e) => $pluckAction('checkin from', $s, $e),
-            'new_assets'      => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
-            'new_maintenances'=> fn ($s, $e) => $pluckMaintenances($s, $e),
-            'new_users'       => fn ($s, $e) => $pluckCreated(User::class, $s, $e),
-            'new_accessories' => fn ($s, $e) => $pluckCreated(Accessory::class, $s, $e),
-            'new_components'  => fn ($s, $e) => $pluckCreated(Component::class, $s, $e),
-            'new_consumables' => fn ($s, $e) => $pluckCreated(Consumable::class, $s, $e),
-            'new_licenses'    => fn ($s, $e) => $pluckCreated(License::class, $s, $e),
+            'asset_checkouts'      => fn ($s, $e) => $pluckActionByType('checkout', Asset::class, $s, $e),
+            'asset_checkins'       => fn ($s, $e) => $pluckCheckinsByType(Asset::class, $s, $e),
+            'new_assets'           => fn ($s, $e) => $pluckCreated(Asset::class, $s, $e),
+            'new_maintenances'     => fn ($s, $e) => $pluckMaintenances($s, $e),
+            'new_audits'           => fn ($s, $e) => $pluckAction('audit', $s, $e),
+            'component_checkouts'  => fn ($s, $e) => $pluckActionByType('checkout', Component::class, $s, $e),
+            'component_checkins'   => fn ($s, $e) => $pluckCheckinsByType(Component::class, $s, $e),
+            'new_components'       => fn ($s, $e) => $pluckCreated(Component::class, $s, $e),
+            'consumable_checkouts' => fn ($s, $e) => $pluckActionByType('checkout', Consumable::class, $s, $e),
+            'consumable_checkins'  => fn ($s, $e) => $pluckCheckinsByType(Consumable::class, $s, $e),
+            'new_consumables'      => fn ($s, $e) => $pluckCreated(Consumable::class, $s, $e),
+            'license_checkouts'    => fn ($s, $e) => $pluckActionByType('checkout', LicenseSeat::class, $s, $e),
+            'license_checkins'     => fn ($s, $e) => $pluckCheckinsByType(LicenseSeat::class, $s, $e),
+            'new_licenses'         => fn ($s, $e) => $pluckCreated(License::class, $s, $e),
+            'accessory_checkouts'  => fn ($s, $e) => $pluckActionByType('checkout', Accessory::class, $s, $e),
+            'accessory_checkins'   => fn ($s, $e) => $pluckCheckinsByType(Accessory::class, $s, $e),
+            'new_accessories'      => fn ($s, $e) => $pluckCreated(Accessory::class, $s, $e),
         ] as $key => $query) {
             $datasets[$key] = $fill($query($curStart, $curEnd), $curDates);
             $datasets['prev_'.$key] = $fill($query($prevStart, $prevEnd), $prevDates);

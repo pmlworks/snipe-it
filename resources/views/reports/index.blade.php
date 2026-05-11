@@ -14,60 +14,72 @@
 
         <div class="col-lg-3 col-sm-6">
             <a href="{{ route('reports.audit') }}">
-                <div class="small-box {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}">
-                    <div class="inner">
-                        <h3>{{ number_format($audit_alert_count) }}</h3>
-                        <p>{{ trans('general.audit_due') }} / {{ trans('general.audit_overdue') }}</p>
-                    </div>
-                    <div class="icon" aria-hidden="true"><x-icon type="audit" /></div>
-                    <span class="small-box-footer">
-                        {{ trans('general.viewall') }} <x-icon type="arrow-circle-right" />
+                <div class="info-box">
+                    <span class="info-box-icon {{ $audit_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                        <x-icon type="audit" />
                     </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ trans('general.audit_due') }} / {{ trans('general.audit_overdue') }}</span>
+                        <span class="info-box-number">{{ number_format($audit_alert_count) }}</span>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" id="progress-audit" style="width: 0%"></div>
+                        </div>
+                        <span class="info-box-more" id="progress-audit-label">&nbsp;</span>
+                    </div>
                 </div>
             </a>
         </div>
 
         <div class="col-lg-3 col-sm-6">
             <a href="{{ route('hardware.index') }}">
-                <div class="small-box {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}">
-                    <div class="inner">
-                        <h3>{{ number_format($checkin_alert_count) }}</h3>
-                        <p>{{ trans('general.checkin_due') }} / {{ trans('general.checkin_overdue') }}</p>
-                    </div>
-                    <div class="icon" aria-hidden="true"><x-icon type="assets" /></div>
-                    <span class="small-box-footer">
-                        {{ trans('general.viewall') }} <x-icon type="arrow-circle-right" />
+                <div class="info-box">
+                    <span class="info-box-icon {{ $checkin_alert_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                        <x-icon type="assets" />
                     </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ trans('general.checkin_due') }} / {{ trans('general.checkin_overdue') }}</span>
+                        <span class="info-box-number">{{ number_format($checkin_alert_count) }}</span>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" id="progress-checkin" style="width: 0%"></div>
+                        </div>
+                        <span class="info-box-more" id="progress-checkin-label">&nbsp;</span>
+                    </div>
                 </div>
             </a>
         </div>
 
         <div class="col-lg-3 col-sm-6">
             <a href="{{ route('reports/unaccepted_assets') }}">
-                <div class="small-box {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}">
-                    <div class="inner">
-                        <h3>{{ number_format($pending_acceptance_count) }}</h3>
-                        <p>{{ trans('general.unaccepted_asset_report') }}</p>
-                    </div>
-                    <div class="icon" aria-hidden="true"><x-icon type="assets" /></div>
-                    <span class="small-box-footer">
-                        {{ trans('general.viewall') }} <x-icon type="arrow-circle-right" />
+                <div class="info-box">
+                    <span class="info-box-icon {{ $pending_acceptance_count > 0 ? 'bg-yellow' : 'bg-green' }}" aria-hidden="true">
+                        <x-icon type="assets" />
                     </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ trans('general.unaccepted_asset_report') }}</span>
+                        <span class="info-box-number">{{ number_format($pending_acceptance_count) }}</span>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" id="progress-acceptance" style="width: 0%"></div>
+                        </div>
+                        <span class="info-box-more" id="progress-acceptance-label">&nbsp;</span>
+                    </div>
                 </div>
             </a>
         </div>
 
         <div class="col-lg-3 col-sm-6">
             <a href="{{ url('reports/licenses') }}">
-                <div class="small-box {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}">
-                    <div class="inner">
-                        <h3>{{ number_format($licenses_low_count) }}</h3>
-                        <p>{{ trans('general.licenses_with_no_seats') }}</p>
-                    </div>
-                    <div class="icon" aria-hidden="true"><x-icon type="licenses" /></div>
-                    <span class="small-box-footer">
-                        {{ trans('general.viewall') }} <x-icon type="arrow-circle-right" />
+                <div class="info-box">
+                    <span class="info-box-icon {{ $licenses_low_count > 0 ? 'bg-red' : 'bg-green' }}" aria-hidden="true">
+                        <x-icon type="licenses" />
                     </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">{{ trans('general.licenses_with_no_seats') }}</span>
+                        <span class="info-box-number">{{ number_format($licenses_low_count) }}</span>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" id="progress-licenses" style="width: 0%"></div>
+                        </div>
+                        <span class="info-box-more" id="progress-licenses-label">&nbsp;</span>
+                    </div>
                 </div>
             </a>
         </div>
@@ -75,42 +87,47 @@
     </div>
 
 
-    {{-- Charts: all inside one box with the date-range control in the header --}}
+    {{-- Date Range Control --}}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well well-sm" style="display:flex; align-items:center; gap:8px; margin-bottom:15px;">
+                <label style="margin:0; font-weight:bold; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
+                <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
+                    <option value="7">{{ trans('general.last_7_days') }}</option>
+                    <option value="14">{{ trans('general.last_14_days') }}</option>
+                    <option value="30" selected>{{ trans('general.last_30_days') }}</option>
+                    <option value="60">{{ trans('general.last_60_days') }}</option>
+                    <option value="90">{{ trans('general.last_90_days') }}</option>
+                    <option value="180">{{ trans('general.last_180_days') }}</option>
+                    <option value="365">{{ trans('general.last_365_days') }}</option>
+                    <option value="custom">{{ trans('general.custom_range') }}…</option>
+                </select>
+                <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
+                    <input type="text" id="chartStartDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
+                    <span class="input-group-addon">–</span>
+                    <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Assets Box --}}
     <div class="row">
         <div class="col-md-12">
             <div class="box box-default">
-
                 <div class="box-header with-border">
-                    <h2 class="box-title">{{ trans('general.activity_overview') }}</h2>
-                    <div class="box-tools pull-right" style="display:flex; align-items:center; gap:8px;">
-                        <label style="margin:0; font-weight:normal; white-space:nowrap;">{{ trans('general.time_range') }}:</label>
-                        <select id="chartTimeRange" class="form-control input-sm" style="width:auto;">
-                            <option value="7">{{ trans('general.last_7_days') }}</option>
-                            <option value="14">{{ trans('general.last_14_days') }}</option>
-                            <option value="30" selected>{{ trans('general.last_30_days') }}</option>
-                            <option value="60">{{ trans('general.last_60_days') }}</option>
-                            <option value="90">{{ trans('general.last_90_days') }}</option>
-                            <option value="180">{{ trans('general.last_180_days') }}</option>
-                            <option value="365">{{ trans('general.last_365_days') }}</option>
-                            <option value="custom">{{ trans('general.custom_range') }}…</option>
-                        </select>
-                        <div id="customRangePicker" class="input-daterange input-group" style="display:none; width:auto;">
-                            <input type="text" id="chartStartDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
-                            <span class="input-group-addon">–</span>
-                            <input type="text" id="chartEndDate" class="form-control input-sm" placeholder="{{ trans('general.select_date') }}" style="width:110px;" autocomplete="off">
-                        </div>
+                    <h2 class="box-title">{{ trans('general.assets') }}</h2>
+                    <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
                     </div>
                 </div>
-
                 <div class="box-body">
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
                                 <h4>{!! trans('general.checkouts_checkins') !!}</h4>
                                 <div style="position:relative; height:160px;">
-                                    <canvas id="chart-checkouts"></canvas>
+                                    <canvas id="chart-asset-checkouts"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +140,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="well">
@@ -135,54 +151,119 @@
                         </div>
                         <div class="col-md-6">
                             <div class="well">
-                                <h4>{!! trans('general.new_users_created') !!}</h4>
+                                <h4>{!! trans('general.new_audits_created') !!}</h4>
                                 <div style="position:relative; height:160px;">
-                                    <canvas id="chart-users"></canvas>
+                                    <canvas id="chart-audits"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_accessories_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-accessories"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_components_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-components"></canvas>
-                                </div>
-                            </div>
+    {{-- Components & Consumables --}}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h2 class="box-title">{{ trans('general.components') }}</h2>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="well">
+                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-component-checkouts"></canvas>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_consumables_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-consumables"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="well">
-                                <h4>{!! trans('general.new_licenses_created') !!}</h4>
-                                <div style="position:relative; height:160px;">
-                                    <canvas id="chart-licenses"></canvas>
-                                </div>
-                            </div>
+                    <div class="well">
+                        <h4>{!! trans('general.new_components_created') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-components"></canvas>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h2 class="box-title">{{ trans('general.consumables') }}</h2>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="well">
+                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-consumable-checkouts"></canvas>
+                        </div>
+                    </div>
+                    <div class="well">
+                        <h4>{!! trans('general.new_consumables_created') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-consumables"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                </div>{{-- /.box-body --}}
-            </div>{{-- /.box --}}
+    {{-- Licenses & Accessories --}}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h2 class="box-title">{{ trans('general.licenses') }}</h2>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="well">
+                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-license-checkouts"></canvas>
+                        </div>
+                    </div>
+                    <div class="well">
+                        <h4>{!! trans('general.new_licenses_created') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-licenses"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h2 class="box-title">{{ trans('general.accessories') }}</h2>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-hidden="true"><x-icon type="minus" /></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="well">
+                        <h4>{!! trans('general.checkouts_checkins') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-accessory-checkouts"></canvas>
+                        </div>
+                    </div>
+                    <div class="well">
+                        <h4>{!! trans('general.new_accessories_created') !!}</h4>
+                        <div style="position:relative; height:160px;">
+                            <canvas id="chart-accessories"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -325,6 +406,20 @@ function hexToRgba(hex, alpha) {
     return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
 }
 
+function arrSum(arr) {
+    return arr.reduce(function(a, b) { return a + b; }, 0);
+}
+
+function trendPct(cur, prev) {
+    var c = arrSum(cur), p = arrSum(prev);
+    return (c + p) === 0 ? 0 : Math.round(c / (c + p) * 100);
+}
+
+function setInfoBar(id, pct, prevLabel) {
+    $('#progress-' + id).css('width', pct + '%');
+    $('#progress-' + id + '-label').text(pct + '% {!! trans('general.vs_prior_period') !!} (' + prevLabel + ')');
+}
+
 function loadCharts(params) {
     $.ajax({
         type: 'GET',
@@ -334,6 +429,11 @@ function loadCharts(params) {
         dataType: 'json',
         success: function(d) {
             var p = d.prev_label;
+
+            setInfoBar('audit',      trendPct(d.checkouts,    d.prev_checkouts),    p);
+            setInfoBar('checkin',    trendPct(d.checkins,     d.prev_checkins),     p);
+            setInfoBar('acceptance', trendPct(d.checkouts,    d.prev_checkouts),    p);
+            setInfoBar('licenses',   trendPct(d.new_licenses, d.prev_new_licenses), p);
 
             makeChart2('chart-checkouts',
                 d.labels,

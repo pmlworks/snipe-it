@@ -502,6 +502,7 @@ return [
     'new_components_created' => 'New Components',
     'new_consumables_created' => 'New Consumables',
     'new_licenses_created' => 'New Licenses',
+    'vs_prior_period' => 'vs. prior period',
     'time_range' => 'Time Range',
     'last_7_days' => 'Last 7 Days',
     'last_14_days' => 'Last 14 Days',
