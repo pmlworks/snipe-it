@@ -315,6 +315,8 @@ class ComponentsController extends Controller
         }
 
         if ($component->numRemaining() >= $request->input('assigned_qty')) {
+            // Resolve the raw target first, then enforce FMCS explicitly.
+            // Scoped lookup can hide cross-company records and lead to partial writes.
             $asset = Asset::withoutGlobalScopes()->find($request->input('assigned_to'));
 
             if (! $asset) {
@@ -325,6 +327,7 @@ class ComponentsController extends Controller
                 return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.error_user_company')));
             }
 
+            // Keep pivot + action log in one transaction so checkout is all-or-nothing.
             DB::transaction(function () use ($component, $request, $asset): void {
                 $component->assigned_to = $request->input('assigned_to');
 
