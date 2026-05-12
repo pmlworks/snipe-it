@@ -38,6 +38,11 @@ class BulkLicensesController extends Controller
                 continue;
             }
 
+            // Since assigned_seats_count == 0, all seats already have assigned_to and asset_id as null,
+            // so this update is effectively a no-op. It mirrors the single destroy() and is kept as a
+            // safety net. Bypassing Eloquent events here is intentional and safe — there is nothing
+            // assigned to trigger events on. Prior checkout/checkin history is preserved in action_log
+            // (keyed by LicenseSeat item_type/item_id) and remains accessible even after soft-delete.
             DB::table('license_seats')
                 ->where('license_id', $license->id)
                 ->update(['assigned_to' => null, 'asset_id' => null]);
