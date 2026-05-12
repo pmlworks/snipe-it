@@ -155,11 +155,11 @@ class CustomComponentReportController extends Controller
                     }
 
                     if ($request->filled('supplier')) {
-                        $row[] = $component?->supplier->name;
+                        $row[] = $component?->supplier?->name;
                     }
 
                     if ($request->filled('location')) {
-                        $row[] = $component?->location->name;
+                        $row[] = $component?->location?->name;
                         // todo: address
                         // todo: city
                         // todo: state
