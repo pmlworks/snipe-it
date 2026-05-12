@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use League\Csv\EscapeFormula;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -572,6 +573,8 @@ class UsersController extends Controller
 
                     fputcsv($handle, $headers);
 
+                    $formatter = new EscapeFormula('`');
+
                     foreach ($users as $user) {
                         $user_groups = '';
 
@@ -614,7 +617,14 @@ class UsersController extends Controller
                             $user->created_at,
                         ];
 
-                        fputcsv($handle, $values);
+                        // CSV_ESCAPE_FORMULAS is set to false in the .env
+                        if (config('app.escape_formulas') === false) {
+                            fputcsv($handle, $values);
+
+                            // CSV_ESCAPE_FORMULAS is set to true or is not set in the .env
+                        } else {
+                            fputcsv($handle, $formatter->escapeRecord($values));
+                        }
                     }
                 });
 
@@ -639,32 +649,16 @@ class UsersController extends Controller
     {
         $this->authorize('view', User::class);
 
-        $user = User::where('id', $id)
-            ->with([
-                'assets.log' => fn ($query) => $query->withTrashed()->where('target_type', User::class)->where('target_id', $id)->where('action_type', 'accepted'),
-                'assets.assignedAssets.log' => fn ($query) => $query->withTrashed()->where('target_type', User::class)->where('target_id', $id)->where('action_type', 'accepted'),
-                'assets.assignedAssets.defaultLoc',
-                'assets.assignedAssets.location',
-                'assets.assignedAssets.model.category',
-                'assets.defaultLoc',
-                'assets.location',
-                'assets.model.category',
-                'accessories.log' => fn ($query) => $query->withTrashed()->where('target_type', User::class)->where('target_id', $id)->where('action_type', 'accepted'),
-                'accessories.category',
-                'accessories.manufacturer',
-                'consumables.log' => fn ($query) => $query->withTrashed()->where('target_type', User::class)->where('target_id', $id)->where('action_type', 'accepted'),
-                'consumables.category',
-                'consumables.manufacturer',
-                'licenses.category',
-            ])
-            ->withTrashed()
-            ->first();
+        $user = User::withInventoryRelations($id)->first();
+
+        $indirectItemsCount = $user?->assets?->flatMap->assignedAssets->count() + $user?->assets?->flatMap->components->count() + $user?->assets?->flatMap->licenses->count() + $user?->assets?->flatMap->assignedAccessories->count();
 
         if ($user) {
             $this->authorize('view', $user);
 
             return view('users.print')
                 ->with('users', [$user])
+                ->with('indirectItemsCount', $indirectItemsCount)
                 ->with('settings', Setting::getSettings());
         }
 

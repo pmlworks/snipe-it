@@ -187,11 +187,11 @@
                 var colMap = {};
                 this.columns.forEach(c => colMap[c.field] = c.title);
                 var op = this.getAdvancedSearchOperator();
-                var html = '<span class="label label-warning" style="margin-right:6px;display:inline-block;margin-bottom:6px;">' +
+                var html = '<span class="label label-warning" style="font-size: 11px; margin-right:6px;display:inline-block;margin-bottom:6px;">' +
                     advancedSearchOperatorLabel + ': ' + (op === 'or' ? advancedSearchOrText : advancedSearchAndText) + '</span>';
 
                 Object.keys(filters).forEach(f => {
-                    html += '<span class="label label-primary" style="margin-right:6px;display:inline-block;margin-bottom:6px;"><b>' +
+                    html += '<span class="label label-primary" style="font-size: 11px; margin-right:6px;display:inline-block;margin-bottom:6px;"><b>' +
                         (colMap[f] || f).replace(/<[^>]*>/g, '') + ':</b> ' + escapeAdvancedSearchValue(filters[f]) +
                         ' <a href="javascript:void(0)" class="snipe-advanced-search-tag-remove" data-field="' + f +
                         '" style="color:#fff;margin-left:6px;text-decoration:none;">&times;</a></span>';
@@ -366,6 +366,18 @@
                     .on('submit', '.toolbar-model-form', function (event) {
                         event.preventDefault();
                         _this.applyAdvancedSearch();
+                    });
+
+                // Let Enter keypresses reuse the same submit path so keyboard users can apply filters quickly.
+                this.$toolbarModal.find('.toolbar-model-form')
+                    .off('keydown.snipeAdvancedSearch')
+                    .on('keydown.snipeAdvancedSearch', ':input', function (event) {
+                        if (event.key !== 'Enter' || $(event.target).is('textarea')) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        $(this).closest('form').trigger('submit');
                     });
 
                 this.initAdvancedSearchFooter();

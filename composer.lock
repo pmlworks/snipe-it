@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6dbe361f8555681a027fca2d2c2e61fd",
+    "content-hash": "3ad09b8be28e9a805ed3c1cc51c9ffaa",
     "packages": [
         {
             "name": "alek13/slack",
@@ -74,16 +74,16 @@
         },
         {
             "name": "arietimmerman/laravel-scim-server",
-            "version": "dev-upstream_master",
+            "version": "dev-scimv2_with_logging",
             "source": {
                 "type": "git",
                 "url": "https://github.com/grokability/laravel-scim-server.git",
-                "reference": "da40db79d76cf3b4c7e57cde41df6ecf8119afb7"
+                "reference": "dfef93c7344be3c3c255d54694e182c5ec784bab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/grokability/laravel-scim-server/zipball/da40db79d76cf3b4c7e57cde41df6ecf8119afb7",
-                "reference": "da40db79d76cf3b4c7e57cde41df6ecf8119afb7",
+                "url": "https://api.github.com/repos/grokability/laravel-scim-server/zipball/dfef93c7344be3c3c255d54694e182c5ec784bab",
+                "reference": "dfef93c7344be3c3c255d54694e182c5ec784bab",
                 "shasum": ""
             },
             "require": {
@@ -131,9 +131,9 @@
             ],
             "description": "Laravel Package for creating a SCIM server",
             "support": {
-                "source": "https://github.com/grokability/laravel-scim-server/tree/upstream_master"
+                "source": "https://github.com/grokability/laravel-scim-server/tree/scimv2_with_logging"
             },
-            "time": "2025-08-28T19:24:40+00:00"
+            "time": "2026-05-12T11:17:15+00:00"
         },
         {
             "name": "aws/aws-crt-php",

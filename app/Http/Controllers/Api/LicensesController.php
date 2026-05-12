@@ -28,7 +28,7 @@ class LicensesController extends Controller
     {
         $this->authorize('view', License::class);
 
-        $licenses = License::with('company', 'manufacturer', 'supplier', 'category', 'adminuser')->withCount('freeSeats as free_seats_count');
+        $licenses = License::with('company', 'manufacturer', 'supplier', 'category', 'adminuser', 'licenseSeatsRelation', 'assignedCount')->withCount('freeSeats as free_seats_count');
         $settings = Setting::getSettings();
 
         if ($request->input('status') == 'inactive') {
@@ -247,7 +247,7 @@ class LicensesController extends Controller
         if ($license->assigned_seats_count == 0) {
             // Delete the license and the associated license seats
             DB::table('license_seats')
-                ->where('id', $license->id)
+                ->where('license_id', $license->id)
                 ->update(['assigned_to' => null, 'asset_id' => null]);
 
             $licenseSeats = $license->licenseseats();

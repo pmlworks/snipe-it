@@ -790,6 +790,32 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Blank string values should be treated like empty content for direct string fields.
+     */
+    public function test_is_not_null_filter_excludes_blank_string_direct_attributes()
+    {
+        $populated = Asset::factory()->create([
+            'name' => 'Named Asset '.now()->timestamp,
+            'order_number' => 'PO-12345',
+        ]);
+        $blank = Asset::factory()->create([
+            'name' => '',
+            'order_number' => '',
+        ]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['order_number' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $populated->id, $returnedIds);
+        $this->assertNotContains((int) $blank->id, $returnedIds);
+    }
+
+    /**
      * "is:not_null" on the User virtual "name" column should match users where
      * at least one constituent column (first_name, last_name) is not null.
      * All factory-created users have a first_name, so they should all appear.
@@ -856,6 +882,41 @@ class SearchableTraitTest extends TestCase
     }
 
     /**
+     * Regression: `assigned_to` is a polymorphic searchable relation key.
+     * `is:null` should return unassigned assets; `is:not_null` should return assigned assets.
+     */
+    public function test_is_null_filter_on_polymorphic_assigned_to_relation_key()
+    {
+        /** @var User $assignee */
+        $assignee = User::factory()->create();
+        $assignedAsset = Asset::factory()->assignedToUser($assignee)->create();
+        $unassignedAsset = Asset::factory()->create([
+            'assigned_to' => null,
+            'assigned_type' => null,
+        ]);
+
+        $superuser = User::factory()->viewAssets()->create();
+
+        $response = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['assigned_to' => 'is:null'])]))
+            ->assertOk();
+
+        $returnedNullIds = collect($response->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $unassignedAsset->id, $returnedNullIds);
+        $this->assertNotContains((int) $assignedAsset->id, $returnedNullIds);
+
+        $response2 = $this->actingAsForApi($superuser)
+            ->getJson(route('api.assets.index', ['filter' => json_encode(['assigned_to' => 'is:not_null'])]))
+            ->assertOk();
+
+        $returnedNotNullIds = collect($response2->json('rows'))->pluck('id')->map(fn ($id) => (int) $id)->all();
+
+        $this->assertContains((int) $assignedAsset->id, $returnedNotNullIds);
+        $this->assertNotContains((int) $unassignedAsset->id, $returnedNotNullIds);
+    }
+
+    /**
      * Test custom field partial match via filter.
      */
     public function test_custom_field_filter_partial_match()
@@ -897,6 +958,70 @@ class SearchableTraitTest extends TestCase
             ]))
             ->assertOk()
             ->assertJson(fn (AssertableJson $json) => $json->has('rows', 1)->etc());
+    }
+
+    /**
+     * Regression: "is_not:" should perform an exact exclusion (not fuzzy).
+     */
+    public function test_exact_exclusion_filter_with_is_not_prefix_on_attribute()
+    {
+        Asset::factory()->create(['name' => 'Dell', 'asset_tag' => 'ISNOT-ATTR-001']);
+        Asset::factory()->create(['name' => 'Dell XPS 13', 'asset_tag' => 'ISNOT-ATTR-002']);
+        Asset::factory()->create(['name' => 'HP Pavilion', 'asset_tag' => 'ISNOT-ATTR-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['name' => 'is_not:Dell']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Regression: "is_not:" on relations should exclude only exact relation values.
+     */
+    public function test_exact_exclusion_filter_with_is_not_prefix_on_relation()
+    {
+        $apple = Manufacturer::factory()->create(['name' => 'Apple']);
+        $appleInc = Manufacturer::factory()->create(['name' => 'Apple Inc']);
+        $dell = Manufacturer::factory()->create(['name' => 'Dell']);
+
+        $appleModel = AssetModel::factory()->create(['manufacturer_id' => $apple->id]);
+        $appleIncModel = AssetModel::factory()->create(['manufacturer_id' => $appleInc->id]);
+        $dellModel = AssetModel::factory()->create(['manufacturer_id' => $dell->id]);
+
+        Asset::factory()->create(['model_id' => $appleModel->id, 'asset_tag' => 'ISNOT-REL-001']);
+        Asset::factory()->create(['model_id' => $appleIncModel->id, 'asset_tag' => 'ISNOT-REL-002']);
+        Asset::factory()->create(['model_id' => $dellModel->id, 'asset_tag' => 'ISNOT-REL-003']);
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode(['manufacturer' => 'is_not:Apple']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
+    }
+
+    /**
+     * Regression: "is_not:" should perform exact exclusion on custom fields.
+     */
+    public function test_exact_exclusion_filter_with_is_not_prefix_on_custom_field()
+    {
+        $field = CustomField::factory()->cpu()->create();
+        $dbColumn = $field->db_column_name();
+
+        Asset::factory()->create([$dbColumn => 'Intel', 'asset_tag' => 'ISNOT-CF-001']);
+        Asset::factory()->create([$dbColumn => 'Intel Core i9', 'asset_tag' => 'ISNOT-CF-002']);
+        Asset::factory()->create([$dbColumn => 'AMD Ryzen 7', 'asset_tag' => 'ISNOT-CF-003']);
+
+        Asset::flushCustomFieldFilterMap();
+
+        $this->actingAsForApi(User::factory()->viewAssets()->create())
+            ->getJson(route('api.assets.index', [
+                'filter' => json_encode([$dbColumn => 'is_not:Intel']),
+            ]))
+            ->assertOk()
+            ->assertJson(fn (AssertableJson $json) => $json->has('rows', 2)->etc());
     }
 
     /**

@@ -196,7 +196,12 @@ class SnipeSCIMConfig
                         public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             if ($value) {
-                                $object->email = $value[0]['value'];
+                                try {
+                                    $object->email = $value[0]['value'];
+                                } catch (\Throwable $e) {
+                                    \Log::debug($e);
+                                    throw new SCIMException("Unknown email object:  '" . print_r($value, true) . "'", 422);
+                                }
                             } else {
                                 $object->email = null;
                             }
@@ -232,33 +237,38 @@ class SnipeSCIMConfig
                         public function doWrite($operation, $subop, $value, Model &$object, Path $path = null, $removeIfNotSet = false)
                         {
                             \Log::debug("Phones 'value' is: " . print_r($value, true));
-                            if ($operation == "patch") {
-                                if ($path->getValuePathFilter() != null) {
-                                    if ((string)$path == 'phoneNumbers[type eq "mobile"].value') {
-                                        $object->mobile = $value; //I don't know why the value is the raw value, but it is?
-                                        return;
+                            try {
+                                if ($operation == "patch") {
+                                    if ($path->getValuePathFilter() != null) {
+                                        if ((string) $path == 'phoneNumbers[type eq "mobile"].value') {
+                                            $object->mobile = $value; //I don't know why the value is the raw value, but it is?
+                                            return;
+                                        }
+                                        if ((string) $path == 'phoneNumbers[type eq "work"].value') {
+                                            $object->phone = $value; //similar, don't know why, but it is
+                                            return;
+                                        }
                                     }
-                                    if ((string)$path == 'phoneNumbers[type eq "work"].value') {
-                                        $object->phone = $value; //similar, don't know why, but it is
-                                        return;
+                                    parent::patch($subop, $value, $object, $path, $removeIfNotSet);
+                                    return;
+                                }
+                                foreach ($value as $phone) {
+                                    switch ($phone['type']) {
+                                        case 'work':
+                                            $object->phone = $phone['value'];
+                                            break;
+
+                                        case 'mobile':
+                                            $object->mobile = $phone['value'];
+                                            break;
+
+                                        default:
+                                            throw new SCIMException("Unknown phone type '" . @$phone['type'] . "'", 400);
                                     }
                                 }
-                                parent::patch($subop, $value, $object, $path, $removeIfNotSet);
-                                return;
-                            }
-                            foreach ($value as $phone) {
-                                switch ($phone['type']) {
-                                    case 'work':
-                                        $object->phone = $phone['value'];
-                                        break;
-
-                                    case 'mobile':
-                                        $object->mobile = $phone['value'];
-                                        break;
-
-                                    default:
-                                        throw new SCIMException("Unknown phone type '" . @$phone['type'] . "'", 400);
-                                }
+                            } catch (\Throwable $e) {
+                                \Log::debug($e);
+                                throw new SCIMException("Unknown phone object(s) '" . print_r($value, true) . "'", 422);
                             }
                         }
 
@@ -302,11 +312,11 @@ class SnipeSCIMConfig
                                 // addresses[type eq "work"]
                                 $matches = null;
                                 if (!preg_match('/^.+\[type eq "([a-zA-Z]+)"](?:\.([a-zA-Z]+))?$/', (string)$path, $matches)) {
-                                    throw new SCIMException("Unknown path type '$path'")->setCode(422);
+                                    throw new SCIMException("Unknown path type '$path'", 422);
                                 }
                                 $type = $matches[1];
                                 if ($type != 'work') {
-                                    throw new SCIMException("Unknown object type '$type'")->setCode(422);
+                                    throw new SCIMException("Unknown object type '$type'", 422);
                                 }
                                 $attribute = array_key_exists(2, $matches) ? $matches[2] : null;
                                 if (array_key_exists($attribute, self::$addressmap)) {
@@ -315,7 +325,7 @@ class SnipeSCIMConfig
                                 }
 
 
-                                throw new SCIMException("Could not handle path for update $path")->setCode(422);
+                                throw new SCIMException("Could not handle path for update $path", 422);
                             }
                         }
 
