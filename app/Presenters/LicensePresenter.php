@@ -16,6 +16,13 @@ class LicensePresenter extends Presenter
     {
         $layout = [
             [
+                'field' => 'checkbox',
+                'checkbox' => true,
+                'formatter' => 'checkboxEnabledFormatter',
+                'titleTooltip' => trans('general.select_all_none'),
+                'printIgnore' => true,
+                'class' => 'hidden-print',
+            ], [
                 'field' => 'id',
                 'searchable' => false,
                 'sortable' => true,
@@ -115,7 +122,7 @@ class LicensePresenter extends Presenter
                 'searchable' => false,
                 'sortable' => false,
                 'switchable' => true,
-                'title' => '% ' . trans('general.remaining'),
+                'title' => '% '.trans('general.remaining'),
                 'visible' => true,
                 'formatter' => 'progressBarFormatter',
             ], [
