@@ -48,6 +48,7 @@ return [
     'asset_tag' => '资产标签',
     'assets_warrantee_alert' => '有 :count 项资产将在未来 :threshold 天内保修到期或达到使用年限。|有 :count 项资产将在未来 :threshold 天内保修到期或达到使用年限。',
     'assigned_to' => '已分配给',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => '生命周期',
     'best_regards' => '此致',
     'canceled' => '已取消',

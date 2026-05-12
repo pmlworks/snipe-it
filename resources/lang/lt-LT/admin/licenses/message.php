@@ -37,6 +37,9 @@ return [
         'confirm' => 'Ar tikrai norite panaikinti šią licenciją?',
         'error' => 'Bandant panaikinti licenciją įvyko klaida. Bandykite dar kartą.',
         'success' => 'Licencija sėkmingai panaikinta.',
+        'bulk_success' => 'The selected licenses were deleted successfully.',
+        'partial_success' => 'License deleted successfully. See additional information below. | :count licenses were deleted successfully. See additional information below.',
+        'bulk_checkout_warning' => ':license_name has seats that are currently checked out and cannot be deleted. Please check in all seats before deleting.',
     ],
 
     'checkout' => [

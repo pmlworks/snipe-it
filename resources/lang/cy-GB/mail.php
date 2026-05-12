@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Tag Ased',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'Wedi Neilltuo i',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'DB',
     'best_regards' => 'Cofon gorau,',
     'canceled' => 'Wedi canslo',

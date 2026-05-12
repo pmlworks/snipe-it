@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Inventorinis numeris',
     'assets_warrantee_alert' => 'Yra :count vienetas turto, kurio garantija baigiasi arba kurio eksploatavimo laikas baigsis per artimiausias :threshold dienas.|Yra :count vienetai turto, kurio garantija baigiasi arba kurio eksploatavimo laikas baigsis per artimiausias :threshold dienas.',
     'assigned_to' => 'Išduota',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Nurašymo data',
     'best_regards' => 'Pagarbiai,',
     'canceled' => 'Atšauktas',

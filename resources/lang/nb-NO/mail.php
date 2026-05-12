@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Eiendelsmerke',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'Tilordnet til',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Levetid',
     'best_regards' => 'Med vennlig hilsen,',
     'canceled' => 'Avbrutt',

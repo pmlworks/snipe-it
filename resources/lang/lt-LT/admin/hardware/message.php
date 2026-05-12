@@ -99,6 +99,9 @@ return [
         'success' => 'Turtas sėkmingai paimtas.',
         'user_does_not_exist' => 'Neteisingas naudotojas. Bandykite dar kartą.',
         'already_checked_in' => 'Šis turtas jau yra paimtas.',
+        'force_checkin_orphaned_success' => 'Neteisingas priskyrimas sėkmingai ištrintas.',
+        'force_checkin_not_orphaned' => 'Daiktas nėra netinkamo priskyrimo būsenoje.',
+        'force_checkin_error' => 'Nepavyko ištrinti neteisingo priskyrimo.',
 
     ],
 

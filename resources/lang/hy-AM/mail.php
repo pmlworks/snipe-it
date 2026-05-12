@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Ակտիվի թեգ',
     'assets_warrantee_alert' => 'Կա :count ակտիվ, որի երաշխիքը ավարտվում է կամ որը կհասնի իր շահագործման ավարտին առաջիկա :threshold օրերի ընթացքում։ | Կան :count ակտիվներ, որոնց երաշխիքը ավարտվում է կամ որոնք կհասնեն իրենց շահագործման ավարտին առաջիկա :threshold օրերի ընթացքում։',
     'assigned_to' => 'Նշանակված է',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'Լավագույն մաղթանքներով,',
     'canceled' => 'Մերժված',

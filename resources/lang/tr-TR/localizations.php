@@ -9,6 +9,7 @@ return [
         'am-ET' => 'Amharca',
         'af-ZA' => 'Akrika dili',
         'ar-SA' => 'Arapça',
+        'hy-AM' => 'Ermenice',
         'bg-BG' => 'Bulgarca',
         'zh-CN' => 'Basitleştirilmiş Çince',
         'zh-TW' => 'Geleneksel Çince',

@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Asset Tag',
     'assets_warrantee_alert' => 'Es gibt :count Asset mit ablaufender Garantie oder das sein Lebensende in den nächsten :threshold Tagen erreichen wird.|Es gibt :count Assets mit ablaufender Garantie oder die in den nächsten :threshold Tagen ihr Lebensende erreichen werden.',
     'assigned_to' => 'Zugewiesen an',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'Grüße,',
     'canceled' => 'Abgebrochen',

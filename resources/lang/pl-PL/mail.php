@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Tag sprzętu',
     'assets_warrantee_alert' => 'Istnieje :count środek z wygasającą gwarancją lub którego cykl życia dobiega końca w ciągu następnych :treshold dni.|Istnieją :count środki(ów) z wygasającą gwarancją lub których cykl życia dobiega końca w ciągu następnych :treshold dni.',
     'assigned_to' => 'Przypisane do',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Koniec licencji',
     'best_regards' => 'Pozdrawiam',
     'canceled' => 'Anulowane',

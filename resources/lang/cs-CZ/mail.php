@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Inventární číslo',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'Přiděleno',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'KŽ',
     'best_regards' => 'S pozdravem,',
     'canceled' => 'Zrušeno',

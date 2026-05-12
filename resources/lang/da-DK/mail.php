@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Inventarnummer',
     'assets_warrantee_alert' => 'Der er :count enhed med en udløbende garanti eller som nærmer sig end-of-life inden for de næste :threshold dage. | Der er :count enheder med udløbende garantier eller som nærmer sig end-of-life inden for de næste :threshold dage.',
     'assigned_to' => 'Tildelt',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'Med venlig hilsen,',
     'canceled' => 'annulleret',

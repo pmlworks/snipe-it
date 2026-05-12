@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Laitetunniste',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'Osoitettu',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Elinaika',
     'best_regards' => 'Parhain terveisin,',
     'canceled' => 'Peruutettu',
