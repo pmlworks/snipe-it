@@ -161,7 +161,8 @@ trait CustomTestMacros
 
                 foreach ($needles as $needle) {
                     Assert::assertTrue(
-                        $records->contains($needle)
+                        $records->contains($needle),
+                        "Response did not contain the expected value: {$needle}"
                     );
                 }
 
@@ -180,9 +181,19 @@ trait CustomTestMacros
 
                 foreach ($needles as $needle) {
                     Assert::assertFalse(
-                        $records->contains($needle)
+                        $records->contains($needle),
+                        "Response contained unexpected value: {$needle}"
                     );
                 }
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertCsvHeader',
+            function () {
+                $this->assertHeader('content-type', 'text/csv; charset=utf-8');
 
                 return $this;
             }
