@@ -21,7 +21,6 @@ use App\Http\Controllers\ManufacturersController;
 use App\Http\Controllers\ModalController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Reports\CustomAccessoryReportController;
 use App\Http\Controllers\Reports\CustomComponentReportController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ReportTemplatesController;
@@ -461,7 +460,7 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
 
     Route::get('/', [ReportsController::class, 'index'])
         ->name('reports.index')
-        ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
             ->push(trans('general.reports'), route('reports.index')));
 
     Route::get('audit', [ReportsController::class, 'audit'])
@@ -511,7 +510,7 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
 
     Route::get('accessories', [ReportsController::class, 'getAccessoryReport'])
         ->name('reports/accessories')
-        ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
             ->push(trans('general.reports'), route('reports.index'))
             ->push(trans('general.accessory_report'), route('reports/accessories')));
 
@@ -521,24 +520,16 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
     Route::group(['prefix' => 'custom'], function () {
         Route::get('/', [ReportsController::class, 'getCustomReport'])
             ->name('reports/custom')
-            ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+            ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
                 ->push(trans('general.reports'), route('reports.index'))
                 ->push(trans('general.custom_report'), route('reports/custom')));
 
         Route::post('/', [ReportsController::class, 'postCustom'])
             ->name('reports.post-custom');
 
-        Route::get('accessory', [CustomAccessoryReportController::class, 'show'])
-            ->name('reports.custom.accessory')
-            ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
-                ->push('Custom Accessory Report', route('reports.custom.accessory')));
-
-        Route::post('accessory', [CustomAccessoryReportController::class, 'run'])
-            ->name('reports.custom.accessory.run');
-
         Route::get('component', [CustomComponentReportController::class, 'show'])
             ->name('reports.custom.component')
-            ->breadcrumbs(fn(Trail $trail) => $trail->parent('home')
+            ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
                 ->push('Custom Component Report', route('reports.custom.component')));
 
         Route::post('component', [CustomComponentReportController::class, 'run'])

@@ -1851,11 +1851,6 @@
                                             {{ trans('general.custom_report') }}
                                         </a>
                                     </li>
-                                    <li {{!! (request()->is('reports.custom.accessory') ? ' class="active"' : '') !!}}>
-                                        <a href="{{ route('reports.custom.accessory') }}">
-                                            Custom Accessory Report
-                                        </a>
-                                    </li>
                                     <li {{!! (request()->is('reports.custom.component') ? ' class="active"' : '') !!}}>
                                         <a href="{{ route('reports.custom.component') }}">
                                             Custom Component Report
