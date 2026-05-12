@@ -205,7 +205,7 @@ class CustomComponentReportController extends Controller
 
         }, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="custom-accessories-report-'.date('Y-m-d-his').'.csv"',
+            'Content-Disposition' => 'attachment; filename="custom-components-report-'.date('Y-m-d-his').'.csv"',
         ]);
 
         return $response;
