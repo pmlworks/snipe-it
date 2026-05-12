@@ -1,11 +1,10 @@
 <?php
-
-return [
-    'app_version' => 'v8.5.0-pre',
-    'full_app_version' => 'v8.5.0-pre - build 22392-g5014b1c459',
-    'build_version' => '22392',
+return array(
+    'app_version' => 'v8.5.0',
+    'full_app_version' => 'v8.5.0 - build 22652-g80d1bf6a7a',
+    'build_version' => '22652',
     'prerelease_version' => '',
-    'hash_version' => 'g5014b1c459',
-    'full_hash' => 'v8.5.0-pre-207-g5014b1c459',
-    'branch' => 'master',
-];
+    'hash_version' => 'g80d1bf6a7a',
+    'full_hash' => 'v8.5.0-467-g80d1bf6a7a',
+    'branch' => 'develop',
+);
