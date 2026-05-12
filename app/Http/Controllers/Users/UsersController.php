@@ -576,12 +576,6 @@ class UsersController extends Controller
                     $formatter = new EscapeFormula('`');
 
                     foreach ($users as $user) {
-                        $user_groups = '';
-
-                        foreach ($user->groups as $user_group) {
-                            $user_groups .= $user_group->name.', ';
-                        }
-
                         $permissionstring = '';
 
                         if ($user->isSuperUser()) {
@@ -610,7 +604,7 @@ class UsersController extends Controller
                             $user->licenses->count(),
                             $user->accessories->count(),
                             $user->consumables->count(),
-                            $user_groups,
+                            $user->groups->pluck('name')->implode(', '),
                             $permissionstring,
                             $user->notes,
                             ($user->activated == '1') ? trans('general.yes') : trans('general.no'),

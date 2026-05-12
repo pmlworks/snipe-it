@@ -21,8 +21,6 @@ class ExportUsersTest extends TestCase
 
     public function test_can_export_users_to_csv()
     {
-        $this->markTestIncomplete();
-
         $luke = User::factory()
             ->forCompany(['name' => 'Test Company'])
             ->forManager(['first_name' => 'Ben', 'last_name' => 'Kenobi'])
