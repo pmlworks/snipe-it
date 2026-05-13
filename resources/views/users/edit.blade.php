@@ -52,10 +52,14 @@
         <!-- Custom Tabs -->
       <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#info" data-toggle="tab">{{ trans('general.information') }} </a></li>
-            @can('admin')
-                <li><a href="#permissions" data-toggle="tab">{{ trans('general.permissions') }} </a></li>
-            @endcan
+            <li class="active">
+                <a href="#info" data-toggle="tab">{{ trans('general.information') }} </a>
+            </li>
+
+            <li>
+                <a href="#permissions" data-toggle="tab">{{ trans('general.permissions') }} </a>
+            </li>
+
         </ul>
 
         <div class="tab-content">
@@ -641,28 +645,53 @@
             </div>
           </div><!-- /.tab-pane -->
 
-          @can('admin')
+
           <div class="tab-pane" id="permissions">
-                  @if (!Auth::user()->isSuperUser())
-                    <p class="alert alert-warning">{{ trans('admin/users/general.superadmin_permission_warning') }}</p>
-                  @endif
 
-                  @if (!Auth::user()->hasAccess('admin'))
-                    <p class="alert alert-warning">{{ trans('admin/users/general.admin_permission_warning') }}</p>
-                  @endif
 
+              <x-form.legend help_text="{{ trans('permissions.use_groups') }}"/>
+
+              @if (auth()->user()->isSuperUser())
+                  {{-- Superusers can do everything, including editing their own permissions --}}
+                  <div class="col-md-12">
+                      @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                  </div>
+
+              @elseif (auth()->user()->isAdmin())
+                  {{-- Admins can edit own and others' permissions, but cannot grant superuser --}}
                   <p class="alert alert-info">
-                      {{ trans('permissions.use_groups') }}
+                      <x-icon type="info"/>
+                      {{ trans('admin/users/general.superadmin_permission_warning') }}
                   </p>
 
                   <div class="col-md-12">
-                    @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                      @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
                   </div>
+
+              @elseif (auth()->id() === $user->id)
+                  {{-- Non-admin/superuser cannot edit their own permissions --}}
+                  <p class="alert alert-danger">
+                      <x-icon type="alert"/>
+                      {{ trans('admin/users/general.self_permission_warning') }}
+                  </p>
+
+              @else
+                  {{-- Non-admin/superuser editing another user OR creating a new user — cannot grant admin or superuser --}}
+                  <p class="alert alert-info">
+                      <x-icon type="help"/>
+                      {{ trans('admin/users/general.admin_permission_warning') }}
+                  </p>
+
+                  @if (!$user->isSuperUser())
+                      <div class="col-md-12">
+                          @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                      </div>
+                  @endif
+              @endif
 
 
 
           </div><!-- /.tab-pane -->
-          @endcan
         </div><!-- /.tab-content -->
           <x-redirect_submit_options
                   index_route="users.index"

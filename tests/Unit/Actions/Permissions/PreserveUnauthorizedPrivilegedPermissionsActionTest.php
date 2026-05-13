@@ -111,7 +111,7 @@ class PreserveUnauthorizedPrivilegedPermissionsActionTest extends TestCase
         $this->assertSame(['users.edit' => '1'], $normalized);
     }
 
-    public function test_admin_can_modify_their_own_permissions(): void
+    public function test_admin_cannot_modify_their_own_permissions(): void
     {
         $actor = User::factory()->admin()->create();
 
@@ -119,6 +119,20 @@ class PreserveUnauthorizedPrivilegedPermissionsActionTest extends TestCase
             requestedPermissions: ['admin' => '1', 'assets.view' => '1'],
             authenticatedUser: $actor,
             originalPermissions: ['admin' => '1'],
+            targetUser: $actor,
+        );
+
+        $this->assertSame(['admin' => '1'], $normalized);
+    }
+
+    public function test_superuser_can_modify_their_own_permissions(): void
+    {
+        $actor = User::factory()->superuser()->create();
+
+        $normalized = PreserveUnauthorizedPrivilegedPermissionsAction::run(
+            requestedPermissions: ['superuser' => '1', 'assets.view' => '1'],
+            authenticatedUser: $actor,
+            originalPermissions: ['superuser' => '1'],
             targetUser: $actor,
         );
 
