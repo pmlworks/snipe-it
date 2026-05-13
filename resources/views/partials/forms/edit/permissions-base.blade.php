@@ -11,6 +11,14 @@
         $section_name =  str_slug($main_section);
     }
   @endphp
+
+  @if (str_slug($main_section) == 'superuser' && !auth()->user()->isSuperUser())
+      @continue
+  @endif
+  @if (str_slug($main_section) == 'admin' && !auth()->user()->hasAccess('admin'))
+      @continue
+  @endif
+
   <div class="form-group {{ ($sectionPermission['permission']!='superuser') ? ' nonsuperuser' : '' }}{{ ( ($sectionPermission['permission']!='superuser') && ($sectionPermission['permission']!='admin')) ? ' nonadmin' : '' }}">
 
       <!-- start callout legend for major sections -->
@@ -46,10 +54,6 @@
                         @checked(array_key_exists($section_name, $groupPermissions) && $groupPermissions[$section_name] == '1')
                         type="radio"
                         value="1"
-                        {{-- Disable the superuser and admin allow if the user is not a superuser --}}
-                        @if (((str_slug($main_section) == 'admin') && (!auth()->user()->hasAccess('admin'))) || ((str_slug($main_section) == 'superuser') && (!auth()->user()->isSuperUser())))
-                          disabled
-                        @endif
                         id="{{ str_slug($main_section) }}_allow"
                 >
 
@@ -70,10 +74,6 @@
                           @checked((array_key_exists(str_slug($main_section), $groupPermissions) && $groupPermissions[str_slug($main_section)] == '0') || (!array_key_exists(str_slug($main_section), $groupPermissions)))
                           type="radio"
                           value="0"
-                          {{-- Disable the superuser and admin allow if the user is not a superuser --}}
-                          @if (((str_slug($main_section) == 'admin') && (!auth()->user()->hasAccess('admin'))) || ((str_slug($main_section) == 'superuser') && (!auth()->user()->isSuperUser())))
-                            disabled
-                          @endif
                           id="{{ str_slug($main_section) }}_inherit"
                   >
 
@@ -94,10 +94,6 @@
                         @checked(array_key_exists(str_slug($main_section), $groupPermissions) && $groupPermissions[str_slug($main_section)] == '-1')
                         type="radio"
                         value="-1"
-                        {{-- Disable the superuser and admin allow if the user is not a superuser --}}
-                        @if (((str_slug($main_section) == 'admin') && (!auth()->user()->hasAccess('admin'))) || ((str_slug($main_section) == 'superuser') && (!auth()->user()->isSuperUser())))
-                          disabled
-                        @endif
                         id="{{ str_slug($main_section) }}_deny"
                 >
 
