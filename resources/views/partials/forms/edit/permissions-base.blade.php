@@ -17,7 +17,7 @@
       <div class="callout callout-legend col-md-12">
           
          <!-- start left column with area name and note -->
-          <div class="col-md-10">
+          <div class="col-md-9">
 
               <h4 id="{{ str_slug($sectionPermission['permission'])}}" class="{{ (count($main_section_permission) > 1) ? 'remember-toggle': '' }}">
                 @if (count($main_section_permission) > 1)
@@ -33,7 +33,7 @@
           <!-- end left column with area name and note -->
 
           <!-- Handle the checkall ALLOW and DENY radios in the right column -->
-          <div class="col-md-2 text-right header-row">
+          <div class="col-md-3 text-right header-row">
             <div class="radio-toggle-wrapper">
 
               <!-- start .radio-slider-inputs allow -->
@@ -128,14 +128,14 @@
                     @endphp
 
                       <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 13px;">
-                        <div class="col-md-10">
+                          <div class="col-xs-9 col-md-10">
                           <strong>{{ $section_translation }}</strong>
                           @if (\Lang::has('permissions.'.str_slug($this_permission['permission']).'.note'))
                             <p>{{ trans('permissions.'.str_slug($this_permission['permission']).'.note') }}</p>
                           @endif
                         </div>
 
-                        <div class="form-group col-md-2 text-right">
+                          <div class="form-group col-xs-3 col-md-2 text-right">
                           <div class="radio-toggle-wrapper">
 
                                 <div class="radio-slider-inputs" data-tooltip="true" title="{{ trans('permissions.grant', ['area' => $section_translation]) }}">
