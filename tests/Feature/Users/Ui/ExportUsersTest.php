@@ -22,7 +22,7 @@ class ExportUsersTest extends TestCase
     public function test_can_export_users_to_csv()
     {
         $luke = User::factory()
-            ->forCompany(['name' => 'Test Company'])
+            ->forCompany(['name' => 'Jedi'])
             ->forManager(['first_name' => 'Ben', 'last_name' => 'Kenobi'])
             ->forLocation(['name' => 'Space'])
             ->forDepartment(['name' => 'Lightsaber Fighting Dept'])
@@ -37,15 +37,12 @@ class ExportUsersTest extends TestCase
                 'notes' => 'Nice guy...',
             ]);
 
-        $groups = Group::factory()
-            ->count(2)
-            ->sequence(
+        $luke->groups()->sync(
+            Group::factory()->count(2)->sequence(
                 ['name' => 'Jedi'],
                 ['name' => 'Jedi Dance Crew'],
-            )
-            ->create();
-
-        $luke->groups()->sync($groups);
+            )->create()
+        );
 
         Asset::factory()->assignedToUser($luke)->count(2)->create();
         LicenseSeat::factory()->assignedToUser($luke)->count(2)->create();
@@ -57,7 +54,7 @@ class ExportUsersTest extends TestCase
             ->assertOk()
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse([
-                'Test Company',
+                'Jedi',
                 'Jedi Master',
                 '789',
                 'Luke',
@@ -73,6 +70,25 @@ class ExportUsersTest extends TestCase
                 trans('general.user'),
                 'Nice guy...',
                 trans('general.yes'),
+            ])
+            ->assertSeePairsInStreamedResponse([
+                'First Name' => 'Luke',
+                'Last Name' => 'Skywalker',
+                'Username' => 'lskywalker',
+                // / todo:
+                // 'Email' => 'skywalker@jedi.com',
+                // 'Company' => 'Jedi',
+                // 'groups' => 'Jedi, Jedi Dance Crew',
+                // 'job title' => 'Jedi Master',
+                // 'employee number' => '789',
+                // 'manager' => 'Ben Kenobi',
+                // 'location' => 'Space',
+                // 'department' => 'Lightsaber Fighting Dept',
+                // 'assets assigned' => '2',
+                // 'accessories checked out' => '2',
+                // 'consumables checked out' => '2',
+                // 'licenses assigned' => '2',
+                // 'notes' => 'Nice guy...',
             ]);
     }
 }

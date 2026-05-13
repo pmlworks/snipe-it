@@ -191,6 +191,21 @@ trait CustomTestMacros
         );
 
         TestResponse::macro(
+            'assertSeePairsInStreamedResponse',
+            function (array $pair): self {
+                $records = collect(Reader::createFromString($this->streamedContent())->getRecords());
+
+                $headers = collect($records->shift());
+
+                $combined = $records->map(fn ($record) => $headers->combine($record));
+
+                // todo: make the assertion...
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
             'assertCsvHeader',
             function () {
                 $this->assertHeader('content-type', 'text/csv; charset=utf-8');
