@@ -219,6 +219,17 @@ class AssetPaginationTest extends TestCase
         $this->assertStringContainsString('limit=5', $url);
     }
 
+    public function test_page_urls_do_not_include_limit_when_not_in_original_request()
+    {
+        Asset::factory()->count(600)->create();
+
+        $response = $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['page' => 1]))
+            ->assertOk();
+
+        $this->assertStringNotContainsString('limit=', $response->json('next_page_url'));
+    }
+
     public function test_both_page_urls_null_when_single_page()
     {
         Asset::factory()->count(3)->create();
