@@ -38,6 +38,7 @@ class MaintenancesController extends Controller
         $this->authorize('view', Asset::class);
 
         $maintenances = Maintenance::select('maintenances.*')
+            ->whereHas('asset')
             ->with('asset', 'asset.model', 'asset.location', 'asset.defaultLoc', 'supplier', 'asset.company', 'asset.status', 'adminuser', 'asset.assignedTo');
 
         // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
