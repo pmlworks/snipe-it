@@ -648,48 +648,30 @@
 
           <div class="tab-pane" id="permissions">
 
-
               <x-form.legend help_text="{{ trans('permissions.use_groups') }}"/>
 
-              @if (auth()->user()->isSuperUser())
-                  {{-- Superusers can do everything, including editing their own permissions --}}
-                  <div class="col-md-12">
-                      @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
-                  </div>
-
-              @elseif (auth()->user()->isAdmin())
-                  {{-- Admins can edit own and others' permissions, but cannot grant superuser --}}
+              @if (auth()->user()->isAdmin() && !auth()->user()->isSuperUser())
                   <p class="alert alert-info">
                       <x-icon type="info"/>
                       {{ trans('admin/users/general.superadmin_permission_warning') }}
                   </p>
-
-                  <div class="col-md-12">
-                      @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
-                  </div>
-
-              @elseif (auth()->id() === $user->id)
-                  {{-- Non-admin/superuser cannot edit their own permissions --}}
+              @elseif (!auth()->user()->isAdmin() && !auth()->user()->isSuperUser() && auth()->id() === $user->id)
                   <p class="alert alert-danger">
                       <x-icon type="alert"/>
                       {{ trans('admin/users/general.self_permission_warning') }}
                   </p>
-
-              @else
-                  {{-- Non-admin/superuser editing another user OR creating a new user — cannot grant admin or superuser --}}
-                  <p class="alert alert-info">
-                      <x-icon type="help"/>
+              @elseif (!auth()->user()->isAdmin() && !auth()->user()->isSuperUser() && auth()->id() !== $user->id)
+                  <p class="alert alert-danger">
+                      <x-icon type="warning"/>
                       {{ trans('admin/users/general.admin_permission_warning') }}
                   </p>
-
-                  @if (!$user->isSuperUser())
-                      <div class="col-md-12">
-                          @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
-                      </div>
-                  @endif
               @endif
 
-
+              @if (auth()->user()->isSuperUser() || auth()->user()->isAdmin() || (auth()->id() !== $user->id && !$user->isSuperUser()))
+                  <div class="col-md-12">
+                      @include('partials.forms.edit.permissions-base', ['use_inherit' => true, 'groupPermissions' => $userPermissions])
+                  </div>
+              @endif
 
           </div><!-- /.tab-pane -->
         </div><!-- /.tab-content -->
