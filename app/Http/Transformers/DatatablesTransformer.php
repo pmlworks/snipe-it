@@ -11,6 +11,10 @@ class DatatablesTransformer
     {
         (isset($total)) ? $objects_array['total'] = $total : $objects_array['total'] = count($objects);
         $objects_array['rows'] = $objects;
+        $objects_array['current_page'] = app('api_current_page');
+        $limit = app('api_limit_value');
+        $objects_array['per_page'] = $limit;
+        $objects_array['total_pages'] = $limit > 0 ? (int) ceil($objects_array['total'] / $limit) : 1;
 
         return $objects_array;
     }
