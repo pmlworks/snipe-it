@@ -199,7 +199,18 @@ trait CustomTestMacros
 
                 $combined = $records->map(fn ($record) => $headers->combine($record));
 
-                // todo: make the assertion...
+                Assert::assertTrue(
+                    $combined->contains(function ($row) use ($pair) {
+                        foreach ($pair as $key => $value) {
+                            if (($row[$key] ?? null) !== $value) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }),
+                    'Response did not contain a row matching the expected pairs: '.json_encode($pair)
+                );
 
                 return $this;
             }
