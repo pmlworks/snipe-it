@@ -161,14 +161,73 @@ class AssetPaginationTest extends TestCase
             ->assertJsonPath('current_page', 1);
     }
 
-    public function test_per_page_reflects_the_limit_parameter()
+    public function test_per_page_reflects_the_limit_parameter_as_an_integer()
+    {
+        Asset::factory()->count(3)->create();
+
+        $response = $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['limit' => 25]))
+            ->assertOk()
+            ->assertJsonPath('per_page', 25);
+
+        $this->assertIsInt($response->json('per_page'));
+    }
+
+    public function test_prev_page_url_is_null_on_first_page()
+    {
+        Asset::factory()->count(10)->create();
+
+        $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['page' => 1, 'limit' => 5]))
+            ->assertOk()
+            ->assertJsonPath('prev_page_url', null);
+    }
+
+    public function test_next_page_url_is_null_on_last_page()
+    {
+        Asset::factory()->count(10)->create();
+
+        $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['page' => 2, 'limit' => 5]))
+            ->assertOk()
+            ->assertJsonPath('next_page_url', null);
+    }
+
+    public function test_next_page_url_contains_correct_page_number()
+    {
+        Asset::factory()->count(10)->create();
+
+        $url = $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['page' => 1, 'limit' => 5]))
+            ->assertOk()
+            ->json('next_page_url');
+
+        $this->assertStringContainsString('page=2', $url);
+        $this->assertStringContainsString('limit=5', $url);
+    }
+
+    public function test_prev_page_url_contains_correct_page_number()
+    {
+        Asset::factory()->count(10)->create();
+
+        $url = $this->actingAsForApi($this->user)
+            ->getJson(route('api.assets.index', ['page' => 2, 'limit' => 5]))
+            ->assertOk()
+            ->json('prev_page_url');
+
+        $this->assertStringContainsString('page=1', $url);
+        $this->assertStringContainsString('limit=5', $url);
+    }
+
+    public function test_both_page_urls_null_when_single_page()
     {
         Asset::factory()->count(3)->create();
 
         $this->actingAsForApi($this->user)
-            ->getJson(route('api.assets.index', ['limit' => 25]))
+            ->getJson(route('api.assets.index', ['page' => 1, 'limit' => 50]))
             ->assertOk()
-            ->assertJsonPath('per_page', 25);
+            ->assertJsonPath('prev_page_url', null)
+            ->assertJsonPath('next_page_url', null);
     }
 
     public function test_total_pages_is_correct_for_even_division()

@@ -11,10 +11,21 @@ class DatatablesTransformer
     {
         (isset($total)) ? $objects_array['total'] = $total : $objects_array['total'] = count($objects);
         $objects_array['rows'] = $objects;
-        $objects_array['current_page'] = app('api_current_page');
-        $limit = app('api_limit_value');
+        $current_page = app('api_current_page');
+        $limit = (int) app('api_limit_value');
+        $total_pages = $limit > 0 ? (int) ceil($objects_array['total'] / $limit) : 1;
+
+        $objects_array['current_page'] = $current_page;
         $objects_array['per_page'] = $limit;
-        $objects_array['total_pages'] = $limit > 0 ? (int) ceil($objects_array['total'] / $limit) : 1;
+        $objects_array['total_pages'] = $total_pages;
+
+        $base_query = collect(request()->query())->except(['page', 'offset'])->all();
+        $objects_array['prev_page_url'] = $current_page > 1
+            ? request()->url().'?'.http_build_query(array_merge($base_query, ['page' => $current_page - 1, 'limit' => $limit]))
+            : null;
+        $objects_array['next_page_url'] = $current_page < $total_pages
+            ? request()->url().'?'.http_build_query(array_merge($base_query, ['page' => $current_page + 1, 'limit' => $limit]))
+            : null;
 
         return $objects_array;
     }
