@@ -128,14 +128,14 @@
                     @endphp
 
                       <div class="form-group" style="border-bottom: 1px solid #eee; padding-right: 13px;">
-                          <div class="col-xs-9 col-md-10">
+                          <div class="col-md-9">
                           <strong>{{ $section_translation }}</strong>
                           @if (\Lang::has('permissions.'.str_slug($this_permission['permission']).'.note'))
                             <p>{{ trans('permissions.'.str_slug($this_permission['permission']).'.note') }}</p>
                           @endif
                         </div>
 
-                          <div class="form-group col-xs-3 col-md-2 text-right">
+                          <div class="form-group col-md-3 text-right">
                           <div class="radio-toggle-wrapper">
 
                                 <div class="radio-slider-inputs" data-tooltip="true" title="{{ trans('permissions.grant', ['area' => $section_translation]) }}">
