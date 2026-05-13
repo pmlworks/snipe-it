@@ -13,8 +13,12 @@ final class PreserveUnauthorizedPrivilegedPermissionsAction
      * @param  array<string, mixed>  $originalPermissions
      * @return array<string, mixed>
      */
-    public static function run(array $requestedPermissions, User $authenticatedUser, array $originalPermissions = []): array
+    public static function run(array $requestedPermissions, User $authenticatedUser, array $originalPermissions = [], ?User $targetUser = null): array
     {
+        if ($targetUser && ! $authenticatedUser->isAdmin() && $authenticatedUser->id === $targetUser->id) {
+            return $originalPermissions;
+        }
+
         if (! $authenticatedUser->isSuperUser()) {
             if (array_key_exists('superuser', $originalPermissions)) {
                 $requestedPermissions['superuser'] = $originalPermissions['superuser'];

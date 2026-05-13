@@ -315,6 +315,7 @@ class UsersController extends Controller
                 requestedPermissions: NormalizePermissionsPayloadAction::run($request->input('permission')),
                 authenticatedUser: $authenticatedUser,
                 originalPermissions: $orig_permissions_array,
+                targetUser: $user,
             ));
 
             // Only save groups if the user is a superuser
