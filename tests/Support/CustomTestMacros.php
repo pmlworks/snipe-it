@@ -190,6 +190,22 @@ trait CustomTestMacros
             }
         );
 
+        /**
+         * Assert that the streamed CSV response contains a row where all given header→value pairs match simultaneously.
+         *
+         * The first row of the CSV is treated as headers. Each subsequent row is combined with those headers
+         * to produce an associative map, and the assertion passes if at least one row satisfies every pair.
+         *
+         * Unlike assertSeeTextInStreamedResponse, this verifies that the values appear together in the same
+         * row under the correct column — not just anywhere in the file.
+         *
+         * Usage:
+         *   ->assertSeePairsInStreamedResponse([
+         *       'First Name' => 'Luke',
+         *       'Last Name'  => 'Skywalker',
+         *       'Username'   => 'lskywalker',
+         *   ])
+         */
         TestResponse::macro(
             'assertSeePairsInStreamedResponse',
             function (array $pair): self {
