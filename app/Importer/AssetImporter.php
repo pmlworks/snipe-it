@@ -194,10 +194,10 @@ class AssetImporter extends ItemImporter
 
         // For existing assets that have custom fields, update them.
         // This avoids the issue of calling save() twice with Model::unguard() active.
-        if ($editingAsset && !empty($customFieldsToSave)) {
+        if ($editingAsset && ! empty($customFieldsToSave)) {
             $asset->update($customFieldsToSave);
             $success = true;
-        } elseif (!$editingAsset) {
+        } elseif (! $editingAsset) {
             // For new assets, save with all changes (custom fields included via direct attribute assignment above)
             $success = $asset->save();
         } else {

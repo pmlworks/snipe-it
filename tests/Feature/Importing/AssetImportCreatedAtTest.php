@@ -6,9 +6,11 @@ use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
 use App\Models\Company;
+use App\Models\Import;
 use App\Models\Location;
 use App\Models\Statuslabel;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -55,7 +57,7 @@ class AssetImportCreatedAtTest extends TestCase
             ->assertSuccessful();
 
         // Import the file
-        $import = \App\Models\Import::latest()->first();
+        $import = Import::latest()->first();
         $this->actingAsForApi(User::factory()->canImport()->create())
             ->postJson(route('api.imports.importFile', $import->id), [
                 'import-type' => 'asset',
@@ -124,7 +126,7 @@ class AssetImportCreatedAtTest extends TestCase
             ])
             ->assertSuccessful();
 
-        $import1 = \App\Models\Import::latest()->first();
+        $import1 = Import::latest()->first();
         $this->actingAsForApi(User::factory()->canImport()->create())
             ->postJson(route('api.imports.importFile', $import1->id), [
                 'import-type' => 'asset',
@@ -147,7 +149,7 @@ class AssetImportCreatedAtTest extends TestCase
             ])
             ->assertSuccessful();
 
-        $import2 = \App\Models\Import::latest()->first();
+        $import2 = Import::latest()->first();
         $this->actingAsForApi(User::factory()->canImport()->create())
             ->postJson(route('api.imports.importFile', $import2->id), [
                 'import-type' => 'asset',
@@ -180,7 +182,7 @@ class AssetImportCreatedAtTest extends TestCase
         $path = tempnam(sys_get_temp_dir(), 'csv');
         file_put_contents($path, $content);
 
-        return new \Illuminate\Http\UploadedFile(
+        return new UploadedFile(
             $path,
             $filename,
             'text/csv',
@@ -188,6 +190,4 @@ class AssetImportCreatedAtTest extends TestCase
             true
         );
     }
-
 }
-
