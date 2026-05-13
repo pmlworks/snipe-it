@@ -49,6 +49,7 @@ class SettingsServiceProvider extends ServiceProvider
         app()->singleton('api_offset_value', function () {
             if (request()->filled('page') && ! request()->filled('offset')) {
                 $page = max(1, intval(request('page')));
+
                 return ($page - 1) * (int) app('api_limit_value');
             }
 

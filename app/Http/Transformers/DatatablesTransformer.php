@@ -11,7 +11,7 @@ class DatatablesTransformer
     {
         $objects_array = [
             'total' => $total ?? count($objects),
-            'rows'  => $objects,
+            'rows' => $objects,
         ];
         $current_page = app('api_current_page');
         $limit = (int) app('api_limit_value');
@@ -39,7 +39,7 @@ class DatatablesTransformer
     {
         $objects_array = [
             'total' => $total ?? count($objects),
-            'rows'  => $objects,
+            'rows' => $objects,
         ];
 
         return $objects_array;
