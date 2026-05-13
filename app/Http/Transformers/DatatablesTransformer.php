@@ -21,12 +21,11 @@ class DatatablesTransformer
         $objects_array['per_page'] = $limit;
         $objects_array['total_pages'] = $total_pages;
 
-        $base_query = collect(request()->query())->except(['page', 'offset'])->all();
         $objects_array['prev_page_url'] = $current_page > 1
-            ? request()->url().'?'.http_build_query(array_merge($base_query, ['page' => $current_page - 1]))
+            ? request()->fullUrlWithQuery(['page' => $current_page - 1])
             : null;
         $objects_array['next_page_url'] = $current_page < $total_pages
-            ? request()->url().'?'.http_build_query(array_merge($base_query, ['page' => $current_page + 1]))
+            ? request()->fullUrlWithQuery(['page' => $current_page + 1])
             : null;
 
         return $objects_array;
