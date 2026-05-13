@@ -9,8 +9,10 @@ class DatatablesTransformer
      **/
     public function transformDatatables($objects, $total = null)
     {
-        (isset($total)) ? $objects_array['total'] = $total : $objects_array['total'] = count($objects);
-        $objects_array['rows'] = $objects;
+        $objects_array = [
+            'total' => $total ?? count($objects),
+            'rows'  => $objects,
+        ];
         $current_page = app('api_current_page');
         $limit = (int) app('api_limit_value');
         $total_pages = $limit > 0 ? (int) ceil($objects_array['total'] / $limit) : 1;
@@ -35,8 +37,10 @@ class DatatablesTransformer
      **/
     public function transformBulkResponseWithStatusAndObjects($objects, $total)
     {
-        (isset($total)) ? $objects_array['total'] = $total : $objects_array['total'] = count($objects);
-        $objects_array['rows'] = $objects;
+        $objects_array = [
+            'total' => $total ?? count($objects),
+            'rows'  => $objects,
+        ];
 
         return $objects_array;
     }

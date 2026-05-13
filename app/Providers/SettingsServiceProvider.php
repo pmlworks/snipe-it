@@ -49,7 +49,7 @@ class SettingsServiceProvider extends ServiceProvider
         app()->singleton('api_offset_value', function () {
             if (request()->filled('page') && ! request()->filled('offset')) {
                 $page = max(1, intval(request('page')));
-                return ($page - 1) * app('api_limit_value');
+                return ($page - 1) * (int) app('api_limit_value');
             }
 
             return intval(request('offset'));
@@ -62,8 +62,8 @@ class SettingsServiceProvider extends ServiceProvider
                 return max(1, intval(request('page')));
             }
 
-            $limit = app('api_limit_value');
-            $offset = app('api_offset_value');
+            $limit = (int) app('api_limit_value');
+            $offset = (int) app('api_offset_value');
 
             return $limit > 0 ? (int) floor($offset / $limit) + 1 : 1;
         });
