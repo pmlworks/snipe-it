@@ -311,12 +311,14 @@ class UsersController extends Controller
                 $user->password = bcrypt($request->input('password'));
             }
 
-            $user->permissions = json_encode(PreserveUnauthorizedPrivilegedPermissionsAction::run(
-                requestedPermissions: NormalizePermissionsPayloadAction::run($request->input('permission')),
-                authenticatedUser: $authenticatedUser,
-                originalPermissions: $orig_permissions_array,
-                targetUser: $user,
-            ));
+            if ($request->has('permission')) {
+                $user->permissions = json_encode(PreserveUnauthorizedPrivilegedPermissionsAction::run(
+                    requestedPermissions: NormalizePermissionsPayloadAction::run($request->input('permission')),
+                    authenticatedUser: $authenticatedUser,
+                    originalPermissions: $orig_permissions_array,
+                    targetUser: $user,
+                ));
+            }
 
             // Only save groups if the user is a superuser
             if (auth()->user()->isSuperUser()) {
@@ -599,7 +601,7 @@ class UsersController extends Controller
                 'company',
                 'createdBy'
             )->withCount(['managesUsers as manages_users_count', 'managedLocations as manages_locations_count'])
-            ->orderBy('created_at', 'DESC')
+                ->orderBy('created_at', 'DESC')
                 ->chunk(500, function ($users) use ($handle) {
 
                     $formatter = new EscapeFormula('`');
