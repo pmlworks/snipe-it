@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Accessories;
 
 use App\Events\CheckoutableCheckedOut;
 use App\Helpers\Helper;
-use App\Http\Controllers\CheckInOutRequest;
+use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessoryCheckoutRequest;
 use App\Models\Accessory;
@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 
 class AccessoryCheckoutController extends Controller
 {
-    use CheckInOutRequest;
+    use CheckInOutTrait;
 
     /**
      * Return the form to checkout an Accessory to a user.

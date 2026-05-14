@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Assets;
 
 use App\Events\CheckoutablesCheckedOutInBulk;
 use App\Helpers\Helper;
-use App\Http\Controllers\CheckInOutRequest;
+use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetCheckoutRequest;
 use App\Models\Asset;
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Log;
 
 class BulkAssetsController extends Controller
 {
-    use CheckInOutRequest;
+    use CheckInOutTrait;
 
     /**
      * Display the bulk edit page.

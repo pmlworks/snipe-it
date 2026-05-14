@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Kits;
 
-use App\Http\Controllers\CheckInOutRequest;
+use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\PredefinedKit;
@@ -23,7 +23,7 @@ class CheckoutKitController extends Controller
 {
     public $kitService;
 
-    use CheckInOutRequest;
+    use CheckInOutTrait;
 
     public function __construct(PredefinedKitCheckoutService $kitService)
     {
