@@ -166,8 +166,9 @@
                   {{ $snipeSettings->default_currency }}
                 @endif
               </span>
-              <input class="form-control" type="number" name="cost" min="0.00" max="99999999999999999.000" step="0.001" aria-label="cost" id="cost" value="{{ old('cost', $item->cost) }}" maxlength="25" />
+                <input class="form-control" type="text" inputmode="decimal" pattern="[\d.,]+" name="cost" aria-label="cost" id="cost" value="{{ old('cost', \App\Helpers\Helper::formatCurrencyOutput($item->cost)) }}" maxlength="25" data-msg-pattern="{{ trans('general.purchase_cost_invalid') }}"/>
               {!! $errors->first('cost', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+              <p class="help-block">{{ trans('general.purchase_cost_format_help', ['format' => $snipeSettings->digit_separator]) }}</p>
             </div>
           </div>
         </div>
