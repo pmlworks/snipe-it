@@ -255,6 +255,7 @@ return [
     'processing' => 'Processing',
     'profile' => 'View Profile',
     'purchase_cost' => 'Purchase Cost',
+    'purchase_cost_format_help' => 'Use your configured number format, e.g. :format',
     'purchase_date' => 'Purchase Date',
     'qty' => 'QTY',
     'quantity' => 'Quantity',
