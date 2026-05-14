@@ -397,7 +397,7 @@ class SnipeSCIMConfig
                                 // extract ID from URL, jam it in?
                                 $url = $value['$ref'];
                                 $users_prefix = route('scim.resources', ['resourceType' => 'User']) . '/';
-                                if (string_starts_with($url, $users_prefix)) {
+                                if (str_starts_with($url, $users_prefix)) {
                                     $manager_id = substr($url, strlen($users_prefix));
                                 }
                             } elseif (array_key_exists('value', $value)) {
