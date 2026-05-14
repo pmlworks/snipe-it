@@ -255,6 +255,8 @@ return [
     'processing' => 'Processing',
     'profile' => 'View Profile',
     'purchase_cost' => 'Purchase Cost',
+    'purchase_cost_format_help' => 'This should be entered in your system-configured number format, e.g. :format',
+    'purchase_cost_invalid' => 'Please enter a valid number (digits, dots, and commas only)',
     'purchase_date' => 'Purchase Date',
     'qty' => 'QTY',
     'quantity' => 'Quantity',
