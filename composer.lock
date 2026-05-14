@@ -78,12 +78,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/grokability/laravel-scim-server.git",
-                "reference": "dfef93c7344be3c3c255d54694e182c5ec784bab"
+                "reference": "5ddb8188dd50e2bdb6f8133b9b7f0a0b54b83148"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/grokability/laravel-scim-server/zipball/dfef93c7344be3c3c255d54694e182c5ec784bab",
-                "reference": "dfef93c7344be3c3c255d54694e182c5ec784bab",
+                "url": "https://api.github.com/repos/grokability/laravel-scim-server/zipball/5ddb8188dd50e2bdb6f8133b9b7f0a0b54b83148",
+                "reference": "5ddb8188dd50e2bdb6f8133b9b7f0a0b54b83148",
                 "shasum": ""
             },
             "require": {
@@ -133,7 +133,7 @@
             "support": {
                 "source": "https://github.com/grokability/laravel-scim-server/tree/scimv2_with_logging"
             },
-            "time": "2026-05-12T11:17:15+00:00"
+            "time": "2026-05-14T09:39:34+00:00"
         },
         {
             "name": "aws/aws-crt-php",
