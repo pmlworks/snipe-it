@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Kits;
 
-use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\CheckInOutTrait;
 use App\Models\Asset;
 use App\Models\PredefinedKit;
 use App\Models\User;

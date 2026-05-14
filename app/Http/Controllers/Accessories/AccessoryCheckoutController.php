@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Accessories;
 
 use App\Events\CheckoutableCheckedOut;
 use App\Helpers\Helper;
-use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AccessoryCheckoutRequest;
+use App\Http\Traits\CheckInOutTrait;
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
 use App\Models\CheckoutAcceptance;

@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Assets;
 
 use App\Events\CheckoutablesCheckedOutInBulk;
 use App\Helpers\Helper;
-use App\Http\Traits\CheckInOutTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AssetCheckoutRequest;
+use App\Http\Traits\CheckInOutTrait;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Company;
