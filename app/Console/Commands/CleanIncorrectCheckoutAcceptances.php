@@ -63,6 +63,13 @@ class CleanIncorrectCheckoutAcceptances extends Command
                         }
                     }
 
+                    if (is_null($checkoutAcceptance->created_at)) {
+                        $skips++;
+                        $bar->advance();
+
+                        continue;
+                    }
+
                     // Push all filtering (including the ±5-second window) into the DB;
                     // exists() returns as soon as one matching row is found rather than
                     // fetching all checkout logs into PHP.
