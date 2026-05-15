@@ -93,6 +93,15 @@ class CleanIncorrectCheckoutAcceptancesTest extends TestCase
         $this->assertDatabaseHas('checkout_acceptances', ['id' => $acceptance->id]);
     }
 
+    public function test_skips_acceptance_with_null_created_at(): void
+    {
+        $acceptance = CheckoutAcceptance::factory()->withoutActionLog()->create(['created_at' => null]);
+
+        $this->artisan('snipeit:clean-checkout-acceptances')->assertExitCode(0);
+
+        $this->assertDatabaseHas('checkout_acceptances', ['id' => $acceptance->id]);
+    }
+
     public function test_deletes_license_seat_acceptance_when_checkout_target_is_non_user()
     {
         $location = Location::factory()->create();
