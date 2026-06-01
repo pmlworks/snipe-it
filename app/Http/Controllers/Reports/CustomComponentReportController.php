@@ -92,7 +92,7 @@ class CustomComponentReportController extends Controller
                 'unit_cost' => 'purchase_cost',
             ]);
 
-            $query = $this->appendDateBoundaries($query, $request, [
+            $query = $this->appendDateWindowBoundaries($query, $request, [
                 // formKey => column
                 // _start and _end will be appended to the key
                 // ie: purchase_start|purchase_end => purchase_date
@@ -365,7 +365,7 @@ class CustomComponentReportController extends Controller
         return $query;
     }
 
-    private function appendDateBoundaries(Builder $query, Request $request, array $mapping): Builder
+    private function appendDateWindowBoundaries(Builder $query, Request $request, array $mapping): Builder
     {
         foreach ($mapping as $formKey => $column) {
             if (($request->filled("{$formKey}_start")) && ($request->filled("{$formKey}_end"))) {
