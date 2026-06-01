@@ -83,7 +83,7 @@ class CustomComponentReportController extends Controller
                 'by_supplier_id' => 'components.supplier_id',
             ]);
 
-            $query = $this->appendBoundaries($query, $request, [
+            $query = $this->appendNumericalBoundaries($query, $request, [
                 // formKey => column
                 // _start and _end will be appended to the key
                 // ie: quantity_start|quantity_end => qty
@@ -351,7 +351,7 @@ class CustomComponentReportController extends Controller
         return $query;
     }
 
-    private function appendBoundaries(Builder $query, Request $request, array $mapping): Builder
+    private function appendNumericalBoundaries(Builder $query, Request $request, array $mapping): Builder
     {
         foreach ($mapping as $formKey => $column) {
             if ($request->filled(["{$formKey}_start", "{$formKey}_end"])) {
