@@ -61,73 +61,7 @@ class CustomComponentReportController extends Controller
             fputcsv($handle, $headerRow);
             Log::debug('Added headers: '.$this->getExecutionTime());
 
-            $query = Component::select('components.*')
-                ->with([
-                    'category',
-                    'company',
-                    'location',
-                    'manufacturer',
-                    'supplier',
-                ]);
-
-            $query = $this->appendLocalConstraints($query, $request, [
-                'by_model_number' => 'components.model_number',
-                'by_name' => 'components.name',
-                'by_order_number' => 'components.order_number',
-            ]);
-
-            $query = $this->appendForeignConstraints($query, $request, [
-                'by_category_id' => 'components.category_id',
-                'by_company_id' => 'components.company_id',
-                'by_location_id' => 'components.location_id',
-                'by_manufacturer_id' => 'components.manufacturer_id',
-                'by_supplier_id' => 'components.supplier_id',
-            ]);
-
-            $query = $this->appendNumericalBoundaries($query, $request, [
-                // formKey => column
-                // _start and _end will be appended to the key
-                // ie: quantity_start|quantity_end => qty
-                'quantity' => 'qty',
-                'min_quantity' => 'min_amt',
-                'unit_cost' => 'purchase_cost',
-            ]);
-
-            $query = $this->appendDateWindowBoundaries($query, $request, [
-                // formKey => column
-                // _start and _end will be appended to the key
-                // ie: purchase_start|purchase_end => purchase_date
-                'purchase' => 'purchase_date',
-                'created' => 'created_at',
-                'last_updated' => 'updated_at',
-            ]);
-
-            $query = $this->appendBeforeDateBoundaries($query, $request, [
-                // formKey => column
-                'last_updated_before' => 'updated_at',
-            ]);
-
-            if ($request->filled('checkout_date_start') && $request->filled('checkout_date_end')) {
-                $checkout_start = Carbon::parse($request->input('checkout_date_start'))->startOfDay();
-                $checkout_end = Carbon::parse($request->input('checkout_date_end', now()))->endOfDay();
-
-                $componentIdsWithinCheckoutRange = Actionlog::where('action_type', '=', 'checkout')
-                    ->where('item_type', Component::class)
-                    ->whereBetween('action_date', [$checkout_start, $checkout_end])
-                    ->pluck('item_id');
-
-                $query->whereIn('components.id', $componentIdsWithinCheckoutRange);
-            }
-
-            if ($request->input('deleted_components') === 'include_deleted') {
-                $query->withTrashed();
-            }
-
-            if ($request->input('deleted_components') === 'only_deleted') {
-                $query->onlyTrashed();
-            }
-
-            $query->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
+            $this->buildQuery($request)->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
                 Log::debug('Walking results: '.$this->getExecutionTime());
 
                 $count = 0;
@@ -340,6 +274,77 @@ class CustomComponentReportController extends Controller
         }
 
         return $header;
+    }
+
+    private function buildQuery(Request $request): Builder
+    {
+        $query = Component::select('components.*')
+            ->with([
+                'category',
+                'company',
+                'location',
+                'manufacturer',
+                'supplier',
+            ]);
+
+        $query = $this->appendLocalConstraints($query, $request, [
+            'by_model_number' => 'components.model_number',
+            'by_name' => 'components.name',
+            'by_order_number' => 'components.order_number',
+        ]);
+
+        $query = $this->appendForeignConstraints($query, $request, [
+            'by_category_id' => 'components.category_id',
+            'by_company_id' => 'components.company_id',
+            'by_location_id' => 'components.location_id',
+            'by_manufacturer_id' => 'components.manufacturer_id',
+            'by_supplier_id' => 'components.supplier_id',
+        ]);
+
+        $query = $this->appendNumericalBoundaries($query, $request, [
+            // formKey => column
+            // _start and _end will be appended to the key
+            // ie: quantity_start|quantity_end => qty
+            'quantity' => 'qty',
+            'min_quantity' => 'min_amt',
+            'unit_cost' => 'purchase_cost',
+        ]);
+
+        $query = $this->appendDateWindowBoundaries($query, $request, [
+            // formKey => column
+            // _start and _end will be appended to the key
+            // ie: purchase_start|purchase_end => purchase_date
+            'purchase' => 'purchase_date',
+            'created' => 'created_at',
+            'last_updated' => 'updated_at',
+        ]);
+
+        $query = $this->appendBeforeDateBoundaries($query, $request, [
+            // formKey => column
+            'last_updated_before' => 'updated_at',
+        ]);
+
+        if ($request->filled('checkout_date_start') && $request->filled('checkout_date_end')) {
+            $checkout_start = Carbon::parse($request->input('checkout_date_start'))->startOfDay();
+            $checkout_end = Carbon::parse($request->input('checkout_date_end', now()))->endOfDay();
+
+            $componentIdsWithinCheckoutRange = Actionlog::where('action_type', '=', 'checkout')
+                ->where('item_type', Component::class)
+                ->whereBetween('action_date', [$checkout_start, $checkout_end])
+                ->pluck('item_id');
+
+            $query->whereIn('components.id', $componentIdsWithinCheckoutRange);
+        }
+
+        if ($request->input('deleted_components') === 'include_deleted') {
+            $query->withTrashed();
+        }
+
+        if ($request->input('deleted_components') === 'only_deleted') {
+            $query->onlyTrashed();
+        }
+
+        return $query;
     }
 
     private function appendLocalConstraints(Builder $query, Request $request, array $constraints): Builder
