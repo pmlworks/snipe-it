@@ -173,31 +173,31 @@ return [
 
     'licenses' => [
         'name' => 'Licenses',
-        'note' => 'Grants access to the Licenses section of the application.',
+        'note' => 'Grants access to the Licences section of the application.',
     ],
     'licensesview' => [
-        'name' => 'View Licenses',
+        'name' => 'View Licences',
     ],
     'licensescreate' => [
-        'name' => 'Create New Licenses',
+        'name' => 'Create New Licences',
     ],
     'licensesedit' => [
-        'name' => 'Edit Licenses',
+        'name' => 'Edit Licences',
     ],
     'licensesdelete' => [
-        'name' => 'Delete Licenses',
+        'name' => 'Delete Licences',
     ],
     'licensescheckout' => [
-        'name' => 'Assign Licenses',
-        'note' => 'Allows the user to assign licenses to assets or users.',
+        'name' => 'Assign Licences',
+        'note' => 'Allows the user to assign licences to assets or users.',
     ],
     'licensescheckin' => [
-        'name' => 'Unassign Licenses',
-        'note' => 'Allows the user to unassign licenses from assets or users.',
+        'name' => 'Unassign Licences',
+        'note' => 'Allows the user to unassign licences from assets or users.',
     ],
     'licensesfiles' => [
-        'name' => 'Manage License Files',
-        'note' => 'Allows the user to upload, download, and delete files associated with licenses.',
+        'name' => 'Manage Licence Files',
+        'note' => 'Allows the user to upload, download, and delete files associated with licences.',
     ],
     'componentsfiles' => [
         'name' => 'Manage Component Files',
@@ -205,8 +205,8 @@ return [
     ],
 
     'licenseskeys' => [
-        'name' => 'Manage License Keys',
-        'note' => 'Allows the user to view product keys associated with licenses.',
+        'name' => 'Manage Licence Keys',
+        'note' => 'Allows the user to view product keys associated with licences.',
     ],
     'components' => [
         'name' => 'Components',

@@ -48,6 +48,7 @@ return [
     'asset_tag' => '자산 태그',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => '할당',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => '폐기일',
     'best_regards' => '감사합니다,',
     'canceled' => 'Canceled',

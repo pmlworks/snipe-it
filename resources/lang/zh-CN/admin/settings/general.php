@@ -438,7 +438,7 @@ return [
     'timezone' => '时区',
     'test_mail' => '测试邮件',
     'profile_edit' => '编辑个人资料',
-    'profile_edit_help' => '允许用户编辑自己的个人资料。',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => '自定义默认头像',
     'default_avatar_help' => '如果用户没有个人资料照片，此图像将作为个人资料显示。',
     'restore_default_avatar' => '恢复 <a href=":default_avatar" data-toggle="lightbox" data-type="image">原始系统默认头像</a>',

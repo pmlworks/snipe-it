@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Placa del activo',
     'assets_warrantee_alert' => 'Hay :count activo con una garantía expirable o que está llegando al fin de su vida en los próximos :treshold días.|Hay :count activos con garantía expirable o que están llegando al final de su vida en los próximos :threshold días.',
     'assigned_to' => 'Asignado a',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Fin de soporte (EOL)',
     'best_regards' => 'Cordialmente,',
     'canceled' => 'Cancelado',

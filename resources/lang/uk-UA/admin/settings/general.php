@@ -438,7 +438,7 @@ return [
     'timezone' => 'Timezone',
     'test_mail' => 'Тестове повідомлення',
     'profile_edit' => 'Редагувати профіль',
-    'profile_edit_help' => 'Дозволити користувачам редагувати свої профілі.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Власний аватар за замовчуванням',
     'default_avatar_help' => 'Це зображення буде показано в профіль, якщо у користувача немає профілю.',
     'restore_default_avatar' => 'Відновити <a href=":default_avatar" data-toggle="lightbox" data-type="image">стандартний системний аватар</a>',

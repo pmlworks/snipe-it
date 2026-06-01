@@ -2,7 +2,6 @@
 
 namespace App\Http;
 
-use App\Http\Middleware\AssetCountForSidebar;
 use App\Http\Middleware\CheckColorSettings;
 use App\Http\Middleware\CheckForDebug;
 use App\Http\Middleware\CheckForSetup;
@@ -17,6 +16,7 @@ use App\Http\Middleware\PreventBackHistory;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetAPIResponseHeaders;
+use App\Http\Middleware\SetPaginationDefaults;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
 use App\Http\Middleware\VerifyCsrfToken;
@@ -74,7 +74,6 @@ class Kernel extends HttpKernel
             CheckUserIsActivated::class,
             CheckForTwoFactor::class,
             CreateFreshApiToken::class,
-            AssetCountForSidebar::class,
             CheckColorSettings::class,
             AuthenticateSession::class,
             SubstituteBindings::class,
@@ -84,6 +83,7 @@ class Kernel extends HttpKernel
             'auth:api',
             CheckLocale::class,
             LogAuthedUserHeader::class,
+            SetPaginationDefaults::class,
             SubstituteBindings::class,
         ],
 

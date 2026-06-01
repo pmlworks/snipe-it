@@ -438,7 +438,7 @@ return [
     'timezone' => 'Timezone',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Muokkaa profiilia',
-    'profile_edit_help' => 'Salli käyttäjien muokata omia profiilejaan.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'This image will be displayed as a profile if a user does not have a profile photo.',
     'restore_default_avatar' => 'Restore <a href=":default_avatar" data-toggle="lightbox" data-type="image">original system default avatar</a>',

@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'แท็กทรัพย์สิน',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'ได้รับมอบหมายให้',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'อายุการใช้งาน',
     'best_regards' => 'ด้วยความเคารพ,',
     'canceled' => 'ยกเลิก',

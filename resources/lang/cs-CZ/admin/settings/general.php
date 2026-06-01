@@ -439,7 +439,7 @@ Tím zabráníte systému Snipe-IT v pokusu načítat avatary z Gravataru nebo j
     'timezone' => 'Timezone',
     'test_mail' => 'Otestovat Mail',
     'profile_edit' => 'Upravit profil',
-    'profile_edit_help' => 'Povolit uživatelům upravovat své vlastní profily.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Upravit výchozí Avatar',
     'default_avatar_help' => 'Tento obrázek se zobrazí jako profilovka, pokud uživatel nemá profilovou fotografii.',
     'restore_default_avatar' => 'Obnovit <a href=":default_avatar" data-toggle="lightbox" data-type="image">původní výchozí profilový obrázek</a>',

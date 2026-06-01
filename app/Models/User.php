@@ -9,6 +9,7 @@ use App\Models\Traits\Loggable;
 use App\Models\Traits\Searchable;
 use App\Presenters\Presentable;
 use App\Presenters\UserPresenter;
+use App\Rules\CssColor;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
@@ -18,6 +19,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -58,6 +60,13 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     protected $table = 'users';
 
     protected $injectUniqueIdentifier = true;
+
+    /**
+     * Transient (non-persisted) ID of the Actionlog entry written by UserObserver::updating()
+     * during the current request. syncCompaniesWithLogging() merges company changes into this
+     * entry instead of creating a separate one, so a single edit session produces one log row.
+     */
+    public ?int $currentUpdateLogId = null;
 
     protected $fillable = [
         'activated',
@@ -166,7 +175,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         'userloc' => ['name', 'address', 'address2', 'city', 'state', 'zip'],
         'department' => ['name'],
         'groups' => ['name'],
-        'company' => ['name'],
+        'companies' => ['name'],
         'manager' => ['first_name', 'last_name', 'username', 'display_name'],
         'adminuser' => ['first_name', 'last_name', 'display_name'],
     ];
@@ -244,6 +253,15 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
 
     protected static function booted(): void
     {
+        // Bridge for factories/seeders that still set company_id directly: ensure
+        // that company appears in the pivot so FMCS scoping works correctly.
+        // Application code (controllers, importers) writes only to the pivot.
+        static::created(function (User $user) {
+            if ($user->company_id) {
+                $user->companies()->syncWithoutDetaching([$user->company_id]);
+            }
+        });
+
         static::forceDeleted(function (User $user) {
             CheckoutRequest::where(['user_id' => $user->id])->forceDelete();
             $user->purgeAssociatedPassportTokens();
@@ -305,7 +323,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     protected function displayName(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value) => $value ?? $this->getFullNameAttribute(),
+            get: fn (mixed $value) => ($value !== null && $value !== '') ? $value : $this->getFullNameAttribute(),
         );
     }
 
@@ -583,7 +601,6 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             && (($this->accessories_count ?? $this->accessories()->count()) === 0)
             && (($this->licenses_count ?? $this->licenses()->count()) === 0)
             && (($this->consumables_count ?? $this->consumables()->count()) === 0)
-            && (($this->accessories_count ?? $this->accessories()->count()) === 0)
             && (($this->manages_users_count ?? $this->managesUsers()->count()) === 0)
             && (($this->manages_locations_count ?? $this->managedLocations()->count()) === 0)
             && ($this->deleted_at == '');
@@ -601,6 +618,92 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_user');
+    }
+
+    /**
+     * Returns whether an FMCS company check should block this user from receiving
+     * an asset that belongs to the given company.
+     *
+     * - If the user has no company associations at all: returns true (no restriction).
+     * - If the user has associations: returns true only when $companyId is among them.
+     *
+     * Checks both the primary company_id column and the many-to-many pivot table so
+     * that users assigned to multiple companies can receive assets from any of them.
+     */
+    public function canReceiveFromCompany(int $companyId): bool
+    {
+        // Primary company matches
+        if (! is_null($this->company_id) && (int) $this->company_id === $companyId) {
+            return true;
+        }
+
+        // Pivot company matches
+        if ($this->companies()->where('companies.id', $companyId)->exists()) {
+            return true;
+        }
+
+        // User has no company associations — don't enforce (mirrors legacy behaviour
+        // where a null company_id on the user skipped the FMCS check entirely).
+        if (is_null($this->company_id) && ! $this->companies()->exists()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns all companies this user belongs to — union of the primary company_id
+     * column and the many-to-many pivot — as a deduplicated Collection.
+     * Used to scope FMCS dropdowns to companies the user is allowed to work with.
+     */
+    public function allCompanies(): Collection
+    {
+        return $this->companies->push($this->company)->filter()->unique('id')->values();
+    }
+
+    /**
+     * Sync company pivot membership and log the change if the set of companies changed.
+     *
+     * When called after $user->save() in the same request, UserObserver::updating() will
+     * have already written an Actionlog row and stored its ID in $this->currentUpdateLogId.
+     * In that case we merge the company change into that existing entry so that a single
+     * edit session (field changes + company changes) produces one log row, not two.
+     */
+    public function syncCompaniesWithLogging(array $companyIds): void
+    {
+        $oldIds = $this->companies()->orderBy('companies.id')->pluck('companies.id')->toArray();
+        $this->companies()->sync($companyIds);
+        $newIds = $this->companies()->orderBy('companies.id')->pluck('companies.id')->toArray();
+
+        if ($oldIds === $newIds) {
+            return;
+        }
+
+        $companyChange = ['companies' => ['old' => $oldIds, 'new' => $newIds]];
+
+        if ($this->currentUpdateLogId && ($existing = Actionlog::find($this->currentUpdateLogId))) {
+            $meta = json_decode($existing->log_meta ?? '{}', true) ?: [];
+            $existing->log_meta = json_encode(array_merge($meta, $companyChange));
+            $existing->save();
+            $this->currentUpdateLogId = null;
+
+            return;
+        }
+
+        $logAction = new Actionlog;
+        $logAction->item_type = static::class;
+        $logAction->item_id = $this->id;
+        $logAction->target_type = static::class;
+        $logAction->target_id = $this->id;
+        $logAction->created_at = date('Y-m-d H:i:s');
+        $logAction->created_by = auth()->id();
+        $logAction->log_meta = json_encode($companyChange);
+        $logAction->logaction('update');
     }
 
     /**
@@ -649,6 +752,27 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         }
 
         return $this->last_name ? $this->first_name.' '.$this->last_name : $this->first_name;
+    }
+
+    protected function linkLightColor(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => CssColor::sanitize($value, '#296282'),
+        );
+    }
+
+    protected function linkDarkColor(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => CssColor::sanitize($value, '#5fa4cc'),
+        );
+    }
+
+    protected function navLinkColor(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => CssColor::sanitize($value, '#ffffff'),
+        );
     }
 
     /**
@@ -725,9 +849,10 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     {
         return $this->belongsToMany(License::class, 'license_seats', 'assigned_to', 'license_id')->withPivot('id', 'created_at', 'updated_at');
     }
+
     public function directLicenses()
     {
-        return $this->belongsToMany(\App\Models\License::class, 'license_seats', 'assigned_to', 'license_id')->withPivot('id', 'created_at', 'updated_at')->wherePivotNull('asset_id')->withTrashed();
+        return $this->belongsToMany(License::class, 'license_seats', 'assigned_to', 'license_id')->withPivot('id', 'created_at', 'updated_at')->wherePivotNull('asset_id')->withTrashed();
     }
 
     /**
@@ -1338,7 +1463,14 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
      */
     public function scopeOrderCompany($query, $order)
     {
-        return $query->leftJoin('companies as companies_user', 'users.company_id', '=', 'companies_user.id')->orderBy('companies_user.name', $order);
+        $sub = DB::table('company_user')
+            ->join('companies', 'companies.id', '=', 'company_user.company_id')
+            ->select('company_user.user_id', DB::raw('MIN(companies.name) as min_company_name'))
+            ->groupBy('company_user.user_id');
+
+        return $query
+            ->leftJoinSub($sub, 'companies_sort', 'companies_sort.user_id', '=', 'users.id')
+            ->orderBy('companies_sort.min_company_name', $order);
     }
 
     /**
@@ -1393,6 +1525,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             ->orwhereRaw('CONCAT(users.first_name," ",users.last_name) LIKE \''.$search.'%\'');
 
     }
+
     public function scopeWithInventoryRelations($query, int $id)
     {
         return $query->where('id', $id)
@@ -1434,6 +1567,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             ])
             ->withTrashed();
     }
+
     /**
      * Get all direct and indirect subordinates for this user.
      *

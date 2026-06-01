@@ -371,6 +371,12 @@ class AssetsController extends Controller
             $assets->where('assets.order_number', '=', strval($request->input('order_number')));
         }
 
+        foreach ($all_custom_fields as $field) {
+            if ($request->filled($field->db_column_name())) {
+                $assets->where($field->db_column_name(), '=', $request->input($field->db_column_name()));
+            }
+        }
+
         // This is kinda gross, but we need to do this because the Bootstrap Tables
         // API passes custom field ordering as custom_fields.fieldname, and we have to strip
         // that out to let the default sorter below order them correctly on the assets table.
@@ -590,6 +596,7 @@ class AssetsController extends Controller
      */
     public function selectlist(Request $request): array
     {
+        $this->authorize('view.selectlists');
 
         $assets = Asset::select([
             'assets.id',
@@ -602,8 +609,20 @@ class AssetsController extends Controller
         ])->with('model', 'status', 'assignedTo')
             ->NotArchived();
 
-        if ((Setting::getSettings()->full_multiple_companies_support == '1') && ($request->filled('companyId'))) {
-            $assets->where('assets.company_id', $request->input('companyId'));
+        // When FMCS is enabled, automatically scope to companies the acting user belongs to.
+        // scopeCompanyables is a no-op for superusers and when FMCS is disabled.
+        $assets = Company::scopeCompanyables($assets);
+
+        // Allow further narrowing to a specific company passed via data-company-id on the select.
+        if ((Setting::getSettings()->full_multiple_companies_support == '1') && $request->filled('companyId')) {
+            $companyIds = array_values(array_filter(array_map('intval', explode(',', $request->input('companyId')))));
+            if (! empty($companyIds)) {
+                $assets->whereIn('assets.company_id', $companyIds);
+            }
+        }
+
+        if ($request->filled('excludeId')) {
+            $assets->where('assets.id', '!=', (int) $request->input('excludeId'));
         }
 
         if ($request->filled('statusType') && $request->input('statusType') === 'RTD') {
@@ -894,11 +913,21 @@ class AssetsController extends Controller
 
     private function checkoutCompanyMismatchResponse(Asset $asset, User|Asset|Location $target): ?JsonResponse
     {
-        if ((Setting::getSettings()->full_multiple_companies_support == '1')
-            && (! is_null($asset->company_id))
-            && (! is_null($target->company_id))
-            && ((int) $asset->company_id !== (int) $target->company_id)
-        ) {
+        if (Setting::getSettings()->full_multiple_companies_support != '1' || is_null($asset->company_id)) {
+            return null;
+        }
+
+        // For users with multiple companies, check all their associated companies,
+        // not just the primary company_id column.
+        if ($target instanceof User) {
+            if (! $target->canReceiveFromCompany((int) $asset->company_id)) {
+                return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.error_user_company')));
+            }
+
+            return null;
+        }
+
+        if (! is_null($target->company_id) && (int) $asset->company_id !== (int) $target->company_id) {
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('general.error_user_company')));
         }
 
@@ -1052,13 +1081,8 @@ class AssetsController extends Controller
         }
 
         // In FMCS mode, enforce explicit same-company target checks before mutating checkout state.
-        $targetCompanyId = data_get($target, 'company_id');
-        if ((Setting::getSettings()->full_multiple_companies_support == '1')
-            && (! is_null($asset->company_id))
-            && (! is_null($targetCompanyId))
-            && ((int) $asset->company_id !== (int) $targetCompanyId)
-        ) {
-            return response()->json(Helper::formatStandardApiResponse('error', $error_payload, trans('general.error_user_company')));
+        if ($mismatch = $this->checkoutCompanyMismatchResponse($asset, $target)) {
+            return $mismatch;
         }
 
         $checkout_at = request('checkout_at', date('Y-m-d H:i:s'));

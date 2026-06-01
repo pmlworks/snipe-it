@@ -444,7 +444,7 @@ return [
     'timezone' => 'Ժամային գոտի',
     'test_mail' => 'Փորձնական նամակ',
     'profile_edit' => 'Խմբագրել պրոֆիլը',
-    'profile_edit_help' => 'Թույլատրել օգտատերերին խմբագրել իրենց սեփական պրոֆիլները։',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Լռելյայն հատուկ ավատար',
     'default_avatar_help' => 'Եթե օգտատերը չունի պրոֆիլի նկար, այս պատկերը կցուցադրվի որպես նրա պրոֆիլի նկար։',
     'restore_default_avatar' => 'Վերականգնել <a href=":default_avatar" data-toggle="lightbox" data-type="image">համակարգի լռելյայն ավատարը</a>',

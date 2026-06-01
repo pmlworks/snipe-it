@@ -47,7 +47,7 @@ return [
     'serial_required' => 'Asset :number requires a serial number',
     'serial_required_post_model_update' => ':asset_model have been updated to require a serial number. Please add a serial number for this asset.',
     'status' => 'Estat',
-    'tag' => 'Etiqueta de Recurs',
+    'tag' => 'Etiqueta del recurs',
     'update' => 'Asset Update',
     'warranty' => 'Warranty',
     'warranty_expires' => 'Warranty Expires',
@@ -64,4 +64,6 @@ return [
     'optional_infos' => 'Informació opcional',
     'order_details' => 'Informació de compra relacionada',
     'calc_eol' => 'If nulling the EOL date, use automatic EOL calculation based on the purchase date and EOL rate.',
+    'checkin_licenses' => 'Checkin associated license seats',
+    'checkin_child_assets' => 'Checkin associated assets',
 ];

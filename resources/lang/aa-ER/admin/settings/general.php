@@ -438,7 +438,7 @@ return [
     'timezone' => 'crwdns11831:0crwdne11831:0',
     'test_mail' => 'crwdns12973:0crwdne12973:0',
     'profile_edit' => 'crwdns12280:0crwdne12280:0',
-    'profile_edit_help' => 'crwdns12282:0crwdne12282:0',
+    'profile_edit_help' => 'crwdns14789:0crwdne14789:0',
     'default_avatar' => 'crwdns12987:0crwdne12987:0',
     'default_avatar_help' => 'crwdns12590:0crwdne12590:0',
     'restore_default_avatar' => 'crwdns12592:0crwdne12592:0',

@@ -438,7 +438,7 @@ return [
     'timezone' => 'Tidszon',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Redigera profil',
-    'profile_edit_help' => 'Tillåt användare att redigera sina egna profiler.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Denna bild kommer att visas som profilbild om en användare inte har en profilbild.',
     'restore_default_avatar' => 'Återställ <a href=":default_avatar" data-toggle="lightbox" data-type="image">ursprunglig systemavatar</a>',

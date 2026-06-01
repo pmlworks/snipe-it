@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Označenie majetku',
     'assets_warrantee_alert' => 'Existuje :count majetok s exspirujúcou zárukou alebo s koncom svojej životnosti v nasledujúcich :threshold dňoch.|Existujú :count aktíva s exspirujúcou zárukou alebo s koncom svojej životnosti v nasledujúcich :threshold dňoch.',
     'assigned_to' => 'Pridelené',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'S pozdravom,',
     'canceled' => 'Zrušené',

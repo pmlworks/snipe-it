@@ -438,7 +438,7 @@ return [
     'timezone' => 'Időzóna',
     'test_mail' => 'Teszt email',
     'profile_edit' => 'Profil szerkesztése',
-    'profile_edit_help' => 'Engedélyezze a felhasználóknak, hogy szerkeszthessék a saját profiljukat.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Alapértelmezett avatár',
     'default_avatar_help' => 'Ez a kép akkor jelenik meg profilként, ha a felhasználónak nincs profilképe.',
     'restore_default_avatar' => 'A rendszer eredeti alapértelmezett profilképének <a href=":default_avatar" data-toggle="lightbox" data-type="image">visszaállítása</a>v',

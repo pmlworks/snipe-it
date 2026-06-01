@@ -287,20 +287,20 @@ return [
         'note' => 'Grants access to the Categories section of the application.',
     ],
     'categoriesview' => [
-        'name' => 'View Categories',
+        'name' => 'Ver categorias',
     ],
     'categoriescreate' => [
-        'name' => 'Create New Categories',
+        'name' => 'Crer Nuevas Categorias',
     ],
     'categoriesedit' => [
-        'name' => 'Edit Categories',
+        'name' => 'Editar Categorias',
     ],
     'categoriesdelete' => [
-        'name' => 'Delete Categories',
+        'name' => 'Eliminar Categorias',
     ],
     'departments' => [
         'name' => 'Departamentos',
-        'note' => 'Grants access to the Departments section of the application.',
+        'note' => 'Dar acceso a la sección de Departamentos de la aplicación.',
     ],
     'departmentsview' => [
         'name' => 'Ver Departamentos',
@@ -399,19 +399,19 @@ return [
         'note' => 'Grants access to the Companies section of the application.',
     ],
     'companiesview' => [
-        'name' => 'View Companies',
+        'name' => 'Ver empresas',
     ],
     'companiescreate' => [
-        'name' => 'Create New Companies',
+        'name' => 'Crear Nuevas Empresas',
     ],
     'companiesedit' => [
-        'name' => 'Edit Companies',
+        'name' => 'Editar Empresas',
     ],
     'companiesdelete' => [
-        'name' => 'Delete Companies',
+        'name' => 'Eliminar Empresas',
     ],
     'user-self-accounts' => [
-        'name' => 'User Self Accounts',
+        'name' => 'Cuentas propias del usuario',
         'note' => 'Grants non-admin users the ability to manage certain aspects of their own user accounts.',
     ],
     'selftwo-factor' => [

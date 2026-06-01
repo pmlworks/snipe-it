@@ -438,7 +438,7 @@ return [
     'timezone' => 'Fuso orario',
     'test_mail' => 'Email di prova',
     'profile_edit' => 'Modifica Profilo',
-    'profile_edit_help' => 'Consenti agli utenti di modificare i propri profili.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Avatar Personalizzato Predefinito',
     'default_avatar_help' => 'Questa immagine verrà visualizzata come profilo se un utente non ha una foto di profilo.',
     'restore_default_avatar' => 'Ripristina <a href=":default_avatar" data-toggle="lightbox" data-type="image">avatar predefinito di sistema</a>',

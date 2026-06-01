@@ -496,7 +496,9 @@
                 if (cell.is('th')) {
                     return cell.find('.th-inner').text()
                 }
-                return htmlData
+                // Convert <br> tags to newlines so that line breaks in notes and
+                // textarea fields survive HTML-stripping during export
+                return htmlData.replace(/<br\s*\/?>/gi, '\n');
             }
 
             // This allows us to override the table defaults set below using the data-dash attributes
@@ -532,6 +534,9 @@
                     'columns',
                     'btnAdd',
                     'btnShowDeleted',
+                    'btnToggleCompleted',
+                    'btnDue',
+                    'btnOverdue',
                     'btnShowAdmins',
                     'btnShowExpiring',
                     'btnShowInactive',
@@ -617,7 +622,7 @@
                 },
                 locale: '{{ app()->getLocale() }}',
                 exportOptions: export_options,
-                exportTypes: ['xlsx', 'excel', 'csv', 'pdf', 'json', 'xml', 'txt', 'sql', 'doc'],
+                exportTypes: ['xlsx', 'csv', 'pdf', 'json', 'xml', 'txt', 'sql', 'doc'],
                 onLoadSuccess: function () { // possible 'fixme'? this might be for contents, not for headers?
                     $('[data-tooltip="true"]').tooltip(); // Needed to attach tooltips after ajax call
                 },
@@ -1161,6 +1166,44 @@
                 @endif
             }
         },
+        btnToggleCompleted: {
+            text: '{{ request()->input('completed', 'false') === 'true' ? trans('admin/maintenances/general.show_active') : trans('admin/maintenances/general.show_completed') }}',
+            icon: 'fa-regular fa-square-check',
+            event() {
+                var isShowingCompleted = '{{ request()->input('completed', 'false') }}' === 'true';
+                window.location.href = '{{ route('maintenances.index') }}?completed=' + (isShowingCompleted ? 'false' : 'true');
+            },
+            attributes: {
+                class: '{{ request()->input('completed', 'false') === 'true' ? 'btn-selected' : '' }}',
+                title: '{{ request()->input('completed', 'false') === 'true' ? trans('admin/maintenances/general.show_active') : trans('admin/maintenances/general.show_completed') }}',
+            },
+        },
+
+        btnDue: {
+            text: '{{ trans('admin/maintenances/general.due') }}',
+            icon: 'fa-regular fa-clock',
+            event() {
+                var isActive = '{{ request()->input('upcoming_status') }}' === 'due';
+                window.location.href = '{{ route('maintenances.index') }}' + (isActive ? '' : '?upcoming_status=due');
+            },
+            attributes: {
+                class: '{{ request()->input('upcoming_status') === 'due' ? 'btn-selected' : '' }}',
+                title: '{{ trans('admin/maintenances/general.due') }}',
+            },
+        },
+
+        btnOverdue: {
+            text: '{{ trans('admin/maintenances/general.overdue') }}',
+            icon: 'fa-solid fa-triangle-exclamation',
+            event() {
+                var isActive = '{{ request()->input('upcoming_status') }}' === 'overdue';
+                window.location.href = '{{ route('maintenances.index') }}' + (isActive ? '' : '?upcoming_status=overdue');
+            },
+            attributes: {
+                class: '{{ request()->input('upcoming_status') === 'overdue' ? 'btn-selected' : '' }}',
+                title: '{{ trans('admin/maintenances/general.overdue') }}',
+            },
+        },
     });
     @endcan
 
@@ -1326,6 +1369,30 @@
     }
 
 
+    function updateSelectedCount(table) {
+        var countId = $(table).data('selected-count-id');
+        if (!countId || !$(countId).length) return;
+        var count = $(table).bootstrapTable('getSelections').length;
+        $(countId).find('.badge').text(count);
+        if (count > 0) {
+            $(countId).show();
+        } else {
+            $(countId).hide();
+        }
+    }
+
+    $('.snipe-table').on('post-body.bs.table', function () {
+        var countId = $(this).data('selected-count-id');
+        if (!countId) return;
+        var $paginationDetail = $(this).closest('.bootstrap-table')
+            .find('.fixed-table-pagination').first()
+            .find('.pagination-detail');
+        if ($paginationDetail.length && $(countId).length === 0) {
+            $paginationDetail.after('<span id="' + countId.substring(1) + '" style="display:none; float:left; margin-top:10px; margin-bottom:10px; margin-left:10px; line-height:34px;">&mdash; <span class="badge">0</span> {{ trans('general.selected') }}</span>');
+        }
+        updateSelectedCount(this);
+    });
+
     // These methods dynamically add/remove hidden input values in the bulk actions form
     $('.snipe-table').on('check.bs.table .btSelectItem', function (row, $element) {
         var buttonName =  $(this).data('bulk-button-id');
@@ -1333,12 +1400,12 @@
 
         $(buttonName).removeAttr('disabled');
         $(buttonName).after('<input id="' + tableId + '_checkbox_' + $element.id + '" type="hidden" name="ids[]" value="' + $element.id + '">');
+        updateSelectedCount(this);
     });
 
     $('.snipe-table').on('check-all.bs.table', function (event, rowsAfter) {
 
         var buttonName =  $(this).data('bulk-button-id');
-        $(buttonName).removeAttr('disabled');
         var tableId =  $(this).data('id-table');
 
         for (var i in rowsAfter) {
@@ -1347,12 +1414,18 @@
                 $(buttonName).after('<input id="' + tableId + '_checkbox_' + rowsAfter[i].id + '" type="hidden" name="ids[]" value="' + rowsAfter[i].id + '">');
             }
         }
+
+        if ($(this).bootstrapTable('getSelections').length > 0) {
+            $(buttonName).removeAttr('disabled');
+        }
+        updateSelectedCount(this);
     });
 
 
     $('.snipe-table').on('uncheck.bs.table .btSelectItem', function (row, $element) {
         var tableId =  $(this).data('id-table');
         $( "#" + tableId + "_checkbox_" + $element.id).remove();
+        updateSelectedCount(this);
     });
 
 
@@ -1375,6 +1448,7 @@
         for (var i in rowsBefore) {
             $('#' + tableId + "_checkbox_" + rowsBefore[i].id).remove();
         }
+        updateSelectedCount(this);
 
     });
 
@@ -1412,7 +1486,6 @@
            domnode.elements.order.value = order;
        }
     });
-
 
 
     // This specifies the footer columns that should have special styles associated
@@ -1673,33 +1746,53 @@
 
         if ((value) && (value.type)) {
 
-            if (value.type == 'asset') {
+            if (value.type === 'asset') {
                 item_destination = 'hardware';
                 item_icon = 'fas fa-barcode';
-            } else if (value.type == 'accessory') {
+            }
+            else if (value.type === 'accessory') {
                 item_destination = 'accessories';
                 item_icon = 'far fa-keyboard';
-            } else if (value.type == 'component') {
+            }
+            else if (value.type === 'component') {
                 item_destination = 'components';
                 item_icon = 'far fa-hdd';
-            } else if (value.type == 'consumable') {
+            }
+            else if (value.type === 'consumable') {
                 item_destination = 'consumables';
                 item_icon = 'fas fa-tint';
-            } else if (value.type == 'license') {
+            }
+            else if (value.type === 'license') {
                 item_destination = 'licenses';
                 item_icon = 'far fa-save';
-            } else if (value.type == 'user') {
+            }
+            else if (value.type === 'user') {
                 item_destination = 'users';
                 item_icon = 'fas fa-user';
-            } else if (value.type == 'location') {
+            }
+            else if (value.type === 'location') {
                 item_destination = 'locations'
                 item_icon = 'fas fa-map-marker-alt';
-            } else if (value.type == 'maintenance') {
+            }
+            else if (value.type === 'maintenance') {
                 item_destination = 'maintenances'
                 item_icon = 'fa-solid fa-screwdriver-wrench';
-            } else if (value.type == 'model') {
+            }
+            else if (value.type === 'model') {
                 item_destination = 'models'
-                item_icon = '';
+                item_icon = 'fa-solid fa-boxes-stacked';
+            }
+            else if (value.type === 'supplier') {
+                item_destination = 'suppliers';
+                item_icon = 'fa-solid fa-store';
+            }
+            else if (value.type === 'department') {
+                item_destination = 'departments';
+                item_icon = 'fa-solid fa-building-user';
+            }
+            else if (value.type === 'company') {
+                item_destination = 'companies';
+                item_icon = 'fa-regular fa-building';
             }
 
             // display the username if it's checked out to a user, but don't do it if the username's there already
@@ -1742,29 +1835,23 @@
     // However since different bulk actions have different requirements, we have to walk through the available_actions object
     // to determine whether to disable it
     function checkboxEnabledFormatter (value, row) {
-
-        // add some stuff to get the value of the select2 option here?
-
-        if ((row.available_actions) && (row.available_actions.bulk_selectable) && (row.available_actions.bulk_selectable.delete !== true)) {
-            return {
-                disabled:true,
-                //checked: false, <-- not sure this will work the way we want?
+        if (row.available_actions && row.available_actions.bulk_selectable) {
+            var values = Object.values(row.available_actions.bulk_selectable);
+            if (values.length > 0 && !values.some(function (v) { return v === true; })) {
+                return { disabled: true };
             }
         }
     }
 
     function licenseInOutFormatter(value, row) {
+        var user_can_checkout = row.available_actions && row.available_actions.user_can_checkout;
 
-        // check that checkin is not disabled
-        if (row.user_can_checkout === false) {
-            return '<span class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.unavailable') }}">{{ trans('general.checkout') }}</span>';
-        } else if (row.disabled === true) {
+        if (row.disabled === true) {
             return '<span class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.license_is_inactive') }}">{{ trans('general.checkout') }}</span>';
-
-        } else
-            // The user is allowed to check the license seat out and it's available
-        if ((row.available_actions.checkout === true) && (row.user_can_checkout === true) && (row.disabled === false)) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkout/" class="btn btn-sm bg-maroon btn-checkout" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
+        } else if ((row.available_actions.checkout === true) && (user_can_checkout === true) && (row.disabled === false)) {
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkout" class="btn btn-sm bg-maroon btn-checkout" data-tooltip="true" title="{{ trans('general.checkout_tooltip') }}">{{ trans('general.checkout') }}</a>';
+        } else if (row.available_actions.checkout === true) {
+            return '<span class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('admin/licenses/message.checkout.unavailable') }}">{{ trans('general.checkout') }}</span>';
         }
     }
     // We need a special formatter for license seats, since they don't work exactly the same
@@ -1784,7 +1871,7 @@
 
         // The user is allowed to check the license seat in and it's available
         if ((row.available_actions.checkin === true) && ((row.assigned_asset) || (row.assigned_user))) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin/" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
         }
 
     }
@@ -1908,6 +1995,13 @@
                         return '<a href="mailto:' + row.custom_fields[field_column_plain].value + '" style="white-space: nowrap" data-tooltip="true" title="{{ trans('general.send_email') }}"><x-icon type="email" /> ' + row.custom_fields[field_column_plain].value + '</a>';
                     }
                 }
+                // Convert newlines to <br> for textarea fields so they render in
+                // the table; export will convert <br> back to \n via onCellHtmlData
+                if (row.custom_fields[field_column_plain].element === 'textarea') {
+                    var val = row.custom_fields[field_column_plain].value;
+                    return val ? val.replace(/(?:\r\n|\r|\n)/g, '<br>') : '';
+                }
+
                 return row.custom_fields[field_column_plain].value;
 
             }
@@ -1936,7 +2030,7 @@
         if (value) {
             var groups = '';
             for (var index in value.rows) {
-                groups += '<a href="{{ config('app.url') }}/admin/groups/' + value.rows[index].id + '" class="label label-default">' + value.rows[index].name + '</a> ';
+                groups += '<a href="{{ config('app.url') }}/admin/groups/' + value.rows[index].id + '" class="label label-light">' + value.rows[index].name + '</a> ';
             }
             return groups;
         }
@@ -2111,6 +2205,24 @@
         } else {
             return value;
         }
+    }
+
+    function companiesLinkObjFormatter(value, row) {
+        if (!value) {
+            return '';
+        }
+        var icon = (value.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i> ' : '';
+        return '<a href="{{ config('app.url') }}/companies/' + value.id + '" class="label label-light">' + icon + value.name + '</a>';
+    }
+
+    function companiesArrayLinkFormatter(value, row) {
+        if (!value || !value.length) {
+            return '';
+        }
+        return value.map(function (c) {
+            var icon = (c.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + c.tag_color + ';" aria-hidden="true"></i> ' : '';
+            return '<a href="{{ config('app.url') }}/companies/' + c.id + '" class="label label-light">' + icon + c.name + '</a></span>';
+        }).join(' ');
     }
 
     function locationCompanyObjFilterFormatter(value, row) {

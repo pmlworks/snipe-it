@@ -39,8 +39,8 @@ return [
     'order' => 'Sipariş Numarası',
     'qr' => 'QR Kod',
     'requestable' => 'Kullanıcılar bu demirbaşı talep edebilir',
-    'redirect_to_all' => 'Tümüne dönmek için: type',
-    'redirect_to_type' => 'Git: type',
+    'redirect_to_all' => 'Tüm :type’lara dön',
+    'redirect_to_type' => 'Git :type',
     'redirect_to_checked_out_to' => 'Tıkla Çekilmişlere Git',
     'select_statustype' => 'Durum Seçiniz',
     'serial' => 'Seri No',
@@ -64,4 +64,6 @@ return [
     'optional_infos' => 'Opsiyonel Bilgi',
     'order_details' => 'Sipariş Bilgileri',
     'calc_eol' => 'EOL tarihini null yapılırsa, satın alma tarihi ve EOL oranına göre otomatik EOL hesaplaması kullanın.',
+    'checkin_licenses' => 'Checkin associated license seats',
+    'checkin_child_assets' => 'Checkin associated assets',
 ];

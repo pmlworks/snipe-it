@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Инвентарен номер',
     'assets_warrantee_alert' => 'Има :count актив с изтекла гаранция или достигнали края на живота си през следващите :threshold дни.| Има :count активи с изтекла гаранция или достигнали края на живота си през следващите :threshold дни.',
     'assigned_to' => 'Възложени на',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'С най-добри пожелания.',
     'canceled' => 'Отменено',

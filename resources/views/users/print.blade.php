@@ -365,7 +365,7 @@
             @endforeach
         </table>
     @endif
-    @if($indirectItemsCount > 0 && $settings->show_assigned_assets)
+    @if(($indirectItemsCount ?? 0) > 0 && $settings->show_assigned_assets)
         <div id="indirect-assignments-toolbar">
             <h4>{{ $indirectItemsCount.' '.trans('mail.assigned_to_assets') }}</h4>
         </div>
@@ -583,7 +583,7 @@
             },
             exportOptions: export_options,
 
-            exportTypes: ['xlsx', 'excel', 'csv', 'pdf','json', 'xml', 'txt', 'sql', 'doc' ],
+            exportTypes: ['xlsx', 'csv', 'pdf', 'json', 'xml', 'txt', 'sql', 'doc'],
             onLoadSuccess: function () {
                 $('[data-tooltip="true"]').tooltip(); // Needed to attach tooltips after ajax call
             }

@@ -37,6 +37,9 @@ return [
         'confirm' => 'Ar tikrai norite panaikinti šią licenciją?',
         'error' => 'Bandant panaikinti licenciją įvyko klaida. Bandykite dar kartą.',
         'success' => 'Licencija sėkmingai panaikinta.',
+        'bulk_success' => 'Pasirinktos licencijos sėkmingai panaikintos.',
+        'partial_success' => 'Licencija sėkmingai panaikinta. Daugiau informacijos rasite žemiau. | Licencijos (:count) buvo sėkmingai panaikintos. Daugiau informacijos rasite žemiau.',
+        'bulk_checkout_warning' => ':license_name turi vietų, kurios šiuo metu yra išduotos ir negali būti panaikintos. Tam, kad panaikintumėte, turite paimti šias vietas.',
     ],
 
     'checkout' => [

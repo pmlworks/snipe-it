@@ -438,7 +438,7 @@ return [
     'timezone' => 'Zona horaria',
     'test_mail' => 'Probar Correo',
     'profile_edit' => 'Editar perfil',
-    'profile_edit_help' => 'Permitir que los usuarios editen sus propios perfiles.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Avatar personalizado por defecto',
     'default_avatar_help' => 'Esta imagen se mostrará como la imagen de perfil si el usuario no tiene foto de perfil.',
     'restore_default_avatar' => 'Restaurar <a href=":default_avatar" data-toggle="lightbox" data-type="image">avatar original por defecto del sistema</a>',

@@ -17,8 +17,8 @@ return [
         'error' => 'Turto sukurti nepavyko, bandykite dar kartą.',
         'success' => 'Turtas sėkmingai sukurtas. :)',
         'success_linked' => 'Turtas su žyma :tag sėkmingai sukurtas. <strong><a href=":link" style="color: white;">Spustelėkite čia, kad peržiūrėtumėte</a></strong>.',
-        'multi_success_linked' => 'Turtas su inventoriniu numeriu :links sėkmingai sukurtas.|:count turto vienetai(-ų) sėkmingai sukurti. :links.',
-        'partial_failure' => 'Nepavyko sukurti turto. Priežastis: :failures|:count turto vienetų nepavyko sukurti. Priežastys: :failures',
+        'multi_success_linked' => 'Turtas su inventoriniu numeriu :links sėkmingai sukurtas.|Turto vienetai (:count) sėkmingai sukurti. :links.',
+        'partial_failure' => 'Nepavyko sukurti turto. Priežastis: :failures|Turto vienetų (:count) nepavyko sukurti. Priežastys: :failures',
         'target_not_found' => [
             'user' => 'Priskirto naudotojo rasti nepavyko.',
             'asset' => 'Priskirto turto rasti nepavyko.',
@@ -94,11 +94,20 @@ return [
         'success' => 'Turtas sėkmingai išduotas.|Turtas sėkmingai išduotas.',
     ],
 
+    'multi-checkin' => [
+        'error' => 'Turtas nebuvo paimtas, bandykite dar kartą|Turtas nebuvo paimtas, bandykite dar kartą',
+        'success' => 'Turtas sėkmingai paimtas.|Turtas sėkmingai paimtas.',
+        'no_assets_selected' => 'Turite pasirinkti bent vieną turto vienetą iš sąrašo',
+    ],
+
     'checkin' => [
         'error' => 'Turtas nebuvo paimtas, bandykite dar kartą',
         'success' => 'Turtas sėkmingai paimtas.',
         'user_does_not_exist' => 'Neteisingas naudotojas. Bandykite dar kartą.',
         'already_checked_in' => 'Šis turtas jau yra paimtas.',
+        'force_checkin_orphaned_success' => 'Neteisingas priskyrimas sėkmingai ištrintas.',
+        'force_checkin_not_orphaned' => 'Daiktas nėra netinkamo priskyrimo būsenoje.',
+        'force_checkin_error' => 'Nepavyko ištrinti neteisingo priskyrimo.',
 
     ],
 

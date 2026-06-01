@@ -55,6 +55,7 @@ return [
     'asset_tag' => 'نام دارایی',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'اختصاص یافته به',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'با احترام،',
     'canceled' => 'لغو شد',

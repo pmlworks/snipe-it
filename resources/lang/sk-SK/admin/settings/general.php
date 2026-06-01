@@ -438,7 +438,7 @@ return [
     'timezone' => 'Časová zóna',
     'test_mail' => 'Testovací mail',
     'profile_edit' => 'Upraviť profil',
-    'profile_edit_help' => 'Povoliť používateľom upravovať ich vlastný profil.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Vlastný predvolený avatar',
     'default_avatar_help' => 'Tento obrázok bude zobrazený ako profilový ak používateľ nemá profilovú fotku.',
     'restore_default_avatar' => 'Obnoviť <a href=":default_avatar" data-toggle="lightbox" data-type="image">pôvodný predvolený avatar</a>',

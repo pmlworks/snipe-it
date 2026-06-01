@@ -172,7 +172,7 @@ return [
     ],
 
     'licenses' => [
-        'name' => 'Licenses',
+        'name' => 'Llicències',
         'note' => 'Grants access to the Licenses section of the application.',
     ],
     'licensesview' => [
@@ -234,7 +234,7 @@ return [
         'note' => 'Check components back into inventory that are currently checked out.',
     ],
     'kits' => [
-        'name' => 'Predefined Kits',
+        'name' => 'Lots predefinits',
         'note' => 'Grants access to the Predefined Kits section of the application.',
     ],
     'kitsview' => [

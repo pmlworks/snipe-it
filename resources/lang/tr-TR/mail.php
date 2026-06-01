@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Varlık Adı',
     'assets_warrantee_alert' => 'Önümüzdeki :threshold gün içinde garantisi sona erecek veya kullanım ömrünün sonuna yaklaşan :count adet varlık bulunmaktadır.|Önümüzdeki :threshold gün içinde garantisi sona erecek veya kullanım ömrünün sonuna yaklaşan :count adet varlık bulunmaktadır.',
     'assigned_to' => 'Atanmış',
+    'assigned_to_assets' => 'Varlıklara Yapılan Atamalar',
     'eol' => 'Ömür Süresi',
     'best_regards' => 'En iyi dileklerimizle,',
     'canceled' => 'İptal edildi',

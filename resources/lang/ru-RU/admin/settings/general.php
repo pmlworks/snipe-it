@@ -438,7 +438,7 @@ return [
     'timezone' => 'Часовой пояс',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Редактировать Профиль',
-    'profile_edit_help' => 'Разрешить пользователям редактировать свои профили.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Это изображение будет отображаться как фото профиля, если у пользователя оно не установлено.',
     'restore_default_avatar' => 'Восстановить <a href=":default_avatar" data-toggle="lightbox" data-type="image">исходный системный аватар</a>',

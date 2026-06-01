@@ -438,7 +438,7 @@ return [
     'timezone' => 'Zona Waktu',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Edit Profil',
-    'profile_edit_help' => 'Izinkan pengguna untuk mengedit profil mereka sendiri.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Gambar ini akan ditampilkan sebagai profil jika pengguna tidak memiliki foto profil.',
     'restore_default_avatar' => 'Pulihkan <a href=":default_avatar" data-toggle="lightbox" data-type="image">avatar default sistem asli</a>',

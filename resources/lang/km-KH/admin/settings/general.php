@@ -440,7 +440,7 @@ return [
     'timezone' => 'តំបន់ពេលវេលា',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'កែសម្រួលប្រវត្តិរូប',
-    'profile_edit_help' => 'អនុញ្ញាតឱ្យអ្នកប្រើកែសម្រួលទម្រង់ផ្ទាល់ខ្លួនរបស់ពួកគេ។',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'រូបភាពនេះនឹងត្រូវបានបង្ហាញជាទម្រង់ ប្រសិនបើអ្នកប្រើមិនមានរូបថតកម្រងព័ត៌មាន។',
     'restore_default_avatar' => 'ស្ដារ <a href=":default_avatar" data-toggle="lightbox" data-type="image">រូបតំណាងលំនាំដើមនៃប្រព័ន្ធដើម</a>',

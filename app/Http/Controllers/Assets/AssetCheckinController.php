@@ -84,7 +84,7 @@ class AssetCheckinController extends Controller
     public function store(AssetCheckinRequest $request, $assetId = null, $backto = null): RedirectResponse
     {
         // Check if the asset exists
-        if (is_null($asset = Asset::find($assetId))) {
+        if (is_null($asset = Asset::withTrashed()->find($assetId))) {
             // Redirect to the asset management page with error
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
         }
@@ -135,12 +135,16 @@ class AssetCheckinController extends Controller
 
         $asset->location_id = $asset->rtd_location_id;
 
-        if ($request->filled('location_id')) {
-            Log::debug('NEW Location ID: '.$request->input('location_id'));
-            $asset->location_id = $request->input('location_id');
-
-            if ($request->input('update_default_location') == 0) {
-                $asset->rtd_location_id = $request->input('location_id');
+        if ($request->has('location_id')) {
+            if ($request->filled('location_id')) {
+                Log::debug('NEW Location ID: '.$request->input('location_id'));
+                $asset->location_id = $request->input('location_id');
+                if ($request->input('update_default_location') == 0) {
+                    $asset->rtd_location_id = $request->input('location_id');
+                }
+            } else {
+                // Explicitly submitted as empty — clear the location
+                $asset->location_id = null;
             }
         }
 

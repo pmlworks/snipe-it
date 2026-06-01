@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Búnaðar númer',
     'assets_warrantee_alert' => 'There is :count asset with an expiring warranty or that are reaching their end of life in the next :threshold days.|There are :count assets with expiring warranties or that are reaching their end of life in the next :threshold days.',
     'assigned_to' => 'Skráð á',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'Lok línu',
     'best_regards' => 'Með kveðju,',
     'canceled' => 'Canceled',

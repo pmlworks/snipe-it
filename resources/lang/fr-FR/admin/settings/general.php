@@ -438,7 +438,7 @@ return [
     'timezone' => 'Fuseau horaire',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Modifier le profil',
-    'profile_edit_help' => 'Permettre aux utilisateurs de modifier leur propre profil.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Cette image sera utilisée pour le profil des utilisateurs·trices qui n\'ont pas de photo de profil.',
     'restore_default_avatar' => 'Rétablir <a href=":default_avatar" data-toggle="lightbox" data-type="image">l\'avatar par défaut d\'origine</a>',

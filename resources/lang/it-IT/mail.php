@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Etichetta Bene',
     'assets_warrantee_alert' => 'C\'è :count bene con una garanzia in scadenza o che arriverà a fine vita tra :threshold giorni.|Ci sono :count beni con garanzie in scadenza o che arriveranno a fine vita tra :threshold giorni.',
     'assigned_to' => 'Assegnato a',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'Cordiali saluti,',
     'canceled' => 'Annullato',

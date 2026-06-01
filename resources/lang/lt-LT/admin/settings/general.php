@@ -438,7 +438,7 @@ return [
     'timezone' => 'Laiko juosta',
     'test_mail' => 'Tikrinti el. pašto nustatymus',
     'profile_edit' => 'Redaguoti profilį',
-    'profile_edit_help' => 'Leisti naudotojams redaguoti savo profilius.',
+    'profile_edit_help' => 'Leisti naudotojams redaguoti savo profilius. (Tai neapima pritaikymo neįgaliesiems nustatymų, tokių kaip šviesus / tamsus režimas, garso signalai ar nuorodų spalvos.)',
     'default_avatar' => 'Pasirinktinis numatytasis avataras',
     'default_avatar_help' => 'Jei naudotojas neturi profilio nuotraukos, šis atvaizdas bus rodomas jo profilyje.',
     'restore_default_avatar' => 'Atkurti <a href=":default_avatar" data-toggle="lightbox" data-type="image">pradinį sistemos numatytąjį avatarą</a>',

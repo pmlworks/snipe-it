@@ -438,7 +438,7 @@ return [
     'timezone' => 'Timezone',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Uredi profil',
-    'profile_edit_help' => 'Omogoči uporabnikom, da urejajo svoje profile.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Ta slika bo prikazana kot profilna slika, če uporabnik nima profilne fotografije.',
     'restore_default_avatar' => 'Obnovi <a href=":default_avatar" data-toggle="lightbox" data-type="image">prvotni privzeti avatar sistema</a>',

@@ -438,7 +438,7 @@ return [
     'timezone' => 'Tijdzone',
     'test_mail' => 'Test Mail',
     'profile_edit' => 'Profiel bewerken',
-    'profile_edit_help' => 'Gebruikers toestaan hun eigen profielen te bewerken.',
+    'profile_edit_help' => 'Allow users to edit their own profiles. (This does not include accessibility settings like light/dark mode, audio feedback, or link colors.)',
     'default_avatar' => 'Custom Default Avatar',
     'default_avatar_help' => 'Deze afbeelding wordt weergegeven als profielfoto wanneer een gebruiker geen profielfoto heeft.',
     'restore_default_avatar' => '<a href=":default_avatar" data-toggle="lightbox" data-type="image">Originele standaard avatar</a> herstellen',

@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'Eszköz azonosító',
     'assets_warrantee_alert' => 'Van :count eszköz, amelynek a garanciája a következő :threshold napban lejár, vagy eléri az élettartamának végét.|Vannak :count eszközök, amelyeknek a garanciája a következő :threshold napban lejár, vagy eléri az élettartamának végét.',
     'assigned_to' => 'Hozzárendelve',
+    'assigned_to_assets' => 'Assignments to Assets',
     'eol' => 'EOL',
     'best_regards' => 'Üdvözlettel,',
     'canceled' => 'Megszakítva',

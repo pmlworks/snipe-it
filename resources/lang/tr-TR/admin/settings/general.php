@@ -439,7 +439,7 @@ return [
     'timezone' => 'Zaman Dilimi',
     'test_mail' => 'Test Postası',
     'profile_edit' => 'Profili Düzenle',
-    'profile_edit_help' => 'Kullanıcıların kendi profillerini düzenlemelerine izin ver.',
+    'profile_edit_help' => 'Kullanıcıların kendi profillerini düzenlemesine izin ver. (Bu, açık/koyu mod, sesli geri bildirim veya bağlantı renkleri gibi erişilebilirlik ayarlarını içermez.)',
     'default_avatar' => 'Özel Varsayılan Avatar',
     'default_avatar_help' => 'Kullanıcı profil fotoğrafı yüklememişse bu görsel profil fotoğrafı olacak.',
     'restore_default_avatar' => '<a href=":default_avatar" data-toggle="lightbox" data-type="image">orijinal sistem varsayılan avatarını</a> geri yükle',

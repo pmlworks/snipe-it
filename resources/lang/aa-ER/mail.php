@@ -48,6 +48,7 @@ return [
     'asset_tag' => 'crwdns6068:0crwdne6068:0',
     'assets_warrantee_alert' => 'crwdns13812:0crwdne13812:0',
     'assigned_to' => 'crwdns1714:0crwdne1714:0',
+    'assigned_to_assets' => 'crwdns14791:0crwdne14791:0',
     'eol' => 'crwdns13814:0crwdne13814:0',
     'best_regards' => 'crwdns1715:0crwdne1715:0',
     'canceled' => 'crwdns12718:0crwdne12718:0',

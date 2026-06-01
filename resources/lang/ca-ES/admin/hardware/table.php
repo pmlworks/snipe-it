@@ -2,7 +2,7 @@
 
 return [
 
-    'asset_tag' => 'Etiqueta de Recurs',
+    'asset_tag' => 'Etiqueta de recurs',
     'asset_model' => 'Model',
     'assigned_to' => 'Assigned To',
     'book_value' => 'Current Value',

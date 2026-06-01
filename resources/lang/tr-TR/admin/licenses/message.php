@@ -37,6 +37,9 @@ return [
         'confirm' => 'Lisansı silmek istediğinize emin misiniz?',
         'error' => 'Lisansı silerken bir hata oluştu. Lütfen tekrar deneyin.',
         'success' => 'Lisans silindi.',
+        'bulk_success' => 'Seçilen lisanslar başarıyla silindi.',
+        'partial_success' => 'Lisans başarıyla silindi. Aşağıdaki ek bilgilere göz atın. | :count lisans başarıyla silindi. Aşağıdaki ek bilgilere göz atın.',
+        'bulk_checkout_warning' => ':license_name lisansının şu an zimmetli olan lisans hakları var ve silinemez. Lütfen silmeden önce tüm hakları geri alın.',
     ],
 
     'checkout' => [
