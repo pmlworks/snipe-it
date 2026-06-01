@@ -101,10 +101,10 @@ class CustomComponentReportController extends Controller
                 'last_updated' => 'updated_at',
             ]);
 
-            if (($request->filled('last_updated_before'))) {
-                $last_updated_window = Carbon::parse(today()->subDays($request->input('last_updated_before')));
-                $query->where('components.updated_at', '<', $last_updated_window);
-            }
+            $query = $this->appendBeforeDateBoundaries($query, $request, [
+                // formKey => column
+                'last_updated_before' => 'updated_at',
+            ]);
 
             if ($request->input('deleted_components') === 'include_deleted') {
                 $query->withTrashed();
@@ -373,6 +373,18 @@ class CustomComponentReportController extends Controller
                 $end = Carbon::parse($request->input("{$formKey}_end"))->endOfDay();
 
                 $query->whereBetween("components.{$column}", [$start, $end]);
+            }
+        }
+
+        return $query;
+    }
+
+    private function appendBeforeDateBoundaries(Builder $query, Request $request, array $mapping): Builder
+    {
+        foreach ($mapping as $formKey => $column) {
+            if ($request->filled($formKey)) {
+                $date = Carbon::parse(today()->subDays($request->input($formKey)));
+                $query->where('components.updated_at', '<', $date);
             }
         }
 
