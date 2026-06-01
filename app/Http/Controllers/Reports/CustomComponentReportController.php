@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Models\Actionlog;
 use App\Models\Component;
 use App\Models\ReportTemplate;
 use Carbon\Carbon;
@@ -105,6 +106,18 @@ class CustomComponentReportController extends Controller
                 // formKey => column
                 'last_updated_before' => 'updated_at',
             ]);
+
+            if ($request->filled('checkout_date_start') && $request->filled('checkout_date_end')) {
+                $checkout_start = Carbon::parse($request->input('checkout_date_start'))->startOfDay();
+                $checkout_end = Carbon::parse($request->input('checkout_date_end', now()))->endOfDay();
+
+                $componentIdsWithinCheckoutRange = Actionlog::where('action_type', '=', 'checkout')
+                    ->where('item_type', Component::class)
+                    ->whereBetween('action_date', [$checkout_start, $checkout_end])
+                    ->pluck('item_id');
+
+                $query->whereIn('components.id', $componentIdsWithinCheckoutRange);
+            }
 
             if ($request->input('deleted_components') === 'include_deleted') {
                 $query->withTrashed();

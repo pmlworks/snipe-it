@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Reporting\Custom;
 
+use App\Events\CheckoutableCheckedOut;
+use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Company;
 use App\Models\Component;
@@ -411,7 +413,44 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_checkout_date()
     {
-        $this->markTestIncomplete();
+        $user = User::factory()->create();
+        [$assetA, $assetB] = Asset::factory()->count(2)->create()->all();
+
+        $componentA = Component::factory()->checkedOutToAsset($assetA)->create(['name' => 'Component A']);
+        $componentB = Component::factory()->checkedOutToAsset($assetB)->create(['name' => 'Component B']);
+
+        // we'll time travel a bit when firing these events to set the action log entries for testing.
+        $this->travel(-30)->days(
+            fn () => event(new CheckoutableCheckedOut(
+                $componentA,
+                $assetA,
+                $user,
+                '',
+                [],
+                1,
+            ))
+        );
+
+        $this->travel(-15)->days(
+            fn () => event(new CheckoutableCheckedOut(
+                $componentB,
+                $assetB,
+                $user,
+                '',
+                [],
+                1,
+            ))
+        );
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'checkout_date_start' => now()->subDays(45)->toDateString(),
+            'checkout_date_end' => now()->subDays(20)->toDateString(),
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
     public function test_limiting_by_created_at()
