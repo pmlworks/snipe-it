@@ -558,6 +558,39 @@ class CustomComponentReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Deleted Component');
     }
 
+    public function test_does_not_included_assignments_by_default()
+    {
+        $this->markTestIncomplete();
+    }
+
+    public function test_can_include_assignments()
+    {
+        $this->markTestIncomplete();
+
+        [$assetA, $assetB] = Asset::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Asset 001'],
+                ['name' => 'Asset 002'],
+            )->create();
+
+        Component::factory()->create(['name' => 'Component A']);
+        Component::factory()->checkedOutToAsset($assetA)->create(['name' => 'Component B']);
+        Component::factory()->checkedOutToAsset($assetB)->create(['name' => 'Component C']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'include_assignments' => '1',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertSeeTextInStreamedResponse('Component B')
+            ->assertSeeTextInStreamedResponse('Component C')
+            ->assertSeeTextInStreamedResponse('Asset 001')
+            ->assertSeeTextInStreamedResponse('Asset 002');
+    }
+
     public function test_custom_component_report_adheres_to_company_scoping_for_non_super_users()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
@@ -598,11 +631,6 @@ class CustomComponentReportTest extends TestCase
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse('Company A Component')
             ->assertSeeTextInStreamedResponse('Company B Component');
-    }
-
-    public function test_can_include_assignments()
-    {
-        $this->markTestIncomplete();
     }
 
     private function sendRequest(array $data): TestResponse

@@ -438,6 +438,14 @@
 
                             <div class="col-md-9 col-md-offset-3">
                                 <label class="form-control">
+                                    <input type="checkbox" name="use_bom" value="1" @checked($template->checkmarkValue('include_assignments', '0')) />
+                                    Include Assignments
+                                </label>
+                                <p class="help-block">todo: details</p>
+                            </div>
+
+                            <div class="col-md-9 col-md-offset-3">
+                                <label class="form-control">
                                     <input
                                         name="deleted_components"
                                         id="deleted_components_exclude_deleted"
