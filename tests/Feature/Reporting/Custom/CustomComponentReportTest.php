@@ -600,6 +600,11 @@ class CustomComponentReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Company B Component');
     }
 
+    public function test_can_include_assignments()
+    {
+        $this->markTestIncomplete();
+    }
+
     private function sendRequest(array $data): TestResponse
     {
         return $this->actingAs($this->actor)
