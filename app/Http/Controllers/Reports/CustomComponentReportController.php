@@ -69,84 +69,92 @@ class CustomComponentReportController extends Controller
                 $formatter = new EscapeFormula('`');
 
                 foreach ($components as $component) {
-                    $count++;
-                    $row = [];
 
-                    if ($request->filled('id')) {
-                        $row[] = $component->id;
+                    foreach ($component->assets as $asset) {
+
+                        $count++;
+                        $row = [];
+
+                        if ($request->filled('id')) {
+                            $row[] = $component->id;
+                        }
+
+                        if ($request->filled('company')) {
+                            $row[] = $component?->company?->name;
+                        }
+
+                        if ($request->filled('category')) {
+                            $row[] = $component?->category?->name;
+                        }
+
+                        if ($request->filled('component_name')) {
+                            $row[] = $component->name;
+                        }
+
+                        if ($request->filled('manufacturer')) {
+                            $row[] = $component?->manufacturer?->name;
+                        }
+
+                        if ($request->filled('model')) {
+                            $row[] = $component->model_number;
+                        }
+
+                        if ($request->filled('include_assignments')) {
+                            $row[] = $asset->name;
+                        }
+
+                        // todo: serial
+                        // todo: purchase date
+                        // todo: quantity
+                        // todo: min quantity
+                        // todo: unit cost
+
+                        if ($request->filled('order')) {
+                            $row[] = $component->order_number;
+                        }
+
+                        if ($request->filled('supplier')) {
+                            $row[] = $component?->supplier?->name;
+                        }
+
+                        if ($request->filled('location')) {
+                            $row[] = $component?->location?->name;
+                            // todo: address
+                            // todo: city
+                            // todo: state
+                            // todo: country
+                            // todo: zip
+                        }
+
+                        // todo: checkout date
+
+                        if ($request->filled('created_at')) {
+                            $row[] = $component->created_at;
+                        }
+
+                        if ($request->filled('updated_at')) {
+                            $row[] = $component->updated_at;
+                        }
+
+                        // todo: deleted
+                        // todo: notes
+
+                        // todo: checkout to: asset name
+                        // todo: checkout to: asset tag
+                        // todo: checkout to: asset company
+                        // todo: checkout to: asset serial
+
+                        // CSV_ESCAPE_FORMULAS is set to false in the .env
+                        if (config('app.escape_formulas') === false) {
+                            fputcsv($handle, $row);
+
+                            // CSV_ESCAPE_FORMULAS is set to true or is not set in the .env
+                        } else {
+                            fputcsv($handle, $formatter->escapeRecord($row));
+                        }
+
+                        Log::debug('-- Record '.$count.' Component ID:'.$component->id.' in '.$this->getExecutionTime());
                     }
-
-                    if ($request->filled('company')) {
-                        $row[] = $component?->company?->name;
-                    }
-
-                    if ($request->filled('category')) {
-                        $row[] = $component?->category?->name;
-                    }
-
-                    if ($request->filled('component_name')) {
-                        $row[] = $component->name;
-                    }
-
-                    if ($request->filled('manufacturer')) {
-                        $row[] = $component?->manufacturer?->name;
-                    }
-
-                    if ($request->filled('model')) {
-                        $row[] = $component->model_number;
-                    }
-
-                    // todo: serial
-                    // todo: purchase date
-                    // todo: quantity
-                    // todo: min quantity
-                    // todo: unit cost
-
-                    if ($request->filled('order')) {
-                        $row[] = $component->order_number;
-                    }
-
-                    if ($request->filled('supplier')) {
-                        $row[] = $component?->supplier?->name;
-                    }
-
-                    if ($request->filled('location')) {
-                        $row[] = $component?->location?->name;
-                        // todo: address
-                        // todo: city
-                        // todo: state
-                        // todo: country
-                        // todo: zip
-                    }
-
-                    // todo: checkout date
-
-                    if ($request->filled('created_at')) {
-                        $row[] = $component->created_at;
-                    }
-
-                    if ($request->filled('updated_at')) {
-                        $row[] = $component->updated_at;
-                    }
-
-                    // todo: deleted
-                    // todo: notes
-
-                    // todo: checkout to: asset name
-                    // todo: checkout to: asset tag
-                    // todo: checkout to: asset company
-                    // todo: checkout to: asset serial
-
-                    // CSV_ESCAPE_FORMULAS is set to false in the .env
-                    if (config('app.escape_formulas') === false) {
-                        fputcsv($handle, $row);
-
-                        // CSV_ESCAPE_FORMULAS is set to true or is not set in the .env
-                    } else {
-                        fputcsv($handle, $formatter->escapeRecord($row));
-                    }
-
-                    Log::debug('-- Record '.$count.' Component ID:'.$component->id.' in '.$this->getExecutionTime());
                 }
             });
 
@@ -192,6 +200,11 @@ class CustomComponentReportController extends Controller
 
         if ($request->filled('model')) {
             $header[] = trans('general.model_no');
+        }
+
+        if ($request->filled('include_assignments')) {
+            // todo:
+            $header[] = 'Asset';
         }
 
         if ($request->filled('serial')) {
@@ -284,6 +297,8 @@ class CustomComponentReportController extends Controller
                 'manufacturer',
                 'supplier',
             ]);
+
+        $request->whenFilled('include_assignments', fn () => $query->with('assets'));
 
         $query = $this->appendLocalConstraints($query, $request, [
             'by_model_number' => 'components.model_number',

@@ -585,8 +585,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_can_include_assignments()
     {
-        $this->markTestIncomplete();
-
         [$assetA, $assetB] = Asset::factory()
             ->count(2)
             ->sequence(
