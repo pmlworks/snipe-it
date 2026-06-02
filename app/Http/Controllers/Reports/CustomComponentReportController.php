@@ -103,11 +103,29 @@ class CustomComponentReportController extends Controller
                             $row[] = $component->assets[$i]?->name;
                         }
 
-                        // todo: serial
-                        // todo: purchase date
+                        if ($request->filled('serial')) {
+                            $row[] = $component->serial;
+                        }
+
+                        if ($request->filled('purchase')) {
+                            $row[] = $component->purchase_date ? Carbon::make($component->purchase_date)->format('Y-m-d') : '';
+                        }
                         // todo: quantity
                         // todo: min quantity
                         // todo: unit cost
+
+                        if ($request->filled('quantity')) {
+                            $row[] = $component->qty;
+                        }
+
+                        if ($request->filled('min_amount')) {
+                            $row[] = $component->min_amt;
+                        }
+
+                        // todo:
+                        // if ($request->filled('unit_cost')) {
+                        //
+                        // }
 
                         if ($request->filled('order')) {
                             $row[] = $component->order_number;
