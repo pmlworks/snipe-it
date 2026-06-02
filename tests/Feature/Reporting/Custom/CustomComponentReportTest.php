@@ -20,9 +20,13 @@ use Tests\TestCase;
 #[Group('custom-reporting')]
 class CustomComponentReportTest extends TestCase
 {
+    private User $actor;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->actor = User::factory()->canViewReports()->create();
 
         // todo: remove
         Model::preventLazyLoading();
@@ -554,14 +558,51 @@ class CustomComponentReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Deleted Component');
     }
 
-    public function test_custom_component_report_adheres_to_company_scoping()
+    public function test_custom_component_report_adheres_to_company_scoping_for_non_super_users()
     {
-        $this->markTestIncomplete();
+        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
+
+        Component::factory()->for($companyA)->create(['name' => 'Company A Component']);
+        Component::factory()->for($companyB)->create(['name' => 'Company B Component']);
+
+        $this->actor = User::factory()->canViewReports()->for($companyA)->create();
+
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'company' => '1',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Company A Component')
+            ->assertDontSeeTextInStreamedResponse('Company B Component');
+    }
+
+    public function test_custom_component_report_super_users_can_see_all_components()
+    {
+        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
+
+        Component::factory()->for($companyA)->create(['name' => 'Company A Component']);
+        Component::factory()->for($companyB)->create(['name' => 'Company B Component']);
+
+        $this->actor = User::factory()->superuser()->create();
+
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $this->sendRequest([
+            'component_name' => '1',
+            'company' => '1',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Company A Component')
+            ->assertSeeTextInStreamedResponse('Company B Component');
     }
 
     private function sendRequest(array $data): TestResponse
     {
-        return $this->actingAs(User::factory()->canViewReports()->create())
+        return $this->actingAs($this->actor)
             ->post(route('reports.custom.component.run'), $data);
     }
 }
