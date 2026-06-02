@@ -45,7 +45,7 @@ class CustomComponentReportController extends Controller
 
         $this->disableDebugbar();
 
-        $response = new StreamedResponse(function () use ($request) {
+        return new StreamedResponse(function () use ($request) {
             Log::debug('Starting streamed response for custom component report');
             Log::debug('CSV escaping is set to: '.config('app.escape_formulas'));
 
@@ -159,8 +159,6 @@ class CustomComponentReportController extends Controller
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="custom-components-report-'.date('Y-m-d-his').'.csv"',
         ]);
-
-        return $response;
     }
 
     private function getExecutionTime(): mixed
