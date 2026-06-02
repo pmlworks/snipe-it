@@ -69,9 +69,9 @@ class CustomComponentReportController extends Controller
                 $formatter = new EscapeFormula('`');
 
                 foreach ($components as $component) {
+                    $rowsToWrite = $component->qty;
 
-                    foreach ($component->assets as $asset) {
-
+                    for ($i = 0; $i < $rowsToWrite; $i++) {
                         $count++;
                         $row = [];
 
@@ -99,8 +99,8 @@ class CustomComponentReportController extends Controller
                             $row[] = $component->model_number;
                         }
 
-                        if ($request->filled('include_assignments')) {
-                            $row[] = $asset->name;
+                        if ($request->filled('include_assignments') && isset($component->assets[$i])) {
+                            $row[] = $component->assets[$i]?->name;
                         }
 
                         // todo: serial
