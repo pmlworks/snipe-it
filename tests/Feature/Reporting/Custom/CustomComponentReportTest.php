@@ -560,7 +560,27 @@ class CustomComponentReportTest extends TestCase
 
     public function test_does_not_included_assignments_by_default()
     {
-        $this->markTestIncomplete();
+        [$assetA, $assetB] = Asset::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Asset 001'],
+                ['name' => 'Asset 002'],
+            )->create();
+
+        Component::factory()->create(['name' => 'Component A']);
+        Component::factory()->checkedOutToAsset($assetA)->create(['name' => 'Component B']);
+        Component::factory()->checkedOutToAsset($assetB)->create(['name' => 'Component C']);
+
+        $this->sendRequest([
+            'component_name' => '1',
+        ])
+            ->assertOk()
+            ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse('Component A')
+            ->assertSeeTextInStreamedResponse('Component B')
+            ->assertSeeTextInStreamedResponse('Component C')
+            ->assertDontSeeTextInStreamedResponse('Asset 001')
+            ->assertDontSeeTextInStreamedResponse('Asset 002');
     }
 
     public function test_can_include_assignments()
