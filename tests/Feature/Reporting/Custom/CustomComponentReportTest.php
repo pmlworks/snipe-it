@@ -97,8 +97,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_custom_component_report_headers()
     {
-        $this->markTestIncomplete();
-
         $this->sendRequest([
             'id' => '1',
             'company' => '1',
@@ -143,15 +141,10 @@ class CustomComponentReportTest extends TestCase
                 trans('general.state'),
                 trans('general.country'),
                 trans('general.zip'),
-                trans('admin/hardware/table.checkout_date'),
                 trans('general.created_at'),
                 trans('general.updated_at'),
                 trans('general.deleted'),
                 trans('general.notes'),
-                trans('admin/hardware/form.name'),
-                trans('admin/hardware/form.tag'),
-                trans('admin/reports/general.custom_export.asset_company'),
-                trans('admin/reports/general.custom_export.asset_serial'),
             ]);
     }
 
@@ -593,7 +586,7 @@ class CustomComponentReportTest extends TestCase
 
     public function test_does_not_included_assignments_by_default()
     {
-        $this->markTestIncomplete();
+        $this->markTestIncomplete('Need to honor include_assignments not being passed');
 
         [$assetA, $assetB] = Asset::factory()
             ->count(2)
@@ -611,6 +604,13 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
+            ->assertDontSeeTextInStreamedResponse([
+                trans('admin/hardware/table.checkout_date'),
+                trans('admin/hardware/form.name'),
+                trans('admin/hardware/form.tag'),
+                trans('admin/reports/general.custom_export.asset_company'),
+                trans('admin/reports/general.custom_export.asset_serial'),
+            ])
             ->assertSeeTextInStreamedResponse('Component A')
             ->assertSeeTextInStreamedResponse('Component B')
             ->assertSeeTextInStreamedResponse('Component C')
@@ -638,6 +638,14 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
+            ->assertSeeTextInStreamedResponse([
+                // todo:
+                // trans('admin/hardware/table.checkout_date'),
+                trans('admin/hardware/form.name'),
+                trans('admin/hardware/form.tag'),
+                trans('admin/reports/general.custom_export.asset_company'),
+                trans('admin/reports/general.custom_export.asset_serial'),
+            ])
             ->assertSeeTextInStreamedResponse('Component A')
             ->assertSeeTextInStreamedResponse('Component B')
             ->assertSeeTextInStreamedResponse('Component C')

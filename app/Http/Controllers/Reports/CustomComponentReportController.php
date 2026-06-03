@@ -155,10 +155,10 @@ class CustomComponentReportController extends Controller
                             }
                         }
 
-                        if ($request->filled('checkout_date')) {
-                            // todo: checkout date
-                            $row[] = '';
-                        }
+                        // if ($request->filled('checkout_date')) {
+                        //     // todo: checkout date
+                        //     $row[] = '';
+                        // }
 
                         if ($request->filled('created_at')) {
                             $row[] = $component->created_at;
@@ -283,9 +283,9 @@ class CustomComponentReportController extends Controller
         }
 
         // todo: has to have include_assignments enabled
-        if ($request->filled('checkout_date')) {
-            $header[] = trans('admin/hardware/table.checkout_date');
-        }
+        // if ($request->filled('checkout_date')) {
+        //     $header[] = trans('admin/hardware/table.checkout_date');
+        // }
 
         if ($request->filled('created_at')) {
             $header[] = trans('general.created_at');
