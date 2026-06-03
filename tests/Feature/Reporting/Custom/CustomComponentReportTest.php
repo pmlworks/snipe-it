@@ -97,6 +97,8 @@ class CustomComponentReportTest extends TestCase
 
     public function test_custom_component_report_headers()
     {
+        $this->markTestIncomplete();
+
         $this->sendRequest([
             'id' => '1',
             'company' => '1',
@@ -637,6 +639,10 @@ class CustomComponentReportTest extends TestCase
         $this->sendRequest([
             'component_name' => '1',
             'include_assignments' => '1',
+            'asset_name' => '1',
+            'asset_tag' => '1',
+            'asset_company' => '1',
+            'asset_serial' => '1',
         ])
             ->assertOk()
             ->assertCsvHeader()

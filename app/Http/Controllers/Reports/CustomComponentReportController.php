@@ -68,6 +68,7 @@ class CustomComponentReportController extends Controller
 
                 $formatter = new EscapeFormula('`');
 
+                /** @var Component $component */
                 foreach ($components as $component) {
                     $rowsToWrite = $component->qty;
 
@@ -80,11 +81,11 @@ class CustomComponentReportController extends Controller
                         }
 
                         if ($request->filled('company')) {
-                            $row[] = $component?->company?->name;
+                            $row[] = $component->company->name ?? '';
                         }
 
                         if ($request->filled('category')) {
-                            $row[] = $component?->category?->name;
+                            $row[] = $component?->category->name ?? '';
                         }
 
                         if ($request->filled('component_name')) {
@@ -92,7 +93,7 @@ class CustomComponentReportController extends Controller
                         }
 
                         if ($request->filled('manufacturer')) {
-                            $row[] = $component?->manufacturer?->name;
+                            $row[] = $component?->manufacturer->name ?? '';
                         }
 
                         if ($request->filled('model')) {
@@ -100,19 +101,30 @@ class CustomComponentReportController extends Controller
                         }
 
                         if ($request->filled('include_assignments') && isset($component->assets[$i])) {
-                            $row[] = $component->assets[$i]?->name;
+                            if ($request->filled('asset_name')) {
+                                $row[] = $component->assets[$i]?->name;
+                            }
+
+                            if ($request->filled('asset_tag')) {
+                                $row[] = $component->assets[$i]?->asset_tag;
+                            }
+
+                            if ($request->filled('asset_company')) {
+                                $row[] = $component->assets[$i]->company->name ?? '';
+                            }
+
+                            if ($request->filled('asset_serial')) {
+                                $row[] = $component->assets[$i]?->serial;
+                            }
                         }
 
                         if ($request->filled('serial')) {
                             $row[] = $component->serial;
                         }
 
-                        if ($request->filled('purchase')) {
+                        if ($request->filled('purchase_date')) {
                             $row[] = $component->purchase_date ? Carbon::make($component->purchase_date)->format('Y-m-d') : '';
                         }
-                        // todo: quantity
-                        // todo: min quantity
-                        // todo: unit cost
 
                         if ($request->filled('quantity')) {
                             $row[] = $component->qty;
@@ -122,10 +134,9 @@ class CustomComponentReportController extends Controller
                             $row[] = $component->min_amt;
                         }
 
-                        // todo:
-                        // if ($request->filled('unit_cost')) {
-                        //
-                        // }
+                        if ($request->filled('unit_cost')) {
+                            $row[] = $component->purchase_cost;
+                        }
 
                         if ($request->filled('order')) {
                             $row[] = $component->order_number;
@@ -136,15 +147,22 @@ class CustomComponentReportController extends Controller
                         }
 
                         if ($request->filled('location')) {
-                            $row[] = $component?->location?->name;
-                            // todo: address
-                            // todo: city
-                            // todo: state
-                            // todo: country
-                            // todo: zip
+                            $row[] = $component->location->name ?? '';
+
+                            if ($request->filled('location_address')) {
+                                $row[] = $component->location->address ?? '';
+                                $row[] = $component->location->address2 ?? '';
+                                $row[] = $component->location->city ?? '';
+                                $row[] = $component->location->state ?? '';
+                                $row[] = $component->location->country ?? '';
+                                $row[] = $component->location->zip ?? '';
+                            }
                         }
 
-                        // todo: checkout date
+                        if ($request->filled('checkout_date')) {
+                            // todo: checkout date
+                            $row[] = '';
+                        }
 
                         if ($request->filled('created_at')) {
                             $row[] = $component->created_at;
@@ -154,13 +172,13 @@ class CustomComponentReportController extends Controller
                             $row[] = $component->updated_at;
                         }
 
-                        // todo: deleted
-                        // todo: notes
+                        if ($request->filled('deleted_at')) {
+                            $row[] = $component->deleted_at ?? '';
+                        }
 
-                        // todo: checkout to: asset name
-                        // todo: checkout to: asset tag
-                        // todo: checkout to: asset company
-                        // todo: checkout to: asset serial
+                        if ($request->filled('notes')) {
+                            $row[] = $component->notes;
+                        }
 
                         // CSV_ESCAPE_FORMULAS is set to false in the .env
                         if (config('app.escape_formulas') === false) {
@@ -221,8 +239,23 @@ class CustomComponentReportController extends Controller
         }
 
         if ($request->filled('include_assignments')) {
-            // todo:
-            $header[] = 'Asset';
+            $header[] = trans('general.asset');
+
+            if ($request->filled('asset_name')) {
+                $header[] = trans('admin/hardware/form.name');
+            }
+
+            if ($request->filled('asset_tag')) {
+                $header[] = trans('admin/hardware/form.tag');
+            }
+
+            if ($request->filled('asset_company')) {
+                $header[] = trans('admin/reports/general.custom_export.asset_company');
+            }
+
+            if ($request->filled('asset_serial')) {
+                $header[] = trans('admin/reports/general.custom_export.asset_serial');
+            }
         }
 
         if ($request->filled('serial')) {
@@ -287,26 +320,6 @@ class CustomComponentReportController extends Controller
             $header[] = trans('general.notes');
         }
 
-        // todo: has to have include_assignments enabled
-        if ($request->filled('asset_name')) {
-            $header[] = trans('admin/hardware/form.name');
-        }
-
-        // todo: has to have include_assignments enabled
-        if ($request->filled('asset_tag')) {
-            $header[] = trans('admin/hardware/form.tag');
-        }
-
-        // todo: has to have include_assignments enabled
-        if ($request->filled('asset_company')) {
-            $header[] = trans('admin/reports/general.custom_export.asset_company');
-        }
-
-        // todo: has to have include_assignments enabled
-        if ($request->filled('asset_serial')) {
-            $header[] = trans('admin/reports/general.custom_export.asset_serial');
-        }
-
         return $header;
     }
 
@@ -321,7 +334,7 @@ class CustomComponentReportController extends Controller
                 'supplier',
             ]);
 
-        $request->whenFilled('include_assignments', fn () => $query->with('assets'));
+        $request->whenFilled('include_assignments', fn () => $query->with('assets.company'));
 
         $query = $this->appendLocalConstraints($query, $request, [
             'by_model_number' => 'components.model_number',
