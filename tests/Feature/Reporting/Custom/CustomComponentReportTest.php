@@ -138,7 +138,7 @@ class CustomComponentReportTest extends TestCase
                 trans('general.min_amt'),
                 trans('general.unit_cost'),
                 trans('admin/hardware/form.order'),
-                trans('general.suppliers'),
+                trans('general.supplier'),
                 trans('general.location'),
                 trans('general.address'),
                 trans('general.city'),
@@ -181,7 +181,14 @@ class CustomComponentReportTest extends TestCase
 
     public function test_limiting_by_company()
     {
-        [$companyA, $companyB] = Company::factory()->count(2)->create()->all();
+        [$companyA, $companyB] = Company::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Company A'],
+                ['name' => 'Company B'],
+            )
+            ->create()
+            ->all();
 
         Component::factory()
             ->count(2)
@@ -200,13 +207,20 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Company A')
+            ->assertSeePairsInStreamedResponse(['Company' => 'Company A', 'Component Name' => 'Component for Company A'])
             ->assertDontSeeTextInStreamedResponse('Component for Company B');
     }
 
     public function test_limiting_by_category()
     {
-        [$categoryA, $categoryB] = Category::factory()->count(2)->create()->all();
+        [$categoryA, $categoryB] = Category::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Category A'],
+                ['name' => 'Category B'],
+            )
+            ->create()
+            ->all();
 
         Component::factory()
             ->count(2)
@@ -225,13 +239,20 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Category A')
+            ->assertSeePairsInStreamedResponse(['Category' => 'Category A', 'Component Name' => 'Component for Category A'])
             ->assertDontSeeTextInStreamedResponse('Component for Category B');
     }
 
     public function test_limiting_by_manufacturer()
     {
-        [$manufacturerA, $manufacturerB] = Manufacturer::factory()->count(2)->create()->all();
+        [$manufacturerA, $manufacturerB] = Manufacturer::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Manufacturer A'],
+                ['name' => 'Manufacturer B'],
+            )
+            ->create()
+            ->all();
 
         Component::factory()
             ->count(2)
@@ -250,13 +271,20 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Manufacturer A')
+            ->assertSeePairsInStreamedResponse(['Manufacturer' => 'Manufacturer A', 'Component Name' => 'Component for Manufacturer A'])
             ->assertDontSeeTextInStreamedResponse('Component for Manufacturer B');
     }
 
     public function test_limiting_by_supplier()
     {
-        [$supplierA, $supplierB] = Supplier::factory()->count(2)->create()->all();
+        [$supplierA, $supplierB] = Supplier::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Supplier A'],
+                ['name' => 'Supplier B'],
+            )
+            ->create()
+            ->all();
 
         Component::factory()
             ->count(2)
@@ -275,13 +303,20 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Supplier A')
+            ->assertSeePairsInStreamedResponse(['Supplier' => 'Supplier A', 'Component Name' => 'Component for Supplier A'])
             ->assertDontSeeTextInStreamedResponse('Component for Supplier B');
     }
 
     public function test_limiting_by_location()
     {
-        [$locationA, $locationB] = Location::factory()->count(2)->create()->all();
+        [$locationA, $locationB] = Location::factory()
+            ->count(2)
+            ->sequence(
+                ['name' => 'Location A'],
+                ['name' => 'Location B'],
+            )
+            ->create()
+            ->all();
 
         Component::factory()
             ->count(2)
@@ -300,7 +335,7 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('Component for Location A')
+            ->assertSeePairsInStreamedResponse(['Location' => 'Location A', 'Component Name' => 'Component for Location A'])
             ->assertDontSeeTextInStreamedResponse('Component for Location B');
     }
 
@@ -315,14 +350,14 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('RAM')
+            ->assertSeePairsInStreamedResponse(['Component Name' => 'RAM'])
             ->assertDontSeeTextInStreamedResponse('Hard Drive');
     }
 
     public function test_limiting_by_model_number()
     {
-        Component::factory()->create(['model_number' => 'MODEL-001']);
-        Component::factory()->create(['model_number' => 'MODEL-002']);
+        Component::factory()->create(['name' => 'Component A', 'model_number' => 'MODEL-001']);
+        Component::factory()->create(['name' => 'Component B', 'model_number' => 'MODEL-002']);
 
         $this->sendRequest([
             'component_name' => '1',
@@ -331,14 +366,14 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('MODEL-001')
+            ->assertSeePairsInStreamedResponse(['Model No.' => 'MODEL-001', 'Component Name' => 'Component A'])
             ->assertDontSeeTextInStreamedResponse('MODEL-002');
     }
 
     public function test_limiting_by_order_number()
     {
-        Component::factory()->create(['order_number' => 'ORD-001']);
-        Component::factory()->create(['order_number' => 'ORD-002']);
+        Component::factory()->create(['name' => 'Component A', 'order_number' => 'ORD-001']);
+        Component::factory()->create(['name' => 'Component B', 'order_number' => 'ORD-002']);
 
         $this->sendRequest([
             'component_name' => '1',
@@ -347,11 +382,11 @@ class CustomComponentReportTest extends TestCase
         ])
             ->assertOk()
             ->assertCsvHeader()
-            ->assertSeeTextInStreamedResponse('ORD-001')
+            ->assertSeePairsInStreamedResponse(['Order Number' => 'ORD-001', 'Component Name' => 'Component A'])
             ->assertDontSeeTextInStreamedResponse('ORD-002');
     }
 
-    public function test_limiting_by_purchase_date()
+    public function test_limiting_by_purchase_date_range()
     {
         Component::factory()->create(['name' => 'Component A', 'purchase_date' => '2024-01-15']);
         Component::factory()->create(['name' => 'Component B', 'purchase_date' => '2024-06-15']);
@@ -367,7 +402,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_quantity()
+    public function test_limiting_by_quantity_range()
     {
         Component::factory()->create(['name' => 'Component A', 'qty' => 5]);
         Component::factory()->create(['name' => 'Component B', 'qty' => 50]);
@@ -383,7 +418,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_minimum_quantity()
+    public function test_limiting_by_minimum_quantity_range()
     {
         Component::factory()->create(['name' => 'Component A', 'min_amt' => 2]);
         Component::factory()->create(['name' => 'Component B', 'min_amt' => 20]);
@@ -399,7 +434,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_unit_cost()
+    public function test_limiting_by_unit_cost_range()
     {
         Component::factory()->create(['name' => 'Component A', 'purchase_cost' => 10.00]);
         Component::factory()->create(['name' => 'Component B', 'purchase_cost' => 500.00]);
@@ -415,7 +450,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_checkout_date()
+    public function test_limiting_by_checkout_date_range()
     {
         $user = User::factory()->create();
         [$assetA, $assetB] = Asset::factory()->count(2)->create()->all();
@@ -457,7 +492,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_created_at()
+    public function test_limiting_by_created_at_range()
     {
         $this->travel(-60)->days(function () {
             Component::factory()->create(['name' => 'Component A']);
@@ -476,7 +511,7 @@ class CustomComponentReportTest extends TestCase
             ->assertDontSeeTextInStreamedResponse('Component B');
     }
 
-    public function test_limiting_by_updated_at()
+    public function test_limiting_by_updated_at_range()
     {
         $this->travel(-60)->days(function () {
             Component::factory()->create(['name' => 'Component A']);

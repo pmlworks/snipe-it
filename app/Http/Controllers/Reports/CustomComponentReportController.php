@@ -250,7 +250,7 @@ class CustomComponentReportController extends Controller
         }
 
         if ($request->filled('supplier')) {
-            $header[] = trans('general.suppliers');
+            $header[] = trans('general.supplier');
         }
 
         if ($request->filled('location')) {
