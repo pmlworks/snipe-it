@@ -158,7 +158,7 @@
 
                             <label class="form-control">
                                 <input type="checkbox" name="supplier" value="1" @checked($template->checkmarkValue('supplier')) />
-                                {{ trans('general.suppliers') }}
+                                {{ trans('general.supplier') }}
                             </label>
 
                             <label class="form-control">
