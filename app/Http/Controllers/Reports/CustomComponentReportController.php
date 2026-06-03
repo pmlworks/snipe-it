@@ -72,7 +72,7 @@ class CustomComponentReportController extends Controller
 
                 /** @var Component $component */
                 foreach ($components as $component) {
-                    $rowsToWrite = $component->qty;
+                    $rowsToWrite = $request->filled('include_assignments') ? $component->qty : 1;
 
                     for ($i = 0; $i < $rowsToWrite; $i++) {
                         $count++;

@@ -586,8 +586,6 @@ class CustomComponentReportTest extends TestCase
 
     public function test_does_not_included_assignments_by_default()
     {
-        $this->markTestIncomplete('Need to honor include_assignments not being passed');
-
         [$assetA, $assetB] = Asset::factory()
             ->count(2)
             ->sequence(
@@ -618,7 +616,8 @@ class CustomComponentReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Component C')
             ->assertDontSeeTextInStreamedResponse('Asset 001')
             ->assertDontSeeTextInStreamedResponse('Asset 002')
-            ->assertRowCountInStreamedResponse(3);
+            // header + number of components
+            ->assertRowCountInStreamedResponse(4);
     }
 
     public function test_can_include_assignments()
