@@ -114,6 +114,11 @@ class CustomComponentReportController extends Controller
         return microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
     }
 
+    /**
+     * Each key corresponds to a form field name submitted by the front end.
+     * When that field is present in the request, its headers are added to the CSV
+     * and its values closure is called to produce the row data for that column(s).
+     */
     private function buildMappings(): array
     {
         return [
