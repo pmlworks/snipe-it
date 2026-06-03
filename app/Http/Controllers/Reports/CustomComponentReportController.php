@@ -266,6 +266,7 @@ class CustomComponentReportController extends Controller
             $header[] = trans('general.zip');
         }
 
+        // todo: has to have include_assignments enabled
         if ($request->filled('checkout_date')) {
             $header[] = trans('admin/hardware/table.checkout_date');
         }
@@ -286,18 +287,22 @@ class CustomComponentReportController extends Controller
             $header[] = trans('general.notes');
         }
 
+        // todo: has to have include_assignments enabled
         if ($request->filled('asset_name')) {
             $header[] = trans('admin/hardware/form.name');
         }
 
+        // todo: has to have include_assignments enabled
         if ($request->filled('asset_tag')) {
             $header[] = trans('admin/hardware/form.tag');
         }
 
+        // todo: has to have include_assignments enabled
         if ($request->filled('asset_company')) {
             $header[] = trans('admin/reports/general.custom_export.asset_company');
         }
 
+        // todo: has to have include_assignments enabled
         if ($request->filled('asset_serial')) {
             $header[] = trans('admin/reports/general.custom_export.asset_serial');
         }
