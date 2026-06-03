@@ -213,7 +213,7 @@ trait CustomTestMacros
 
                 $headers = collect($records->shift());
 
-                $combined = $records->map(fn($record) => $headers->combine($record));
+                $combined = $records->map(fn ($record) => $headers->combine($record));
 
                 Assert::assertTrue(
                     $combined->contains(function ($row) use ($pair) {
@@ -226,6 +226,19 @@ trait CustomTestMacros
                         return true;
                     }),
                     'Response did not contain a row matching the expected pairs: '.json_encode($pair)
+                );
+
+                return $this;
+            }
+        );
+
+        TestResponse::macro(
+            'assertRowCountInStreamedResponse',
+            function (int $expectedCount) {
+                Assert::assertCount(
+                    $expectedCount,
+                    collect(Reader::fromString($this->streamedContent())->getRecords()),
+                    "Response did not contain the expected number of rows: {$expectedCount}"
                 );
 
                 return $this;

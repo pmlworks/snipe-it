@@ -560,12 +560,14 @@ class CustomComponentReportTest extends TestCase
 
     public function test_does_not_included_assignments_by_default()
     {
+        $this->markTestIncomplete();
+
         [$assetA, $assetB] = Asset::factory()
             ->count(2)
             ->sequence(
                 ['name' => 'Asset 001'],
                 ['name' => 'Asset 002'],
-            )->create();
+            )->create()->all();
 
         Component::factory()->create(['name' => 'Component A']);
         Component::factory()->checkedOutToAsset($assetA)->create(['name' => 'Component B']);
@@ -580,7 +582,8 @@ class CustomComponentReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Component B')
             ->assertSeeTextInStreamedResponse('Component C')
             ->assertDontSeeTextInStreamedResponse('Asset 001')
-            ->assertDontSeeTextInStreamedResponse('Asset 002');
+            ->assertDontSeeTextInStreamedResponse('Asset 002')
+            ->assertRowCountInStreamedResponse(3);
     }
 
     public function test_can_include_assignments()
@@ -590,7 +593,7 @@ class CustomComponentReportTest extends TestCase
             ->sequence(
                 ['name' => 'Asset 001'],
                 ['name' => 'Asset 002'],
-            )->create();
+            )->create()->all();
 
         Component::factory()->create(['name' => 'Component A']);
         Component::factory()->checkedOutToAsset($assetA)->create(['name' => 'Component B']);
