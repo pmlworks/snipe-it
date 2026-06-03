@@ -120,10 +120,6 @@ class CustomComponentReportTest extends TestCase
             'updated_at' => '1',
             'deleted_at' => '1',
             'notes' => '1',
-            'asset_name' => '1',
-            'asset_tag' => '1',
-            'asset_company' => '1',
-            'asset_serial' => '1',
         ])
             ->assertOk()
             ->assertCsvHeader()
@@ -639,10 +635,6 @@ class CustomComponentReportTest extends TestCase
         $this->sendRequest([
             'component_name' => '1',
             'include_assignments' => '1',
-            'asset_name' => '1',
-            'asset_tag' => '1',
-            'asset_company' => '1',
-            'asset_serial' => '1',
         ])
             ->assertOk()
             ->assertCsvHeader()

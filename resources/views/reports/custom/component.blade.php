@@ -196,27 +196,12 @@
                                 {{ trans('general.notes') }}
                             </label>
 
-                            <h2>{{ trans('general.checked_out_to_fields') }}: </h2>
-
+                            <h2>{{ trans('general.assigned') }}: </h2>
                             <label class="form-control">
-                                <input type="checkbox" name="asset_name" value="1" @checked($template->checkmarkValue('asset_name')) />
-                                {{ trans('admin/hardware/form.name') }}
+                                <input type="checkbox" name="include_assignments" value="1" @checked($template->checkmarkValue('include_assignments', '0')) />
+                                Include Assignments
                             </label>
-
-                            <label class="form-control">
-                                <input type="checkbox" name="asset_tag" value="1" @checked($template->checkmarkValue('asset_tag')) />
-                                {{ trans('admin/hardware/form.tag') }}
-                            </label>
-
-                            <label class="form-control">
-                                <input type="checkbox" name="asset_company" value="1" @checked($template->checkmarkValue('asset_company')) />
-                                {{ trans('admin/reports/general.custom_export.asset_company') }}
-                            </label>
-
-                            <label class="form-control">
-                                <input type="checkbox" name="asset_serial" value="1" @checked($template->checkmarkValue('asset_serial')) />
-                                {{ trans('admin/reports/general.custom_export.asset_serial') }}
-                            </label>
+                            <p class="help-block">todo: details</p>
 
                         </div> <!-- /.col-md-4-->
 
@@ -434,14 +419,6 @@
                                     <input type="checkbox" name="use_bom" value="1" @checked($template->checkmarkValue('use_bom', '0')) />
                                     {{ trans('general.bom_remark') }}
                                 </label>
-                            </div>
-
-                            <div class="col-md-9 col-md-offset-3">
-                                <label class="form-control">
-                                    <input type="checkbox" name="include_assignments" value="1" @checked($template->checkmarkValue('include_assignments', '0')) />
-                                    Include Assignments
-                                </label>
-                                <p class="help-block">todo: details</p>
                             </div>
 
                             <div class="col-md-9 col-md-offset-3">

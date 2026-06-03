@@ -106,21 +106,10 @@ class CustomComponentReportController extends Controller
 
                         if ($request->filled('include_assignments')) {
                             if (isset($component->assets[$i])) {
-                                if ($request->filled('asset_name')) {
-                                    $row[] = $component->assets[$i]->name ?? '';
-                                }
-
-                                if ($request->filled('asset_tag')) {
-                                    $row[] = $component->assets[$i]->asset_tag ?? '';
-                                }
-
-                                if ($request->filled('asset_company')) {
-                                    $row[] = $component->assets[$i]->company->name ?? '';
-                                }
-
-                                if ($request->filled('asset_serial')) {
-                                    $row[] = $component->assets[$i]->serial;
-                                }
+                                $row[] = $component->assets[$i]->name ?? '';
+                                $row[] = $component->assets[$i]->asset_tag ?? '';
+                                $row[] = $component->assets[$i]->company->name ?? '';
+                                $row[] = $component->assets[$i]->serial;
                             } else {
                                 $row[] = '';
                                 $row[] = '';
@@ -250,21 +239,10 @@ class CustomComponentReportController extends Controller
         }
 
         if ($request->filled('include_assignments')) {
-            if ($request->filled('asset_name')) {
-                $header[] = trans('admin/hardware/form.name');
-            }
-
-            if ($request->filled('asset_tag')) {
-                $header[] = trans('admin/hardware/form.tag');
-            }
-
-            if ($request->filled('asset_company')) {
-                $header[] = trans('admin/reports/general.custom_export.asset_company');
-            }
-
-            if ($request->filled('asset_serial')) {
-                $header[] = trans('admin/reports/general.custom_export.asset_serial');
-            }
+            $header[] = trans('admin/hardware/form.name');
+            $header[] = trans('admin/hardware/form.tag');
+            $header[] = trans('admin/reports/general.custom_export.asset_company');
+            $header[] = trans('admin/reports/general.custom_export.asset_serial');
         }
 
         if ($request->filled('purchase_date')) {
