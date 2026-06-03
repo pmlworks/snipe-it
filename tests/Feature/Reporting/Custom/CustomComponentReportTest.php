@@ -646,11 +646,13 @@ class CustomComponentReportTest extends TestCase
                 trans('admin/reports/general.custom_export.asset_company'),
                 trans('admin/reports/general.custom_export.asset_serial'),
             ])
-            ->assertSeeTextInStreamedResponse('Component A')
-            ->assertSeeTextInStreamedResponse('Component B')
-            ->assertSeeTextInStreamedResponse('Component C')
-            ->assertSeeTextInStreamedResponse('Asset 001')
-            ->assertSeeTextInStreamedResponse('Asset 002');
+            ->assertSeeTextInStreamedResponse([
+                'Component A',
+                'Component B',
+                'Component C',
+                'Asset 001',
+                'Asset 002',
+            ]);
     }
 
     public function test_custom_component_report_adheres_to_company_scoping_for_non_super_users()
