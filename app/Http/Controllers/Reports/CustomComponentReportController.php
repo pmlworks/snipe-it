@@ -55,13 +55,15 @@ class CustomComponentReportController extends Controller
 
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            $headerRow = $this->generateHeaders($request);
+            $mappings = $this->buildMappings();
+
+            $headerRow = $this->generateHeaders($request, $mappings);
 
             Log::debug('Adding headers: '.$this->getExecutionTime());
             fputcsv($handle, $headerRow);
             Log::debug('Added headers: '.$this->getExecutionTime());
 
-            $this->buildQuery($request)->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request) {
+            $this->buildQuery($request)->orderBy('components.id', 'ASC')->chunk(500, function ($components) use ($handle, $request, $mappings) {
                 Log::debug('Walking results: '.$this->getExecutionTime());
 
                 $count = 0;
@@ -76,103 +78,10 @@ class CustomComponentReportController extends Controller
                         $count++;
                         $row = [];
 
-                        if ($request->filled('id')) {
-                            $row[] = $component->id;
-                        }
-
-                        if ($request->filled('company')) {
-                            $row[] = $component->company->name ?? '';
-                        }
-
-                        if ($request->filled('category')) {
-                            $row[] = $component?->category->name ?? '';
-                        }
-
-                        if ($request->filled('component_name')) {
-                            $row[] = $component->name;
-                        }
-
-                        if ($request->filled('manufacturer')) {
-                            $row[] = $component?->manufacturer->name ?? '';
-                        }
-
-                        if ($request->filled('model')) {
-                            $row[] = $component->model_number;
-                        }
-
-                        if ($request->filled('serial')) {
-                            $row[] = $component->serial;
-                        }
-
-                        if ($request->filled('include_assignments')) {
-                            if (isset($component->assets[$i])) {
-                                $row[] = $component->assets[$i]->name ?? '';
-                                $row[] = $component->assets[$i]->asset_tag ?? '';
-                                $row[] = $component->assets[$i]->company->name ?? '';
-                                $row[] = $component->assets[$i]->serial;
-                                $row[] = $component->assets[$i]->pivot->created_at ?? '';
-                                $row[] = $component->assets[$i]->pivot->assigned_qty;
-                            } else {
-                                $row[] = '';
-                                $row[] = '';
-                                $row[] = '';
-                                $row[] = '';
-                                $row[] = '';
-                                $row[] = '';
+                        foreach ($mappings as $key => $mapping) {
+                            if ($request->filled($key)) {
+                                array_push($row, ...($mapping['values'])($component, $i));
                             }
-                        }
-
-                        if ($request->filled('purchase_date')) {
-                            $row[] = $component->purchase_date ? Carbon::make($component->purchase_date)->format('Y-m-d') : '';
-                        }
-
-                        if ($request->filled('quantity')) {
-                            $row[] = $component->qty;
-                        }
-
-                        if ($request->filled('min_amount')) {
-                            $row[] = $component->min_amt;
-                        }
-
-                        if ($request->filled('unit_cost')) {
-                            $row[] = $component->purchase_cost;
-                        }
-
-                        if ($request->filled('order')) {
-                            $row[] = $component->order_number;
-                        }
-
-                        if ($request->filled('supplier')) {
-                            $row[] = $component?->supplier?->name;
-                        }
-
-                        if ($request->filled('location')) {
-                            $row[] = $component->location->name ?? '';
-
-                            if ($request->filled('location_address')) {
-                                $row[] = $component->location->address ?? '';
-                                $row[] = $component->location->address2 ?? '';
-                                $row[] = $component->location->city ?? '';
-                                $row[] = $component->location->state ?? '';
-                                $row[] = $component->location->country ?? '';
-                                $row[] = $component->location->zip ?? '';
-                            }
-                        }
-
-                        if ($request->filled('created_at')) {
-                            $row[] = $component->created_at;
-                        }
-
-                        if ($request->filled('updated_at')) {
-                            $row[] = $component->updated_at;
-                        }
-
-                        if ($request->filled('deleted_at')) {
-                            $row[] = $component->deleted_at ?? '';
-                        }
-
-                        if ($request->filled('notes')) {
-                            $row[] = $component->notes;
                         }
 
                         // CSV_ESCAPE_FORMULAS is set to false in the .env
@@ -205,102 +114,131 @@ class CustomComponentReportController extends Controller
         return microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
     }
 
-    private function generateHeaders(Request $request): array
+    private function buildMappings(): array
     {
-        $header = [];
+        return [
+            'id' => [
+                'headers' => [trans('general.id')],
+                'values' => fn ($component, $i) => [$component->id],
+            ],
+            'company' => [
+                'headers' => [trans('general.company')],
+                'values' => fn ($component, $i) => [$component->company->name ?? ''],
+            ],
+            'category' => [
+                'headers' => [trans('general.category')],
+                'values' => fn ($component, $i) => [$component->category->name ?? ''],
+            ],
+            'component_name' => [
+                'headers' => [trans('admin/components/general.component_name')],
+                'values' => fn ($component, $i) => [$component->name],
+            ],
+            'manufacturer' => [
+                'headers' => [trans('general.manufacturer')],
+                'values' => fn ($component, $i) => [$component->manufacturer->name ?? ''],
+            ],
+            'model' => [
+                'headers' => [trans('general.model_no')],
+                'values' => fn ($component, $i) => [$component->model_number],
+            ],
+            'serial' => [
+                'headers' => [trans('general.serial_number')],
+                'values' => fn ($component, $i) => [$component->serial],
+            ],
+            'include_assignments' => [
+                'headers' => [
+                    trans('admin/hardware/form.name'),
+                    trans('admin/hardware/form.tag'),
+                    trans('admin/reports/general.custom_export.asset_company'),
+                    trans('admin/reports/general.custom_export.asset_serial'),
+                    trans('admin/hardware/form.checkout_date'),
+                    'Assigned Qty', // todo: translate
+                ],
+                'values' => fn ($component, $i) => isset($component->assets[$i]) ? [
+                    $component->assets[$i]->name ?? '',
+                    $component->assets[$i]->asset_tag ?? '',
+                    $component->assets[$i]->company->name ?? '',
+                    $component->assets[$i]->serial,
+                    $component->assets[$i]->pivot->created_at ?? '',
+                    $component->assets[$i]->pivot->assigned_qty,
+                ] : array_fill(0, 6, ''),
+            ],
+            'purchase_date' => [
+                'headers' => [trans('general.purchase_date')],
+                'values' => fn ($component, $i) => [$component->purchase_date ? Carbon::make($component->purchase_date)->format('Y-m-d') : ''],
+            ],
+            'quantity' => [
+                'headers' => [trans('general.quantity')],
+                'values' => fn ($component, $i) => [$component->qty],
+            ],
+            'min_amount' => [
+                'headers' => [trans('general.min_amt')],
+                'values' => fn ($component, $i) => [$component->min_amt],
+            ],
+            'unit_cost' => [
+                'headers' => [trans('general.unit_cost')],
+                'values' => fn ($component, $i) => [$component->purchase_cost],
+            ],
+            'order' => [
+                'headers' => [trans('admin/hardware/form.order')],
+                'values' => fn ($component, $i) => [$component->order_number],
+            ],
+            'supplier' => [
+                'headers' => [trans('general.supplier')],
+                'values' => fn ($component, $i) => [$component->supplier?->name],
+            ],
+            'location' => [
+                'headers' => [trans('general.location')],
+                'values' => fn ($component, $i) => [$component->location->name ?? ''],
+            ],
+            'location_address' => [
+                'headers' => [
+                    trans('general.address'),
+                    trans('general.address'),
+                    trans('general.city'),
+                    trans('general.state'),
+                    trans('general.country'),
+                    trans('general.zip'),
+                ],
+                'values' => fn ($component, $i) => [
+                    $component->location->address ?? '',
+                    $component->location->address2 ?? '',
+                    $component->location->city ?? '',
+                    $component->location->state ?? '',
+                    $component->location->country ?? '',
+                    $component->location->zip ?? '',
+                ],
+            ],
+            'created_at' => [
+                'headers' => [trans('general.created_at')],
+                'values' => fn ($component, $i) => [$component->created_at],
+            ],
+            'updated_at' => [
+                'headers' => [trans('general.updated_at')],
+                'values' => fn ($component, $i) => [$component->updated_at],
+            ],
+            'deleted_at' => [
+                'headers' => [trans('general.deleted')],
+                'values' => fn ($component, $i) => [$component->deleted_at ?? ''],
+            ],
+            'notes' => [
+                'headers' => [trans('general.notes')],
+                'values' => fn ($component, $i) => [$component->notes],
+            ],
+        ];
+    }
 
-        if ($request->filled('id')) {
-            $header[] = trans('general.id');
+    private function generateHeaders(Request $request, array $mappings): array
+    {
+        $headers = [];
+
+        foreach ($mappings as $key => $mapping) {
+            if ($request->filled($key)) {
+                array_push($headers, ...$mapping['headers']);
+            }
         }
 
-        if ($request->filled('company')) {
-            $header[] = trans('general.company');
-        }
-
-        if ($request->filled('category')) {
-            $header[] = trans('general.category');
-        }
-
-        if ($request->filled('component_name')) {
-            $header[] = trans('admin/components/general.component_name');
-        }
-
-        if ($request->filled('manufacturer')) {
-            $header[] = trans('general.manufacturer');
-        }
-
-        if ($request->filled('model')) {
-            $header[] = trans('general.model_no');
-        }
-
-        if ($request->filled('serial')) {
-            $header[] = trans('general.serial_number');
-        }
-
-        if ($request->filled('include_assignments')) {
-            $header[] = trans('admin/hardware/form.name');
-            $header[] = trans('admin/hardware/form.tag');
-            $header[] = trans('admin/reports/general.custom_export.asset_company');
-            $header[] = trans('admin/reports/general.custom_export.asset_serial');
-            $header[] = trans('admin/hardware/form.checkout_date');
-            // todo: translate
-            $header[] = 'Assigned Qty';
-        }
-
-        if ($request->filled('purchase_date')) {
-            $header[] = trans('general.purchase_date');
-        }
-
-        if ($request->filled('quantity')) {
-            $header[] = trans('general.quantity');
-        }
-
-        if ($request->filled('min_amount')) {
-            $header[] = trans('general.min_amt');
-        }
-
-        if ($request->filled('unit_cost')) {
-            $header[] = trans('general.unit_cost');
-        }
-
-        if ($request->filled('order')) {
-            $header[] = trans('admin/hardware/form.order');
-        }
-
-        if ($request->filled('supplier')) {
-            $header[] = trans('general.supplier');
-        }
-
-        if ($request->filled('location')) {
-            $header[] = trans('general.location');
-        }
-
-        if ($request->filled('location_address')) {
-            $header[] = trans('general.address');
-            $header[] = trans('general.address');
-            $header[] = trans('general.city');
-            $header[] = trans('general.state');
-            $header[] = trans('general.country');
-            $header[] = trans('general.zip');
-        }
-
-        if ($request->filled('created_at')) {
-            $header[] = trans('general.created_at');
-        }
-
-        if ($request->filled('updated_at')) {
-            $header[] = trans('general.updated_at');
-        }
-
-        if ($request->filled('deleted_at')) {
-            $header[] = trans('general.deleted');
-        }
-
-        if ($request->filled('notes')) {
-            $header[] = trans('general.notes');
-        }
-
-        return $header;
+        return $headers;
     }
 
     private function buildQuery(Request $request): Builder
