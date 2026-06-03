@@ -100,26 +100,33 @@ class CustomComponentReportController extends Controller
                             $row[] = $component->model_number;
                         }
 
-                        if ($request->filled('include_assignments') && isset($component->assets[$i])) {
-                            if ($request->filled('asset_name')) {
-                                $row[] = $component->assets[$i]?->name;
-                            }
-
-                            if ($request->filled('asset_tag')) {
-                                $row[] = $component->assets[$i]?->asset_tag;
-                            }
-
-                            if ($request->filled('asset_company')) {
-                                $row[] = $component->assets[$i]->company->name ?? '';
-                            }
-
-                            if ($request->filled('asset_serial')) {
-                                $row[] = $component->assets[$i]?->serial;
-                            }
-                        }
-
                         if ($request->filled('serial')) {
                             $row[] = $component->serial;
+                        }
+
+                        if ($request->filled('include_assignments')) {
+                            if (isset($component->assets[$i])) {
+                                if ($request->filled('asset_name')) {
+                                    $row[] = $component->assets[$i]->name ?? '';
+                                }
+
+                                if ($request->filled('asset_tag')) {
+                                    $row[] = $component->assets[$i]->asset_tag ?? '';
+                                }
+
+                                if ($request->filled('asset_company')) {
+                                    $row[] = $component->assets[$i]->company->name ?? '';
+                                }
+
+                                if ($request->filled('asset_serial')) {
+                                    $row[] = $component->assets[$i]->serial;
+                                }
+                            } else {
+                                $row[] = '';
+                                $row[] = '';
+                                $row[] = '';
+                                $row[] = '';
+                            }
                         }
 
                         if ($request->filled('purchase_date')) {
@@ -238,9 +245,11 @@ class CustomComponentReportController extends Controller
             $header[] = trans('general.model_no');
         }
 
-        if ($request->filled('include_assignments')) {
-            $header[] = trans('general.asset');
+        if ($request->filled('serial')) {
+            $header[] = trans('general.serial_number');
+        }
 
+        if ($request->filled('include_assignments')) {
             if ($request->filled('asset_name')) {
                 $header[] = trans('admin/hardware/form.name');
             }
@@ -256,10 +265,6 @@ class CustomComponentReportController extends Controller
             if ($request->filled('asset_serial')) {
                 $header[] = trans('admin/reports/general.custom_export.asset_serial');
             }
-        }
-
-        if ($request->filled('serial')) {
-            $header[] = trans('general.serial_number');
         }
 
         if ($request->filled('purchase_date')) {
