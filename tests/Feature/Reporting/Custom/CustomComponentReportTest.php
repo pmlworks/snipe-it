@@ -605,11 +605,13 @@ class CustomComponentReportTest extends TestCase
             ->assertOk()
             ->assertCsvHeader()
             ->assertDontSeeTextInStreamedResponse([
-                trans('admin/hardware/table.checkout_date'),
                 trans('admin/hardware/form.name'),
                 trans('admin/hardware/form.tag'),
                 trans('admin/reports/general.custom_export.asset_company'),
                 trans('admin/reports/general.custom_export.asset_serial'),
+                trans('admin/hardware/table.checkout_date'),
+                // todo: translate
+                'Assigned Qty',
             ])
             ->assertSeeTextInStreamedResponse('Component A')
             ->assertSeeTextInStreamedResponse('Component B')
@@ -639,12 +641,13 @@ class CustomComponentReportTest extends TestCase
             ->assertOk()
             ->assertCsvHeader()
             ->assertSeeTextInStreamedResponse([
-                // todo:
-                // trans('admin/hardware/table.checkout_date'),
                 trans('admin/hardware/form.name'),
                 trans('admin/hardware/form.tag'),
                 trans('admin/reports/general.custom_export.asset_company'),
                 trans('admin/reports/general.custom_export.asset_serial'),
+                trans('admin/hardware/table.checkout_date'),
+                // todo: translate
+                'Assigned Qty',
             ])
             ->assertSeeTextInStreamedResponse([
                 'Component A',

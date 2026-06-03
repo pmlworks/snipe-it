@@ -110,7 +110,11 @@ class CustomComponentReportController extends Controller
                                 $row[] = $component->assets[$i]->asset_tag ?? '';
                                 $row[] = $component->assets[$i]->company->name ?? '';
                                 $row[] = $component->assets[$i]->serial;
+                                $row[] = $component->assets[$i]->pivot->created_at ?? '';
+                                $row[] = $component->assets[$i]->pivot->assigned_qty;
                             } else {
+                                $row[] = '';
+                                $row[] = '';
                                 $row[] = '';
                                 $row[] = '';
                                 $row[] = '';
@@ -154,11 +158,6 @@ class CustomComponentReportController extends Controller
                                 $row[] = $component->location->zip ?? '';
                             }
                         }
-
-                        // if ($request->filled('checkout_date')) {
-                        //     // todo: checkout date
-                        //     $row[] = '';
-                        // }
 
                         if ($request->filled('created_at')) {
                             $row[] = $component->created_at;
@@ -243,6 +242,9 @@ class CustomComponentReportController extends Controller
             $header[] = trans('admin/hardware/form.tag');
             $header[] = trans('admin/reports/general.custom_export.asset_company');
             $header[] = trans('admin/reports/general.custom_export.asset_serial');
+            $header[] = trans('admin/hardware/form.checkout_date');
+            // todo: translate
+            $header[] = 'Assigned Qty';
         }
 
         if ($request->filled('purchase_date')) {
@@ -281,11 +283,6 @@ class CustomComponentReportController extends Controller
             $header[] = trans('general.country');
             $header[] = trans('general.zip');
         }
-
-        // todo: has to have include_assignments enabled
-        // if ($request->filled('checkout_date')) {
-        //     $header[] = trans('admin/hardware/table.checkout_date');
-        // }
 
         if ($request->filled('created_at')) {
             $header[] = trans('general.created_at');
