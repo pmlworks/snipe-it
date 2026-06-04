@@ -113,6 +113,7 @@ return [
     'current_password' => 'Current Password',
     'customize_report' => 'Customize Report',
     'custom_report' => 'Custom Asset Report',
+    'custom_component_report' => 'Custom Component Report',
     'dashboard' => 'Dashboard',
     'data_source' => 'Data Source',
     'days' => 'days',

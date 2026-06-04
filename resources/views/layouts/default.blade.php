@@ -1871,7 +1871,7 @@
                                     </li>
                                     <li {{!! (request()->is('reports.custom.component') ? ' class="active"' : '') !!}}>
                                         <a href="{{ route('reports.custom.component') }}">
-                                            Custom Component Report
+                                            {{ trans('general.custom_component_report') }}
                                         </a>
                                     </li>
                                     <li {{!! (request()->is('reports/audit') ? ' class="active"' : '') !!}}>

@@ -537,7 +537,7 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
             ->name('reports.custom.component')
             ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
                 ->push(trans('general.reports'), route('reports.index'))
-                ->push('Custom Component Report', route('reports.custom.component')));
+                ->push(trans('general.custom_component_report'), route('reports.custom.component')));
 
         Route::post('component', [CustomComponentReportController::class, 'run'])
             ->name('reports.custom.component.run');

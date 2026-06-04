@@ -5,9 +5,9 @@
     @if (request()->routeIs('report-templates.edit'))
         {{ trans('general.update') }} {{ $template->name }}
     @elseif(request()->routeIs('report-templates.show'))
-        Custom Component Report: {{ $template->name }}
+        {{ trans('general.custom_component_report') }}: {{ $template->name }}
     @else
-        Custom Component Report
+        {{ trans('general.custom_component_report') }}
     @endif
     @parent
 @stop
