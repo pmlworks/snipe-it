@@ -627,10 +627,9 @@
             form.attr('action', '{{ route('report-templates.store') }}').submit();
         });
 
-        // $('#saved_report_select')
-        // .on('select2:select', function (event) {
-        //     window.location.href = event.params.data.element.dataset.route;
-        // });
+        $('#saved_report_select').on('select2:select', function (event) {
+            window.location.href = event.params.data.element.dataset.route;
+        });
 
     </script>
 @stop

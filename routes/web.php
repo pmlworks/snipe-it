@@ -552,15 +552,29 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
             // The breadcrumb on this is a little odd for now since we don't have a template index
             Route::get('/{reportTemplate}', [ReportTemplatesController::class, 'show'])
                 ->name('report-templates.show')
-                ->breadcrumbs(fn (Trail $trail, ReportTemplate $reportTemplate) => $trail->parent('reports/custom')
-                    ->push($reportTemplate->name, null)
-                    ->push(trans('general.customize_report'), ''));
+                ->breadcrumbs(function (Trail $trail, ReportTemplate $reportTemplate) {
+                    $parent = match ($reportTemplate->type) {
+                        'asset' => 'reports/custom',
+                        'component' => 'reports.custom.component',
+                    };
+
+                    return $trail->parent($parent)
+                        ->push($reportTemplate->name, null)
+                        ->push(trans('general.customize_report'), '');
+                });
 
             Route::get('/{reportTemplate}/edit', [ReportTemplatesController::class, 'edit'])
                 ->name('report-templates.edit')
-                ->breadcrumbs(fn (Trail $trail, ReportTemplate $reportTemplate) => $trail->parent('reports/custom')
-                    ->push($reportTemplate->name, route('report-templates.show', $reportTemplate))
-                    ->push(trans('general.customize_report'), ''));
+                ->breadcrumbs(function (Trail $trail, ReportTemplate $reportTemplate) {
+                    $parent = match ($reportTemplate->type) {
+                        'asset' => 'reports/custom',
+                        'component' => 'reports.custom.component',
+                    };
+
+                    return $trail->parent($parent)
+                        ->push($reportTemplate->name, route('report-templates.show', $reportTemplate))
+                        ->push(trans('general.customize_report'), '');
+                });
 
             Route::post('/{reportTemplate}', [ReportTemplatesController::class, 'update'])
                 ->name('report-templates.update');

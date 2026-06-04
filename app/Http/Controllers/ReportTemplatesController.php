@@ -7,6 +7,7 @@ use App\Models\ReportTemplate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use UnhandledMatchError;
 
 class ReportTemplatesController extends Controller
 {
@@ -36,7 +37,15 @@ class ReportTemplatesController extends Controller
         $customfields = CustomField::get();
         $report_templates = ReportTemplate::orderBy('name')->get();
 
-        return view('reports.custom.asset', [
+        try {
+            $view = $reportTemplate->getViewPath();
+        } catch (UnhandledMatchError $e) {
+            return redirect()
+                ->route('reports.index')
+                ->with('error', 'Saved template type is not valid.');
+        }
+
+        return view($view, [
             'customfields' => $customfields,
             'report_templates' => $report_templates,
             'template' => $reportTemplate,
@@ -53,7 +62,15 @@ class ReportTemplatesController extends Controller
                 ->withError(trans('general.report_not_editable'));
         }
 
-        return view('reports.custom.asset', [
+        try {
+            $view = $reportTemplate->getViewPath();
+        } catch (UnhandledMatchError $e) {
+            return redirect()
+                ->route('reports.index')
+                ->with('error', 'Saved template type is not valid.');
+        }
+
+        return view($view, [
             'customfields' => CustomField::get(),
             'template' => $reportTemplate,
         ]);
