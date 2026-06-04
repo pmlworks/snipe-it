@@ -131,13 +131,6 @@ class CustomComponentReportTest extends TestCase
             ]);
     }
 
-    public function test_custom_component_report_contents()
-    {
-        $this->markTestIncomplete();
-
-        // todo: ensure only the items checked are included in the output
-    }
-
     public function test_limiting_by_company()
     {
         [$companyA, $companyB] = Company::factory()
@@ -576,8 +569,7 @@ class CustomComponentReportTest extends TestCase
                 trans('admin/reports/general.custom_export.asset_company'),
                 trans('admin/reports/general.custom_export.asset_serial'),
                 trans('admin/hardware/table.checkout_date'),
-                // todo: translate
-                'Assigned Qty',
+                trans('general.assigned_quantity'),
             ])
             ->assertSeeTextInStreamedResponse('Component A')
             ->assertSeeTextInStreamedResponse('Component B')
@@ -613,8 +605,7 @@ class CustomComponentReportTest extends TestCase
                 trans('admin/reports/general.custom_export.asset_company'),
                 trans('admin/reports/general.custom_export.asset_serial'),
                 trans('admin/hardware/table.checkout_date'),
-                // todo: translate
-                'Assigned Qty',
+                trans('general.assigned_quantity'),
             ])
             ->assertSeeTextInStreamedResponse([
                 'Component A',

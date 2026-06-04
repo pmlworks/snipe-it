@@ -157,7 +157,7 @@ class CustomComponentReportController extends Controller
                     trans('admin/reports/general.custom_export.asset_company'),
                     trans('admin/reports/general.custom_export.asset_serial'),
                     trans('admin/hardware/form.checkout_date'),
-                    'Assigned Qty', // todo: translate
+                    trans('general.assigned_quantity'),
                 ],
                 'values' => fn ($component, $i) => isset($component->assets[$i]) ? [
                     $component->assets[$i]->name ?? '',

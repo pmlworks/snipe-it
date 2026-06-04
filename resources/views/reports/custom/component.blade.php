@@ -199,7 +199,7 @@
                             <h2>{{ trans('general.assigned') }}: </h2>
                             <label class="form-control">
                                 <input type="checkbox" name="include_assignments" value="1" @checked($template->checkmarkValue('include_assignments', '0')) />
-                                Include Assignments
+                                {{ trans('general.include_assignments') }}
                             </label>
 
                         </div> <!-- /.col-md-4-->
