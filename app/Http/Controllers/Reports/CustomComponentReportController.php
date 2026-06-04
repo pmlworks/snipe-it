@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CustomComponentReportRequest;
 use App\Models\Actionlog;
 use App\Models\Component;
 use App\Models\ReportTemplate;
@@ -37,7 +38,7 @@ class CustomComponentReportController extends Controller
         ]);
     }
 
-    public function run(Request $request)
+    public function run(CustomComponentReportRequest $request)
     {
         $this->authorize('reports.view');
 

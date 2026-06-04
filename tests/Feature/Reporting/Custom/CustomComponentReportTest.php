@@ -52,15 +52,59 @@ class CustomComponentReportTest extends TestCase
 
     public function test_custom_component_report_validation()
     {
-        $this->markTestIncomplete();
+        // Invalid date formats are rejected
+        $this->sendRequest([
+            'purchase_start' => 'not-a-date',
+            'purchase_end' => 'not-a-date',
+            'checkout_date_start' => 'not-a-date',
+            'checkout_date_end' => 'not-a-date',
+            'created_start' => 'not-a-date',
+            'created_end' => 'not-a-date',
+            'last_updated_start' => 'not-a-date',
+            'last_updated_end' => 'not-a-date',
+        ])->assertSessionHasErrors([
+            'purchase_start', 'purchase_end',
+            'checkout_date_start', 'checkout_date_end',
+            'created_start', 'created_end',
+            'last_updated_start', 'last_updated_end',
+        ]);
 
-        // todo: purchase_start and purchase_end
-        // todo: quantity
-        // todo: min quantity
-        // todo: unit cost
-        // todo: checkout
-        // todo: created_at
-        // todo: updated_at
+        // End date must be on or after start date
+        $this->sendRequest([
+            'purchase_start' => '2024-12-31',
+            'purchase_end' => '2024-01-01',
+            'checkout_date_start' => '2024-12-31',
+            'checkout_date_end' => '2024-01-01',
+            'created_start' => '2024-12-31',
+            'created_end' => '2024-01-01',
+            'last_updated_start' => '2024-12-31',
+            'last_updated_end' => '2024-01-01',
+        ])->assertSessionHasErrors([
+            'purchase_end', 'checkout_date_end', 'created_end', 'last_updated_end',
+        ]);
+
+        // Non-numeric values are rejected, and last_updated_before must be an integer
+        $this->sendRequest([
+            'quantity_start' => 'abc',
+            'quantity_end' => 'abc',
+            'min_quantity_start' => 'abc',
+            'min_quantity_end' => 'abc',
+            'unit_cost_start' => 'abc',
+            'unit_cost_end' => 'abc',
+            'last_updated_before' => 'not-an-integer',
+        ])->assertSessionHasErrors([
+            'quantity_start', 'quantity_end',
+            'min_quantity_start', 'min_quantity_end',
+            'unit_cost_start', 'unit_cost_end',
+            'last_updated_before',
+        ]);
+
+        // End must be >= start for numeric ranges
+        $this->sendRequest([
+            'quantity_start' => 10, 'quantity_end' => 1,
+            'min_quantity_start' => 10, 'min_quantity_end' => 1,
+            'unit_cost_start' => 100, 'unit_cost_end' => 1,
+        ])->assertSessionHasErrors(['quantity_end', 'min_quantity_end', 'unit_cost_end']);
     }
 
     public function test_custom_component_report_headers()
