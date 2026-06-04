@@ -430,8 +430,7 @@
                                         value="exclude_deleted"
                                         @checked($template->radioValue('deleted_components', 'exclude_deleted', true))
                                         aria-label="deleted_components"
-                                    >
-                                    Exclude Deleted Components
+                                    >{{ trans('admin/components/general.exclude_deleted') }}
                                 </label>
                                 <label class="form-control">
                                     <input
@@ -441,8 +440,7 @@
                                         value="include_deleted"
                                         @checked($template->radioValue('deleted_components', 'include_deleted'))
                                         aria-label="deleted_components"
-                                    >
-                                    Include Deleted Components
+                                    >{{ trans('admin/components/general.include_deleted') }}
                                 </label>
                                 <label class="form-control">
                                     <input
@@ -452,8 +450,7 @@
                                         value="only_deleted"
                                         @checked($template->radioValue('deleted_components', 'only_deleted'))
                                         aria-label="deleted_components"
-                                    >
-                                    Only Deleted Components
+                                    >{{ trans('admin/components/general.only_deleted') }}
                                 </label>
                             </div>
                         </div>
