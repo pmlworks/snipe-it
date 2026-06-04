@@ -1017,7 +1017,7 @@
     @endcan
 
     @can('create', \App\Models\Component::class)
-    // Compoment table buttons
+    // Component table buttons
     window.componentButtons = () => ({
         btnAdd: {
             text: '{{ trans('general.create') }}',
@@ -1031,6 +1031,16 @@
                 @if ($snipeSettings->shortcuts_enabled == 1)
                 accesskey: 'n'
                 @endif
+            }
+        },
+        btnExport: {
+            text: '{{ trans('general.custom_component_report') }}',
+            icon: 'fa-solid fa-file-csv',
+            event () {
+                window.location.href = '{{ route('reports.custom.component') }}';
+            },
+            attributes: {
+                title: '{{ trans('general.custom_component_report') }}',
             }
         },
     });
