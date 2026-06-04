@@ -44,29 +44,6 @@ class CustomAssetReportTest extends TestCase
             ]);
     }
 
-    public function test_saved_templates_on_page_are_scoped_to_the_user_and_type()
-    {
-        // Given there are saved templates for one user
-        ReportTemplate::factory()->create(['type' => 'asset', 'name' => 'Another User: Asset']);
-        ReportTemplate::factory()->create(['type' => 'component', 'name' => 'Another User: Component']);
-
-        // When loading reports/custom while acting as another user that also has saved templates
-        $user = User::factory()->canViewReports()
-            ->has(ReportTemplate::factory(['type' => 'asset', 'name' => 'User: Asset']))
-            ->has(ReportTemplate::factory(['type' => 'component', 'name' => 'User: Component']))
-            ->create();
-
-        $response = $this->actingAs($user)->get(route('reports/custom'));
-
-        $viewTemplateNames = $response->viewData('report_templates')->pluck('name');
-
-        // The user should only see their asset template
-        $this->assertTrue($viewTemplateNames->contains('User: Asset'));
-        $this->assertTrue($viewTemplateNames->doesntContain('User: Component'));
-        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Asset'));
-        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Component'));
-    }
-
     public function test_custom_asset_report()
     {
         Asset::factory()->create(['name' => 'Asset A']);

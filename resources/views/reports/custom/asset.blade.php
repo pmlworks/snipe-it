@@ -723,26 +723,7 @@
     <!-- Saved Reports right column -->
     <div class="col-md-3">
         @if (! request()->routeIs('report-templates.edit'))
-            <div class="form-group">
-                <label for="saved_report_select">{{ trans('admin/reports/general.open_saved_template') }}</label>
-                <select
-                    id="saved_report_select"
-                    class="form-control select2"
-                    data-placeholder="{{ trans('admin/reports/general.select_a_template') }}"
-                >
-                    <option></option>
-                    @foreach($report_templates as $savedTemplate)
-                        <option
-                            value="{{ $savedTemplate->id }}"
-                            data-route="{{ route('report-templates.show', $savedTemplate->id) }}"
-                            @selected($savedTemplate->is(request()->route()->parameter('reportTemplate')))
-                        >
-                            {{ $savedTemplate->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
+            <livewire:report-template-select type="asset" />
             <div class="row">
                 <div class="col-md-12">
 

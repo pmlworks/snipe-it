@@ -35,7 +35,6 @@ class ReportTemplatesController extends Controller
         $this->authorize('reports.view');
 
         $customfields = CustomField::get();
-        $report_templates = ReportTemplate::orderBy('name')->get();
 
         try {
             $view = $reportTemplate->getViewPath();
@@ -47,7 +46,6 @@ class ReportTemplatesController extends Controller
 
         return view($view, [
             'customfields' => $customfields,
-            'report_templates' => $report_templates,
             'template' => $reportTemplate,
         ]);
     }

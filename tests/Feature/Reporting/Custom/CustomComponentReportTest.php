@@ -9,7 +9,6 @@ use App\Models\Company;
 use App\Models\Component;
 use App\Models\Location;
 use App\Models\Manufacturer;
-use App\Models\ReportTemplate;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -53,33 +52,6 @@ class CustomComponentReportTest extends TestCase
         $this->actingAs(User::factory()->canViewReports()->create())
             ->get(route('reports.custom.component'))
             ->assertOk();
-    }
-
-    public function test_saved_templates_on_page_are_scoped_to_the_user_and_type()
-    {
-        // Given there are saved templates for one user
-        ReportTemplate::factory()->create(['type' => 'asset', 'name' => 'Another User: Asset']);
-        ReportTemplate::factory()->create(['type' => 'accessory', 'name' => 'Another User: Accessory']);
-        ReportTemplate::factory()->create(['type' => 'component', 'name' => 'Another User: Component']);
-
-        // When loading reports.custom.component while acting as another user that also has saved templates
-        $user = User::factory()->canViewReports()
-            ->has(ReportTemplate::factory(['type' => 'asset', 'name' => 'User: Asset']))
-            ->has(ReportTemplate::factory(['type' => 'accessory', 'name' => 'User: Accessory']))
-            ->has(ReportTemplate::factory(['type' => 'component', 'name' => 'User: Component']))
-            ->create();
-
-        $response = $this->actingAs($user)->get(route('reports.custom.component'));
-
-        $viewTemplateNames = $response->viewData('report_templates')->pluck('name');
-
-        // The user should only see their component template
-        $this->assertTrue($viewTemplateNames->contains('User: Component'));
-        $this->assertTrue($viewTemplateNames->doesntContain('User: Accessory'));
-        $this->assertTrue($viewTemplateNames->doesntContain('User: Asset'));
-        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Asset'));
-        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Accessory'));
-        $this->assertTrue($viewTemplateNames->doesntContain('Another User: Component'));
     }
 
     public function test_custom_component_report_validation()
