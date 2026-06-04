@@ -11,7 +11,6 @@ use App\Models\Location;
 use App\Models\Manufacturer;
 use App\Models\Supplier;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\TestResponse;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\TestCase;
@@ -26,9 +25,6 @@ class CustomComponentReportTest extends TestCase
         parent::setUp();
 
         $this->actor = User::factory()->canViewReports()->create();
-
-        // todo: remove
-        Model::preventLazyLoading();
     }
 
     public function test_requires_permission_to_view_page()
