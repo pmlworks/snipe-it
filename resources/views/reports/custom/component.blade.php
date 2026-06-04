@@ -608,18 +608,24 @@
             keepEmptyValues: true,
         });
 
-        {{--$("#savetemplateform").submit(function(e) {--}}
-        {{--    e.preventDefault(e);--}}
+        $("#savetemplateform").submit(function(e) {
+            e.preventDefault(e);
 
-        {{--    let form = $('#custom-report-form');--}}
-        {{--    $('<input>').attr({--}}
-        {{--        type: 'hidden',--}}
-        {{--        name: 'name',--}}
-        {{--        value: $('#name').val(),--}}
-        {{--    }).appendTo(form);--}}
+            let form = $('#custom-report-form');
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'name',
+                value: $('#name').val(),
+            }).appendTo(form);
 
-        {{--    form.attr('action', '{{ route('report-templates.store') }}').submit();--}}
-        {{--});--}}
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'type',
+                value: 'component',
+            }).appendTo(form);
+
+            form.attr('action', '{{ route('report-templates.store') }}').submit();
+        });
 
         // $('#saved_report_select')
         // .on('select2:select', function (event) {

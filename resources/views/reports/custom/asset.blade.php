@@ -912,6 +912,12 @@
               value: $('#name').val(),
           }).appendTo(form);
 
+          $('<input>').attr({
+              type: 'hidden',
+              name: 'type',
+              value: 'asset',
+          }).appendTo(form);
+
           form.attr('action', '{{ route('report-templates.store') }}').submit();
       });
 

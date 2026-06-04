@@ -18,6 +18,7 @@ class ReportTemplatesController extends Controller
         $validated = $request->validate(Arr::except((new ReportTemplate)->getRules(), 'options'));
 
         $report = $request->user()->reportTemplates()->create([
+            'type' => $validated['type'],
             'name' => $validated['name'],
             'options' => $request->except(['_token', 'name', 'is_shared']),
             'is_shared' => $request->has('is_shared'),

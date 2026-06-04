@@ -26,12 +26,17 @@ class ReportTemplate extends Model
 
     protected $fillable = [
         'created_by',
+        'type',
         'name',
         'options',
         'is_shared',
     ];
 
     protected $rules = [
+        'type' => [
+            'required',
+            'in:asset,component',
+        ],
         'name' => [
             'required',
             'string',
