@@ -574,6 +574,14 @@
             keepEmptyValues: true,
         });
 
+        $('.checkout-range .input-daterange').datepicker({
+            clearBtn: true,
+            todayHighlight: true,
+            endDate: '0d',
+            format: 'yyyy-mm-dd',
+            keepEmptyValues: true,
+        });
+
         $('.created-range .input-daterange').datepicker({
             clearBtn: true,
             todayHighlight: true,
