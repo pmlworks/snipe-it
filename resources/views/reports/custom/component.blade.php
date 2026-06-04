@@ -201,7 +201,6 @@
                                 <input type="checkbox" name="include_assignments" value="1" @checked($template->checkmarkValue('include_assignments', '0')) />
                                 Include Assignments
                             </label>
-                            <p class="help-block">todo: details</p>
 
                         </div> <!-- /.col-md-4-->
 
