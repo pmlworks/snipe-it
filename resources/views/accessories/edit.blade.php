@@ -100,6 +100,8 @@
 
             @include ('partials.forms.edit.image-upload', ['image_path' => app('accessories_upload_path')])
 
+            @include ('partials.forms.edit.requestable', ['requestable_text' => trans('admin/accessories/general.requestable')])
+
             <x-slot:customfooter>
                 <x-redirect_submit_options
                     index_route="accessories.index"
