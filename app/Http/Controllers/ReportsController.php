@@ -799,11 +799,11 @@ class ReportsController extends Controller
                 $checkout_start = Carbon::parse($request->input('checkout_date_start'))->startOfDay();
                 $checkout_end = Carbon::parse($request->input('checkout_date_end', now()))->endOfDay();
 
-                $actionlogassets = Actionlog::select('id')->where('action_type', '=', 'checkout')
+                $actionlogassets = Actionlog::select('item_id')->where('action_type', '=', 'checkout')
                     ->where('item_type', '=', Asset::class)
                     ->whereBetween('action_date', [$checkout_start, $checkout_end]); // we are *not* doing ->get()...
 
-                $assets->whereIn('id', $actionlogassets); // ...because this _should_ act as a 'subquery'
+                $assets->whereIn('assets.id', $actionlogassets); // ...because this _should_ act as a 'subquery'
             }
 
             if (($request->filled('checkin_date_start'))) {
