@@ -136,6 +136,9 @@ class AccessoriesController extends Controller
             case 'created_by':
                 $accessories = $accessories->OrderByCreatedByName($order);
                 break;
+            case 'total_cost':
+                $accessories = $accessories->orderByRaw('COALESCE(purchase_cost, 0) * qty '.$order);
+                break;
             default:
                 $accessories = $accessories->orderBy($column_sort, $order);
                 break;
