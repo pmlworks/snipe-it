@@ -424,6 +424,9 @@ class AssetsController extends Controller
             case 'created_by':
                 $assets->OrderByCreatedByName($order);
                 break;
+            case 'eol':
+                $assets->orderBy('assets.asset_eol_date', $order);
+                break;
             default:
                 $numeric_sort = false;
 

@@ -59,6 +59,7 @@ class AccessoriesController extends Controller
                 'company_id',
                 'notes',
                 'checkouts_count',
+                'image',
                 'order_number',
                 'qty',
                 // These are *relationships* so we wouldn't normally include them in this array,
