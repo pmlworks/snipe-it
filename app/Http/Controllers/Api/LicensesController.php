@@ -145,17 +145,22 @@ class LicensesController extends Controller
             case 'created_by':
                 $licenses = $licenses->OrderByCreatedBy($order);
                 break;
+            case 'product_key':
+                $licenses = $licenses->orderBy('licenses.serial', $order);
+                break;
             default:
                 $allowed_columns =
                     [
                         'category',
                         'company',
+                        'created_at',
                         'depreciation_id',
                         'expiration_date',
                         'free_seats_count',
                         'id',
                         'license_email',
                         'license_name',
+                        'maintained',
                         'min_amt',
                         'name',
                         'notes',
@@ -163,9 +168,11 @@ class LicensesController extends Controller
                         'purchase_cost',
                         'purchase_date',
                         'purchase_order',
+                        'reassignable',
                         'seats',
                         'serial',
                         'termination_date',
+                        'updated_at',
                     ];
                 $sort = in_array($request->input('sort'), $allowed_columns) ? e($request->input('sort')) : 'created_at';
                 $licenses = $licenses->orderBy($sort, $order);
