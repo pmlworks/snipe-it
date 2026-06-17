@@ -34,7 +34,11 @@ class LicensesController extends Controller
     {
         $this->authorize('view', License::class);
 
-        $licenses = License::with('company', 'manufacturer', 'supplier', 'category', 'adminuser', 'licenseSeatsRelation', 'assignedCount')->withCount('freeSeats as free_seats_count');
+        $licenses = License::with('company', 'manufacturer', 'supplier', 'category', 'adminuser', 'licenseSeatsRelation', 'assignedCount')
+            ->withCount([
+                'freeSeats as free_seats_count',
+                'licenseseats as unreassignable_seats_count' => fn ($q) => $q->where('unreassignable_seat', true),
+            ]);
         $settings = Setting::getSettings();
 
         if ($request->input('status') == 'inactive') {
@@ -114,8 +118,10 @@ class LicensesController extends Controller
             $licenses->onlyTrashed();
         }
 
+        $total = $licenses->count();
+
         // Make sure the offset and limit are actually integers and do not exceed system limits
-        $offset = ($request->input('offset') > $licenses->count()) ? $licenses->count() : app('api_offset_value');
+        $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
 
         $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
@@ -142,31 +148,29 @@ class LicensesController extends Controller
             default:
                 $allowed_columns =
                     [
-                        'id',
-                        'name',
-                        'purchase_cost',
-                        'expiration_date',
-                        'purchase_order',
-                        'order_number',
-                        'notes',
-                        'purchase_date',
-                        'serial',
-                        'company',
                         'category',
-                        'license_name',
-                        'license_email',
-                        'free_seats_count',
-                        'seats',
-                        'termination_date',
+                        'company',
                         'depreciation_id',
+                        'expiration_date',
+                        'free_seats_count',
+                        'id',
+                        'license_email',
+                        'license_name',
                         'min_amt',
+                        'name',
+                        'notes',
+                        'order_number',
+                        'purchase_cost',
+                        'purchase_date',
+                        'purchase_order',
+                        'seats',
+                        'serial',
+                        'termination_date',
                     ];
                 $sort = in_array($request->input('sort'), $allowed_columns) ? e($request->input('sort')) : 'created_at';
                 $licenses = $licenses->orderBy($sort, $order);
                 break;
         }
-
-        $total = $licenses->count();
 
         $licenses = $licenses->skip($offset)->take($limit)->get();
 
@@ -206,7 +210,10 @@ class LicensesController extends Controller
     public function show($id): JsonResponse|array
     {
         $this->authorize('view', License::class);
-        $license = License::withCount('freeSeats as free_seats_count')->findOrFail($id);
+        $license = License::withCount([
+            'freeSeats as free_seats_count',
+            'licenseseats as unreassignable_seats_count' => fn ($q) => $q->where('unreassignable_seat', true),
+        ])->findOrFail($id);
         $license = $license->load('assignedusers', 'licenseSeats.user', 'licenseSeats.asset');
 
         return (new LicensesTransformer)->transformLicense($license);
