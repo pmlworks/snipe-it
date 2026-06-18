@@ -372,7 +372,7 @@ class AssetsController extends Controller
         }
 
         foreach ($all_custom_fields as $field) {
-            if ($request->filled($field->db_column_name())) {
+            if ($field->db_column_name() && $request->filled($field->db_column_name())) {
                 $assets->where($field->db_column_name(), '=', $request->input($field->db_column_name()));
             }
         }
