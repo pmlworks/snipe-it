@@ -3,6 +3,7 @@
 namespace App\Models\Traits;
 
 use App\Models\CompanyableScope;
+use App\Models\Location;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,7 @@ trait CompanyableTrait
      *  - FMCS is disabled, OR
      *  - this item has no company (uncompanied items are unrestricted), OR
      *  - target is a User whose company pivot includes this item's company, OR
+     *  - target is a Location and scope_locations_fmcs is disabled, OR
      *  - target has no effective company and null_company_is_floater is enabled, OR
      *  - target's effective company_id exactly matches this item's company_id.
      */
@@ -59,6 +61,10 @@ trait CompanyableTrait
 
         if ($target instanceof User) {
             return $target->canReceiveFromCompany((int) $this->company_id);
+        }
+
+        if ($target instanceof Location && ! $settings->scope_locations_fmcs) {
+            return true;
         }
 
         $targetCompanyId = method_exists($target, 'effectiveFmcsCompanyId')
