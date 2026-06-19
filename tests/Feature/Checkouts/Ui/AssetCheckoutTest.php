@@ -143,6 +143,47 @@ class AssetCheckoutTest extends TestCase
         Event::assertDispatched(CheckoutableCheckedOut::class);
     }
 
+    public function test_can_checkout_to_child_location_whose_parent_has_matching_company_when_fmcs_enabled()
+    {
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $company = Company::factory()->create();
+        $parentLocation = Location::factory()->for($company)->create();
+        $childLocation = Location::factory()->create(['parent_id' => $parentLocation->id, 'company_id' => null]);
+        $asset = Asset::factory()->for($company)->create();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('hardware.checkout.store', $asset), [
+                'checkout_to_type' => 'location',
+                'assigned_location' => $childLocation->id,
+                'redirect_option' => 'index',
+            ])
+            ->assertSessionMissing('error')
+            ->assertRedirect();
+
+        Event::assertDispatched(CheckoutableCheckedOut::class);
+    }
+
+    public function test_cannot_checkout_to_child_location_whose_parent_has_different_company_when_fmcs_enabled()
+    {
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $assetCompany = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $parentLocation = Location::factory()->for($otherCompany)->create();
+        $childLocation = Location::factory()->create(['parent_id' => $parentLocation->id, 'company_id' => null]);
+        $asset = Asset::factory()->for($assetCompany)->create();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('hardware.checkout.store', $asset), [
+                'checkout_to_type' => 'location',
+                'assigned_location' => $childLocation->id,
+            ])
+            ->assertSessionHas('error');
+
+        Event::assertNotDispatched(CheckoutableCheckedOut::class);
+    }
+
     public function test_page_renders()
     {
         $this->actingAs(User::factory()->superuser()->create())
