@@ -30,6 +30,7 @@ class CompaniesController extends Controller
         $allowed_columns = [
             'id',
             'name',
+            'parent_id',
             'phone',
             'fax',
             'email',
@@ -41,6 +42,7 @@ class CompaniesController extends Controller
             'accessories_count',
             'consumables_count',
             'components_count',
+            'children_count',
             'tag_color',
             'notes',
         ];
@@ -48,8 +50,8 @@ class CompaniesController extends Controller
         $companies = Company::withCount(['assets as assets_count' => function ($query) {
             $query->AssetsForShow();
         }])
-            ->with('adminuser')
-            ->withCount('licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count');
+            ->with('adminuser', 'parent')
+            ->withCount('licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count', 'children as children_count');
 
         // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
         if ($request->filled('filter') || $request->filled('search')) {
@@ -70,6 +72,16 @@ class CompaniesController extends Controller
 
         if ($request->filled('tag_color')) {
             $companies->where('tag_color', '=', $request->input('tag_color'));
+        }
+
+        if ($request->filled('parent_id')) {
+            // Allow filtering for top-level companies by passing parent_id=0 or "null".
+            $parentId = $request->input('parent_id');
+            if ($parentId === '0' || strtolower((string) $parentId) === 'null') {
+                $companies->whereNull('parent_id');
+            } else {
+                $companies->where('parent_id', '=', (int) $parentId);
+            }
         }
 
         // Make sure the offset and limit are actually integers and do not exceed system limits

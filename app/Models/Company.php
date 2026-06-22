@@ -39,6 +39,11 @@ final class Company extends SnipeModel
         'fax' => 'min:7|max:35|nullable',
         'phone' => 'min:7|max:35|nullable',
         'email' => 'email|max:150|nullable',
+        'parent_id' => 'nullable|integer|exists:companies,id|one_level_deep:companies,id',
+    ];
+
+    protected $casts = [
+        'parent_id' => 'integer',
     ];
 
     protected $presenter = CompanyPresenter::class;
@@ -88,6 +93,7 @@ final class Company extends SnipeModel
      */
     protected $fillable = [
         'name',
+        'parent_id',
         'phone',
         'fax',
         'email',
@@ -101,6 +107,11 @@ final class Company extends SnipeModel
      * We deliberately bypass the Eloquent companies() relationship here because
      * loading that relationship triggers CompanyableScope on the Company model,
      * which calls this method again — infinite recursion.
+     *
+     * If a user is a member of a parent company, they implicitly have access to
+     * all of that company's children too. We expand the direct pivot set by
+     * pulling in children of any directly-assigned company. The one-level-deep
+     * constraint enforced by validation means a single child lookup is sufficient.
      */
     private static function getCurrentUserCompanyIds(): array
     {
@@ -108,10 +119,21 @@ final class Company extends SnipeModel
             return [];
         }
 
-        return DB::table('company_user')
+        $directIds = DB::table('company_user')
             ->where('user_id', auth()->id())
             ->pluck('company_id')
             ->toArray();
+
+        if (empty($directIds)) {
+            return [];
+        }
+
+        $childIds = DB::table('companies')
+            ->whereIn('parent_id', $directIds)
+            ->pluck('id')
+            ->toArray();
+
+        return array_values(array_unique(array_merge($directIds, $childIds)));
     }
 
     public static function isFullMultipleCompanySupportEnabled()
@@ -312,7 +334,8 @@ final class Company extends SnipeModel
             && (($this->components_count ?? $this->components()->count()) === 0)
             && (($this->consumables_count ?? $this->consumables()->count()) === 0)
             && (($this->accessories_count ?? $this->accessories()->count()) === 0)
-            && (($this->users_count ?? $this->users()->count()) === 0);
+            && (($this->users_count ?? $this->users()->count()) === 0)
+            && (($this->children_count ?? $this->children()->count()) === 0);
     }
 
     /**
@@ -330,6 +353,23 @@ final class Company extends SnipeModel
     public function users()
     {
         return $this->belongsToMany(User::class, 'company_user');
+    }
+
+    /**
+     * Parent company (one level only — children cannot themselves have children).
+     */
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * Child companies. The one-level-deep validator on parent_id guarantees
+     * children of a child cannot be created, so this is the full descendant set.
+     */
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function assets()

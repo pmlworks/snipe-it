@@ -61,6 +61,7 @@ final class CompaniesController extends Controller
 
         $company = new Company;
         $company->name = $request->input('name');
+        $company->parent_id = $request->input('parent_id') ?: null;
         $company->phone = $request->input('phone');
         $company->fax = $request->input('fax');
         $company->email = $request->input('email');
@@ -108,6 +109,7 @@ final class CompaniesController extends Controller
 
         $this->authorize('update', $company);
         $company->name = $request->input('name');
+        $company->parent_id = $request->input('parent_id') ?: null;
         $company->phone = $request->input('phone');
         $company->fax = $request->input('fax');
         $company->email = $request->input('email');

@@ -160,6 +160,7 @@ return [
     'two_column_unique_undeleted' => 'The :attribute must be unique across :table1 and :table2. ',
     'unique_undeleted' => 'The :attribute must be unique.',
     'non_circular' => 'The :attribute must not create a circular reference.',
+    'one_level_deep' => 'The :attribute must be a top-level item, and this item must not already have children. Only one level of nesting is allowed.',
     'not_array' => ':attribute cannot be an array.',
     'disallow_same_pwd_as_user_fields' => 'Password cannot be the same as the username.',
     'letters' => 'Password must contain at least one letter.',

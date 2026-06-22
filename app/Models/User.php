@@ -649,17 +649,34 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
             return (bool) Setting::getSettings()->null_company_is_floater;
         }
 
-        return $userCompanyIds->contains($companyId);
+        if ($userCompanyIds->contains($companyId)) {
+            return true;
+        }
+
+        // Membership in a parent company implies access to its children — accept
+        // an item from a child company when the user belongs to its parent.
+        return DB::table('companies')
+            ->where('id', $companyId)
+            ->whereIn('parent_id', $userCompanyIds)
+            ->exists();
     }
 
     /**
-     * Returns all companies this user belongs to — union of the primary company_id
-     * column and the many-to-many pivot — as a deduplicated Collection.
+     * Returns all companies this user has access to — the pivot memberships plus
+     * any child companies of those memberships (one-level-deep hierarchy).
      * Used to scope FMCS dropdowns to companies the user is allowed to work with.
      */
     public function allCompanies(): Collection
     {
-        return $this->companies->unique('id')->values();
+        $direct = $this->companies->unique('id');
+
+        if ($direct->isEmpty()) {
+            return $direct->values();
+        }
+
+        $children = Company::whereIn('parent_id', $direct->pluck('id'))->get();
+
+        return $direct->concat($children)->unique('id')->values();
     }
 
     /**

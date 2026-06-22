@@ -25,6 +25,11 @@
                 name="name"
             />
 
+            @include('partials.forms.edit.company-select', [
+                'translated_name' => trans('admin/companies/table.parent'),
+                'fieldname' => 'parent_id',
+            ])
+
             <x-form.row
                 :label="trans('admin/suppliers/table.phone')"
                 :$item

@@ -181,6 +181,57 @@ class ValidationServiceProvider extends ServiceProvider
             return true;
         });
 
+        // Enforce a one-level-deep self-referential hierarchy.
+        //
+        // Used on parent_id columns where we explicitly do NOT want grandparents:
+        // a row may be a top-level (parent_id null) or a child of a top-level,
+        // but a child cannot itself become a parent, and a row that already has
+        // children cannot be assigned a parent.
+        //
+        // Example usage on Company (parent_id self-references the same table):
+        //   'parent_id' => 'one_level_deep:companies,id'
+        //
+        // Fails when:
+        //   - the chosen parent is the row itself (self-parent)
+        //   - the chosen parent itself has a parent (would create depth > 1)
+        //   - the row being saved already has children (would create depth > 1)
+        Validator::extend('one_level_deep', function ($attribute, $value, $parameters, $validator) {
+            if (is_null($value) || $value === '') {
+                return true;
+            }
+
+            if (count($parameters) < 2) {
+                throw new \Exception('Required validator parameters: <table>,<primary key>');
+            }
+
+            $table = $parameters[0];
+            $pk = $parameters[1];
+
+            $data = $validator->getData();
+            $modelId = $data[$pk] ?? null;
+
+            // Self-parent is never allowed.
+            if ($modelId && (int) $modelId === (int) $value) {
+                return false;
+            }
+
+            // The chosen parent must itself be a top-level (parent_id IS NULL).
+            $chosenParentParentId = DB::table($table)->where($pk, $value)->value('parent_id');
+            if (! is_null($chosenParentParentId)) {
+                return false;
+            }
+
+            // If this row already has children, it cannot be moved under another parent.
+            if ($modelId) {
+                $hasChildren = DB::table($table)->where('parent_id', $modelId)->exists();
+                if ($hasChildren) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
         // Yo dawg. I heard you like validators.
         // This validates the custom validator regex in custom fields.
         // We're just checking that the regex won't throw an exception, not
