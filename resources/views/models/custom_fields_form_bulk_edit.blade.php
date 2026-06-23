@@ -44,7 +44,8 @@
                   <x-input.select
                       :name="$field->db_column_name()"
                       :options="$field->formatFieldValuesAsArray()"
-                      :selected="old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : ''))"
+                      :selected="old($field->db_column_name(), (isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : ''))"
+                      :include-empty="true"
                       class="format form-control"
                   />
 
@@ -53,6 +54,7 @@
                     <input type="text" class="form-control" disabled value="{{ trans('/admin/hardware/form.bulk_update_custom_field_unique') }}">
                 @endif
                 @if(!$field->is_unique)
+                    <textarea class="col-md-6 form-control" id="{{ $field->db_column_name() }}" name="{{ $field->db_column_name() }}">{{ old($field->db_column_name(), (isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}</textarea>
                         <textarea class="col-md-6 form-control" id="{{ $field->db_column_name() }}"
                                   name="{{ $field->db_column_name() }}">{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}</textarea>
                 @endif
@@ -107,7 +109,8 @@
             <div class="input-group col-md-5" style="padding-left: 0px;">
                 <div class="input-group date" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-autoclose="true" data-date-clear-btn="true">
                     <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}"
-                           name="{{ $field->db_column_name() }}" id="{{ $field->db_column_name() }}" readonly
+                           name="{{ $field->db_column_name() }}"
+                           id="{{ $field->db_column_name() }}" readonly
                            value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}"
                            style="background-color:inherit">
                     <span class="input-group-addon"><x-icon type="calendar" /></span>
@@ -124,7 +127,8 @@
                             @if(!$field->is_unique)
                                 <input type="text"
                                        value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}"
-                                       id="{{ $field->db_column_name() }}" class="form-control"
+                                       id="{{ $field->db_column_name() }}"
+                                       class="form-control"
                                        name="{{ $field->db_column_name() }}"
                                        placeholder="Enter {{ strtolower($field->format) }} text">
                         @endif 
