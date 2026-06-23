@@ -55,15 +55,17 @@
                 @endif
                 @if(!$field->is_unique)
                     <textarea class="col-md-6 form-control" id="{{ $field->db_column_name() }}" name="{{ $field->db_column_name() }}">{{ old($field->db_column_name(), (isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}</textarea>
+                        <textarea class="col-md-6 form-control" id="{{ $field->db_column_name() }}"
+                                  name="{{ $field->db_column_name() }}">{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}</textarea>
                 @endif
               @elseif ($field->element=='checkbox')
                     <!-- Checkboxes -->
               @php
                   $fieldName = $field->db_column_name();
                   $oldValues = old($fieldName);
-                  $currentValues = isset($item) ? array_map('trim', explode(',', $item->{$fieldName})) : [];
+                  $currentValues = isset($item) ? array_map('trim', explode(',', $item->{$fieldName})) : '';
 
-                  $selectedValues = is_array($oldValues) ? $oldValues : $currentValues;
+                  $selectedValues = is_array($oldValues) ? $oldValues : [];
               @endphp
 
               @foreach ($field->formatFieldValuesAsArray() as $key => $value)
@@ -106,7 +108,11 @@
 
             <div class="input-group col-md-5" style="padding-left: 0px;">
                 <div class="input-group date" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-autoclose="true" data-date-clear-btn="true">
-                    <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="{{ $field->db_column_name() }}" id="{{ $field->db_column_name() }}" readonly value="{{ old($field->db_column_name(), (isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}"  style="background-color:inherit">
+                    <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}"
+                           name="{{ $field->db_column_name() }}"
+                           id="{{ $field->db_column_name() }}" readonly
+                           value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}"
+                           style="background-color:inherit">
                     <span class="input-group-addon"><x-icon type="calendar" /></span>
                 </div>
             </div>
@@ -117,9 +123,14 @@
                     @if (($field->field_encrypted=='0') || (Gate::allows('admin')))
                         @if ($field->is_unique) 
                                 <input type="text" class="form-control" disabled value="{{trans('/admin/hardware/form.bulk_update_custom_field_unique')}}">
-                            @endif  
-                        @if(!$field->is_unique) 
-                                <input type="text" value="{{ old($field->db_column_name(), (isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}" id="{{ $field->db_column_name() }}" class="form-control" name="{{ $field->db_column_name() }}" placeholder="Enter {{ strtolower($field->format) }} text">
+                            @endif
+                            @if(!$field->is_unique)
+                                <input type="text"
+                                       value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')) }}"
+                                       id="{{ $field->db_column_name() }}"
+                                       class="form-control"
+                                       name="{{ $field->db_column_name() }}"
+                                       placeholder="Enter {{ strtolower($field->format) }} text">
                         @endif 
                             @else
                                 <input type="text" value="{{ strtoupper(trans('admin/custom_fields/general.encrypted')) }}" class="form-control disabled" disabled>
