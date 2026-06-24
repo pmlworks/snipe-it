@@ -188,6 +188,54 @@ class EnforceApiUserAgentTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
+    public function test_curl_pattern_blocks_real_curl_but_not_third_party_app_that_mentions_curl()
+    {
+        // Regression for the "BradyCoolIntegration / RipCurl" review thread: the curl/
+        // pattern must block a real curl client at the start of the UA, but must not
+        // touch an unrelated UA that just happens to contain the letters "curl" later
+        // in its identifier.
+        $this->settings->set([
+            'block_api_user_agents' => '1',
+            'blocked_api_user_agents' => 'curl/',
+            'block_blank_api_user_agents' => '0',
+        ]);
+
+        Passport::actingAs(User::factory()->superuser()->create());
+
+        $this->withHeader('User-Agent', 'Curl/8.7.1')
+            ->getJson(route('api.users.selectlist'))
+            ->assertForbidden()
+            ->assertJson(['payload' => ['user_agent' => 'Curl/8.7.1']]);
+
+        $this->withHeader('User-Agent', 'BradyCoolIntegration/1.0.0 (RipCurl something something ARM blah')
+            ->getJson(route('api.users.selectlist'))
+            ->assertOk();
+    }
+
+    public function test_bare_curl_pattern_without_trailing_slash_still_only_matches_at_start()
+    {
+        // If an admin shortens the pattern to just "curl" (no slash), the prefix-only
+        // semantics from === 0 still protect a UA that contains the substring "curl"
+        // later in its identifier.
+        $this->settings->set([
+            'block_api_user_agents' => '1',
+            'blocked_api_user_agents' => 'curl',
+            'block_blank_api_user_agents' => '0',
+        ]);
+
+        Passport::actingAs(User::factory()->superuser()->create());
+
+        // Real curl client — blocked.
+        $this->withHeader('User-Agent', 'Curl/8.7.1')
+            ->getJson(route('api.users.selectlist'))
+            ->assertForbidden();
+
+        // Third-party app whose name contains "Curl" mid-string — not blocked.
+        $this->withHeader('User-Agent', 'BradyCoolIntegration/1.0.0 (RipCurl something something ARM blah')
+            ->getJson(route('api.users.selectlist'))
+            ->assertOk();
+    }
+
     public function test_missing_user_agent_header_is_treated_the_same_as_empty_string()
     {
         // Symfony's test client always injects a default User-Agent, so we exercise the
