@@ -165,6 +165,40 @@ class EnforceApiUserAgentTest extends TestCase
             ->assertOk();
     }
 
+    public function test_middleware_is_applied_to_scim_routes()
+    {
+        $this->settings->set([
+            'block_api_user_agents' => '1',
+            'blocked_api_user_agents' => 'curl/',
+            'block_blank_api_user_agents' => '0',
+        ]);
+
+        Passport::actingAs(User::factory()->superuser()->create());
+
+        $this->withHeader('User-Agent', 'curl/8.5.0')
+            ->getJson('/scim/v2/Users')
+            ->assertForbidden()
+            ->assertJson([
+                'status' => 'error',
+                'payload' => ['user_agent' => 'curl/8.5.0'],
+            ]);
+    }
+
+    public function test_blank_blocking_applies_to_scim_routes()
+    {
+        $this->settings->set([
+            'block_api_user_agents' => '0',
+            'blocked_api_user_agents' => null,
+            'block_blank_api_user_agents' => '1',
+        ]);
+
+        Passport::actingAs(User::factory()->superuser()->create());
+
+        $this->withHeader('User-Agent', '')
+            ->getJson('/scim/v2/Users')
+            ->assertForbidden();
+    }
+
     public function test_default_patterns_constant_is_non_empty()
     {
         $this->assertNotEmpty(Setting::DEFAULT_BLOCKED_API_USER_AGENTS);
