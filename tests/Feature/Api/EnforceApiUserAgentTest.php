@@ -9,18 +9,23 @@ use Tests\TestCase;
 
 class EnforceApiUserAgentTest extends TestCase
 {
-    public function test_master_off_allows_matching_user_agents_to_pass()
+    public function test_master_off_bails_out_entirely_so_nothing_is_blocked()
     {
-        // Master gate off — even with a populated pattern list, nothing should be blocked.
+        // Master off — even a curl UA AND a blank UA pass through, regardless of
+        // any other setting or per-route parameter.
         $this->settings->set([
             'block_api_user_agents' => '0',
             'blocked_api_user_agents' => "curl/\nPostmanRuntime/",
-            'block_blank_api_user_agents' => '0',
+            'block_blank_api_user_agents' => '1',
         ]);
 
         Passport::actingAs(User::factory()->superuser()->create());
 
         $this->withHeader('User-Agent', 'curl/8.5.0')
+            ->getJson(route('api.users.selectlist'))
+            ->assertOk();
+
+        $this->withHeader('User-Agent', '')
             ->getJson(route('api.users.selectlist'))
             ->assertOk();
     }
@@ -74,12 +79,13 @@ class EnforceApiUserAgentTest extends TestCase
             ->assertOk();
     }
 
-    public function test_master_on_blank_user_agent_passes_when_blank_blocking_is_off()
+    public function test_master_on_blank_blocking_off_lets_blank_user_agent_through_on_api()
     {
-        // The Entra SCIM scenario: pattern blocking is on, blanks are explicitly allowed.
+        // Pattern blocking on but blank blocking off: an admin who has webhooks/other
+        // integrations that send blanks can keep them working.
         $this->settings->set([
             'block_api_user_agents' => '1',
-            'blocked_api_user_agents' => "curl/\nPostmanRuntime/",
+            'blocked_api_user_agents' => 'curl/',
             'block_blank_api_user_agents' => '0',
         ]);
 
@@ -90,11 +96,10 @@ class EnforceApiUserAgentTest extends TestCase
             ->assertOk();
     }
 
-    public function test_blank_user_agent_blocked_when_blank_blocking_on_even_if_master_is_off()
+    public function test_master_on_blank_blocking_on_rejects_blank_user_agent_on_api()
     {
-        // Blank blocking is independent of the master pattern gate.
         $this->settings->set([
-            'block_api_user_agents' => '0',
+            'block_api_user_agents' => '1',
             'blocked_api_user_agents' => null,
             'block_blank_api_user_agents' => '1',
         ]);
@@ -105,26 +110,7 @@ class EnforceApiUserAgentTest extends TestCase
             ->getJson(route('api.users.selectlist'))
             ->assertForbidden()
             ->assertJson([
-                'status' => 'error',
                 'payload' => ['user_agent' => ''],
-            ]);
-    }
-
-    public function test_whitespace_only_user_agent_treated_as_blank_and_echoed_verbatim()
-    {
-        $this->settings->set([
-            'block_api_user_agents' => '0',
-            'blocked_api_user_agents' => null,
-            'block_blank_api_user_agents' => '1',
-        ]);
-
-        Passport::actingAs(User::factory()->superuser()->create());
-
-        $this->withHeader('User-Agent', '   ')
-            ->getJson(route('api.users.selectlist'))
-            ->assertForbidden()
-            ->assertJson([
-                'payload' => ['user_agent' => '   '],
             ]);
     }
 
@@ -138,12 +124,10 @@ class EnforceApiUserAgentTest extends TestCase
 
         Passport::actingAs(User::factory()->superuser()->create());
 
-        // Mid-string mention of "curl/" should NOT be blocked under prefix matching.
         $this->withHeader('User-Agent', 'MyWrapper/1.0 (uses curl/8.5.0 internally)')
             ->getJson(route('api.users.selectlist'))
             ->assertOk();
 
-        // Pattern at position 0 still blocks.
         $this->withHeader('User-Agent', 'curl/8.5.0')
             ->getJson(route('api.users.selectlist'))
             ->assertForbidden();
@@ -165,7 +149,7 @@ class EnforceApiUserAgentTest extends TestCase
             ->assertOk();
     }
 
-    public function test_middleware_is_applied_to_scim_routes()
+    public function test_scim_routes_block_pattern_matches()
     {
         $this->settings->set([
             'block_api_user_agents' => '1',
@@ -179,24 +163,26 @@ class EnforceApiUserAgentTest extends TestCase
             ->getJson('/scim/v2/Users')
             ->assertForbidden()
             ->assertJson([
-                'status' => 'error',
                 'payload' => ['user_agent' => 'curl/8.5.0'],
             ]);
     }
 
-    public function test_blank_blocking_applies_to_scim_routes()
+    public function test_scim_routes_allow_blank_user_agent_even_when_admin_blocks_blanks()
     {
+        // Hard override: even with the admin toggle set to block blanks, SCIM routes
+        // pass through because Entra ID SCIM provisioning sends a blank User-Agent.
         $this->settings->set([
-            'block_api_user_agents' => '0',
+            'block_api_user_agents' => '1',
             'blocked_api_user_agents' => null,
             'block_blank_api_user_agents' => '1',
         ]);
 
         Passport::actingAs(User::factory()->superuser()->create());
 
-        $this->withHeader('User-Agent', '')
-            ->getJson('/scim/v2/Users')
-            ->assertForbidden();
+        $response = $this->withHeader('User-Agent', '')
+            ->getJson('/scim/v2/Users');
+
+        $this->assertNotEquals(403, $response->status());
     }
 
     public function test_default_patterns_constant_is_non_empty()

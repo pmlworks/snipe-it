@@ -170,7 +170,7 @@ return [
     'blocked_api_user_agents_text' => 'Blocked API User-Agent patterns',
     'blocked_api_user_agents_help' => 'One pattern per line. Each pattern is matched case-insensitively against the start of the request\'s User-Agent, so "curl/" matches "curl/8.5.0" but not a UA that only mentions "curl/" later in the string. The textarea is pre-filled with common scripted clients (curl, Postman, python-requests, etc.). Add, remove, or clear lines as needed.',
     'block_blank_api_user_agents_text' => 'Also reject API requests with a blank User-Agent',
-    'block_blank_api_user_agents_help' => 'When enabled, API requests that arrive without a User-Agent header (or with an empty one) are rejected. <strong>This will not apply to SCIM requests, as Microsoft EntraID sends a blank User-Agent.</strong>',
+    'block_blank_api_user_agents_help' => 'Also reject requests that arrive with a blank or missing User-Agent header. <strong>SCIM endpoints ignore this setting and always accept blank User-Agents, since Microsoft Entra ID SCIM provisioning sends a blank User-Agent.</strong> Leave this off if you have other integrations that legitimately send blank User-Agents.',
     'blocked_api_user_agent_rejected' => 'This API endpoint rejected the request based on its User-Agent.',
     'login_common_disabled_text' => 'Disable other authentication mechanisms',
     'login_common_disabled_help' => 'This option disables other authentication mechanisms. Just enable this option if you are sure that your REMOTE_USER login is already working',

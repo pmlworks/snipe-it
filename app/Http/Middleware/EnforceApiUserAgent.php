@@ -10,27 +10,42 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnforceApiUserAgent
 {
-    public function handle(Request $request, Closure $next): Response
+    /**
+     * The route-level parameter that lets a route opt out of blank-User-Agent
+     * blocking. Routes that legitimately receive blank UAs (e.g. Entra ID SCIM
+     * provisioning) declare this via `EnforceApiUserAgent::class.':allow_blank_user_agent'`.
+     */
+    private const ALLOW_BLANK_PARAMETER = 'allow_blank_user_agent';
+
+    public function handle(Request $request, Closure $next, ?string $parameter = null): Response
     {
         $setting = Setting::getSettings();
-        $rawUserAgent = $request->header('User-Agent');
-        $userAgent = trim((string) $rawUserAgent);
 
-        // Handle the blank-UA case up front. Blank blocking is independent of the
-        // pattern master so an admin can leave it off for integrations that legitimately
-        // send a blank User-Agent (e.g. Entra SCIM provisioning).
-        if ($userAgent === '') {
-            if ($setting?->block_blank_api_user_agents) {
-                return $this->reject($rawUserAgent);
-            }
-
+        // Bail out entirely when User-Agent blocking is disabled, regardless of
+        // whether a route opts out of blank blocking — the whole feature is off.
+        if (! $setting?->block_api_user_agents) {
             return $next($request);
         }
 
-        // From here on we know the UA is non-blank.
-        // Pattern-based blocking is gated behind block_api_user_agents so the textarea
-        // can be pre-populated with sensible defaults without auto-enabling blocking.
-        if (! $setting?->block_api_user_agents) {
+        $rawUserAgent = $request->header('User-Agent');
+        $userAgent = trim((string) $rawUserAgent);
+
+        if ($userAgent === '') {
+            // Hard override: routes that legitimately receive blank UAs (SCIM,
+            // hit by Entra ID provisioning) pass the allow_blank_user_agent
+            // parameter and always succeed here, regardless of admin settings.
+            if ($parameter === self::ALLOW_BLANK_PARAMETER) {
+                return $next($request);
+            }
+
+            // Otherwise the admin's block_blank_api_user_agents toggle decides.
+            // Pattern blocking on + blank blocking off lets blank-UA integrations
+            // through on the regular API surface; flipping blank blocking on
+            // tightens it.
+            if ($setting->block_blank_api_user_agents) {
+                return $this->reject($rawUserAgent);
+            }
+
             return $next($request);
         }
 

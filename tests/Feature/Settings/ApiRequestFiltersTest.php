@@ -52,6 +52,21 @@ class ApiRequestFiltersTest extends TestCase
         $this->assertTrue($fresh->block_blank_api_user_agents);
     }
 
+    public function test_post_without_blank_flag_treats_it_as_false()
+    {
+        Setting::getSettings()->forceFill(['block_blank_api_user_agents' => true])->save();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('settings.oauth.request_filters.save'), [
+                'block_api_user_agents' => '1',
+                'blocked_api_user_agents' => 'curl/',
+                // block_blank_api_user_agents intentionally absent — hidden=0 sentinel covers it
+            ])
+            ->assertRedirect();
+
+        $this->assertFalse(Setting::getSettings()->fresh()->block_blank_api_user_agents);
+    }
+
     public function test_post_with_empty_textarea_clears_patterns_to_null()
     {
         Setting::getSettings()->forceFill(['blocked_api_user_agents' => 'curl/'])->save();
@@ -60,7 +75,6 @@ class ApiRequestFiltersTest extends TestCase
             ->post(route('settings.oauth.request_filters.save'), [
                 'block_api_user_agents' => '1',
                 'blocked_api_user_agents' => '',
-                'block_blank_api_user_agents' => '0',
             ])
             ->assertRedirect();
 
@@ -78,7 +92,6 @@ class ApiRequestFiltersTest extends TestCase
 
         $this->actingAs(User::factory()->superuser()->create())
             ->post(route('settings.oauth.request_filters.save'), [
-                // block_api_user_agents intentionally absent (unchecked + hidden=0 sentinel)
                 'block_api_user_agents' => '0',
                 'blocked_api_user_agents' => "curl/\nfoo-client/",
             ])
@@ -89,18 +102,17 @@ class ApiRequestFiltersTest extends TestCase
         $this->assertSame("curl/\nfoo-client/", $fresh->blocked_api_user_agents);
     }
 
-    public function test_post_without_blank_flag_treats_it_as_false()
+    public function test_post_without_master_flag_treats_it_as_false()
     {
-        Setting::getSettings()->forceFill(['block_blank_api_user_agents' => true])->save();
+        Setting::getSettings()->forceFill(['block_api_user_agents' => true])->save();
 
         $this->actingAs(User::factory()->superuser()->create())
             ->post(route('settings.oauth.request_filters.save'), [
-                'block_api_user_agents' => '0',
+                // block_api_user_agents intentionally absent — hidden=0 sentinel covers it
                 'blocked_api_user_agents' => '',
-                // block_blank_api_user_agents intentionally absent
             ])
             ->assertRedirect();
 
-        $this->assertFalse(Setting::getSettings()->fresh()->block_blank_api_user_agents);
+        $this->assertFalse(Setting::getSettings()->fresh()->block_api_user_agents);
     }
 }

@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Reject blank User-Agents (independent toggle) -->
+                                <!-- Reject blank User-Agents (SCIM routes ignore this) -->
                                 <div class="form-group {{ $errors->has('block_blank_api_user_agents') ? 'error' : '' }}">
                                     <div class="col-md-8 col-md-offset-3">
                                         <label class="form-control">
