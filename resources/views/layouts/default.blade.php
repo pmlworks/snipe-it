@@ -316,6 +316,7 @@
         input[type="radio"]:disabled,
         input[readonly],
         textarea[readonly],
+        textarea:disabled,
         .select2-container--default.select2-container--disabled .select2-selection--single,
         .select2-container--default.select2-container--disabled .select2-selection--multiple,
         .select2-container--default.select2-container--disabled .select2-selection__rendered,
