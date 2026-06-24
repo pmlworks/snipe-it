@@ -1182,7 +1182,7 @@ class SettingsController extends Controller
         // Otherwise this could mess with the demo API explorer
         if (config('app.lock_passwords')) {
             return redirect()
-                ->to(route('settings.oauth.index') . '#api-request-filters')
+                ->to(route('settings.oauth.index').'#api-request-filters')
                 ->with('error', trans('general.feature_disabled'));
         }
 
