@@ -102,6 +102,32 @@ class ApiRequestFiltersTest extends TestCase
         $this->assertSame("curl/\nfoo-client/", $fresh->blocked_api_user_agents);
     }
 
+    public function test_post_is_blocked_when_app_is_in_demo_mode()
+    {
+        config(['app.lock_passwords' => true]);
+
+        Setting::getSettings()->forceFill([
+            'block_api_user_agents' => false,
+            'blocked_api_user_agents' => null,
+            'block_blank_api_user_agents' => false,
+        ])->save();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('settings.oauth.request_filters.save'), [
+                'block_api_user_agents' => '1',
+                'blocked_api_user_agents' => "curl/\nfoo-client/",
+                'block_blank_api_user_agents' => '1',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        // Nothing should have changed.
+        $fresh = Setting::getSettings()->fresh();
+        $this->assertFalse($fresh->block_api_user_agents);
+        $this->assertNull($fresh->blocked_api_user_agents);
+        $this->assertFalse($fresh->block_blank_api_user_agents);
+    }
+
     public function test_post_without_master_flag_treats_it_as_false()
     {
         Setting::getSettings()->forceFill(['block_api_user_agents' => true])->save();

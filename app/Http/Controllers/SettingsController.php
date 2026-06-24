@@ -1178,6 +1178,14 @@ class SettingsController extends Controller
             return redirect()->to('admin')->with('error', trans('admin/settings/message.update.error'));
         }
 
+        // Check we're not on the public demo, and redirect without saving if we are.
+        // Otherwise this could mess with the demo API explorer
+        if (config('app.lock_passwords')) {
+            return redirect()
+                ->to(route('settings.oauth.index') . '#api-request-filters')
+                ->with('error', trans('general.feature_disabled'));
+        }
+
         $setting->block_api_user_agents = $request->boolean('block_api_user_agents');
         $blockedUserAgents = trim((string) $request->input('blocked_api_user_agents', ''));
         $setting->blocked_api_user_agents = $blockedUserAgents === '' ? null : $blockedUserAgents;
