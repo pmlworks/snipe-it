@@ -16,26 +16,25 @@ class EnforceApiUserAgent
         $rawUserAgent = $request->header('User-Agent');
         $userAgent = trim((string) $rawUserAgent);
 
-        // Blank-UA blocking is independent of the pattern-based master toggle: an admin
-        // can enable it on its own (or leave it off if they have an integration like Entra
-        // SCIM that legitimately sends a blank User-Agent).
-        if ($setting?->block_blank_api_user_agents && $userAgent === '') {
-            return $this->reject($rawUserAgent);
+        // Handle the blank-UA case up front. Blank blocking is independent of the
+        // pattern master so an admin can leave it off for integrations that legitimately
+        // send a blank User-Agent (e.g. Entra SCIM provisioning).
+        if ($userAgent === '') {
+            if ($setting?->block_blank_api_user_agents) {
+                return $this->reject($rawUserAgent);
+            }
+
+            return $next($request);
         }
 
+        // From here on we know the UA is non-blank.
         // Pattern-based blocking is gated behind block_api_user_agents so the textarea
         // can be pre-populated with sensible defaults without auto-enabling blocking.
         if (! $setting?->block_api_user_agents) {
             return $next($request);
         }
 
-        $patterns = $this->blockedPatterns($setting->blocked_api_user_agents);
-
-        if ($patterns === [] || $userAgent === '') {
-            return $next($request);
-        }
-
-        foreach ($patterns as $pattern) {
+        foreach ($this->blockedPatterns($setting->blocked_api_user_agents) as $pattern) {
             if (stripos($userAgent, $pattern) !== false) {
                 return $this->reject($rawUserAgent);
             }
