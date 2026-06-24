@@ -128,6 +128,27 @@ class EnforceApiUserAgentTest extends TestCase
             ]);
     }
 
+    public function test_pattern_is_matched_only_at_start_of_user_agent()
+    {
+        $this->settings->set([
+            'block_api_user_agents' => '1',
+            'blocked_api_user_agents' => 'curl/',
+            'block_blank_api_user_agents' => '0',
+        ]);
+
+        Passport::actingAs(User::factory()->superuser()->create());
+
+        // Mid-string mention of "curl/" should NOT be blocked under prefix matching.
+        $this->withHeader('User-Agent', 'MyWrapper/1.0 (uses curl/8.5.0 internally)')
+            ->getJson(route('api.users.selectlist'))
+            ->assertOk();
+
+        // Pattern at position 0 still blocks.
+        $this->withHeader('User-Agent', 'curl/8.5.0')
+            ->getJson(route('api.users.selectlist'))
+            ->assertForbidden();
+    }
+
     public function test_master_on_empty_pattern_lines_do_not_match_every_request()
     {
         // Without filtering, a blank line would be a zero-length substring that matches every UA.

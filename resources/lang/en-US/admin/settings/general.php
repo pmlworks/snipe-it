@@ -168,7 +168,7 @@ return [
     'block_api_user_agents_text' => 'Block API requests by User-Agent',
     'block_api_user_agents_help' => 'When enabled, API requests whose User-Agent matches any of the patterns below will be rejected.',
     'blocked_api_user_agents_text' => 'Blocked API User-Agent patterns',
-    'blocked_api_user_agents_help' => 'One pattern per line, matched as a case-insensitive substring of the request\'s User-Agent. The textarea is pre-filled with common scripted clients (curl, Postman, python-requests, etc.). Add, remove, or clear lines as needed. ',
+    'blocked_api_user_agents_help' => 'One pattern per line. Each pattern is matched case-insensitively against the start of the request\'s User-Agent, so "curl/" matches "curl/8.5.0" but not a UA that only mentions "curl/" later in the string. The textarea is pre-filled with common scripted clients (curl, Postman, python-requests, etc.). Add, remove, or clear lines as needed.',
     'block_blank_api_user_agents_text' => 'Also reject API requests with a blank User-Agent',
     'block_blank_api_user_agents_help' => 'When enabled, API requests that arrive without a User-Agent header (or with an empty one) are rejected. <strong>Leave this off if you have integrations that legitimately send an empty User-Agent, for example, Microsoft Entra ID SCIM provisioning.</strong>',
     'blocked_api_user_agent_rejected' => 'This API endpoint rejected the request based on its User-Agent.',

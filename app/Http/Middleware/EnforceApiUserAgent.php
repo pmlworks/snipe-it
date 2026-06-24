@@ -34,8 +34,13 @@ class EnforceApiUserAgent
             return $next($request);
         }
 
+        // Prefix match (=== 0) rather than substring: scripted clients identify
+        // themselves at the start of the User-Agent (curl/x, PostmanRuntime/x,
+        // python-requests/x, etc.), and matching only the prefix prevents a pattern
+        // from accidentally hitting an unrelated UA that mentions it later in the
+        // string.
         foreach ($this->blockedPatterns($setting->blocked_api_user_agents) as $pattern) {
-            if (stripos($userAgent, $pattern) !== false) {
+            if (stripos($userAgent, $pattern) === 0) {
                 return $this->reject($rawUserAgent);
             }
         }
