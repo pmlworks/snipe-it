@@ -30,7 +30,7 @@ class CompaniesController extends Controller
         $allowed_columns = [
             'id',
             'name',
-            'parent_id',
+            'parent',
             'phone',
             'fax',
             'email',
@@ -51,7 +51,19 @@ class CompaniesController extends Controller
             $query->AssetsForShow();
         }])
             ->with('adminuser', 'parent')
-            ->withCount('licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count', 'children as children_count');
+            ->withCount('licenses as licenses_count')
+            ->withCount('accessories as accessories_count')
+            ->withCount('consumables as consumables_count')
+            ->withCount('components as components_count')
+            ->withCount('users as users_count')
+            // children is a self-relation. Laravel aliases the related table to
+            // `laravel_reserved_0` for the count subquery, but CompanyableScope
+            // hardcodes `companies.id` in its where clause — that clashes with
+            // the alias and produces "Unknown column 'laravel_reserved_0.parent_id'".
+            // The closure form lets us strip the global scope on the subquery.
+            ->withCount(['children as children_count' => function ($query) {
+                $query->withoutGlobalScopes();
+            }]);
 
         // This invokes the Searchable model trait scopeTextSearch and will handle input by search or by advanced search filter
         if ($request->filled('filter') || $request->filled('search')) {
@@ -94,6 +106,9 @@ class CompaniesController extends Controller
         switch ($sort_override) {
             case 'created_by':
                 $companies = $companies->OrderByCreatedBy($order);
+                break;
+            case 'parent':
+                $companies = $companies->OrderParent($order);
                 break;
             default:
                 $companies = $companies->orderBy($column_sort, $order);

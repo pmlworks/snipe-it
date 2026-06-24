@@ -16,12 +16,12 @@
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
-                    <x-tabs.user-tab count="{{ $company->users->count() }}"/>
-                    <x-tabs.asset-tab count="{{ $company->assets()->AssetsForShow()->count() }}"/>
-                    <x-tabs.license-tab count="{{ $company->licenses->count() }}"/>
-                    <x-tabs.accessory-tab count="{{ $company->accessories->count() }}"/>
-                    <x-tabs.consumable-tab count="{{ $company->consumables->count() }}"/>
-                    <x-tabs.component-tab count="{{ $company->components->count() }}"/>
+                    <x-tabs.user-tab count="{{ $tabCounts['users'] }}"/>
+                    <x-tabs.asset-tab count="{{ $tabCounts['assets'] }}"/>
+                    <x-tabs.license-tab count="{{ $tabCounts['licenses'] }}"/>
+                    <x-tabs.accessory-tab count="{{ $tabCounts['accessories'] }}"/>
+                    <x-tabs.consumable-tab count="{{ $tabCounts['consumables'] }}"/>
+                    <x-tabs.component-tab count="{{ $tabCounts['components'] }}"/>
                     <x-tabs.files-tab :item="$company" count="{{ $company->uploads()->count() }}"/>
                     <x-tabs.upload-tab :item="$company"/>
                 </x-slot:tabnav>
@@ -29,37 +29,37 @@
                 <x-slot:tabpanes>
                     <!-- start users tab pane -->
                     <x-tabs.pane name="users">
-                        <x-table.users name="users" :route="route('api.users.index', ['company_id' => $company->id])"/>
+                        <x-table.users name="users" :route="route('api.users.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
                     <!-- end users tab pane -->
 
                     <!-- start assets tab pane -->
                     <x-tabs.pane name="assets">
-                        <x-table.assets name="assets" :route="route('api.assets.index', ['company_id' => $company->id])"/>
+                        <x-table.assets name="assets" :route="route('api.assets.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
                     <!-- end assets tab pane -->
 
                     <!-- start licenses tab pane -->
                     <x-tabs.pane name="licenses">
-                        <x-table.licenses name="licenses" :route="route('api.licenses.index', ['company_id' => $company->id])"/>
+                        <x-table.licenses name="licenses" :route="route('api.licenses.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
                     <!-- end licenses tab pane -->
 
                     <!-- start accessory tab pane -->
                     <x-tabs.pane name="accessories">
-                        <x-table.accessories name="accessories" :route="route('api.accessories.index', ['company_id' => $company->id])"/>
+                        <x-table.accessories name="accessories" :route="route('api.accessories.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
                     <!-- end accessory tab pane -->
 
                     <!-- start consumables tab pane -->
                     <x-tabs.pane name="consumables">
-                        <x-table.consumables name="consumables" :route="route('api.consumables.index', ['company_id' => $company->id])"/>
+                        <x-table.consumables name="consumables" :route="route('api.consumables.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
                     <!-- end components tab pane -->
 
                     <!-- start components tab pane -->
                     <x-tabs.pane name="components">
-                        <x-table.components name="components" :route="route('api.components.index', ['company_id' => $company->id])"/>
+                        <x-table.components name="components" :route="route('api.components.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
 
                     <!-- start files tab pane -->
@@ -93,6 +93,13 @@
     @can('files', $company)
         @include ('modals.upload-file', ['item_type' => 'companies', 'item_id' => $company->id])
     @endcan
+    <script>
+        // Bootstrap-table formatters read this to decorate rows whose company
+        // doesn't match the company being viewed (i.e. inherited from parent
+        // or child via the FMCS hierarchy expansion). See companiesLinkObj
+        // Formatter and companiesArrayLinkFormatter in partials/bootstrap-table.
+        window.viewingCompanyId = {{ (int) $company->id }};
+    </script>
     @include ('partials.bootstrap-table')
 @endsection
 

@@ -3,7 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ImageUploadRequest;
+use App\Models\Accessory;
+use App\Models\Asset;
 use App\Models\Company;
+use App\Models\Component;
+use App\Models\Consumable;
+use App\Models\License;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,7 +67,7 @@ final class CompaniesController extends Controller
 
         $company = new Company;
         $company->name = $request->input('name');
-        $company->parent_id = $request->input('parent_id') ?: null;
+        $company->parent_id = $request->input('parent_id');
         $company->phone = $request->input('phone');
         $company->fax = $request->input('fax');
         $company->email = $request->input('email');
@@ -109,7 +115,7 @@ final class CompaniesController extends Controller
 
         $this->authorize('update', $company);
         $company->name = $request->input('name');
-        $company->parent_id = $request->input('parent_id') ?: null;
+        $company->parent_id = $request->input('parent_id');
         $company->phone = $request->input('phone');
         $company->fax = $request->input('fax');
         $company->email = $request->input('email');
@@ -167,6 +173,20 @@ final class CompaniesController extends Controller
     {
         $this->authorize('view', Company::class);
 
-        return view('companies/view')->with('company', $company);
+        // Counts on the tab badges include hierarchy (the row + parent + children)
+        // to match the tab contents the API serves under expand_company_hierarchy=1.
+        // Computed here so the Blade can stay free of @php blocks.
+        $reachableIds = Company::reachableCompanyIds($company->id);
+
+        return view('companies/view')
+            ->with('company', $company)
+            ->with('tabCounts', [
+                'users' => User::whereHas('companies', fn ($q) => $q->whereIn('companies.id', $reachableIds))->count(),
+                'assets' => Asset::whereIn('company_id', $reachableIds)->AssetsForShow()->count(),
+                'licenses' => License::whereIn('company_id', $reachableIds)->count(),
+                'accessories' => Accessory::whereIn('company_id', $reachableIds)->count(),
+                'consumables' => Consumable::whereIn('company_id', $reachableIds)->count(),
+                'components' => Component::whereIn('company_id', $reachableIds)->count(),
+            ]);
     }
 }

@@ -191,7 +191,15 @@ class UsersController extends Controller
         }
 
         if ($request->filled('company_id')) {
-            $users = $users->whereHas('companies', fn ($q) => $q->where('companies.id', $request->input('company_id')));
+            // When the caller is the company show-page (expand_company_hierarchy=1),
+            // include users who belong to the company's parent or any of its
+            // direct children — they inherit access via the one-level hierarchy.
+            // Other callers (select2 dropdowns, etc.) keep exact-id semantics.
+            $companyIds = $request->boolean('expand_company_hierarchy')
+                ? Company::reachableCompanyIds($request->input('company_id'))
+                : [(int) $request->input('company_id')];
+
+            $users = $users->whereHas('companies', fn ($q) => $q->whereIn('companies.id', $companyIds));
         }
 
         if ($request->filled('phone')) {

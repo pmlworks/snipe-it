@@ -8,9 +8,7 @@
 
 {{-- Page content --}}
 @section('content')
-    <x-container columns="2">
-
-        <x-page-column class="col-md-9">
+    <x-container>
             <x-box>
                 <table
                   data-columns="{{ \App\Presenters\CompanyPresenter::dataTableLayout() }}"
@@ -29,14 +27,6 @@
                             }'>
                 </table>
             </x-box>
-        </x-page-column>
-
-
-        <!-- side address column -->
-        <x-page-column class="col-md-3">
-          <h2>{{ trans('admin/companies/general.about_companies') }}</h2>
-          <p>{{ trans('admin/companies/general.about_companies_description') }}</p>
-        </x-page-column>
     </x-container>
 @stop
 

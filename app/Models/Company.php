@@ -46,6 +46,18 @@ final class Company extends SnipeModel
         'parent_id' => 'integer',
     ];
 
+    /**
+     * A company with no parent stores NULL, never 0 — the empty string from an
+     * unselected select2 and a literal 0 would otherwise survive the integer
+     * cast and break the `exists:` validation + parent/child queries.
+     */
+    public function setParentIdAttribute($value): void
+    {
+        $this->attributes['parent_id'] = ($value === '' || $value === null || (int) $value === 0)
+            ? null
+            : (int) $value;
+    }
+
     protected $presenter = CompanyPresenter::class;
 
     use Presentable;
@@ -102,6 +114,17 @@ final class Company extends SnipeModel
     ];
 
     /**
+     * Per-request memoization for getCurrentUserCompanyIds(), keyed by user id.
+     * CompanyableScope::apply() calls that method on every Eloquent query against
+     * a Companyable model, and the index/transformer hot path runs hundreds of
+     * such queries per page — without memoization we issue thousands of redundant
+     * pivot reads. Cleared explicitly in tests via flushCompanyIdsCache().
+     *
+     * @var array<int, array<int>>
+     */
+    private static array $companyIdsCache = [];
+
+    /**
      * Return the current user's company IDs by querying the pivot table directly.
      *
      * We deliberately bypass the Eloquent companies() relationship here because
@@ -119,13 +142,19 @@ final class Company extends SnipeModel
             return [];
         }
 
+        $userId = auth()->id();
+
+        if (array_key_exists($userId, self::$companyIdsCache)) {
+            return self::$companyIdsCache[$userId];
+        }
+
         $directIds = DB::table('company_user')
-            ->where('user_id', auth()->id())
+            ->where('user_id', $userId)
             ->pluck('company_id')
             ->toArray();
 
         if (empty($directIds)) {
-            return [];
+            return self::$companyIdsCache[$userId] = [];
         }
 
         $childIds = DB::table('companies')
@@ -133,7 +162,57 @@ final class Company extends SnipeModel
             ->pluck('id')
             ->toArray();
 
-        return array_values(array_unique(array_merge($directIds, $childIds)));
+        return self::$companyIdsCache[$userId] = array_values(array_unique(array_merge($directIds, $childIds)));
+    }
+
+    /**
+     * Reset the per-user company-ids memoization. Called from TestCase::setUp()
+     * so that test isolation isn't broken by static state surviving across tests
+     * (RefreshDatabase rolls back the DB but not PHP static properties).
+     */
+    public static function flushCompanyIdsCache(): void
+    {
+        self::$companyIdsCache = [];
+    }
+
+    /**
+     * Return the set of company IDs a user viewing $companyId should see items
+     * from when "hierarchy expansion" is requested — the company itself, its
+     * direct parent (if any), and any of its direct children.
+     *
+     * Used by the company show-page tabs (users / assets / licenses / etc.) so
+     * that viewing a child company also surfaces items inherited from the
+     * parent, and viewing a parent surfaces items from its children. The
+     * one-level-deep validator caps the chain at depth 2, so this is at most
+     * three rows.
+     *
+     * Returns the original id alone if the company can't be found, so callers
+     * can pass the result straight into a whereIn without special-casing.
+     */
+    public static function reachableCompanyIds(int|string $companyId): array
+    {
+        $companyId = (int) $companyId;
+        if ($companyId <= 0) {
+            return [];
+        }
+
+        $row = DB::table('companies')->where('id', $companyId)->first(['id', 'parent_id']);
+        if (! $row) {
+            return [$companyId];
+        }
+
+        $ids = [(int) $row->id];
+        if ($row->parent_id) {
+            $ids[] = (int) $row->parent_id;
+        }
+
+        $childIds = DB::table('companies')
+            ->where('parent_id', $companyId)
+            ->pluck('id')
+            ->map(fn ($v) => (int) $v)
+            ->all();
+
+        return array_values(array_unique(array_merge($ids, $childIds)));
     }
 
     public static function isFullMultipleCompanySupportEnabled()
@@ -333,7 +412,6 @@ final class Company extends SnipeModel
             && (($this->licenses_count ?? $this->licenses()->count()) === 0)
             && (($this->components_count ?? $this->components()->count()) === 0)
             && (($this->consumables_count ?? $this->consumables()->count()) === 0)
-            && (($this->accessories_count ?? $this->accessories()->count()) === 0)
             && (($this->users_count ?? $this->users()->count()) === 0)
             && (($this->children_count ?? $this->children()->count()) === 0);
     }
@@ -357,19 +435,42 @@ final class Company extends SnipeModel
 
     /**
      * Parent company (one level only — children cannot themselves have children).
+     *
+     * Bypasses CompanyableScope because the scope hardcodes `companies.id` in its
+     * where clause, which collides with Eloquent's self-relation auto-alias
+     * (`laravel_reserved_0`) and produces "Unknown column 'laravel_reserved_0.parent_id'"
+     * on the index page. Hierarchy is metadata about a row the user already sees,
+     * not an access decision, so unscoping here is semantically correct too.
      */
     public function parent()
     {
-        return $this->belongsTo(self::class, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id')->withoutGlobalScopes();
     }
 
     /**
      * Child companies. The one-level-deep validator on parent_id guarantees
      * children of a child cannot be created, so this is the full descendant set.
+     * See parent() above for why the global scope is dropped.
      */
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id')->withoutGlobalScopes();
+    }
+
+    /**
+     * Sort the company list by the parent company's name. Left join so that
+     * top-level companies (parent_id IS NULL) still appear in the results.
+     *
+     * Use addSelect (not select) so prior withCount subqueries on the query
+     * survive — select() replaces the whole columns list and would strip the
+     * eager *_count columns, forcing isDeletable() and the transformer into a
+     * 7-query-per-row N+1.
+     */
+    public function scopeOrderParent($query, $order)
+    {
+        return $query->leftJoin('companies as parent_co', 'companies.parent_id', '=', 'parent_co.id')
+            ->addSelect('companies.*')
+            ->orderBy('parent_co.name', $order);
     }
 
     public function assets()
@@ -562,10 +663,16 @@ final class Company extends SnipeModel
     }
 
     /**
-     * Query builder scope to order on the user that created it
+     * Query builder scope to order on the user that created it.
+     *
+     * Use addSelect (not select) so prior withCount subqueries on the query
+     * survive — see scopeOrderParent() for the same rationale.
      */
     public function scopeOrderByCreatedBy($query, $order)
     {
-        return $query->leftJoin('users as admin_sort', 'companies.created_by', '=', 'admin_sort.id')->select('companies.*')->orderBy('admin_sort.first_name', $order)->orderBy('admin_sort.last_name', $order);
+        return $query->leftJoin('users as admin_sort', 'companies.created_by', '=', 'admin_sort.id')
+            ->addSelect('companies.*')
+            ->orderBy('admin_sort.first_name', $order)
+            ->orderBy('admin_sort.last_name', $order);
     }
 }

@@ -111,6 +111,38 @@ class CompanyHierarchyTest extends TestCase
         $this->assertNull($child->fresh()->parent_id);
     }
 
+    public function test_parent_id_of_zero_is_stored_as_null()
+    {
+        $this->actingAsForApi(User::factory()->createCompanies()->create())
+            ->postJson(route('api.companies.store'), [
+                'name' => 'TopLevelViaZero',
+                'parent_id' => 0,
+            ])
+            ->assertStatus(200)
+            ->assertStatusMessageIs('success');
+
+        $this->assertDatabaseHas('companies', [
+            'name' => 'TopLevelViaZero',
+            'parent_id' => null,
+        ]);
+    }
+
+    public function test_parent_id_of_empty_string_is_stored_as_null()
+    {
+        $this->actingAsForApi(User::factory()->createCompanies()->create())
+            ->postJson(route('api.companies.store'), [
+                'name' => 'TopLevelViaEmpty',
+                'parent_id' => '',
+            ])
+            ->assertStatus(200)
+            ->assertStatusMessageIs('success');
+
+        $this->assertDatabaseHas('companies', [
+            'name' => 'TopLevelViaEmpty',
+            'parent_id' => null,
+        ]);
+    }
+
     public function test_parent_id_must_reference_existing_company()
     {
         $this->actingAsForApi(User::factory()->createCompanies()->create())
@@ -150,6 +182,45 @@ class CompanyHierarchyTest extends TestCase
         $this->assertNotNull($parentRow);
         $this->assertNull($parentRow['parent']);
         $this->assertEquals(2, $parentRow['children_count']);
+    }
+
+    public function test_index_loads_for_fmcs_scoped_non_superuser()
+    {
+        // Regression: CompanyableScope hardcodes `companies.id`, which clashes with
+        // the alias Eloquent picks for the children-count self-relation subquery.
+        // Reproduce the original "Unknown column laravel_reserved_0.parent_id" by
+        // hitting the index as a non-superuser with FMCS enabled.
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $parent = Company::factory()->create();
+        Company::factory()->count(2)->childOf($parent)->create();
+
+        $user = $parent->users()->save(User::factory()->viewCompanies()->make());
+
+        $this->actingAsForApi($user)
+            ->getJson(route('api.companies.index'))
+            ->assertOk();
+    }
+
+    public function test_index_can_sort_by_parent_company_name()
+    {
+        $alpha = Company::factory()->create(['name' => 'AlphaParent']);
+        $zulu = Company::factory()->create(['name' => 'ZuluParent']);
+        $alphaChild = Company::factory()->childOf($alpha)->create(['name' => 'AlphaChild']);
+        $zuluChild = Company::factory()->childOf($zulu)->create(['name' => 'ZuluChild']);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.index', ['sort' => 'parent', 'order' => 'asc', 'limit' => 200]))
+            ->assertOk()
+            ->json();
+
+        $ids = collect($response['rows'])->pluck('id')->all();
+        $alphaChildPos = array_search($alphaChild->id, $ids);
+        $zuluChildPos = array_search($zuluChild->id, $ids);
+
+        $this->assertNotFalse($alphaChildPos);
+        $this->assertNotFalse($zuluChildPos);
+        $this->assertLessThan($zuluChildPos, $alphaChildPos, 'AlphaParent child should sort before ZuluParent child when sorting by parent name asc');
     }
 
     public function test_show_exposes_parent_block_for_child_company()
@@ -231,6 +302,63 @@ class CompanyHierarchyTest extends TestCase
         $this->assertContains($parent->id, $ids);
         $this->assertContains($child->id, $ids);
         $this->assertNotContains($unrelated->id, $ids);
+    }
+
+    public function test_expand_company_hierarchy_on_assets_includes_parent_and_children()
+    {
+        $parent = Company::factory()->create();
+        $child = Company::factory()->childOf($parent)->create();
+        $unrelated = Company::factory()->create();
+
+        $parentAsset = Asset::factory()->create(['company_id' => $parent->id]);
+        $childAsset = Asset::factory()->create(['company_id' => $child->id]);
+        $unrelatedAsset = Asset::factory()->create(['company_id' => $unrelated->id]);
+
+        // Without the flag: only exact-company match
+        $exact = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.assets.index', ['company_id' => $child->id]))
+            ->assertOk()
+            ->json();
+        $exactIds = collect($exact['rows'])->pluck('id')->all();
+        $this->assertContains($childAsset->id, $exactIds);
+        $this->assertNotContains($parentAsset->id, $exactIds);
+
+        // With expand_company_hierarchy=1: child page includes parent's items
+        $expanded = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.assets.index', ['company_id' => $child->id, 'expand_company_hierarchy' => 1]))
+            ->assertOk()
+            ->json();
+        $expandedIds = collect($expanded['rows'])->pluck('id')->all();
+        $this->assertContains($childAsset->id, $expandedIds);
+        $this->assertContains($parentAsset->id, $expandedIds, 'Parent asset should appear on the child page when hierarchy is expanded');
+        $this->assertNotContains($unrelatedAsset->id, $expandedIds);
+    }
+
+    public function test_expand_company_hierarchy_on_users_includes_parent_and_children_members()
+    {
+        $parent = Company::factory()->create();
+        $child = Company::factory()->childOf($parent)->create();
+
+        $parentMember = $parent->users()->save(User::factory()->create());
+        $childMember = $child->users()->save(User::factory()->create());
+
+        // Without the flag: child page only shows direct child members
+        $exact = $this->actingAsForApi(User::factory()->superuser()->viewUsers()->create())
+            ->getJson(route('api.users.index', ['company_id' => $child->id]))
+            ->assertOk()
+            ->json();
+        $exactIds = collect($exact['rows'])->pluck('id')->all();
+        $this->assertContains($childMember->id, $exactIds);
+        $this->assertNotContains($parentMember->id, $exactIds);
+
+        // With the flag: child page also shows users inherited from the parent
+        $expanded = $this->actingAsForApi(User::factory()->superuser()->viewUsers()->create())
+            ->getJson(route('api.users.index', ['company_id' => $child->id, 'expand_company_hierarchy' => 1]))
+            ->assertOk()
+            ->json();
+        $expandedIds = collect($expanded['rows'])->pluck('id')->all();
+        $this->assertContains($childMember->id, $expandedIds);
+        $this->assertContains($parentMember->id, $expandedIds, 'Parent member should appear on the child page when hierarchy is expanded');
     }
 
     public function test_fmcs_floater_mode_still_works_with_hierarchy()

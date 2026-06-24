@@ -2250,22 +2250,45 @@
         }
     }
 
+    // Renders a small "Inherited" badge when the company shown in a row doesn't
+    // match the company whose page we're on (window.viewingCompanyId, set by
+    // companies/view.blade.php). On every other page the global is undefined
+    // and this returns an empty string — formatters are unchanged elsewhere.
+    // Dark background + white text keeps contrast above WCAG AAA (≈12.6:1).
+    function inheritedCompanyBadge(matched) {
+        if (typeof window.viewingCompanyId === 'undefined' || window.viewingCompanyId === null) {
+            return '';
+        }
+        if (matched) {
+            return '';
+        }
+        return ' <span class="label" style="background:#1a4480;color:#fff;margin-left:4px;" title="{{ trans('admin/companies/table.inherited_help') }}">'
+            + '<i class="fa-solid fa-link" aria-hidden="true"></i> {{ trans('admin/companies/table.inherited') }}'
+            + '</span>';
+    }
+
     function companiesLinkObjFormatter(value, row) {
         if (!value) {
             return '';
         }
         var icon = (value.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i> ' : '';
-        return '<a href="{{ config('app.url') }}/companies/' + value.id + '" class="label label-light">' + icon + value.name + '</a>';
+        var link = '<a href="{{ config('app.url') }}/companies/' + value.id + '" class="label label-light">' + icon + value.name + '</a>';
+        var matched = (typeof window.viewingCompanyId !== 'undefined') && (parseInt(value.id, 10) === parseInt(window.viewingCompanyId, 10));
+        return link + inheritedCompanyBadge(matched);
     }
 
     function companiesArrayLinkFormatter(value, row) {
         if (!value || !value.length) {
             return '';
         }
-        return value.map(function (c) {
+        var matched = (typeof window.viewingCompanyId !== 'undefined') && value.some(function (c) {
+            return parseInt(c.id, 10) === parseInt(window.viewingCompanyId, 10);
+        });
+        var links = value.map(function (c) {
             var icon = (c.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + c.tag_color + ';" aria-hidden="true"></i> ' : '';
             return '<a href="{{ config('app.url') }}/companies/' + c.id + '" class="label label-light">' + icon + c.name + '</a></span>';
         }).join(' ');
+        return links + inheritedCompanyBadge(matched);
     }
 
     function locationCompanyObjFilterFormatter(value, row) {
