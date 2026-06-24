@@ -87,7 +87,6 @@
                                             <label for="block_blank_api_user_agents">{{ trans('admin/settings/general.block_blank_api_user_agents_text') }}</label>
                                         </label>
                                         <p class="help-block">
-                                            <x-icon type="warning" class="text-warning"/>
                                             {!! trans('admin/settings/general.block_blank_api_user_agents_help') !!}
                                         </p>
                                         {!! $errors->first('block_blank_api_user_agents', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
