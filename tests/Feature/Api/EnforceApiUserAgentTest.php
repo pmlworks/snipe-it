@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Api;
 
+use App\Http\Middleware\EnforceApiUserAgent;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -183,6 +186,30 @@ class EnforceApiUserAgentTest extends TestCase
             ->getJson('/scim/v2/Users');
 
         $this->assertNotEquals(403, $response->status());
+    }
+
+    public function test_missing_user_agent_header_is_treated_the_same_as_empty_string()
+    {
+        // Symfony's test client always injects a default User-Agent, so we exercise the
+        // middleware directly with a Request that has no User-Agent header at all to
+        // confirm null (header absent) collapses to empty-string behavior.
+        $this->settings->set([
+            'block_api_user_agents' => '1',
+            'blocked_api_user_agents' => null,
+            'block_blank_api_user_agents' => '1',
+        ]);
+
+        Auth::loginUsingId(User::factory()->superuser()->create()->id);
+
+        $request = Request::create('/api/v1/users/selectlist');
+        $request->headers->remove('User-Agent');
+        $this->assertNull($request->header('User-Agent'));
+
+        $response = (new EnforceApiUserAgent)->handle($request, fn () => response('passed'));
+
+        $this->assertSame(403, $response->getStatusCode());
+        $payload = json_decode($response->getContent(), true);
+        $this->assertNull($payload['payload']['user_agent']);
     }
 
     public function test_default_patterns_constant_is_non_empty()
