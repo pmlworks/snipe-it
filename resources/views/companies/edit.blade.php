@@ -28,6 +28,8 @@
             @include('partials.forms.edit.company-select', [
                 'translated_name' => trans('admin/companies/table.parent'),
                 'fieldname' => 'parent_id',
+                'only_top_level' => true,
+                'exclude_id' => $item->id ?? null,
             ])
 
             <x-form.row
