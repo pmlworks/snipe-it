@@ -4,6 +4,7 @@ namespace Tests\Feature\Companies\Api;
 
 use App\Models\Asset;
 use App\Models\Company;
+use App\Models\Location;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -510,6 +511,73 @@ class CompanyHierarchyTest extends TestCase
         $expandedIds = collect($expanded['rows'])->pluck('id')->all();
         $this->assertContains($childMember->id, $expandedIds);
         $this->assertContains($parentMember->id, $expandedIds, 'Parent member should appear on the child page when hierarchy is expanded');
+    }
+
+    public function test_asset_at_parent_can_check_out_to_location_at_child()
+    {
+        // Regression: Asset.canCheckoutTo(Location) used strict company_id
+        // equality; without the hierarchy expansion, a parent-company asset
+        // couldn't be moved to a child-company location even though the user
+        // had full visibility into both.
+        $this->settings->enableScopedLocationsWithFullMultipleCompanySupport();
+
+        $parent = Company::factory()->create();
+        $child = Company::factory()->childOf($parent)->create();
+
+        $asset = Asset::factory()->create(['company_id' => $parent->id]);
+        $location = Location::factory()->create(['company_id' => $child->id]);
+
+        $this->assertTrue($asset->canCheckoutTo($location));
+    }
+
+    public function test_asset_at_child_can_check_out_to_location_at_parent()
+    {
+        $this->settings->enableScopedLocationsWithFullMultipleCompanySupport();
+
+        $parent = Company::factory()->create();
+        $child = Company::factory()->childOf($parent)->create();
+
+        $asset = Asset::factory()->create(['company_id' => $child->id]);
+        $location = Location::factory()->create(['company_id' => $parent->id]);
+
+        $this->assertTrue($asset->canCheckoutTo($location));
+    }
+
+    public function test_asset_cannot_check_out_to_location_at_unrelated_company()
+    {
+        $this->settings->enableScopedLocationsWithFullMultipleCompanySupport();
+
+        $parent = Company::factory()->create();
+        $child = Company::factory()->childOf($parent)->create();
+        $unrelated = Company::factory()->create();
+
+        $asset = Asset::factory()->create(['company_id' => $child->id]);
+        $location = Location::factory()->create(['company_id' => $unrelated->id]);
+
+        $this->assertFalse(
+            $asset->canCheckoutTo($location),
+            'Strict company match should still apply for companies outside the hierarchy',
+        );
+    }
+
+    public function test_asset_at_child_cannot_check_out_to_location_at_sibling_child()
+    {
+        // Hierarchy expansion is parent ↔ child only — sibling-to-sibling is
+        // intentionally not auto-allowed (mirrors User::canReceiveFromCompany,
+        // where a user in child A can't receive an item from sibling child B).
+        $this->settings->enableScopedLocationsWithFullMultipleCompanySupport();
+
+        $parent = Company::factory()->create();
+        $childA = Company::factory()->childOf($parent)->create();
+        $childB = Company::factory()->childOf($parent)->create();
+
+        $asset = Asset::factory()->create(['company_id' => $childA->id]);
+        $location = Location::factory()->create(['company_id' => $childB->id]);
+
+        $this->assertFalse(
+            $asset->canCheckoutTo($location),
+            'Sibling-child to sibling-child should require the parent-company user, not auto-allow',
+        );
     }
 
     public function test_fmcs_floater_mode_still_works_with_hierarchy()
