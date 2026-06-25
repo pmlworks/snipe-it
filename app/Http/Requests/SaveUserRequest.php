@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Company;
 use App\Models\Setting;
 use App\Rules\UserCannotSwitchCompaniesIfItemsAssigned;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class SaveUserRequest extends FormRequest
 {
@@ -69,5 +71,36 @@ class SaveUserRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    /**
+     * Block non-superusers from saving a user whose resulting company set would
+     * be empty *while floater mode is enabled* — that combination promotes the
+     * target user to a system-wide floater (sees everything), and is the
+     * privilege-escalation vector flagged in #19200. Superusers can still make
+     * floaters intentionally. Applies to web and API store/update.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            if (! auth()->check() || auth()->user()->canGrantFloaterStatus()) {
+                return;
+            }
+
+            // Mirror the controller's resolution: prefer company_ids[], fall
+            // back to legacy company_id, intval, drop empties.
+            $submitted = (array) ($this->input('company_ids') ?? ($this->filled('company_id') ? [$this->input('company_id')] : []));
+            $submitted = array_filter(array_map('intval', $submitted));
+
+            // Filter to companies the actor can actually assign (matches the
+            // controller's syncCompaniesWithLogging(Company::getIdsForCurrentUser(...))
+            // step). If nothing survives the filter, the save would clear the
+            // user's pivot.
+            $effective = Company::getIdsForCurrentUser($submitted);
+
+            if (empty($effective)) {
+                $validator->errors()->add('company_ids', trans('admin/users/general.cannot_make_floater'));
+            }
+        });
     }
 }

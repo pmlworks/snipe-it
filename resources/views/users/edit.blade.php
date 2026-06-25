@@ -344,27 +344,47 @@
 
 
                               <!-- Company -->
+                              {{-- selected reads from the company_user pivot only; the legacy users.company_id
+                                   scalar can lag behind (LDAP sync, pre-observer rows, etc.) so we never fall
+                                   back to it or the dropdown would show ghost selections. --}}
                               @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
                                   @include ('partials.forms.edit.company-select', [
                                       'translated_name' => trans('general.company'),
                                       'fieldname' => 'company_ids',
                                       'multiple' => 'true',
-                                      'selected' => old('company_ids', $user->companies->isNotEmpty() ? $user->companies->pluck('id')->toArray() : ($user->company_id ? [$user->company_id] : [])),
+                                      'selected' => old('company_ids', $user->companies->pluck('id')->toArray()),
                                   ])
+                                  @if (! auth()->user()->canGrantFloaterStatus())
+                                      <div class="col-md-6 col-md-offset-3">
+                                          <p class="help-block"><x-icon type="warning" /> {{ trans('admin/users/general.floater_mode_warning_help') }}</p>
+                                      </div>
+                                  @endif
                               @else
-                                  @if ($user->companies->isNotEmpty())
-                                      <div class="form-group">
-                                          <label class="col-md-3 control-label" for="locale">{{ trans('general.company') }}</label>
-                                          <div class="col-md-6">
-                                              <p class="form-control-static">
+                                  {{-- Field stays visible even when read-only so it's clear it exists and
+                                       what it would have shown. Body is the target's current companies if any,
+                                       or a "(no companies)" note, plus a help line explaining why it's locked. --}}
+                                  <div class="form-group">
+                                      <label class="col-md-3 control-label">{{ trans('general.company') }}</label>
+                                      <div class="col-md-6">
+                                          <p class="form-control-static">
+                                              @if ($user->companies->isNotEmpty())
                                                   @foreach ($user->companies as $company)
                                                       <span class="label label-light">{!! $company->present()->formattedNameLink !!}</span>
                                                   @endforeach
-
-                                              </p>
-                                          </div>
+                                              @else
+                                                  <em class="text-muted">{{ trans('admin/users/general.no_companies_assigned') }}</em>
+                                              @endif
+                                          </p>
+                                          <p class="help-block">
+                                              <x-icon type="info" />
+                                              @if (! Gate::allows('canEditAuthFields', $user))
+                                                  {{ trans('admin/users/general.cannot_edit_privileged_user_companies') }}
+                                              @else
+                                                  {{ trans('admin/users/general.cannot_manage_companies_without_membership') }}
+                                              @endif
+                                          </p>
                                       </div>
-                                  @endif
+                                  </div>
                               @endif
 
 

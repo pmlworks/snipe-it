@@ -567,6 +567,28 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     }
 
     /**
+     * Whether this user is allowed to save another user with no company
+     * assignment. Under floater mode, "no companies" means the target gains
+     * system-wide visibility — only superusers are trusted to do that.
+     * When floater mode is off, anyone with `users.edit` can clear the pivot
+     * (no escalation possible, the target just becomes unscoped). When FMCS
+     * itself is off the whole notion is moot. See #19200.
+     */
+    public function canGrantFloaterStatus(): bool
+    {
+        $settings = Setting::getSettings();
+
+        if (! $settings->full_multiple_companies_support) {
+            return true;
+        }
+        if (! $settings->null_company_is_floater) {
+            return true;
+        }
+
+        return $this->isSuperUser();
+    }
+
+    /**
      * Checks if the user can edit their own profile
      *
      * @author A. Gianotto <snipe@snipe.net>
