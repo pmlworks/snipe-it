@@ -10,6 +10,7 @@ use App\Http\Transformers\CompaniesTransformer;
 use App\Http\Transformers\SelectlistTransformer;
 use App\Models\Company;
 use App\Models\Setting;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -89,7 +90,7 @@ class CompaniesController extends Controller
         if ($request->filled('parent_id')) {
             // Allow filtering for top-level companies by passing parent_id=0 or "null".
             $parentId = $request->input('parent_id');
-            if ($parentId === '0' || strtolower((string) $parentId) === 'null') {
+            if (strtolower((string) $parentId) === 'null') {
                 $companies->whereNull('parent_id');
             } else {
                 $companies->where('parent_id', '=', (int) $parentId);
@@ -230,6 +231,7 @@ class CompaniesController extends Controller
         $companies = Company::select([
             'companies.id',
             'companies.name',
+            'companies.parent_id',
             'companies.email',
             'companies.image',
             'companies.tag_color',
@@ -249,15 +251,59 @@ class CompaniesController extends Controller
             $companies = $companies->where('companies.name', 'LIKE', '%'.$request->input('search').'%');
         }
 
-        $companies = $companies->orderBy('name', 'ASC')->paginate(50);
-
-        // Loop through and set some custom properties for the transformer to use.
-        // This lets us have more flexibility in special cases like assets, where
-        // they may not have a ->name value but we want to display something anyway
-        foreach ($companies as $company) {
-            $company->use_image = ($company->image) ? Storage::disk('public')->url('companies/'.$company->image, $company->image) : null;
+        // excludeId: drop a specific company from the list. Used by the parent-
+        // company picker on the edit form so a company can't be made its own parent.
+        if ($request->filled('excludeId')) {
+            $companies->where('companies.id', '!=', (int) $request->input('excludeId'));
         }
 
-        return (new SelectlistTransformer)->transformSelectlist($companies);
+        // Mirror Locations: fetch the full set so we can sort parent → child and
+        // emit indented use_text. Manual pagination after the hierarchical sort
+        // keeps select2 responsive on large lists while preserving grouping.
+        $companies = $companies->orderBy('name', 'ASC')->get();
+
+        // onlyTopLevel: child companies (parent_id != null) still appear, but are
+        // marked disabled so select2 renders them un-clickable. Communicates the
+        // hierarchy constraint visually instead of as a post-submit error.
+        $onlyTopLevel = $request->boolean('onlyTopLevel');
+        if ($onlyTopLevel) {
+            foreach ($companies as $company) {
+                if ($company->parent_id) {
+                    $company->use_disabled = true;
+                }
+            }
+        }
+
+        if ($request->filled('search')) {
+            // Searching breaks hierarchy display anyway — render flat results.
+            foreach ($companies as $company) {
+                $company->use_image = ($company->image)
+                    ? Storage::disk('public')->url('companies/'.$company->image)
+                    : null;
+            }
+            $sorted = $companies;
+        } else {
+            // Group by parent_id, using 0 for "no parent" — PHP 8.4 deprecates
+            // null array offsets and Company::indenter expects ints.
+            $companies_by_parent = [];
+            foreach ($companies as $company) {
+                $companies_by_parent[(int) $company->parent_id][] = $company;
+            }
+
+            // If a user is scoped to a child but not its parent, the child's
+            // parent_id won't have a top-level key — flatten those into the
+            // top-level bucket so they still appear in the list.
+            $visibleIds = $companies->pluck('id')->all();
+            foreach ($companies_by_parent as $pid => $rows) {
+                if ($pid !== 0 && ! in_array($pid, $visibleIds, true)) {
+                    $companies_by_parent[0] = array_merge($companies_by_parent[0] ?? [], $rows);
+                    unset($companies_by_parent[$pid]);
+                }
+            }
+
+            $sorted = new Collection(Company::indenter($companies_by_parent));
+        }
+
+        return (new SelectlistTransformer)->transformSelectlist(Helper::paginateCollection($sorted));
     }
 }

@@ -19,7 +19,6 @@ use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class LocationsController extends Controller
@@ -473,11 +472,6 @@ class LocationsController extends Controller
             'locations.tag_color',
         ]);
 
-        $page = 1;
-        if ($request->filled('page')) {
-            $page = $request->input('page');
-        }
-
         if ($request->filled('search')) {
             $locations = $locations->where('locations.name', 'LIKE', '%'.$request->input('search').'%');
         }
@@ -507,9 +501,7 @@ class LocationsController extends Controller
             $locations_formatted = new Collection($location_options);
         }
 
-        $paginated_results = new LengthAwarePaginator($locations_formatted->forPage($page, 500), $locations_formatted->count(), 500, $page, []);
-
-        return (new SelectlistTransformer)->transformSelectlist($paginated_results);
+        return (new SelectlistTransformer)->transformSelectlist(Helper::paginateCollection($locations_formatted));
     }
 
     public function history(Request $request, Location $location): JsonResponse|array
