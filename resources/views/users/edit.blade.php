@@ -375,32 +375,29 @@
                                       @endif
                                   </div>
 
-                                  @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
-                                      @if ($snipeSettings->full_multiple_companies_support == '1')
-                                          @cannot('superadmin')
-                                              <div class="col-md-6 col-md-offset-3">
+                                  {{-- Help-block column rendered unconditionally so the grid stays
+                                       stable; the @if/@else picks which <p class="help-block"> lines
+                                       go inside. --}}
+                                  <div class="col-md-6 col-md-offset-3">
+                                      @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
+                                          @if ($snipeSettings->full_multiple_companies_support == '1')
+                                              @cannot('superadmin')
                                                   <p class="help-block">
                                                       <x-icon type="tip" class="text-info"/> {{ trans('general.fmcs_company_select_note') }}
                                                   </p>
-                                              </div>
-                                          @endcannot
-                                          @can('superadmin')
-                                              <div class="col-md-6 col-md-offset-3">
+                                              @endcannot
+                                              @can('superadmin')
                                                   <p class="help-block">
                                                       <x-icon type="tip"/> {{ trans('general.fmcs_company_select_superadmin_note') }}
                                                   </p>
-                                              </div>
-                                          @endcan
-                                      @endif
-                                      @if (! auth()->user()->canGrantFloaterStatus())
-                                          <div class="col-md-6 col-md-offset-3">
+                                              @endcan
+                                          @endif
+                                          @if (! auth()->user()->canGrantFloaterStatus())
                                               <p class="help-block">
                                                   <x-icon type="warning" class="text-warning"/> {{ trans('admin/users/general.floater_mode_warning_help') }}
                                               </p>
-                                          </div>
-                                      @endif
-                                  @else
-                                      <div class="col-md-6 col-md-offset-3">
+                                          @endif
+                                      @else
                                           <p class="help-block">
                                               <x-icon type="tip"/>
                                               @if (! Gate::allows('canEditAuthFields', $user))
@@ -409,8 +406,8 @@
                                                   {{ trans('admin/users/general.cannot_manage_companies_without_membership') }}
                                               @endif
                                           </p>
-                                      </div>
-                                  @endif
+                                      @endif
+                                  </div>
 
                                   {!! $errors->first('company_ids', '<div class="col-md-8 col-md-offset-3"><span class="alert-msg"><i class="fas fa-times" aria-hidden="true"></i> :message</span></div>') !!}
                               </div>
