@@ -344,28 +344,25 @@
 
 
                               <!-- Company -->
-                              {{-- selected reads from the company_user pivot only; the legacy users.company_id
-                                   scalar can lag behind (LDAP sync, pre-observer rows, etc.) so we never fall
-                                   back to it or the dropdown would show ghost selections. --}}
-                              @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
-                                  @include ('partials.forms.edit.company-select', [
-                                      'translated_name' => trans('general.company'),
-                                      'fieldname' => 'company_ids',
-                                      'multiple' => 'true',
-                                      'selected' => old('company_ids', $user->companies->pluck('id')->toArray()),
-                                  ])
-                                  @if (! auth()->user()->canGrantFloaterStatus())
-                                      <div class="col-md-6 col-md-offset-3">
-                                          <p class="help-block"><x-icon type="warning" /> {{ trans('admin/users/general.floater_mode_warning_help') }}</p>
-                                      </div>
-                                  @endif
-                              @else
-                                  {{-- Field stays visible even when read-only so it's clear it exists and
-                                       what it would have shown. Body is the target's current companies if any,
-                                       or a "(no companies)" note, plus a help line explaining why it's locked. --}}
-                                  <div class="form-group">
-                                      <label class="col-md-3 control-label">{{ trans('general.company') }}</label>
-                                      <div class="col-md-6">
+                              {{-- When the actor has the rights and the FMCS pivot
+                                   to actually manage companies, we render the dropdown; otherwise
+                                   the target's current companies (or "(none)") in read-only labels.
+                                   Either way one or two help-blocks may follow. --}}
+                              <div id="company_ids" class="form-group{{ $errors->has('company_ids') ? ' has-error' : '' }}">
+                                  <label for="company_ids" class="col-md-3 control-label">{{ trans('general.company') }}</label>
+                                  <div class="col-md-6">
+                                      @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
+                                          <select class="js-data-ajax" data-endpoint="companies" data-placeholder="{{ trans('general.select_company') }}" name="company_ids[]" style="width: 100%" multiple='multiple'>
+                                              {{-- selected reads from the company_user pivot only; the legacy
+                                                   users.company_id scalar can lag behind (LDAP sync, pre-observer
+                                                   rows, etc.) so we never fall back to it. --}}
+                                              @foreach (old('company_ids', $user->companies->pluck('id')->toArray()) as $company_id)
+                                                  <option value="{{ $company_id }}" selected="selected" role="option" aria-selected="true">
+                                                      {{ \App\Models\Company::find($company_id)?->name }}
+                                                  </option>
+                                              @endforeach
+                                          </select>
+                                      @else
                                           <p class="form-control-static">
                                               @if ($user->companies->isNotEmpty())
                                                   @foreach ($user->companies as $company)
@@ -375,8 +372,37 @@
                                                   <em class="text-muted">{{ trans('admin/users/general.no_companies_assigned') }}</em>
                                               @endif
                                           </p>
+                                      @endif
+                                  </div>
+
+                                  @if ((Gate::allows('canEditAuthFields', $user)) && (\App\Models\Company::canManageUsersCompanies()))
+                                      @if ($snipeSettings->full_multiple_companies_support == '1')
+                                          @cannot('superadmin')
+                                              <div class="col-md-6 col-md-offset-3">
+                                                  <p class="help-block">
+                                                      <x-icon type="tip" class="text-info"/> {{ trans('general.fmcs_company_select_note') }}
+                                                  </p>
+                                              </div>
+                                          @endcannot
+                                          @can('superadmin')
+                                              <div class="col-md-6 col-md-offset-3">
+                                                  <p class="help-block">
+                                                      <x-icon type="tip"/> {{ trans('general.fmcs_company_select_superadmin_note') }}
+                                                  </p>
+                                              </div>
+                                          @endcan
+                                      @endif
+                                      @if (! auth()->user()->canGrantFloaterStatus())
+                                          <div class="col-md-6 col-md-offset-3">
+                                              <p class="help-block">
+                                                  <x-icon type="warning" class="text-warning"/> {{ trans('admin/users/general.floater_mode_warning_help') }}
+                                              </p>
+                                          </div>
+                                      @endif
+                                  @else
+                                      <div class="col-md-6 col-md-offset-3">
                                           <p class="help-block">
-                                              <x-icon type="info" />
+                                              <x-icon type="tip"/>
                                               @if (! Gate::allows('canEditAuthFields', $user))
                                                   {{ trans('admin/users/general.cannot_edit_privileged_user_companies') }}
                                               @else
@@ -384,8 +410,10 @@
                                               @endif
                                           </p>
                                       </div>
-                                  </div>
-                              @endif
+                                  @endif
+
+                                  {!! $errors->first('company_ids', '<div class="col-md-8 col-md-offset-3"><span class="alert-msg"><i class="fas fa-times" aria-hidden="true"></i> :message</span></div>') !!}
+                              </div>
 
 
                               <!-- language -->
