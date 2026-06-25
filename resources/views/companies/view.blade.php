@@ -84,6 +84,28 @@
 
                 </x-info-panel>
             </x-box>
+
+            @if ($company->parent || $company->children->isNotEmpty())
+                <x-box>
+                    <h2 class="box-title" style="font-size: 16px; margin-bottom: 12px;">{{ trans('admin/companies/table.hierarchy') }}</h2>
+
+                    @if ($company->parent)
+                        <p style="margin-bottom: 12px;">
+                            <strong>{{ trans('admin/companies/table.parent') }}:</strong><br>
+                            <a href="{{ route('companies.show', $company->parent) }}">{{ $company->parent->name }}</a>
+                        </p>
+                    @endif
+
+                    @if ($company->children->isNotEmpty())
+                        <p style="margin-bottom: 4px;"><strong>{{ trans('admin/companies/table.children') }}:</strong></p>
+                        <ul style="padding-left: 20px; margin-bottom: 0;">
+                            @foreach ($company->children->sortBy('name') as $child)
+                                <li><a href="{{ route('companies.show', $child) }}">{{ $child->name }}</a></li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </x-box>
+            @endif
         </x-page-column>
     </x-container>
 

@@ -173,6 +173,10 @@ final class CompaniesController extends Controller
     {
         $this->authorize('view', Company::class);
 
+        // Eager-load the hierarchy so the sidebar's parent + children list
+        // doesn't trigger lazy lookups during render.
+        $company->loadMissing('parent', 'children');
+
         // Counts on the tab badges include hierarchy (the row + parent + children)
         // to match the tab contents the API serves under expand_company_hierarchy=1.
         // Computed here so the Blade can stay free of @php blocks.

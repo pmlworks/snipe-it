@@ -14,4 +14,5 @@ return [
     'children' => 'Child Companies',
     'inherited' => 'Inherited',
     'inherited_help' => 'This item belongs to a related company in the hierarchy (parent or child), not this company directly.',
+    'hierarchy' => 'Company Hierarchy',
 ];
