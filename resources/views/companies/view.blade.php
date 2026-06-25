@@ -22,6 +22,9 @@
                     <x-tabs.accessory-tab count="{{ $tabCounts['accessories'] }}"/>
                     <x-tabs.consumable-tab count="{{ $tabCounts['consumables'] }}"/>
                     <x-tabs.component-tab count="{{ $tabCounts['components'] }}"/>
+                    @if ($company->children->isNotEmpty())
+                        <x-tabs.company-tab count="{{ $company->children->count() }}"/>
+                    @endif
                     <x-tabs.files-tab :item="$company" count="{{ $company->uploads()->count() }}"/>
                     <x-tabs.upload-tab :item="$company"/>
                 </x-slot:tabnav>
@@ -62,6 +65,14 @@
                         <x-table.components name="components" :route="route('api.components.index', ['company_id' => $company->id, 'expand_company_hierarchy' => 1])"/>
                     </x-tabs.pane>
 
+                    @if ($company->children->isNotEmpty())
+                        <!-- start child companies tab pane -->
+                        <x-tabs.pane name="companies">
+                            <x-table.companies name="companies" :route="route('api.companies.index', ['parent_id' => $company->id])"/>
+                        </x-tabs.pane>
+                        <!-- end child companies tab pane -->
+                    @endif
+
                     <!-- start files tab pane -->
                     <x-tabs.pane name="files">
                         <x-table.files object_type="companies" :object="$company"/>
@@ -82,30 +93,29 @@
                         <x-button.delete :item="$company" />
                     </x-slot:buttons>
 
-                </x-info-panel>
-            </x-box>
-
-            @if ($company->parent || $company->children->isNotEmpty())
-                <x-box>
-                    <h2 class="box-title" style="font-size: 16px; margin-bottom: 12px;">{{ trans('admin/companies/table.hierarchy') }}</h2>
-
                     @if ($company->parent)
-                        <p style="margin-bottom: 12px;">
-                            <strong>{{ trans('admin/companies/table.parent') }}:</strong><br>
-                            <a href="{{ route('companies.show', $company->parent) }}">{{ $company->parent->name }}</a>
-                        </p>
+                        <x-info-element icon_type="company" :icon_color="$company->parent->tag_color" title="{{ trans('admin/companies/table.parent') }}">
+                            <x-copy-to-clipboard class="pull-right" copy_what="parent_company">
+                                {!! $company->parent->present()->nameUrl !!}
+                            </x-copy-to-clipboard>
+                        </x-info-element>
                     @endif
 
                     @if ($company->children->isNotEmpty())
-                        <p style="margin-bottom: 4px;"><strong>{{ trans('admin/companies/table.children') }}:</strong></p>
-                        <ul style="padding-left: 20px; margin-bottom: 0;">
-                            @foreach ($company->children->sortBy('name') as $child)
-                                <li><a href="{{ route('companies.show', $child) }}">{{ $child->name }}</a></li>
-                            @endforeach
-                        </ul>
+                        <x-info-element icon_type="company" title="{{ trans('admin/companies/table.children') }}">
+                            {{ trans('admin/companies/table.children') }}
+                            <x-info-element class="subitem">
+                                <x-copy-to-clipboard class="pull-right" copy_what="child_companies">
+                                    @foreach ($company->children->sortBy('name') as $child)
+                                        {!! $child->present()->formattedNameLink !!}<br>
+                                    @endforeach
+                                </x-copy-to-clipboard>
+                            </x-info-element>
+                        </x-info-element>
                     @endif
-                </x-box>
-            @endif
+
+                </x-info-panel>
+            </x-box>
         </x-page-column>
     </x-container>
 
@@ -116,11 +126,14 @@
         @include ('modals.upload-file', ['item_type' => 'companies', 'item_id' => $company->id])
     @endcan
     <script>
-        // Bootstrap-table formatters read this to decorate rows whose company
-        // doesn't match the company being viewed (i.e. inherited from parent
-        // or child via the FMCS hierarchy expansion). See companiesLinkObj
-        // Formatter and companiesArrayLinkFormatter in partials/bootstrap-table.
+        // Bootstrap-table formatters read these to decorate company tags on
+        // rows that are present because of FMCS hierarchy expansion. The set
+        // is just [self, parent, ...direct children]; companies outside it
+        // (e.g. a user's other memberships) should render unmarked even if
+        // they appear in the same row. See companiesLinkObjFormatter and
+        // companiesArrayLinkFormatter in partials/bootstrap-table.
         window.viewingCompanyId = {{ (int) $company->id }};
+        window.viewingCompanyHierarchyIds = {!! json_encode(\App\Models\Company::reachableCompanyIds($company->id)) !!};
     </script>
     @include ('partials.bootstrap-table')
 @endsection
