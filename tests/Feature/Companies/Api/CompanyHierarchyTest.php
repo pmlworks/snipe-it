@@ -384,6 +384,54 @@ class CompanyHierarchyTest extends TestCase
         $this->assertEquals('SearchableChild', $byId[$child->id]['text'], 'Children should render flat (no indent) when searching');
     }
 
+    public function test_selectlist_marks_children_disabled_when_only_top_level_is_set()
+    {
+        $top = Company::factory()->create(['name' => 'TopLevelSelect']);
+        $child = Company::factory()->childOf($top)->create(['name' => 'ChildSelect']);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.selectlist', ['onlyTopLevel' => 1]))
+            ->assertOk()
+            ->json();
+
+        $byId = collect($response['results'])->keyBy('id');
+
+        $this->assertArrayNotHasKey('disabled', $byId[$top->id], 'Top-level company should not be disabled');
+        $this->assertTrue($byId[$child->id]['disabled'] ?? false, 'Child company should be marked disabled');
+    }
+
+    public function test_selectlist_does_not_mark_disabled_without_only_top_level()
+    {
+        $top = Company::factory()->create();
+        $child = Company::factory()->childOf($top)->create();
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.selectlist'))
+            ->assertOk()
+            ->json();
+
+        $byId = collect($response['results'])->keyBy('id');
+
+        $this->assertArrayNotHasKey('disabled', $byId[$top->id]);
+        $this->assertArrayNotHasKey('disabled', $byId[$child->id], 'Without onlyTopLevel, no rows should be disabled');
+    }
+
+    public function test_selectlist_excludes_company_passed_as_exclude_id()
+    {
+        $excluded = Company::factory()->create(['name' => 'ExcludedFromList']);
+        $included = Company::factory()->create(['name' => 'IncludedInList']);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.selectlist', ['excludeId' => $excluded->id]))
+            ->assertOk()
+            ->json();
+
+        $ids = collect($response['results'])->pluck('id')->all();
+
+        $this->assertNotContains($excluded->id, $ids);
+        $this->assertContains($included->id, $ids);
+    }
+
     public function test_selectlist_surfaces_orphaned_child_when_parent_is_out_of_scope()
     {
         $this->settings->enableMultipleFullCompanySupport();
