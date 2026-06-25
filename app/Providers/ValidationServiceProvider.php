@@ -181,21 +181,19 @@ class ValidationServiceProvider extends ServiceProvider
             return true;
         });
 
-        // Enforce a one-level-deep self-referential hierarchy.
+        // Together, these two validators enforce a one-level-deep self-
+        // referential hierarchy. They're split (rather than combined into one
+        // rule) so each failure produces a message that actually describes
+        // the cause — "the parent you picked isn't top-level" reads very
+        // differently from "this row already has children of its own."
         //
-        // Used on parent_id columns where we explicitly do NOT want grandparents:
-        // a row may be a top-level (parent_id null) or a child of a top-level,
-        // but a child cannot itself become a parent, and a row that already has
-        // children cannot be assigned a parent.
-        //
-        // Example usage on Company (parent_id self-references the same table):
-        //   'parent_id' => 'one_level_deep:companies,id'
-        //
-        // Fails when:
-        //   - the chosen parent is the row itself (self-parent)
-        //   - the chosen parent itself has a parent (would create depth > 1)
-        //   - the row being saved already has children (would create depth > 1)
-        Validator::extend('one_level_deep', function ($attribute, $value, $parameters, $validator) {
+        // Example usage on a parent_id column self-referencing the same table:
+        //   'parent_id' => 'nullable|integer|exists:companies,id|parent_must_be_top_level:companies,id|must_have_no_children:companies,id'
+
+        // The chosen parent_id (1) must not be the row itself (no self-parent),
+        // and (2) must itself be a top-level row (its own parent_id IS NULL).
+        // Either failure means saving would create depth > 1.
+        Validator::extend('parent_must_be_top_level', function ($attribute, $value, $parameters, $validator) {
             if (is_null($value) || $value === '') {
                 return true;
             }
@@ -210,26 +208,38 @@ class ValidationServiceProvider extends ServiceProvider
             $data = $validator->getData();
             $modelId = $data[$pk] ?? null;
 
-            // Self-parent is never allowed.
             if ($modelId && (int) $modelId === (int) $value) {
                 return false;
             }
 
-            // The chosen parent must itself be a top-level (parent_id IS NULL).
             $chosenParentParentId = DB::table($table)->where($pk, $value)->value('parent_id');
-            if (! is_null($chosenParentParentId)) {
-                return false;
+
+            return is_null($chosenParentParentId);
+        });
+
+        // If the row being saved already has children of its own, it can't be
+        // assigned a parent — doing so would push those children to depth 2.
+        // Only checked on update (a brand-new row has no children yet).
+        Validator::extend('must_have_no_children', function ($attribute, $value, $parameters, $validator) {
+            if (is_null($value) || $value === '') {
+                return true;
             }
 
-            // If this row already has children, it cannot be moved under another parent.
-            if ($modelId) {
-                $hasChildren = DB::table($table)->where('parent_id', $modelId)->exists();
-                if ($hasChildren) {
-                    return false;
-                }
+            if (count($parameters) < 2) {
+                throw new \Exception('Required validator parameters: <table>,<primary key>');
             }
 
-            return true;
+            $table = $parameters[0];
+            $pk = $parameters[1];
+
+            $data = $validator->getData();
+            $modelId = $data[$pk] ?? null;
+
+            if (! $modelId) {
+                return true;
+            }
+
+            return ! DB::table($table)->where('parent_id', $modelId)->exists();
         });
 
         // Yo dawg. I heard you like validators.
