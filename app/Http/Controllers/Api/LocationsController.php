@@ -490,11 +490,14 @@ class LocationsController extends Controller
 
         $locations_with_children = [];
 
+        // Use 0 (not null) for the top-level bucket — null array offsets are
+        // deprecated in PHP 8.4 and Location::indenter expects an int key.
         foreach ($locations as $location) {
-            if (! array_key_exists($location->parent_id, $locations_with_children)) {
-                $locations_with_children[$location->parent_id] = [];
+            $parentKey = (int) $location->parent_id;
+            if (! array_key_exists($parentKey, $locations_with_children)) {
+                $locations_with_children[$parentKey] = [];
             }
-            $locations_with_children[$location->parent_id][] = $location;
+            $locations_with_children[$parentKey][] = $location;
         }
 
         if ($request->filled('search')) {
