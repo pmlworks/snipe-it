@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Watson\Validating\ValidatingTrait;
 
@@ -39,7 +40,7 @@ final class Company extends SnipeModel
         'fax' => 'min:7|max:35|nullable',
         'phone' => 'min:7|max:35|nullable',
         'email' => 'email|max:150|nullable',
-        'parent_id' => 'nullable|integer|exists:companies,id|one_level_deep:companies,id',
+        'parent_id' => 'nullable|integer|exists:companies,id|parent_must_be_top_level:companies,id|must_have_no_children:companies,id',
     ];
 
     protected $casts = [
@@ -213,6 +214,45 @@ final class Company extends SnipeModel
             ->all();
 
         return array_values(array_unique(array_merge($ids, $childIds)));
+    }
+
+    /**
+     * Walk the companies-by-parent map, emitting each company with a `use_text`
+     * prefix that reflects its depth. Children appear directly under their
+     * parent; orphans (children whose parent isn't in the visible set — can
+     * happen under FMCS scoping) are surfaced as top-level so they aren't lost.
+     *
+     * The map's keys are parent_id values, with `0` used for "no parent / top-
+     * level". Using 0 (not null) avoids PHP 8.4's deprecation of null array
+     * offsets when callers build the map from `$company->parent_id`.
+     *
+     * Mirrors Location::indenter so the SelectlistTransformer renders the same
+     * "-- Child Co" indentation it already does for locations.
+     */
+    public static function indenter(array $companies_by_parent, int $parent_id = 0, string $prefix = ''): array
+    {
+        $results = [];
+
+        if (! array_key_exists($parent_id, $companies_by_parent)) {
+            return [];
+        }
+
+        foreach ($companies_by_parent[$parent_id] as $company) {
+            $company->use_text = trim($prefix.' '.$company->name);
+            $company->use_image = ($company->image)
+                ? Storage::disk('public')->url('companies/'.$company->image)
+                : null;
+            $results[] = $company;
+
+            if (array_key_exists($company->id, $companies_by_parent)) {
+                $results = array_merge(
+                    $results,
+                    self::indenter($companies_by_parent, $company->id, $prefix.'--'),
+                );
+            }
+        }
+
+        return $results;
     }
 
     public static function isFullMultipleCompanySupportEnabled()
