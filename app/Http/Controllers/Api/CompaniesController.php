@@ -140,6 +140,9 @@ class CompaniesController extends Controller
         $company = $request->handleImages($company);
 
         if ($company->save()) {
+            $company->loadMissing('parent');
+            $company->loadCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()]);
+
             return response()->json(Helper::formatStandardApiResponse('success', (new CompaniesTransformer)->transformCompany($company), trans('admin/companies/message.create.success')));
         }
 
@@ -159,11 +162,12 @@ class CompaniesController extends Controller
     public function show($id): array
     {
         $this->authorize('view', Company::class);
-        $company = Company::findOrFail($id);
+        $company = Company::with('parent')
+            ->withCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()])
+            ->findOrFail($id);
         $this->authorize('view', $company);
 
         return (new CompaniesTransformer)->transformCompany($company);
-
     }
 
     /**
@@ -184,6 +188,9 @@ class CompaniesController extends Controller
         $company = $request->handleImages($company);
 
         if ($company->save()) {
+            $company->loadMissing('parent');
+            $company->loadCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()]);
+
             return response()
                 ->json(Helper::formatStandardApiResponse('success', (new CompaniesTransformer)->transformCompany($company), trans('admin/companies/message.update.success')));
         }

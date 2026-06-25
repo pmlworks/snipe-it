@@ -1512,9 +1512,14 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
      */
     public function scopeOrderCompany($query, $order)
     {
+        // The MIN(...) aggregate has to go through DB::raw, which bypasses
+        // Laravel's grammar — so the `companies` table reference inside the
+        // raw string won't get DB_PREFIX applied automatically. Same pattern
+        // as Api\AssetsController::index's natural-sort branch.
+        $prefix = DB::getTablePrefix();
         $sub = DB::table('company_user')
             ->join('companies', 'companies.id', '=', 'company_user.company_id')
-            ->select('company_user.user_id', DB::raw('MIN(companies.name) as min_company_name'))
+            ->select('company_user.user_id', DB::raw('MIN('.$prefix.'companies.name) as min_company_name'))
             ->groupBy('company_user.user_id');
 
         return $query
