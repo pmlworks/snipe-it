@@ -77,6 +77,45 @@ class CompanyHierarchyTest extends TestCase
         $this->assertDatabaseMissing('companies', ['name' => 'GreatGrandchild']);
     }
 
+    public function test_validation_message_for_grandchild_attempt_mentions_top_level()
+    {
+        $grandparent = Company::factory()->create();
+        $parent = Company::factory()->childOf($grandparent)->create();
+
+        $response = $this->actingAsForApi(User::factory()->createCompanies()->create())
+            ->postJson(route('api.companies.store'), [
+                'name' => 'GreatGrandchildMessageCheck',
+                'parent_id' => $parent->id,
+            ])
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertNotEmpty($response['messages']['parent_id']);
+        $message = implode(' ', (array) $response['messages']['parent_id']);
+        $this->assertStringContainsString('top-level', $message);
+        $this->assertStringNotContainsString('children of its own', $message, 'Grandchild attempt should not show the "row has children" message');
+    }
+
+    public function test_validation_message_for_demoting_parent_mentions_children()
+    {
+        $top = Company::factory()->create();
+        $parentWithKids = Company::factory()->create();
+        Company::factory()->childOf($parentWithKids)->create();
+
+        $response = $this->actingAsForApi(User::factory()->editCompanies()->create())
+            ->patchJson(route('api.companies.update', ['company' => $parentWithKids->id]), [
+                'name' => $parentWithKids->name,
+                'parent_id' => $top->id,
+            ])
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertNotEmpty($response['messages']['parent_id']);
+        $message = implode(' ', (array) $response['messages']['parent_id']);
+        $this->assertStringContainsString('children of its own', $message);
+        $this->assertStringNotContainsString('top-level', $message, 'Demote-with-children attempt should not show the "parent must be top-level" message');
+    }
+
     public function test_cannot_assign_parent_to_company_that_has_children()
     {
         $grandparentCandidate = Company::factory()->create();
@@ -302,6 +341,70 @@ class CompanyHierarchyTest extends TestCase
         $this->assertContains($parent->id, $ids);
         $this->assertContains($child->id, $ids);
         $this->assertNotContains($unrelated->id, $ids);
+    }
+
+    public function test_selectlist_groups_children_under_their_parent_with_indented_text()
+    {
+        $alphaParent = Company::factory()->create(['name' => 'AlphaParent']);
+        $zuluParent = Company::factory()->create(['name' => 'ZuluParent']);
+        $alphaChild = Company::factory()->childOf($alphaParent)->create(['name' => 'AlphaChild']);
+        $zuluChild = Company::factory()->childOf($zuluParent)->create(['name' => 'ZuluChild']);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.selectlist'))
+            ->assertOk()
+            ->json();
+
+        $byId = collect($response['results'])->keyBy('id');
+
+        // Parents render with no indent prefix, children render with the "-- " prefix.
+        $this->assertEquals('AlphaParent', $byId[$alphaParent->id]['text']);
+        $this->assertEquals('-- AlphaChild', $byId[$alphaChild->id]['text']);
+        $this->assertEquals('ZuluParent', $byId[$zuluParent->id]['text']);
+        $this->assertEquals('-- ZuluChild', $byId[$zuluChild->id]['text']);
+
+        // Children appear directly after their own parent, not lumped at the end.
+        $positions = collect($response['results'])->pluck('id')->flip();
+        $this->assertLessThan($positions[$zuluParent->id], $positions[$alphaChild->id], 'Child should appear under its own parent, before the next top-level company');
+    }
+
+    public function test_selectlist_returns_flat_text_when_searching()
+    {
+        $parent = Company::factory()->create(['name' => 'SearchableParent']);
+        $child = Company::factory()->childOf($parent)->create(['name' => 'SearchableChild']);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.selectlist', ['search' => 'Searchable']))
+            ->assertOk()
+            ->json();
+
+        $byId = collect($response['results'])->keyBy('id');
+
+        $this->assertEquals('SearchableParent', $byId[$parent->id]['text']);
+        $this->assertEquals('SearchableChild', $byId[$child->id]['text'], 'Children should render flat (no indent) when searching');
+    }
+
+    public function test_selectlist_surfaces_orphaned_child_when_parent_is_out_of_scope()
+    {
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $parent = Company::factory()->create(['name' => 'HiddenParent']);
+        $child = Company::factory()->childOf($parent)->create(['name' => 'VisibleChild']);
+
+        // User in child only; parent is not in their pivot, so the selectlist
+        // scopes it out — but the child should still render (as top-level, no indent).
+        $userInChild = $child->users()->save(User::factory()->createAssets()->create());
+
+        $response = $this->actingAsForApi($userInChild)
+            ->getJson(route('api.companies.selectlist'))
+            ->assertOk()
+            ->json();
+
+        $byId = collect($response['results'])->keyBy('id');
+
+        $this->assertArrayNotHasKey($parent->id, $byId, 'Parent should not be visible');
+        $this->assertArrayHasKey($child->id, $byId, 'Orphaned child should still appear');
+        $this->assertEquals('VisibleChild', $byId[$child->id]['text'], 'Orphan should be flat (no indent) since its parent is hidden');
     }
 
     public function test_expand_company_hierarchy_on_assets_includes_parent_and_children()
