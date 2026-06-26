@@ -90,7 +90,7 @@ class SaveUserRequest extends FormRequest
             // sneak past the gate — flagged in PR review for #19200. Exclude
             // the PHPUnit/Pest runner, which also reports as "in console" but
             // is using the HTTP stack and must see the gate fire.
-            $inActualConsole = app()->runningInConsole() && !app()->runningUnitTests();
+            $inActualConsole = app()->runningInConsole() && ! app()->runningUnitTests();
             if ($inActualConsole || auth()->user()?->canGrantFloaterStatus()) {
                 return;
             }
