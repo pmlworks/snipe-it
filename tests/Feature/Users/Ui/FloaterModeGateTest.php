@@ -202,6 +202,83 @@ class FloaterModeGateTest extends TestCase
             ->assertSessionDoesntHaveErrors('company_ids');
     }
 
+    public function test_non_superuser_cannot_assign_only_companies_they_do_not_belong_to()
+    {
+        // Regression: Company::getIdsForCurrentUser does an array_intersect
+        // against the actor's company memberships. A non-superuser actor in
+        // companyA who submits company_ids=[companyB.id] would have the
+        // submitted IDs silently filtered to [] — flipping the target into
+        // floater status without ever clicking "no companies". Pin both the
+        // update path (the original report) and the store path.
+        $this->settings->enableFloaterMode();
+
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        $actor = $companyA->users()->save(User::factory()->editUsers()->createUsers()->viewUsers()->create());
+        $target = $companyA->users()->save(User::factory()->create());
+
+        $this->actingAs($actor)
+            ->put(route('users.update', $target), [
+                'first_name' => $target->first_name,
+                'username' => $target->username,
+                'company_ids' => [$companyB->id],
+            ])
+            ->assertSessionHasErrors('company_ids');
+
+        $freshIds = $target->fresh()->companies->pluck('id')->all();
+        $this->assertContains($companyA->id, $freshIds, 'Update: target should keep companyA — intersect-to-empty was refused');
+        $this->assertNotContains($companyB->id, $freshIds);
+
+        $this->actingAs($actor)
+            ->post(route('users.store'), [
+                'first_name' => 'Intersect',
+                'username' => 'intersect-bypass',
+                'password' => 'testpassword1235!!',
+                'password_confirmation' => 'testpassword1235!!',
+                'company_ids' => [$companyB->id],
+            ])
+            ->assertSessionHasErrors('company_ids');
+
+        // Store: floater user must not be created via intersect-to-empty bypass.
+        $this->assertDatabaseMissing('users', ['username' => 'intersect-bypass']);
+    }
+
+    public function test_non_superuser_cannot_assign_only_companies_they_do_not_belong_to_via_api()
+    {
+        // Mirror of the UI regression above for the API surface — both
+        // surfaces share SaveUserRequest, so this pins that contract.
+        $this->settings->enableFloaterMode();
+
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+        $actor = $companyA->users()->save(User::factory()->editUsers()->createUsers()->viewUsers()->create());
+        $target = $companyA->users()->save(User::factory()->create());
+
+        $this->actingAsForApi($actor)
+            ->putJson(route('api.users.update', $target), [
+                'first_name' => $target->first_name,
+                'username' => $target->username,
+                'company_ids' => [$companyB->id],
+            ])
+            ->assertJsonStructure(['messages' => ['company_ids']]);
+
+        $freshIds = $target->fresh()->companies->pluck('id')->all();
+        $this->assertContains($companyA->id, $freshIds);
+        $this->assertNotContains($companyB->id, $freshIds);
+
+        $this->actingAsForApi($actor)
+            ->postJson(route('api.users.store'), [
+                'first_name' => 'IntersectApi',
+                'username' => 'intersect-bypass-api',
+                'password' => 'testpassword1235!!',
+                'password_confirmation' => 'testpassword1235!!',
+                'company_ids' => [$companyB->id],
+            ])
+            ->assertJsonStructure(['messages' => ['company_ids']]);
+
+        $this->assertDatabaseMissing('users', ['username' => 'intersect-bypass-api']);
+    }
+
     public function test_non_superuser_can_change_their_companies_to_a_non_empty_set_in_floater_mode()
     {
         $this->settings->enableFloaterMode();
