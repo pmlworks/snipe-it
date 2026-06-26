@@ -83,7 +83,15 @@ class SaveUserRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator) {
-            if (! auth()->check() || auth()->user()->canGrantFloaterStatus()) {
+            // Console commands (artisan/seeders/queue workers) need to be able
+            // to manage users without going through the HTTP floater gate.
+            // We deliberately check runningInConsole() (rather than "no auth
+            // user") so a future unauthenticated HTTP endpoint can never
+            // sneak past the gate — flagged in PR review for #19200. Exclude
+            // the PHPUnit/Pest runner, which also reports as "in console" but
+            // is using the HTTP stack and must see the gate fire.
+            $inActualConsole = app()->runningInConsole() && !app()->runningUnitTests();
+            if ($inActualConsole || auth()->user()?->canGrantFloaterStatus()) {
                 return;
             }
 
