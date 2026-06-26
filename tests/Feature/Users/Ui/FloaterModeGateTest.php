@@ -109,27 +109,97 @@ class FloaterModeGateTest extends TestCase
         $this->assertNotEmpty($victim->fresh()->companies);
     }
 
-    public function test_uncompanied_non_superuser_cannot_save_user_with_no_companies()
+    public function test_non_superuser_cannot_create_a_new_user_with_no_companies_in_floater_mode()
     {
-        // Per spec: under floater mode, ONLY superusers may grant floater
-        // status. An uncompanied non-superuser (themselves a floater) was
-        // previously trusted to manage other floaters — that's now closed off
-        // because it lets the chain "clear pivot → reset target's password
-        // (via canEditAuthFields gaps) → log in as a new floater" complete.
+        // Covers the web POST path — SaveUserRequest's withValidator fires on
+        // both store and update because it's the same FormRequest.
         $this->settings->enableFloaterMode();
 
-        $actor = User::factory()->editUsers()->create();
-        $actor->companies()->sync([]);
+        $company = Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->createUsers()->viewUsers()->create());
+
+        $this->actingAs($actor)
+            ->post(route('users.store'), [
+                'first_name' => 'New',
+                'username' => 'newfloateruser',
+                'password' => 'testpassword1235!!',
+                'password_confirmation' => 'testpassword1235!!',
+                'company_ids' => [],
+            ])
+            ->assertSessionHasErrors('company_ids');
+
+        $this->assertDatabaseMissing('users', ['username' => 'newfloateruser']);
+    }
+
+    public function test_non_superuser_cannot_create_a_new_user_with_no_companies_via_api_in_floater_mode()
+    {
+        // Covers the API POST path. Same SaveUserRequest underneath, but
+        // worth pinning the JSON entry point separately so the gate isn't
+        // accidentally bypassed by a future API rewrite.
+        $this->settings->enableFloaterMode();
+
+        $company = Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->createUsers()->viewUsers()->create());
+
+        $this->actingAsForApi($actor)
+            ->postJson(route('api.users.store'), [
+                'first_name' => 'New',
+                'username' => 'newfloateruserapi',
+                'password' => 'testpassword1235!!',
+                'password_confirmation' => 'testpassword1235!!',
+                'company_ids' => [],
+            ])
+            ->assertJsonStructure(['messages' => ['company_ids']]);
+
+        $this->assertDatabaseMissing('users', ['username' => 'newfloateruserapi']);
+    }
+
+    public function test_superuser_can_create_a_user_with_no_companies_in_floater_mode()
+    {
+        // Sanity counterpart to the two preceding tests — confirms the gate
+        // only fires for non-superusers, not as an unconditional block on
+        // empty-pivot user creation.
+        $this->settings->enableFloaterMode();
+
+        $superuser = User::factory()->superuser()->create();
+
+        $this->actingAs($superuser)
+            ->post(route('users.store'), [
+                'first_name' => 'New',
+                'username' => 'superminted',
+                'password' => 'testpassword1235!!',
+                'password_confirmation' => 'testpassword1235!!',
+                'company_ids' => [],
+            ])
+            ->assertSessionDoesntHaveErrors('company_ids');
+
+        $this->assertDatabaseHas('users', ['username' => 'superminted']);
+    }
+
+    public function test_floater_actor_can_save_another_user_with_no_companies()
+    {
+        // An actor who is themselves uncompanied (already a floater under
+        // floater mode) is trusted to manage other floaters — they can't
+        // escalate their privileges because they already have none above
+        // floater-level. Legitimate use case: an HR / onboarding role that
+        // sits outside any specific sub-company and is responsible for
+        // creating users across the org (see PR review thread for #19200).
+        // Only the *companied → uncompanied* transition by a companied actor
+        // is blocked.
+        $this->settings->enableFloaterMode();
+
+        $floaterActor = User::factory()->editUsers()->create();
+        $floaterActor->companies()->sync([]);
         $target = User::factory()->create();
         $target->companies()->sync([]);
 
-        $this->actingAs($actor)
+        $this->actingAs($floaterActor)
             ->put(route('users.update', $target), [
                 'first_name' => $target->first_name,
                 'username' => $target->username,
                 'company_ids' => [],
             ])
-            ->assertSessionHasErrors('company_ids');
+            ->assertSessionDoesntHaveErrors('company_ids');
     }
 
     public function test_non_superuser_can_change_their_companies_to_a_non_empty_set_in_floater_mode()

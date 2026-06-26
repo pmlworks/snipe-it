@@ -569,10 +569,14 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     /**
      * Whether this user is allowed to save another user with no company
      * assignment. Under floater mode, "no companies" means the target gains
-     * system-wide visibility — only superusers are trusted to do that.
-     * When floater mode is off, anyone with `users.edit` can clear the pivot
-     * (no escalation possible, the target just becomes unscoped). When FMCS
-     * itself is off the whole notion is moot. See #19200.
+     * system-wide visibility, so the actor needs to already be at that
+     * privilege level: superusers can always grant it; floater actors
+     * (themselves uncompanied) can grant it to others without escalating —
+     * they already have the same access. The only blocked case is a
+     * *companied* non-superuser trying to elevate someone to floater, which
+     * would be a genuine escalation. When floater mode itself is off — or
+     * FMCS is off — there's no floater to grant, so the answer is yes. See
+     * #19200.
      */
     public function canGrantFloaterStatus(): bool
     {
@@ -584,8 +588,11 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         if (! $settings->null_company_is_floater) {
             return true;
         }
+        if ($this->isSuperUser()) {
+            return true;
+        }
 
-        return $this->isSuperUser();
+        return ! $this->companies()->exists();
     }
 
     /**
