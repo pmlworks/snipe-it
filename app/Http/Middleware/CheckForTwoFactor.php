@@ -15,6 +15,39 @@ class CheckForTwoFactor
     public const IGNORE_ROUTES = ['two-factor', 'two-factor-enroll', 'setup', 'logout'];
 
     /**
+     * Whether the *session* attached to this request has cleared 2FA — i.e.
+     * the user is allowed to act beyond the password+2FA-prompt screens.
+     *
+     * Sharing this check lets other middleware (the Passport cookie issuer)
+     * and the API-token endpoints refuse to mint or expose tokens for a
+     * password-only session that never entered a 2FA code. Without it a
+     * session that landed on /two-factor (which is in IGNORE_ROUTES) could
+     * pick up the Passport cookie, hit POST /api/v1/account/personal-access-
+     * tokens and walk away with a long-lived bearer token.
+     */
+    public static function isComplete(Request $request): bool
+    {
+        if (! Auth::check()) {
+            return true;
+        }
+
+        $settings = Setting::getSettings();
+        if (! $settings || $settings->two_factor_enabled == '') {
+            return true;
+        }
+
+        // 2FA is optional and this user has not opted in.
+        if ($settings->two_factor_enabled == '1' && auth()->user()->two_factor_optin != '1') {
+            return true;
+        }
+
+        // 2FA required (or opted in): session must carry the authed marker
+        // set by Auth\TwoFactorAuthController after a valid code is entered.
+        return $request->hasSession()
+            && $request->session()->get('2fa_authed') == auth()->id();
+    }
+
+    /**
      * Handle an incoming request.
      *
      * @param  Request  $request
