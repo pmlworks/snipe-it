@@ -32,12 +32,23 @@ class CheckForTwoFactor
         }
 
         $settings = Setting::getSettings();
-        if (! $settings || $settings->two_factor_enabled == '') {
+        if (! $settings) {
+            return true;
+        }
+
+        // Normalize to the only two "on" values (optional/required). Anything
+        // else — '', '0', null, the integer 0 SQLite occasionally hands back
+        // for an empty tinyInteger column — counts as disabled. Loose `== ''`
+        // would miscount '0' as enabled under PHP 8's stricter comparison
+        // rules and trigger spurious 403s, which is how this manifested on
+        // CI's SQLite even though local SQLite stored the value as ''.
+        $mode = (string) $settings->two_factor_enabled;
+        if ($mode !== '1' && $mode !== '2') {
             return true;
         }
 
         // 2FA is optional and this user has not opted in.
-        if ($settings->two_factor_enabled == '1' && auth()->user()->two_factor_optin != '1') {
+        if ($mode === '1' && auth()->user()->two_factor_optin != '1') {
             return true;
         }
 
