@@ -46,8 +46,15 @@ a.accordion-header {
   color: #333;
 }
 .dynamic-form-row {
-  padding: 10px;
-  margin: 20px;
+  margin-bottom: 15px;
+}
+.dynamic-form-row::before,
+.dynamic-form-row::after {
+  content: " ";
+  display: table;
+}
+.dynamic-form-row::after {
+  clear: both;
 }
 .handle {
   padding-left: 10px;
