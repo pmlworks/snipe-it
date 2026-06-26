@@ -656,23 +656,32 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
 
     /**
      * Returns whether an FMCS company check should allow this user to receive
-     * an asset that belongs to the given company.
+     * an item that belongs to the given company (null = uncompanied item).
      *
-     * - If the user has no company associations at all: returns true (no restriction).
-     * - If the user has associations: returns true only when $companyId is among them.
+     * Mirrors the rules in CompanyableTrait::canCheckoutTo so the User-target
+     * branch behaves the same as every other companyable target:
+     *  - Both sides uncompanied → allowed (null↔null).
+     *  - Item uncompanied, user companied → only when null_company_is_floater
+     *    is on (floater mode treats null-company items as system-wide).
+     *  - Item companied, user uncompanied → only when null_company_is_floater
+     *    is on (floater users see everything).
+     *  - Both sides companied → user's pivot must contain the item's company.
      */
-    public function canReceiveFromCompany(int $companyId): bool
+    public function canReceiveFromCompany(?int $companyId): bool
     {
-        // Items with no company association are unrestricted — anyone can receive them.
-        if (! $companyId) {
-            return true;
-        }
-
         // Query the pivot directly to avoid the Company model's FMCS global scope,
         // which would restrict results to the current actor's visible companies.
         $userCompanyIds = DB::table('company_user')
             ->where('user_id', $this->id)
             ->pluck('company_id');
+
+        if (is_null($companyId)) {
+            if ((bool) Setting::getSettings()->null_company_is_floater) {
+                return true;
+            }
+
+            return $userCompanyIds->isEmpty();
+        }
 
         if ($userCompanyIds->isEmpty()) {
             return (bool) Setting::getSettings()->null_company_is_floater;
