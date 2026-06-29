@@ -616,6 +616,10 @@ class ReportsController extends Controller
                 $header[] = trans('general.type');
             }
 
+            if ($request->filled('assigned_asset_tag')) {
+                $header[] = trans('admin/reports/general.custom_export.assigned_asset_tag');
+            }
+
             if ($request->filled('username')) {
                 $header[] = 'Username';
             }
@@ -970,6 +974,14 @@ class ReportsController extends Controller
                     if ($request->filled('assigned_to')) {
                         $row[] = ($asset->assigned) ? $asset->assigned->display_name : '';
                         $row[] = ($asset->assigned) ? $asset->assignedType() : '';
+                    }
+
+                    if ($request->filled('assigned_asset_tag')) {
+                        // #18281: only populated when the assignee is another
+                        // Asset — empty for user/location assignees and for
+                        // unassigned rows, matching how username/email already
+                        // behave when the assignee isn't a user.
+                        $row[] = ($asset->assigned instanceof Asset) ? $asset->assigned->asset_tag : '';
                     }
 
                     if ($request->filled('username')) {
