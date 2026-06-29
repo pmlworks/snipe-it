@@ -135,10 +135,10 @@ class BrandingSettingsTest extends TestCase
 
         $proxy = \Mockery::mock($publicDisk);
         $proxy->shouldReceive('exists')->with('')->never();
-        $proxy->shouldReceive('exists')->andReturnUsing(fn($p) => $publicDisk->exists($p));
-        $proxy->shouldReceive('put')->andReturnUsing(fn(...$a) => $publicDisk->put(...$a));
-        $proxy->shouldReceive('delete')->andReturnUsing(fn(...$a) => $publicDisk->delete(...$a));
-        $proxy->shouldReceive('makeDirectory')->andReturnUsing(fn(...$a) => $publicDisk->makeDirectory(...$a));
+        $proxy->shouldReceive('exists')->andReturnUsing(fn ($p) => $publicDisk->exists($p));
+        $proxy->shouldReceive('put')->andReturnUsing(fn (...$a) => $publicDisk->put(...$a));
+        $proxy->shouldReceive('delete')->andReturnUsing(fn (...$a) => $publicDisk->delete(...$a));
+        $proxy->shouldReceive('makeDirectory')->andReturnUsing(fn (...$a) => $publicDisk->makeDirectory(...$a));
         Storage::shouldReceive('disk')->with('public')->andReturn($proxy);
 
         $this->actingAs(User::factory()->superuser()->create())
