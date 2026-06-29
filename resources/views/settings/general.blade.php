@@ -205,7 +205,7 @@
 
                            <!-- Model List prefs -->
                            <div class="form-group {{ $errors->has('show_in_model_list') ? 'error' : '' }}">
-                               <div class="col-md-3">
+                               <div class="col-md-3 control-label">
                                    <strong>{{ trans('admin/settings/general.show_in_model_list') }}</strong>
                                </div>
                                <div class="col-md-8">
