@@ -310,7 +310,7 @@ class AssetPresenter extends Presenter
                 'formatter' => 'dateDisplayFormatter',
             ], [
                 'field' => 'expected_checkin',
-                'searchable' => false,
+                'searchable' => true,
                 'sortable' => true,
                 'visible' => false,
                 'title' => trans('admin/hardware/form.expected_checkin'),
@@ -351,17 +351,14 @@ class AssetPresenter extends Presenter
         $fields = CustomField::whereHas('fieldset', function ($query) {
             $query->whereHas('models');
         })->get();
-
-        // Note: We do not need to e() escape the field names here, as they are already escaped when
-        // they are presented in the blade view. If we escape them here, custom fields with quotes in their
-        // name can break the listings page. - snipe
+        
         foreach ($fields as $field) {
             $layout[] = [
                 'field' => $field->db_column,
                 'searchable' => true,
                 'sortable' => true,
                 'switchable' => true,
-                'title' => $field->name,
+                'title' => e($field->name),
                 'formatter' => 'customFieldsFormatter',
                 'escape' => true,
                 'class' => ($field->field_encrypted == '1') ? 'css-padlock' : '',

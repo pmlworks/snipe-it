@@ -96,6 +96,14 @@ class ConsumableCheckoutController extends Controller
             return redirect()->route('consumables.checkout.show', $consumable)->with('error', trans('admin/consumables/message.checkout.user_does_not_exist'))->withInput();
         }
 
+        if (! $consumable->canCheckoutTo($user)) {
+            return redirect()->back()->with('error', trans('general.error_checkout_company_mismatch', [
+                'item' => trans('general.consumable').' "'.$consumable->name.'"',
+                'item_company' => $consumable->company?->name ?? trans('general.unassigned'),
+                'target' => trans('general.user').' "'.$user->username.'"',
+            ]));
+        }
+
         // Update the consumable data
         $consumable->assigned_to = e($request->input('assigned_to'));
 
