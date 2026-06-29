@@ -157,6 +157,64 @@ class CustomAssetReportTest extends TestCase
             ->assertSeeTextInStreamedResponse('Unassigned Asset');
     }
 
+    public function test_assigned_asset_tag_column_emits_parent_tag_only_when_opted_in(): void
+    {
+        // #18281: opt-in column that emits the parent asset's tag in its own
+        // cell when an asset is checked out to another asset. Users/locations
+        // /unassigned rows leave the cell empty. Header must not appear when
+        // the checkbox isn't submitted, so existing templates are unchanged.
+        $parent = Asset::factory()->create(['asset_tag' => 'PARENT-001']);
+        Asset::factory()->assignedToAsset()->create([
+            'name' => 'Child Asset',
+            'assigned_to' => $parent->id,
+            'assigned_type' => Asset::class,
+        ]);
+        Asset::factory()->assignedToUser()->create(['name' => 'User-Assigned Asset']);
+        Asset::factory()->create(['name' => 'Unassigned Asset']);
+
+        $reporter = User::factory()->canViewReports()->create();
+
+        // With the checkbox: column appears, parent tag in the asset-to-asset
+        // row, empty cell everywhere else.
+        $response = $this->actingAs($reporter)
+            ->post('reports/custom', [
+                'asset_name' => '1',
+                'assigned_asset_tag' => '1',
+            ])
+            ->assertOk()
+            ->assertHeader('content-type', 'text/csv; charset=utf-8');
+
+        $rows = collect(Reader::createFromString($response->streamedContent())->getRecords())->values();
+        $header = $rows->first();
+        $body = $rows->slice(1)->values();
+
+        $columnIndex = array_search(
+            trans('admin/reports/general.custom_export.assigned_asset_tag'),
+            $header,
+            true,
+        );
+        $this->assertNotFalse($columnIndex, 'Checked Out Asset Tag header should be present when checkbox is submitted');
+
+        $byName = $body->keyBy(fn ($row) => $row[array_search(trans('general.name'), $header, true)] ?? null);
+
+        $this->assertSame('PARENT-001', $byName['Child Asset'][$columnIndex] ?? null);
+        $this->assertSame('', $byName['User-Assigned Asset'][$columnIndex] ?? null);
+        $this->assertSame('', $byName['Unassigned Asset'][$columnIndex] ?? null);
+
+        // Without the checkbox: column header is absent entirely.
+        $responseWithout = $this->actingAs($reporter)
+            ->post('reports/custom', ['asset_name' => '1'])
+            ->assertOk();
+
+        $headerWithout = collect(Reader::createFromString($responseWithout->streamedContent())->getRecords())
+            ->first();
+
+        $this->assertFalse(
+            array_search(trans('admin/reports/general.custom_export.assigned_asset_tag'), $headerWithout, true),
+            'Checked Out Asset Tag column must not appear when checkbox is unchecked',
+        );
+    }
+
     public function test_custom_report_decrypts_encrypted_custom_fields_when_user_has_permission(): void
     {
         $customField = CustomField::factory()->encrypt()->create();

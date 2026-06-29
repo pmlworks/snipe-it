@@ -256,6 +256,11 @@
                 {{ trans('admin/licenses/table.assigned_to') }}
               </label>
 
+                <label class="form-control">
+                    <input type="checkbox" name="assigned_asset_tag" value="1" @checked($template->checkmarkValue('assigned_asset_tag', '0')) />
+                    {{ trans('admin/reports/general.custom_export.assigned_asset_tag') }}
+                </label>
+
 
               <label class="form-control">
                   <input type="checkbox" name="username" value="1" @checked($template->checkmarkValue('username')) />

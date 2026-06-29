@@ -215,6 +215,8 @@ return [
     'logout' => 'Logout',
     'lookup_by_tag' => 'Lookup by Asset Tag',
     'maintenances' => 'Maintenances',
+    'active_maintenances' => 'Active Maintenances',
+    'maintenance_cost' => 'Maintenance Cost',
     'maintenance_complete' => 'Maintenance Complete',
     'manage_api_keys' => 'Manage API keys',
     'manufacturer' => 'Manufacturer',

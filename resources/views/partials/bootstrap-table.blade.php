@@ -2523,6 +2523,10 @@
         return linkToUserSectionBasedOnCount(value, row.id, 'managed-locations');
     }
 
+    function linkNumberToUserAssignedMaintenancesFormatter(value, row) {
+        return linkToUserSectionBasedOnCount(value, row.id, 'maintenances');
+    }
+
     function labelPerPageFormatter(value, row, index, field) {
         if (row) {
             if (!row.hasOwnProperty('sheet_info')) { return 1; }
