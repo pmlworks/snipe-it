@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AssetModelTest extends TestCase
@@ -82,6 +83,35 @@ class AssetModelTest extends TestCase
         };
 
         $this->assertEquals(40.0, $model->percentRemaining());
+    }
+
+    public function test_percent_remaining_only_calls_available_assets_count_once(): void
+    {
+        // Regression: the old implementation called $this->availableAssets()
+        // ->count() twice — once for the zero guard, once for the ratio.
+        // Under the API transformer loop in /api/v1/models that doubled the
+        // status-label pluck + count(*) queries for every row. Pin the
+        // single-call contract so a future cleanup doesn't reintroduce it.
+        $category = Category::factory()->create(['category_type' => 'asset']);
+        $model = AssetModel::factory()->create(['category_id' => $category->id]);
+        Asset::factory()->count(2)->create(['model_id' => $model->id]);
+
+        $availableCountQueries = 0;
+        DB::listen(function ($query) use (&$availableCountQueries, $model) {
+            // The availableAssets() relation generates a count(*) on assets
+            // filtered by model_id AND assigned_to IS NULL.
+            if (str_contains($query->sql, 'count(*)')
+                && str_contains($query->sql, '"assets"')
+                && str_contains($query->sql, '"assigned_to" is null')
+                && in_array($model->id, $query->bindings, true)
+            ) {
+                $availableCountQueries++;
+            }
+        });
+
+        $model->percentRemaining();
+
+        $this->assertSame(1, $availableCountQueries, 'availableAssets()->count() must be called exactly once per percentRemaining()');
     }
 
     public function test_percent_remaining_returns_one_hundred_when_all_assets_are_available()

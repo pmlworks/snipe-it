@@ -160,11 +160,17 @@ class AssetModel extends SnipeModel
 
     public function percentRemaining()
     {
-        if ($this->availableAssets()->count() == 0) {
+        // Cache the available count locally — the old code called
+        // availableAssets()->count() twice, which under the API transformer
+        // loop showed up as a duplicated `select count(*) … assets where
+        // model_id = ?` for every model in the response (visible in any
+        // /api/v1/models?category_id=… query log).
+        $available = $this->availableAssets()->count();
+        if ($available === 0) {
             return 0;
         }
 
-        return $this->availableAssets()->count() / $this->assets()->count() * 100;
+        return $available / $this->assets()->count() * 100;
     }
 
     /**
