@@ -85,6 +85,32 @@ class AssetModelTest extends TestCase
         $this->assertEquals(40.0, $model->percentRemaining());
     }
 
+    public function test_percent_remaining_skips_queries_when_counts_were_eager_loaded(): void
+    {
+        // Api\AssetModelsController::index loads `remaining` and `assets_count`
+        // on every model via withCount. percentRemaining() must read those
+        // attributes instead of re-running the same counts — otherwise the
+        // transformer loop turns into per-model N+1 (visible as duplicated
+        // `count(*) … assets where model_id = ?` rows in /api/v1/models).
+        $category = Category::factory()->create(['category_type' => 'asset']);
+        $model = AssetModel::factory()->create(['category_id' => $category->id]);
+        Asset::factory()->count(4)->create(['model_id' => $model->id]);
+
+        // Simulate the withCount load by setting the raw attributes directly,
+        // matching exactly what Api\AssetModelsController::index does.
+        $model->forceFill(['remaining' => 3, 'assets_count' => 4]);
+
+        $queryCount = 0;
+        DB::listen(function () use (&$queryCount) {
+            $queryCount++;
+        });
+
+        $result = $model->percentRemaining();
+
+        $this->assertSame(0, $queryCount, 'No queries should fire when the counts were eager-loaded');
+        $this->assertSame(75.0, $result);
+    }
+
     public function test_percent_remaining_only_calls_available_assets_count_once(): void
     {
         // Regression: the old implementation called $this->availableAssets()
