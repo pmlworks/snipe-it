@@ -126,9 +126,15 @@ class AssetModelTest extends TestCase
         DB::listen(function ($query) use (&$availableCountQueries, $model) {
             // The availableAssets() relation generates a count(*) on assets
             // filtered by model_id AND assigned_to IS NULL.
-            if (str_contains($query->sql, 'count(*)')
-                && str_contains($query->sql, '"assets"')
-                && str_contains($query->sql, '"assigned_to" is null')
+            //
+            // Strip identifier quotes so the matcher works regardless of
+            // driver — sqlite emits `"assets"`, MySQL/MariaDB emits backticks.
+            // Without this normalization the test passes on the sqlite CI
+            // run and fails on the mysql one.
+            $normalized = str_replace(['`', '"'], '', $query->sql);
+            if (str_contains($normalized, 'count(*)')
+                && str_contains($normalized, 'from assets')
+                && str_contains($normalized, 'assigned_to is null')
                 && in_array($model->id, $query->bindings, true)
             ) {
                 $availableCountQueries++;
