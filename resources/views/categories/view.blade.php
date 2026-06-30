@@ -18,18 +18,16 @@
         <x-page-column class="col-md-9 main-panel">
             <x-tabs>
                 <x-slot:tabnav>
+                    {{-- Method-style ->blah()->count() so we issue a
+                             SELECT count(*) instead of hydrating the full
+                             collection just to read its size. --}}
+
                     @if ($category->category_type=='asset')
                         <x-tabs.asset-tab count="{{ $category->showableAssets()->count() }}"/>
-                        {{-- Use the relation method (->models()) — property access (->models) hydrates
-                             the whole AssetModel collection just to take ->count(), and on a category
-                             with hundreds of models it's a notable allocator on the shell render. --}}
                         <x-tabs.model-tab count="{{ $category->models()->count() }}"/>
                     @elseif ($category->category_type=='accessory')
-                        {{-- Method-style ->accessories()->count() so we issue a
-                             SELECT count(*) instead of hydrating the full
-                             collection just to read its size. Same rationale
-                             as the ->models() call above. --}}
-                        <x-tabs.accessory-tab count="{{ $category->accessories()->count() }}"/>
+
+                    <x-tabs.accessory-tab count="{{ $category->accessories()->count() }}"/>
                     @elseif ($category->category_type=='license')
                         <x-tabs.license-tab count="{{ $category->licenses()->count() }}"/>
                     @elseif ($category->category_type=='consumable')
