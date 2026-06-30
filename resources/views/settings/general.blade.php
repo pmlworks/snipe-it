@@ -205,9 +205,9 @@
 
                            <!-- Model List prefs -->
                            <div class="form-group {{ $errors->has('show_in_model_list') ? 'error' : '' }}">
-                               <div class="col-md-3 control-label">
+                               <x-form.label class="col-md-3">
                                    <strong>{{ trans('admin/settings/general.show_in_model_list') }}</strong>
-                               </div>
+                               </x-form.label>
                                <div class="col-md-8">
                                    <label class="form-control">
                                        <input type="checkbox" name="show_in_model_list[]" value="image" @checked(old('show_in_model_list', $snipeSettings->modellistCheckedValue('image'))) aria-label="show_in_model_list"/>
