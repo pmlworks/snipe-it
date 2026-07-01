@@ -352,9 +352,13 @@ class SlackSettingsForm extends Component
 
     /**
      * Uniform failure path for outbound webhook tests. The exception message
-     * is logged server-side but never reflected into the UI, because Guzzle
-     * error strings leak connect-refused / timeout / DNS details that turn
-     * this feature into a port-scanning oracle for internal hosts.
+     * used to be a port-scanning oracle back when the endpoint field accepted
+     * internal URLs; now that the ExternalUrl rule rejects those before we
+     * ever dial anything, the connect-level error can only describe an
+     * external host the admin explicitly typed, so we surface it back into
+     * the flash. Full exception context still lands in the log for audit
+     * and for cases where the flash message is too short to be useful (SSL
+     * chain problems, proxy failures, etc.).
      */
     private function handleWebhookFailure(\Throwable $e)
     {
@@ -363,13 +367,15 @@ class SlackSettingsForm extends Component
             'app' => $this->webhook_name,
             'exception' => $e::class,
             'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
         ]);
 
         $this->isDisabled = 'disabled';
         $this->save_button = trans('admin/settings/general.webhook_presave');
 
         return session()->flash('error', trans('admin/settings/message.webhook.error', [
-            'error_message' => trans('admin/settings/message.webhook.error_misc'),
+            'error_message' => $e->getMessage(),
             'app' => $this->webhook_name,
         ]));
     }

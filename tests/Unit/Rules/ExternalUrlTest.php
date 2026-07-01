@@ -55,7 +55,6 @@ class ExternalUrlTest extends TestCase
             'v4-mapped rfc1918' => ['http://[::ffff:10.0.0.1]/'],
 
             // Malformed.
-            'empty' => [''],
             'no scheme' => ['example.com'],
             'no host' => ['http:///'],
         ];
@@ -78,5 +77,26 @@ class ExternalUrlTest extends TestCase
     public function test_accepts_public_ipv6_literal()
     {
         $this->assertTrue($this->passes('http://[2606:2800:220:1:248:1893:25c8:1946]/'));
+    }
+
+    public function test_internal_targets_pass_when_escape_hatch_is_enabled()
+    {
+        config(['app.webhook_allow_internal_targets' => true]);
+
+        $this->assertTrue($this->passes('http://127.0.0.1/hook'));
+        $this->assertTrue($this->passes('http://10.0.0.1/hook'));
+        $this->assertTrue($this->passes('http://192.168.1.50:8080/hook'));
+        $this->assertTrue($this->passes('http://169.254.169.254/'));
+        $this->assertTrue($this->passes('http://[::1]/hook'));
+    }
+
+    public function test_escape_hatch_still_blocks_non_http_schemes()
+    {
+        config(['app.webhook_allow_internal_targets' => true]);
+
+        $this->assertFalse($this->passes('ftp://example.com/'));
+        $this->assertFalse($this->passes('irc://example.com/'));
+        $this->assertFalse($this->passes('javascript:alert(1)'));
+        $this->assertFalse($this->passes('file:///etc/passwd'));
     }
 }

@@ -44,6 +44,13 @@ class ExternalUrl implements ValidationRule
             return;
         }
 
+        // Operators who legitimately need to point at an on-LAN webhook
+        // receiver flip WEBHOOK_ALLOW_INTERNAL_TARGETS in .env. Scheme
+        // restrictions above still apply; only the IP-range check is skipped.
+        if (config('app.webhook_allow_internal_targets')) {
+            return;
+        }
+
         $host = $parts['host'];
 
         if (str_starts_with($host, '[') && str_ends_with($host, ']')) {
@@ -89,25 +96,31 @@ class ExternalUrl implements ValidationRule
     {
         $ips = [];
 
-        $records = @dns_get_record($host, DNS_A + DNS_AAAA);
-        if (is_array($records)) {
-            foreach ($records as $r) {
-                if (! empty($r['ip'])) {
-                    $ips[] = $r['ip'];
-                }
+        // gethostbynamel goes through nsswitch (/etc/hosts, mDNS, DNS) —
+        // the same lookup path the outbound HTTP client will use. dns_get_record
+        // alone is a pure DNS query that ignores /etc/hosts and may apply
+        // search suffixes, which would let "localhost" resolve to a public IP
+        // under "localhost.<search-domain>" and slip past the check.
+        $v4 = @gethostbynamel($host);
+        if (is_array($v4)) {
+            foreach ($v4 as $ip) {
+                $ips[] = $ip;
+            }
+        }
+
+        // There is no stdlib nsswitch equivalent for IPv6, so this leg is
+        // best-effort DNS. The IPv4 leg above already catches the common
+        // "localhost" / hosts-file cases, so a missed AAAA record here
+        // can't silently pass a name we would have otherwise rejected.
+        $v6 = @dns_get_record($host, DNS_AAAA);
+        if (is_array($v6)) {
+            foreach ($v6 as $r) {
                 if (! empty($r['ipv6'])) {
                     $ips[] = $r['ipv6'];
                 }
             }
         }
 
-        if ($ips === []) {
-            $resolved = @gethostbyname($host);
-            if ($resolved !== $host && filter_var($resolved, FILTER_VALIDATE_IP)) {
-                $ips[] = $resolved;
-            }
-        }
-
-        return $ips;
+        return array_values(array_unique($ips));
     }
 }
