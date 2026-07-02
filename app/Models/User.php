@@ -567,6 +567,35 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     }
 
     /**
+     * Whether this user is allowed to save another user with no company
+     * assignment. Under floater mode, "no companies" means the target gains
+     * system-wide visibility, so the actor needs to already be at that
+     * privilege level: superusers can always grant it; floater actors
+     * (themselves uncompanied) can grant it to others without escalating —
+     * they already have the same access. The only blocked case is a
+     * *companied* non-superuser trying to elevate someone to floater, which
+     * would be a genuine escalation. When floater mode itself is off — or
+     * FMCS is off — there's no floater to grant, so the answer is yes. See
+     * #19200.
+     */
+    public function canGrantFloaterStatus(): bool
+    {
+        $settings = Setting::getSettings();
+
+        if (! $settings->full_multiple_companies_support) {
+            return true;
+        }
+        if (! $settings->null_company_is_floater) {
+            return true;
+        }
+        if ($this->isSuperUser()) {
+            return true;
+        }
+
+        return ! $this->companies()->exists();
+    }
+
+    /**
      * Checks if the user can edit their own profile
      *
      * @author A. Gianotto <snipe@snipe.net>
@@ -627,23 +656,32 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
 
     /**
      * Returns whether an FMCS company check should allow this user to receive
-     * an asset that belongs to the given company.
+     * an item that belongs to the given company (null = uncompanied item).
      *
-     * - If the user has no company associations at all: returns true (no restriction).
-     * - If the user has associations: returns true only when $companyId is among them.
+     * Mirrors the rules in CompanyableTrait::canCheckoutTo so the User-target
+     * branch behaves the same as every other companyable target:
+     *  - Both sides uncompanied → allowed (null↔null).
+     *  - Item uncompanied, user companied → only when null_company_is_floater
+     *    is on (floater mode treats null-company items as system-wide).
+     *  - Item companied, user uncompanied → only when null_company_is_floater
+     *    is on (floater users see everything).
+     *  - Both sides companied → user's pivot must contain the item's company.
      */
-    public function canReceiveFromCompany(int $companyId): bool
+    public function canReceiveFromCompany(?int $companyId): bool
     {
-        // Items with no company association are unrestricted — anyone can receive them.
-        if (! $companyId) {
-            return true;
-        }
-
         // Query the pivot directly to avoid the Company model's FMCS global scope,
         // which would restrict results to the current actor's visible companies.
         $userCompanyIds = DB::table('company_user')
             ->where('user_id', $this->id)
             ->pluck('company_id');
+
+        if (is_null($companyId)) {
+            if ((bool) Setting::getSettings()->null_company_is_floater) {
+                return true;
+            }
+
+            return $userCompanyIds->isEmpty();
+        }
 
         if ($userCompanyIds->isEmpty()) {
             return (bool) Setting::getSettings()->null_company_is_floater;
