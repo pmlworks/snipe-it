@@ -750,9 +750,8 @@ class ImportAssetsTest extends ImportDataTestCase implements TestsPermissionsReq
             'assigneeEmail' => 'phantom@example.org',
         ]);
 
-        $import = Import::factory()->asset()->create(['file_path' => $importFileBuilder->saveToImportsDirectory()]);
-
         $this->actingAsForApi($importer);
+        $import = Import::factory()->asset()->create(['file_path' => $importFileBuilder->saveToImportsDirectory()]);
         $this->importFileResponse(['import' => $import->id])->assertOk();
 
         $this->assertDatabaseMissing('users', ['username' => 'phantom-floater-user']);
