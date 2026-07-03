@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Traits\UniqueUndeletedTrait;
 use App\Models\Traits\CompanyableTrait;
 use App\Models\Traits\HasUploads;
 use App\Models\Traits\Loggable;
@@ -31,12 +32,13 @@ final class Company extends SnipeModel
     use HasUploads;
     use Loggable;
     use SoftDeletes;
+    use UniqueUndeletedTrait;
 
     protected $table = 'companies';
 
     // Declare the rules for the model validation
     protected $rules = [
-        'name' => 'required|max:255|unique:companies,name',
+        'name' => 'required|max:255|unique_undeleted',
         'fax' => 'min:7|max:35|nullable',
         'phone' => 'min:7|max:35|nullable',
         'email' => 'email|max:150|nullable',
@@ -360,6 +362,18 @@ final class Company extends SnipeModel
                 return true;
             }
 
+            // For User targets the visibility rule is already encoded in the
+            // CompanyableScope. If the actor can see this user in their scoped
+            // list, they can act on it (the role-permission check that runs
+            // after this still has final say). Doing this here keeps per-target
+            // access in lockstep with list visibility — the back-patch for
+            // #19187 tightened the bypass branch below but never updated the
+            // per-target path, which left actors able to see users they
+            // couldn't then edit. One check, one query, same logic as the list.
+            if ($companyable instanceof User) {
+                return User::where('users.id', $companyable->id)->exists();
+            }
+
             $userCompanyIds = self::getCurrentUserCompanyIds();
 
             // Empty pivot = unrestricted only for true legacy "no-company" users
@@ -368,21 +382,6 @@ final class Company extends SnipeModel
             // do NOT qualify for this bypass.
             if (empty($userCompanyIds) && is_null(auth()->user()->company_id)) {
                 return true;
-            }
-
-            // Users are scoped by pivot membership, not company_id, so check the pivot directly.
-            if ($companyable instanceof User) {
-                $companyableCompanyIds = DB::table('company_user')
-                    ->where('user_id', $companyable->id)
-                    ->pluck('company_id')
-                    ->toArray();
-
-                // A null-company user (no pivot rows) is accessible in floater mode.
-                if (empty($companyableCompanyIds)) {
-                    return (bool) Setting::getSettings()->null_company_is_floater;
-                }
-
-                return ! empty(array_intersect($userCompanyIds, $companyableCompanyIds));
             }
 
             $companyable_company_id = ($companyable instanceof Company)

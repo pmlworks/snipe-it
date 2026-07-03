@@ -1780,9 +1780,11 @@ class Helper
                         // Users belong to companies via the many-to-many pivot (company_user).
                         // canReceiveFromCompany() returns true only when the user's pivot
                         // contains the location's company, so !canReceiveFromCompany() is
-                        // the correct mismatch signal.
+                        // the correct mismatch signal. Pass $location_company through as
+                        // ?int — casting null to (int) would coerce it to 0 and miss the
+                        // null-company branch inside the method.
                         if ($item instanceof User) {
-                            $isMismatch = ! $item->canReceiveFromCompany((int) $location_company);
+                            $isMismatch = ! $item->canReceiveFromCompany($location_company === null ? null : (int) $location_company);
                         } elseif ($item->company_id == $location_company) {
                             $isMismatch = false;
                         } elseif (is_null($item->company_id) || is_null($location_company)) {
