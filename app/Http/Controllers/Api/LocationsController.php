@@ -480,6 +480,10 @@ class LocationsController extends Controller
             $locations->where('locations.id', '!=', (int) $request->input('excludeId'));
         }
 
+        if ((Setting::getSettings()->full_multiple_companies_support == '1') && $request->filled('companyId')) {
+            $locations->where('locations.company_id', '=', (int) $request->input('companyId'));
+        }
+
         $locations = $locations->orderBy('name', 'ASC')->get();
 
         $locations_with_children = [];
