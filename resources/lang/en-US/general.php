@@ -740,6 +740,7 @@ return [
         'assoc_components_no_count' => ':item_name is currently associated with other components and cannot be deleted. Please update your components to no longer reference this :item and try again.',
         'assoc_licenses_no_count' => ':item_name is currently associated with other licenses and cannot be deleted. Please update your licenses to no longer reference this :item and try again.',
         'assoc_users_no_count' => ':item_name is currently associated with other users and cannot be deleted. Please update your users to no longer reference this :item and try again.',
+        'assoc_child_companies_no_count' => ':item_name is currently a parent to other companies and cannot be deleted. Please reassign or delete the child companies before trying again.',
     ],
 
     'breadcrumb_button_actions' => [

@@ -83,6 +83,21 @@ class BulkDeleteCompaniesTest extends TestCase
         $this->assertNotSoftDeleted($blocked);
     }
 
+    public function test_parent_company_with_children_is_not_bulk_deleted()
+    {
+        $parent = Company::factory()->create();
+        Company::factory()->create(['parent_id' => $parent->id]);
+
+        $this->actingAs(User::factory()->deleteCompanies()->create())
+            ->post(route('companies.bulk.delete'), [
+                'ids' => [$parent->id],
+            ])
+            ->assertSessionHas('multi_error_messages');
+
+        $this->assertModelExists($parent);
+        $this->assertNotSoftDeleted($parent);
+    }
+
     public function test_nonexistent_ids_are_reported_and_do_not_break_the_batch()
     {
         $deletable = Company::factory()->create();

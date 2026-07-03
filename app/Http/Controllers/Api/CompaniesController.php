@@ -140,8 +140,8 @@ class CompaniesController extends Controller
         $company = $request->handleImages($company);
 
         if ($company->save()) {
+            // parent is worth loading so the response reflects the hierarchy the caller just set.
             $company->loadMissing('parent');
-            $company->loadCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()]);
 
             return response()->json(Helper::formatStandardApiResponse('success', (new CompaniesTransformer)->transformCompany($company), trans('admin/companies/message.create.success')));
         }
@@ -163,6 +163,10 @@ class CompaniesController extends Controller
     {
         $this->authorize('view', Company::class);
         $company = Company::with('parent')
+            // Same seven counts as index(). isDeletable() reads *_count and
+            // falls back to per-relation ->count() queries if these aren't
+            // preloaded, which would be six extra hits per show call.
+            ->withCount('assets as assets_count', 'licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count')
             ->withCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()])
             ->findOrFail($id);
         $this->authorize('view', $company);
@@ -189,6 +193,9 @@ class CompaniesController extends Controller
 
         if ($company->save()) {
             $company->loadMissing('parent');
+            // Match the index()/show() eager loads so isDeletable() in the
+            // transformer doesn't fall through to per-relation count queries.
+            $company->loadCount(['assets as assets_count', 'licenses as licenses_count', 'accessories as accessories_count', 'consumables as consumables_count', 'components as components_count', 'users as users_count']);
             $company->loadCount(['children as children_count' => fn ($q) => $q->withoutGlobalScopes()]);
 
             return response()
