@@ -12,22 +12,29 @@
 
         <x-page-column class="col-md-9">
             <x-box>
-                <table
-                  data-columns="{{ \App\Presenters\CompanyPresenter::dataTableLayout() }}"
-                  data-cookie-id-table="companiesTable"
-                  data-id-table="companiesTable"
-                  data-side-pagination="server"
-                  data-sort-order="asc"
-                  data-advanced-search="false"
-                  id="companiesTable"
-                  data-buttons="companyButtons"
-                  class="table table-striped snipe-table"
-                  data-url="{{ route('api.companies.index') }}"
-                  data-export-options='{
-                            "fileName": "export-companies-{{ date('Y-m-d') }}",
-                            "ignoreColumn": ["actions","image","change","checkbox","checkincheckout","icon"]
-                            }'>
-                </table>
+
+                <x-slot:bulkactions>
+                    <x-table.bulk-actions
+                            name='company'
+                            action_route="{{ route('companies.bulk.delete') }}"
+                            model_name="company"
+                    >
+                        @can('delete', App\Models\Company::class)
+                            <option>{{ trans('general.delete') }}</option>
+                        @endcan
+                    </x-table.bulk-actions>
+                </x-slot:bulkactions>
+
+                <x-table
+                        name="company"
+                        buttons="companyButtons"
+                        fixed_right_number="1"
+                        fixed_number="1"
+                        api_url="{{ route('api.companies.index') }}"
+                        :presenter="\App\Presenters\CompanyPresenter::dataTableLayout()"
+                        export_filename="export-companies-{{ date('Y-m-d') }}"
+                />
+
             </x-box>
         </x-page-column>
 
