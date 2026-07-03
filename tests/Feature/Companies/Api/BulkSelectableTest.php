@@ -48,4 +48,15 @@ class BulkSelectableTest extends TestCase
             ->assertOk()
             ->assertJsonPath('available_actions.bulk_selectable.delete', false);
     }
+
+    public function test_parent_company_with_children_is_not_bulk_selectable()
+    {
+        $parent = Company::factory()->create();
+        Company::factory()->create(['parent_id' => $parent->id]);
+
+        $this->actingAsForApi(User::factory()->superuser()->create())
+            ->getJson(route('api.companies.show', $parent))
+            ->assertOk()
+            ->assertJsonPath('available_actions.bulk_selectable.delete', false);
+    }
 }

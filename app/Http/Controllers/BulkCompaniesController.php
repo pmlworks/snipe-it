@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Companies\DestroyCompanyAction;
 use App\Exceptions\ItemStillHasAccessories;
 use App\Exceptions\ItemStillHasAssets;
+use App\Exceptions\ItemStillHasChildCompanies;
 use App\Exceptions\ItemStillHasComponents;
 use App\Exceptions\ItemStillHasConsumables;
 use App\Exceptions\ItemStillHasLicenses;
@@ -43,6 +44,8 @@ class BulkCompaniesController extends Controller
                 $errors[] = trans('general.bulk_delete_associations.assoc_consumables_no_count', ['item_name' => $company->name, 'item' => trans('general.company')]);
             } catch (ItemStillHasUsers $e) {
                 $errors[] = trans('general.bulk_delete_associations.assoc_users_no_count', ['item_name' => $company->name, 'item' => trans('general.company')]);
+            } catch (ItemStillHasChildCompanies $e) {
+                $errors[] = trans('general.bulk_delete_associations.assoc_child_companies_no_count', ['item_name' => $company->name, 'item' => trans('general.company')]);
             } catch (\Exception $e) {
                 report($e);
                 $errors[] = trans('general.something_went_wrong');
