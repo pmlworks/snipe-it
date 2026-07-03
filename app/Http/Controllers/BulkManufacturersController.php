@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Manufacturers\DeleteManufacturerAction;
+use App\Actions\Manufacturers\DestroyManufacturerAction;
 use App\Exceptions\ItemStillHasAccessories;
 use App\Exceptions\ItemStillHasAssets;
 use App\Exceptions\ItemStillHasComponents;
@@ -27,7 +27,7 @@ class BulkManufacturersController extends Controller
                 continue;
             }
             try {
-                DeleteManufacturerAction::run(manufacturer: $manufacturer);
+                DestroyManufacturerAction::run(manufacturer: $manufacturer);
                 $success_count++;
             } catch (ItemStillHasAssets $e) {
                 $errors[] = trans('general.bulk_delete_associations.assoc_assets_no_count', ['item_name' => $manufacturer->name, 'item' => trans('general.manufacturer')]);

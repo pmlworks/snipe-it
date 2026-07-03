@@ -212,6 +212,11 @@ $(function () {
                         statusType: link.data("asset-status-type"),
                         companyId: link.data("company-ids") || link.data("company-id"),
                         excludeId: link.data("exclude-id"),
+                        // When true, the companies selectlist marks child companies
+                        // (those with a parent of their own) as disabled — used by
+                        // the parent-company picker so users can't choose options
+                        // that would fail the parent_must_be_top_level validator.
+                        onlyTopLevel: link.data("only-top-level"),
                     };
                     return data;
                 },

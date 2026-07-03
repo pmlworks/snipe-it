@@ -2260,21 +2260,72 @@
         }
     }
 
+    // Renders a single company tag. `isInherited` is decided by the caller —
+    // it's true only when (a) we're on the companies show page (viewing context
+    // is set), (b) the row didn't get included via direct membership, and (c)
+    // THIS specific tag is the parent or a child of the viewing company. Other
+    // unrelated memberships on the same row render unmarked.
+    function renderCompanyTag(c, isInherited) {
+        var color = (c.tag_color)
+            ? '<i class="fa-solid fa-square" style="color: ' + c.tag_color + ';" aria-hidden="true"></i> '
+            : '';
+        if (isInherited) {
+            return '<a href="{{ config('app.url') }}/companies/' + c.id + '"'
+                + ' class="label label-light"'
+                + ' data-tooltip="true"'
+                + ' title="{{ trans('admin/companies/table.inherited_help') }}">'
+                + '<i class="fa-solid fa-link" aria-hidden="true"></i> '
+                + color + c.name
+                + ' <span class="sr-only">({{ trans('admin/companies/table.inherited') }})</span>'
+                + '</a>';
+        }
+        return '<a href="{{ config('app.url') }}/companies/' + c.id + '" class="label label-light">'
+            + color + c.name
+            + '</a>';
+    }
+
+    // A tag is "inherited" when (1) we're on a company show page, (2) the row
+    // didn't include the viewing company itself (i.e. the user/asset isn't a
+    // direct member), AND (3) this specific tag IS in the viewing company's
+    // hierarchy set (parent or one of the children). Tags unrelated to the
+    // hierarchy never get marked, even on otherwise-inherited rows.
+    function isCompanyTagInherited(tagId, rowCompanyIds) {
+        if (typeof window.viewingCompanyId === 'undefined' || window.viewingCompanyId === null) {
+            return false;
+        }
+        if (typeof window.viewingCompanyHierarchyIds === 'undefined' || !window.viewingCompanyHierarchyIds) {
+            return false;
+        }
+
+        var viewing = parseInt(window.viewingCompanyId, 10);
+        var tag = parseInt(tagId, 10);
+
+        // Row is direct (some company on the row matches viewing) — nothing
+        // on this row counts as inherited.
+        var rowIsDirect = rowCompanyIds.some(function (id) { return parseInt(id, 10) === viewing; });
+        if (rowIsDirect) {
+            return false;
+        }
+
+        // Only tags that are part of the hierarchy set get the badge.
+        return window.viewingCompanyHierarchyIds.some(function (id) { return parseInt(id, 10) === tag; })
+            && tag !== viewing;
+    }
+
     function companiesLinkObjFormatter(value, row) {
         if (!value) {
             return '';
         }
-        var icon = (value.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i> ' : '';
-        return '<a href="{{ config('app.url') }}/companies/' + value.id + '" class="label label-light">' + icon + value.name + '</a>';
+        return renderCompanyTag(value, isCompanyTagInherited(value.id, [value.id]));
     }
 
     function companiesArrayLinkFormatter(value, row) {
         if (!value || !value.length) {
             return '';
         }
+        var rowCompanyIds = value.map(function (c) { return c.id; });
         return value.map(function (c) {
-            var icon = (c.tag_color) ? '<i class="fa-solid fa-square" style="color: ' + c.tag_color + ';" aria-hidden="true"></i> ' : '';
-            return '<a href="{{ config('app.url') }}/companies/' + c.id + '" class="label label-light">' + icon + c.name + '</a></span>';
+            return renderCompanyTag(c, isCompanyTagInherited(c.id, rowCompanyIds));
         }).join(' ');
     }
 

@@ -352,7 +352,13 @@ class AssetsController extends Controller
         }
 
         if ($request->filled('company_id')) {
-            $assets->where('assets.company_id', '=', $request->input('company_id'));
+            // expand_company_hierarchy=1 opts the company show-page tabs into the
+            // parent/child rollup so a child shows items inherited from its parent.
+            if ($request->boolean('expand_company_hierarchy')) {
+                $assets->whereIn('assets.company_id', Company::reachableCompanyIds($request->input('company_id')));
+            } else {
+                $assets->where('assets.company_id', '=', $request->input('company_id'));
+            }
         }
 
         if ($request->filled('manufacturer_id')) {
