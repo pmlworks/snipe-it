@@ -274,7 +274,9 @@ class CompanyHierarchyTest extends TestCase
             ->json();
 
         $this->assertEquals($parent->id, $response['parent']['id']);
-        $this->assertEquals($parent->name, $response['parent']['name']);
+        // Transformer emits e($parent->name) — mirror that on the LHS so a
+        // faker name containing an apostrophe or other special char round-trips.
+        $this->assertEquals(e($parent->name), $response['parent']['name']);
     }
 
     public function test_user_in_parent_company_has_fmcs_access_to_child_company_assets()
