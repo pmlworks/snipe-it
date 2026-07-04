@@ -84,6 +84,7 @@ return [
     'user_requests_count' => 'Requests',
     'city' => 'City',
     'click_here' => 'Click here',
+    'clear_all_filters' => 'Clear all filters',
     'clear_name' => 'Clear asset name',
     'clear_selection' => 'Clear Selection',
     'companies' => 'Companies',

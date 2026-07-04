@@ -1434,4 +1434,18 @@ Radio toggle styles for permission settings and check/uncheck all
 
     }
   }
+
+// Advanced-search "Clear all" pill. AdminLTE's default anchor styles pull the
+// color toward the theme's link tint on :hover / :focus, which reads black on
+// the red pill background. Pin white in every interactive state so the pill
+// stays legible.
+.snipe-advanced-search-tags-clear-all,
+.snipe-advanced-search-tags-clear-all:link,
+.snipe-advanced-search-tags-clear-all:visited,
+.snipe-advanced-search-tags-clear-all:hover,
+.snipe-advanced-search-tags-clear-all:focus,
+.snipe-advanced-search-tags-clear-all:active {
+  color: #fff !important;
+  text-decoration: none;
+}
 }
