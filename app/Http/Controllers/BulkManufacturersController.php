@@ -51,7 +51,7 @@ class BulkManufacturersController extends Controller
 
             return redirect()->route('manufacturers.index')->with('multi_error_messages', $errors);
         } else {
-            return redirect()->route('manufacturers.index')->with('success', trans('admin/manufacturers/message.delete.bulk_success'));
+            return redirect()->route('manufacturers.index')->with('success', trans_choice('admin/manufacturers/message.delete.bulk_success', $success_count, ['count' => $success_count]));
         }
     }
 }

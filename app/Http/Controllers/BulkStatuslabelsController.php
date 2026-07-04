@@ -45,6 +45,6 @@ class BulkStatuslabelsController extends Controller
         }
 
         return redirect()->route('statuslabels.index')
-            ->with('success', trans('admin/statuslabels/message.delete.bulk_success'));
+            ->with('success', trans_choice('admin/statuslabels/message.delete.bulk_success', $success_count, ['count' => $success_count]));
     }
 }

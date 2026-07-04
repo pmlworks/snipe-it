@@ -82,4 +82,25 @@ class BulkDeleteStatusLabelsTest extends TestCase
 
         $this->assertSoftDeleted($deletable);
     }
+
+    public function test_bulk_success_message_pluralizes_by_count()
+    {
+        $solo = Statuslabel::factory()->create();
+
+        $this->actingAs(User::factory()->deleteStatusLabels()->create())
+            ->post(route('statuslabels.bulk.delete'), [
+                'ids' => [$solo->id],
+            ])
+            ->assertSessionHas('success', trans_choice('admin/statuslabels/message.delete.bulk_success', 1, ['count' => 1]));
+
+        $a = Statuslabel::factory()->create();
+        $b = Statuslabel::factory()->create();
+        $c = Statuslabel::factory()->create();
+
+        $this->actingAs(User::factory()->deleteStatusLabels()->create())
+            ->post(route('statuslabels.bulk.delete'), [
+                'ids' => [$a->id, $b->id, $c->id],
+            ])
+            ->assertSessionHas('success', trans_choice('admin/statuslabels/message.delete.bulk_success', 3, ['count' => 3]));
+    }
 }

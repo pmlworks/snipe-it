@@ -63,6 +63,6 @@ class BulkCompaniesController extends Controller
         }
 
         return redirect()->route('companies.index')
-            ->with('success', trans('admin/companies/message.delete.bulk_success'));
+            ->with('success', trans_choice('admin/companies/message.delete.bulk_success', $success_count, ['count' => $success_count]));
     }
 }
