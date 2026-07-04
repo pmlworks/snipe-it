@@ -29,6 +29,7 @@
         var advancedSearchOperatorLabel = @json(trans('general.search_operator'));
         var advancedSearchAndText = @json(trans('general.and'));
         var advancedSearchOrText = @json(trans('general.or'));
+        var advancedSearchClearAllText = @json(trans('general.clear_all_filters'));
         var advancedSearchOperatorStorageKey = 'snipeit.bs.table.advancedSearchOperator';
 
         var normalizeAdvancedSearchOperator = function (operator) {
@@ -55,6 +56,24 @@
 
             var escapeAdvancedSearchValue = function (value) {
                 return $('<div/>').text(value == null ? '' : value).html();
+            };
+
+            // Safely decode HTML entities in a string WITHOUT parsing it as HTML.
+            // `<textarea>` innerHTML is RCDATA — the parser decodes entity
+            // references like `&lt;` but does not interpret `<tag>` as an
+            // element. Contrast with the naive `$('<div/>').html(value).text()`
+            // pattern, which parses value as HTML into a detached div — an
+            // entity-encoded payload like `&lt;img src=x onerror=alert(1)&gt;`
+            // decodes into a real <img>, and browsers fire onerror even for
+            // detached images. Using a textarea avoids that DOM instantiation
+            // entirely.
+            var decodeHtmlEntitiesSafely = function (value) {
+                if (value == null) {
+                    return '';
+                }
+                var textarea = document.createElement('textarea');
+                textarea.innerHTML = String(value);
+                return textarea.value;
             };
 
             Object.assign($.fn.bootstrapTable.locales, {
@@ -197,6 +216,17 @@
                         '" style="color:#fff;margin-left:6px;text-decoration:none;">&times;</a></span>';
                 });
 
+                // "Clear all" pill: same shortcut as opening the modal and hitting
+                // the cancel button, but done from the tags row so the user doesn't
+                // have to open the modal just to wipe every filter.
+                var safeClearAllLabel = escapeAdvancedSearchValue(advancedSearchClearAllText);
+                html += '<a href="javascript:void(0)" class="label label-danger snipe-advanced-search-tags-clear-all"' +
+                    ' title="' + safeClearAllLabel + '"' +
+                    ' aria-label="' + safeClearAllLabel + '"' +
+                    ' style="font-size: 11px; margin-right:6px; display:inline-block; margin-bottom:6px; color:#fff; text-decoration:none; cursor:pointer;">' +
+                    '<i class="fas fa-trash" aria-hidden="true" style="margin-right:4px;"></i>' + safeClearAllLabel +
+                    '</a>';
+
                 $tagContainer
                     .html(html)
                     .off('click.snipeAdvancedSearchTags')
@@ -211,6 +241,16 @@
                             _this.trigger('column-advanced-search', _this.filterColumnsPartial, _this.getAdvancedSearchOperator());
 
                             _this.renderAdvancedSearchTags();
+                        }
+                    })
+                    .on('click.snipeAdvancedSearchTags', '.snipe-advanced-search-tags-clear-all', function (e) {
+                        e.preventDefault();
+                        // Reuse cancelAdvancedSearch: it already wipes filterColumnsPartial,
+                        // resets the modal's inputs (in case the user opens it later), fires
+                        // the column-advanced-search event (so our patched updateHistoryState
+                        // strips filter[...] from the URL), and refetches via initSearch.
+                        if (typeof _this.cancelAdvancedSearch === 'function') {
+                            _this.cancelAdvancedSearch();
                         }
                     });
 
@@ -275,18 +315,26 @@
                     var column = this.columns[columnIndex];
 
                     if (!column.checkbox && column.visible && column.searchable) {
-                        var title = $('<div/>').html(column.title).text().trim();
+                        // column.title is presenter-supplied and can be entity-encoded
+                        // user input (e.g. AssetPresenter emits `e($field->name)` for
+                        // custom fields). Decode via a textarea so we get the intended
+                        // display string without ever instantiating an <img>/<script>
+                        // element, then escape when interpolating into the HTML template
+                        // — the label, name, and placeholder all get untrusted content.
+                        var title = decodeHtmlEntitiesSafely(column.title).trim();
                         var value = filterColumnsPartial[column.field] || '';
+                        var safeTitle = escapeAdvancedSearchValue(title);
+                        var safeField = escapeAdvancedSearchValue(column.field);
 
                         html.push(`
                             <div class="form-group row">
-                                <label class="col-sm-4 control-label">${title}</label>
+                                <label class="col-sm-4 control-label">${safeTitle}</label>
                                 <div class="col-sm-6">
                                     <input
                                         type="text"
                                         class="form-control ${this.constants.classes.input}"
-                                        name="${column.field}"
-                                        placeholder="${escapeAdvancedSearchValue(title)}"
+                                        name="${safeField}"
+                                        placeholder="${safeTitle}"
                                         value="${escapeAdvancedSearchValue(value)}"
                                     >
                                 </div>
@@ -706,6 +754,176 @@
 
             if (bootstrapTableInstance && typeof bootstrapTableInstance.renderAdvancedSearchTags === 'function') {
                 bootstrapTableInstance.renderAdvancedSearchTags();
+            }
+
+            // -----------------------------------------------------------------
+            // Advanced-search URL deeplink (prototype: assets/hardware only).
+            //
+            // - `?filter[field]=value` per-field + `?filter_operator=and|or`,
+            //   matching the API's own querystring so what the browser shows
+            //   is what the server actually receives.
+            // - Distinct from `?search=` (basic search) so both can coexist.
+            // - Opt-in via `data-advanced-search-deeplink="true"` on the table.
+            //
+            // Two interacting quirks make this non-trivial:
+            //
+            // 1. Snipe's override of applyAdvancedSearch (this file, line ~220)
+            //    is a no-op for sidePagination='server' beyond setting state
+            //    and rendering pills — it never refetches, and never fires the
+            //    `column-advanced-search` event. So a `on('column-advanced-search')`
+            //    listener won't hear anything when the user applies via the
+            //    modal on a server-side table.
+            //
+            // 2. addrbar (bootstrap-table's URL extension) owns the query
+            //    string. It re-pushes `page`/`size`/`order`/`sort`/`search`
+            //    on every onLoadSuccess. If we just replaceState() our own
+            //    `filter[...]`, the next refetch clobbers them.
+            //
+            // Fix: patch two methods on this specific plugin instance.
+            //
+            //   - applyAdvancedSearch: after Snipe's version runs, force a
+            //     refetch + fire the event on server-side. That triggers the
+            //     addrbar → updateHistoryState path, which we've also patched.
+            //
+            //   - updateHistoryState: before addrbar's push, strip any stale
+            //     `filter[...]`/`filter_operator` from its cached URLSearchParams
+            //     and re-serialize from the current filterColumnsPartial. This
+            //     handles adds, edits, and removes (empty filters remove keys).
+            // -----------------------------------------------------------------
+            if (bootstrapTableInstance && data_with_default('advanced-search-deeplink', false)) {
+                var advDeeplinkKeyPrefix = 'filter';
+                var advDeeplinkOpParam = 'filter_operator';
+                var advDeeplinkKeyRegex = new RegExp('^' + advDeeplinkKeyPrefix + '\\[(.+)\\]$');
+
+                // --- Patch updateHistoryState: emit filter[...] alongside addrbar's keys.
+                if (typeof bootstrapTableInstance.updateHistoryState === 'function') {
+                    var origUpdateHistoryState = bootstrapTableInstance.updateHistoryState;
+                    bootstrapTableInstance.updateHistoryState = function (prefix) {
+                        var params = this.searchParams;
+
+                        // Strip stale filter[...] and filter_operator so cleared
+                        // filters don't linger from a previous state.
+                        if (params) {
+                            var toDelete = [];
+                            params.forEach(function (value, key) {
+                                if (key === advDeeplinkOpParam || advDeeplinkKeyRegex.test(key)) {
+                                    toDelete.push(key);
+                                }
+                            });
+                            toDelete.forEach(function (key) { params.delete(key); });
+
+                            // Re-add from current filterColumnsPartial state.
+                            var filters = this.filterColumnsPartial || {};
+                            var count = 0;
+                            Object.keys(filters).forEach(function (field) {
+                                var val = filters[field];
+                                if (val !== undefined && val !== null && val !== '') {
+                                    params.set(advDeeplinkKeyPrefix + '[' + field + ']', val);
+                                    count++;
+                                }
+                            });
+                            if (count > 0 && typeof this.getAdvancedSearchOperator === 'function') {
+                                params.set(advDeeplinkOpParam, this.getAdvancedSearchOperator());
+                            }
+                        }
+
+                        return origUpdateHistoryState.apply(this, arguments);
+                    };
+                }
+
+                // --- Patch applyAdvancedSearch: server-side apply must refetch
+                //     + fire the event so addrbar (and any listeners) run. Also
+                //     clear the basic-search input so the two modes stay mutually
+                //     exclusive (the backend already prefers `filter` over `search`,
+                //     but leaving text in the basic input is a confusing UX and can
+                //     let a stray search word survive into the next state change).
+                if (typeof bootstrapTableInstance.applyAdvancedSearch === 'function') {
+                    var origApplyAdvancedSearch = bootstrapTableInstance.applyAdvancedSearch;
+                    bootstrapTableInstance.applyAdvancedSearch = function () {
+                        origApplyAdvancedSearch.apply(this, arguments);
+                        if (this.options.sidePagination === 'server') {
+                            // Clear basic-search state without going through
+                            // resetSearch()/onSearch() — that path would fire a
+                            // separate refetch, and would re-enter our own
+                            // onSearch override below.
+                            var utils = $.fn.bootstrapTable && $.fn.bootstrapTable.utils;
+                            if (utils && typeof utils.getSearchInput === 'function') {
+                                var $searchInput = utils.getSearchInput(this);
+                                if ($searchInput && $searchInput.length) {
+                                    $searchInput.val('');
+                                }
+                            }
+                            this.searchText = '';
+                            this.options.searchText = '';
+
+                            this.options.pageNumber = 1;
+                            this.refresh();
+                            this.trigger('column-advanced-search', this.filterColumnsPartial, this.getAdvancedSearchOperator());
+                        }
+                    };
+                }
+
+                // --- Patch onSearch: basic search clears advanced filters so the
+                //     two modes stay mutually exclusive. Runs BEFORE the plugin's
+                //     onSearch → initSearch → server refetch, so the AJAX that
+                //     ships in the same tick already has an empty filterColumnsPartial.
+                if (typeof bootstrapTableInstance.onSearch === 'function') {
+                    var origOnSearch = bootstrapTableInstance.onSearch;
+                    bootstrapTableInstance.onSearch = function (event, overwriteSearchText) {
+                        var newText = '';
+                        if (event && event.currentTarget) {
+                            newText = String($(event.currentTarget).val() || '').trim();
+                        }
+                        // Only clear filters when the user is actively typing a
+                        // non-empty search. Empty transitions (resetSearch(''), a
+                        // stray blur on an already-empty input) leave filters alone.
+                        if (
+                            newText !== ''
+                            && this.filterColumnsPartial
+                            && Object.keys(this.filterColumnsPartial).length > 0
+                        ) {
+                            this.filterColumnsPartial = {};
+                            if (typeof this.renderAdvancedSearchTags === 'function') {
+                                this.renderAdvancedSearchTags();
+                            }
+                            if (typeof this.updateAdvancedSearchButtonState === 'function') {
+                                this.updateAdvancedSearchButtonState();
+                            }
+                        }
+                        return origOnSearch.apply(this, arguments);
+                    };
+                }
+
+                // --- Read path: rehydrate from URL if filter[...] is present.
+                var initialFilters = {};
+                var initialOp = null;
+                var initialParams = new URLSearchParams(window.location.search);
+                initialParams.forEach(function (value, key) {
+                    var m = key.match(advDeeplinkKeyRegex);
+                    if (m) {
+                        initialFilters[m[1]] = value;
+                    } else if (key === advDeeplinkOpParam) {
+                        initialOp = value;
+                    }
+                });
+
+                if (Object.keys(initialFilters).length > 0) {
+                    bootstrapTableInstance.filterColumnsPartial = Object.assign({}, initialFilters);
+                    if (initialOp && typeof bootstrapTableInstance.setAdvancedSearchOperator === 'function') {
+                        bootstrapTableInstance.setAdvancedSearchOperator(initialOp);
+                    }
+
+                    // Refetch with the seeded filter. onLoadSuccess → patched
+                    // updateHistoryState → URL is re-emitted with filter[...] intact.
+                    bootstrapTableInstance.refresh();
+
+                    if (typeof bootstrapTableInstance.renderAdvancedSearchTags === 'function') {
+                        bootstrapTableInstance.renderAdvancedSearchTags();
+                    }
+                    if (typeof bootstrapTableInstance.updateAdvancedSearchButtonState === 'function') {
+                        bootstrapTableInstance.updateAdvancedSearchButtonState();
+                    }
+                }
             }
 
             // Add btn-advanced-search class to the advanced search button for styling
