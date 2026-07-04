@@ -111,4 +111,26 @@ class BulkDeleteCompaniesTest extends TestCase
 
         $this->assertSoftDeleted($deletable);
     }
+
+    public function test_bulk_success_message_pluralizes_by_count()
+    {
+        // Single-item batch → singular success message.
+        $solo = Company::factory()->create();
+
+        $this->actingAs(User::factory()->deleteCompanies()->create())
+            ->post(route('companies.bulk.delete'), [
+                'ids' => [$solo->id],
+            ])
+            ->assertSessionHas('success', trans_choice('admin/companies/message.delete.bulk_success', 1, ['count' => 1]));
+
+        $a = Company::factory()->create();
+        $b = Company::factory()->create();
+        $c = Company::factory()->create();
+
+        $this->actingAs(User::factory()->deleteCompanies()->create())
+            ->post(route('companies.bulk.delete'), [
+                'ids' => [$a->id, $b->id, $c->id],
+            ])
+            ->assertSessionHas('success', trans_choice('admin/companies/message.delete.bulk_success', 3, ['count' => 3]));
+    }
 }
