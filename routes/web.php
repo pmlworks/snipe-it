@@ -8,7 +8,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BulkCategoriesController;
 use App\Http\Controllers\BulkCompaniesController;
+use App\Http\Controllers\BulkDepartmentsController;
 use App\Http\Controllers\BulkManufacturersController;
+use App\Http\Controllers\BulkStatuslabelsController;
 use App\Http\Controllers\BulkSuppliersController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CompaniesController;
@@ -108,10 +110,14 @@ Route::group(['middleware' => 'auth'], function () {
      */
     Route::resource('statuslabels', StatuslabelsController::class);
 
+    Route::post('statuslabels/bulk/delete', [BulkStatuslabelsController::class, 'destroy'])->name('statuslabels.bulk.delete');
+
     /*
     * Departments
     */
     Route::resource('departments', DepartmentsController::class);
+
+    Route::post('departments/bulk/delete', [BulkDepartmentsController::class, 'destroy'])->name('departments.bulk.delete');
 });
 
 /*
