@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BulkCategoriesController;
 use App\Http\Controllers\BulkCompaniesController;
 use App\Http\Controllers\BulkDepartmentsController;
+use App\Http\Controllers\BulkDepreciationsController;
 use App\Http\Controllers\BulkManufacturersController;
 use App\Http\Controllers\BulkStatuslabelsController;
 use App\Http\Controllers\BulkSuppliersController;
@@ -104,6 +105,8 @@ Route::group(['middleware' => 'auth'], function () {
     * Depreciations
      */
     Route::resource('depreciations', DepreciationsController::class);
+
+    Route::post('depreciations/bulk/delete', [BulkDepreciationsController::class, 'destroy'])->name('depreciations.bulk.delete');
 
     /*
     * Status Labels
