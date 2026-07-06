@@ -170,6 +170,35 @@ class BulkAuditAssetsTest extends TestCase
         }
     }
 
+    public function test_superuser_bypasses_fmcs_and_audits_assets_in_any_company()
+    {
+        // FMCS on, but a superuser is exempt from CompanyableScope — they can
+        // see and audit assets in every company. A bulk request touching
+        // assets in two different companies should succeed on both rows.
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        $assetA = Asset::factory()->create(['company_id' => $companyA->id]);
+        $assetB = Asset::factory()->create(['company_id' => $companyB->id]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->postJson($this->bulkUrl(), [
+                'ids' => [$assetA->id, $assetB->id],
+                'note' => 'superuser bulk audit',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'success');
+
+        $rows = collect($response->json('results'))->keyBy('id');
+        $this->assertSame('success', $rows[$assetA->id]['status']);
+        $this->assertSame('success', $rows[$assetB->id]['status']);
+
+        $this->assertNotNull($assetA->fresh()->last_audit_date);
+        $this->assertNotNull($assetB->fresh()->last_audit_date);
+    }
+
     public function test_respects_fmcs_scoping_for_non_superuser()
     {
         // FMCS on, caller in company A tries to audit both an A-owned asset

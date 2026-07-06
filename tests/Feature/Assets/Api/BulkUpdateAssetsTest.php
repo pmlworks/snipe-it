@@ -4,6 +4,7 @@ namespace Tests\Feature\Assets\Api;
 
 use App\Models\Asset;
 use App\Models\Company;
+use App\Models\CustomField;
 use App\Models\Statuslabel;
 use App\Models\User;
 use Tests\TestCase;
@@ -170,6 +171,113 @@ class BulkUpdateAssetsTest extends TestCase
         // carries the raw validator error bag.
         $this->assertArrayHasKey('ids', $response->json('messages'));
         $this->assertSame([], $response->json('results'));
+    }
+
+    public function test_custom_field_can_be_updated_across_assets_sharing_a_model()
+    {
+        // Regression: pre-fix, MayContainCustomFields on the bulk path set
+        // $asset_model = null and flagged EVERY _snipeit_* field as not-on-model,
+        // failing request-level validation. Fix: on bulk, skip the per-model
+        // membership check and defer to per-row save behavior.
+        $this->markIncompleteIfMySQL('Custom Field Tests do not work in MySQL');
+
+        $customField = CustomField::factory()->create();
+        [$a, $b] = Asset::factory()->hasMultipleCustomFields([$customField])->count(2)->create();
+
+        $response = $this->actingAsForApi(User::factory()->editAssets()->create())
+            ->patchJson($this->bulkUrl(), [
+                'ids' => [$a->id, $b->id],
+                $customField->db_column_name() => 'bulk custom',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'success');
+
+        foreach ([$a, $b] as $asset) {
+            $this->assertSame('bulk custom', $asset->fresh()->{$customField->db_column_name()});
+        }
+
+        $rows = collect($response->json('results'))->keyBy('id');
+        $this->assertSame('success', $rows[$a->id]['status']);
+        $this->assertSame('success', $rows[$b->id]['status']);
+    }
+
+    public function test_custom_field_absent_from_some_models_is_silently_ignored_on_those_rows()
+    {
+        // Half the batch carries the field, half doesn't. Rows whose model
+        // doesn't carry the field still succeed (their row is a no-op for
+        // that field); rows whose model does carry it get the write.
+        // Matches the per-row apply loop's "iterate the asset's own fieldset"
+        // behavior — a field the model doesn't know is never touched.
+        $this->markIncompleteIfMySQL('Custom Field Tests do not work in MySQL');
+
+        $customField = CustomField::factory()->create();
+        $withField = Asset::factory()->hasMultipleCustomFields([$customField])->create();
+        $withoutField = Asset::factory()->create();
+
+        $this->actingAsForApi(User::factory()->editAssets()->create())
+            ->patchJson($this->bulkUrl(), [
+                'ids' => [$withField->id, $withoutField->id],
+                $customField->db_column_name() => 'partial write',
+                'notes' => 'both should update notes',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'success');
+
+        $this->assertSame('partial write', $withField->fresh()->{$customField->db_column_name()});
+        // Notes still applied on the row that didn't carry the custom field.
+        $this->assertSame('both should update notes', $withoutField->fresh()->notes);
+    }
+
+    public function test_unknown_custom_field_column_is_still_a_request_level_validation_error()
+    {
+        // We drop the per-model membership check on bulk, but we still catch
+        // truly nonexistent custom-field columns (typo protection). Every
+        // targeted row gets the same error via the failedValidation reshape.
+        $this->markIncompleteIfMySQL('Custom Field Tests do not work in MySQL');
+
+        [$a, $b] = Asset::factory()->count(2)->create();
+
+        $response = $this->actingAsForApi(User::factory()->editAssets()->create())
+            ->patchJson($this->bulkUrl(), [
+                'ids' => [$a->id, $b->id],
+                '_snipeit_totally_bogus_9999' => 'nope',
+            ])
+            ->assertJsonPath('status', 'error');
+
+        $rows = collect($response->json('results'))->keyBy('id');
+        foreach ([$a->id, $b->id] as $id) {
+            $this->assertSame('error', $rows[$id]['status']);
+            $this->assertArrayHasKey('_snipeit_totally_bogus_9999', $rows[$id]['messages']);
+        }
+    }
+
+    public function test_superuser_bypasses_fmcs_and_updates_assets_in_any_company()
+    {
+        // FMCS on, but a superuser is exempt from CompanyableScope — they can
+        // see and update assets in every company. A bulk request touching
+        // assets in two different companies should succeed on both rows.
+        $this->settings->enableMultipleFullCompanySupport();
+
+        $companyA = Company::factory()->create();
+        $companyB = Company::factory()->create();
+
+        $assetA = Asset::factory()->create(['company_id' => $companyA->id]);
+        $assetB = Asset::factory()->create(['company_id' => $companyB->id]);
+
+        $response = $this->actingAsForApi(User::factory()->superuser()->create())
+            ->patchJson($this->bulkUrl(), [
+                'ids' => [$assetA->id, $assetB->id],
+                'notes' => 'superuser bulk touch',
+            ])
+            ->assertOk()
+            ->assertJsonPath('status', 'success');
+
+        $rows = collect($response->json('results'))->keyBy('id');
+        $this->assertSame('success', $rows[$assetA->id]['status']);
+        $this->assertSame('success', $rows[$assetB->id]['status']);
+
+        $this->assertSame('superuser bulk touch', $assetA->fresh()->notes);
+        $this->assertSame('superuser bulk touch', $assetB->fresh()->notes);
     }
 
     public function test_respects_fmcs_scoping_for_non_superuser()

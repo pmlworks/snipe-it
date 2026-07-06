@@ -37,17 +37,36 @@ trait MayContainCustomFields
                 return str_starts_with($attributes, '_snipeit_');
             });
 
-            // if there are custom fields, find the ones that don't exist on the model's fieldset and add an error to the validator's error bag
-            if (count($request_fields) > 0 && $validator->errors()->isEmpty()) {
-                $request_fields->diff($asset_model?->fieldset?->fields?->pluck('db_column'))
-                    ->each(function ($request_field_name) use ($validator) {
-                        if (CustomField::where('db_column', $request_field_name)->exists()) {
-                            $validator->errors()->add($request_field_name, trans('validation.custom.custom_field_not_found_on_model'));
-                        } else {
-                            $validator->errors()->add($request_field_name, trans('validation.custom.custom_field_not_found'));
-                        }
-                    });
+            if ($request_fields->isEmpty() || ! $validator->errors()->isEmpty()) {
+                return;
             }
+
+            // Bulk update path: no single target model to check membership
+            // against, since different assets in the batch may carry
+            // different fieldsets. We still flag truly nonexistent
+            // custom-field columns (typo catch); per-model membership is
+            // deferred to save-time, where applyAssetUpdate silently
+            // ignores fields the asset's own model doesn't carry.
+            if ($asset_model === null) {
+                $request_fields->each(function ($request_field_name) use ($validator) {
+                    if (! CustomField::where('db_column', $request_field_name)->exists()) {
+                        $validator->errors()->add($request_field_name, trans('validation.custom.custom_field_not_found'));
+                    }
+                });
+
+                return;
+            }
+
+            // Single-target-model path: fields present in the request but
+            // not on this asset's fieldset are errors.
+            $request_fields->diff($asset_model->fieldset?->fields?->pluck('db_column'))
+                ->each(function ($request_field_name) use ($validator) {
+                    if (CustomField::where('db_column', $request_field_name)->exists()) {
+                        $validator->errors()->add($request_field_name, trans('validation.custom.custom_field_not_found_on_model'));
+                    } else {
+                        $validator->errors()->add($request_field_name, trans('validation.custom.custom_field_not_found'));
+                    }
+                });
         });
     }
 }
