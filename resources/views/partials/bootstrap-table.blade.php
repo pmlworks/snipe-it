@@ -572,8 +572,7 @@
             //   3. Export → CSV (or PDF): alert(1) fires because tableExport
             //      re-injects our returned text via .html() on a scratch div.
             // If a future edit here reintroduces the bug, that exact repro
-            // will fire alert(1) again. See the trap script in XSS_TRAP.md
-            // at the project root for the observer that surfaced the vector.
+            // will fire alert(1) again.
             var htmlEncodeForExport = function (value) {
                 if (value == null) return '';
                 return String(value)
