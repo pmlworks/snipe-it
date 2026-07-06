@@ -77,6 +77,16 @@ return [
         'header_row_has_malformed_characters' => 'One or more attributes in the header row contain malformed UTF-8 characters',
         'content_row_has_malformed_characters' => 'One or more attributes in the first row of content contain malformed UTF-8 characters',
         'transliterate_failure' => 'Transliteration from :encoding to UTF-8 failed due to invalid characters in input',
+        'bulk_delete' => [
+            'button' => 'Delete Selected (:count)',
+            'confirm_title' => 'Delete selected import files?',
+            'confirm_body' => 'You are about to permanently delete :count import file(s). This cannot be undone.',
+            'confirm_button' => 'Delete',
+            'success' => 'Import file deleted successfully.|:count import files were deleted successfully.',
+            'skipped' => ':count file(s) were skipped because you do not have permission to delete them.',
+            'select_all' => 'Select all files on this page',
+            'select_row' => 'Select :file for bulk delete',
+        ],
     ],
 
     'delete' => [
