@@ -22,16 +22,23 @@ const path = require('path');
 const outPath = path.join(__dirname, 'jspdf-dejavu-fonts.js');
 const ttfDir = path.join(__dirname, '..', '..', '..', 'node_modules', 'dejavu-fonts-ttf', 'ttf');
 
+// jsPDF/autotable looks fonts up by (name, style) where `style` is one of
+// 'normal' | 'italic' | 'bold' | 'bolditalic'. Registering the bold face
+// with `style: 'normal', weight: 'bold'` (jsPDF's 4-arg addFont form) makes
+// autotable's `getFont('DejaVuSans', 'bold')` MISS — it looks up by the
+// style slot, not the weight slot. So the second face has to declare
+// `style: 'bold'` directly. If you add italic/bolditalic TTFs in the
+// future, list them here the same way (`style: 'italic'`, etc.).
 const faces = [
-    { file: 'DejaVuSans.ttf', style: 'normal', weight: 'normal' },
-    { file: 'DejaVuSans-Bold.ttf', style: 'normal', weight: 'bold' },
+    { file: 'DejaVuSans.ttf', style: 'normal' },
+    { file: 'DejaVuSans-Bold.ttf', style: 'bold' },
 ];
 
-const registrations = faces.map(({ file, style, weight }) => {
+const registrations = faces.map(({ file, style }) => {
     const buf = fs.readFileSync(path.join(ttfDir, file));
     const b64 = buf.toString('base64');
     return `        this.addFileToVFS(${JSON.stringify(file)}, ${JSON.stringify(b64)});\n` +
-           `        this.addFont(${JSON.stringify(file)}, 'DejaVuSans', ${JSON.stringify(style)}, ${JSON.stringify(weight)});`;
+           `        this.addFont(${JSON.stringify(file)}, 'DejaVuSans', ${JSON.stringify(style)});`;
 }).join('\n');
 
 const out = `/**
