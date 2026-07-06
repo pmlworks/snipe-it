@@ -528,10 +528,18 @@
             data_export_options = $(this).attr('data-export-options');
             export_options = data_export_options ? JSON.parse(data_export_options) : {};
             export_options['htmlContent'] = false; // this is already the default; but let's be explicit about it
+            // DejaVuSans is registered into jsPDF's VFS via
+            // jspdf-dejavu-fonts.js (bundled into public/js/dist/bootstrap-table.js
+            // right after jspdf.umd.min.js — see webpack.mix.js). Referencing
+            // it here is what actually swaps out the default Helvetica fallback
+            // and produces readable output for Cyrillic / Greek / Hebrew / etc.
+            // exports. Fixes #19270.
             export_options['jspdf'] = {
                 "orientation": "l",
                 "autotable": {
                         "styles": {
+                            font: 'DejaVuSans',
+                            fontStyle: 'normal',
                             overflow: 'linebreak'
                         },
                         tableWidth: 'wrap'
