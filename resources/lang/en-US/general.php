@@ -60,6 +60,7 @@ return [
     'bulk_checkout' => 'Bulk Checkout',
     'bulk_edit' => 'Bulk Edit',
     'bulk_delete' => 'Bulk Delete',
+    'bulk_restore' => 'Bulk Restore',
     'bulk_actions' => 'Bulk Actions',
     'bulk_checkin_delete' => 'Bulk Checkin / Delete Users',
     'byod' => 'BYOD',
