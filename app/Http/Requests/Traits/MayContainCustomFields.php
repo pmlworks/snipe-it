@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Traits;
 
+use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\CustomField;
 
@@ -17,19 +18,17 @@ trait MayContainCustomFields
             $asset_model = AssetModel::find(request()->input('model_id'));
 
             // or if we have it available to route-model-binding
-        } elseif ((request()->route('asset') && (request()->route('asset')->model_id))) {
+        } elseif (request()->route('asset') instanceof Asset && request()->route('asset')->model_id) {
 
             $asset_model = AssetModel::find(request()->route('asset')->model_id);
 
+        } elseif ($this->method() == 'POST') {
+            $asset_model = AssetModel::find($this->model_id);
         } else {
-
-            if ($this->method() == 'POST') {
-                $asset_model = AssetModel::find($this->model_id);
-            }
-
-            if ($this->method() == 'PATCH' || $this->method() == 'PUT') {
-                $asset_model = $this->asset->model;
-            }
+            // Bulk update / audit paths (no single {asset} in the URL) — the
+            // model to validate against can't be pinned to one asset, so let
+            // per-row saves surface any bad custom-field values at save time.
+            $asset_model = null;
         }
 
         // collect the custom fields in the request

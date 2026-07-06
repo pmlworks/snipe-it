@@ -35,6 +35,12 @@ return [
         'assets_do_not_exist_or_are_invalid' => 'Selected assets cannot be updated.',
     ],
 
+    'bulk_update' => [
+        'success' => 'Asset updated successfully.|:count assets were updated successfully.',
+        'partial' => ':success asset(s) updated successfully, :failed failed. See the results array for details.',
+        'error' => 'No assets were updated. See the results array for details.',
+    ],
+
     'restore' => [
         'error' => 'Asset was not restored, please try again',
         'success' => 'Asset restored successfully.',
