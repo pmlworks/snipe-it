@@ -4,6 +4,7 @@ namespace Tests\Feature\Accessories\Ui;
 
 use App\Models\Accessory;
 use App\Models\AccessoryCheckout;
+use App\Models\Company;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -80,6 +81,54 @@ class BulkDeleteAccessoriesTest extends TestCase
             ->assertSessionHas('multi_error_messages');
 
         $this->assertSoftDeleted('accessories', ['id' => $deletable->id]);
+    }
+
+    public function test_respects_fmcs_scoping_for_non_superuser()
+    {
+        // Caller scoped to company A asking to bulk delete [A-owned, B-owned]
+        // sees the B-owned row hidden by CompanyableScope (Accessory::find()
+        // returns null), which falls into the "does_not_exist" error bucket.
+        // The A-owned row deletes normally, so the request is a partial success.
+        $this->settings->enableMultipleFullCompanySupport();
+
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+        $accessoryA = Accessory::factory()->for($companyA)->create();
+        $accessoryB = Accessory::factory()->for($companyB)->create();
+        $userA = User::factory()->for($companyA)->deleteAccessories()->create();
+
+        $this->actingAs($userA)
+            ->post(route('accessories.bulk.delete'), [
+                'ids' => [$accessoryA->id, $accessoryB->id],
+            ])
+            ->assertRedirect(route('accessories.index'))
+            ->assertSessionHas('success')
+            ->assertSessionHas('multi_error_messages');
+
+        $this->assertSoftDeleted('accessories', ['id' => $accessoryA->id]);
+        $this->assertDatabaseHas('accessories', ['id' => $accessoryB->id, 'deleted_at' => null]);
+    }
+
+    public function test_superuser_bypasses_fmcs_and_deletes_accessories_in_any_company()
+    {
+        // FMCS on, but a superuser is exempt from CompanyableScope. A bulk
+        // delete touching accessories in two different companies should
+        // remove both without any "does_not_exist" errors.
+        $this->settings->enableMultipleFullCompanySupport();
+
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+        $accessoryA = Accessory::factory()->for($companyA)->create();
+        $accessoryB = Accessory::factory()->for($companyB)->create();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('accessories.bulk.delete'), [
+                'ids' => [$accessoryA->id, $accessoryB->id],
+            ])
+            ->assertRedirect(route('accessories.index'))
+            ->assertSessionHas('success')
+            ->assertSessionMissing('multi_error_messages');
+
+        $this->assertSoftDeleted('accessories', ['id' => $accessoryA->id]);
+        $this->assertSoftDeleted('accessories', ['id' => $accessoryB->id]);
     }
 
     public function test_bulk_success_message_pluralizes_by_count()

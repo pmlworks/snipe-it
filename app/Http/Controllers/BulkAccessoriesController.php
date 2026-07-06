@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Accessory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,9 +18,23 @@ class BulkAccessoriesController extends Controller
         $success_count = 0;
 
         foreach ((array) $request->input('ids', []) as $id) {
+            // Accessory uses CompanyableTrait, so Accessory::find() is
+            // filtered by CompanyableScope — cross-company rows return null
+            // and fall into the "does_not_exist" bucket without ever
+            // reaching authorization.
             $accessory = Accessory::find($id);
             if (is_null($accessory)) {
                 $errors[] = trans('admin/accessories/message.does_not_exist', ['id' => $id]);
+
+                continue;
+            }
+
+            // Per-row auth as belt-and-braces on top of the query scope.
+            // Catches FMCS mismatches that a superuser scope-bypass could
+            // let through, plus any future policy tightening (e.g. per-role
+            // company-based delete gating).
+            if (! Gate::allows('delete', $accessory)) {
+                $errors[] = trans('general.unauthorized');
 
                 continue;
             }
