@@ -29,6 +29,11 @@ class ImpersonateController extends Controller
                 ->with('error', trans('admin/users/message.impersonate.cannot_impersonate_self'));
         }
 
+        if ($user->isSuperUser()) {
+            return redirect()->route('users.show', $user)
+                ->with('error', trans('admin/users/message.impersonate.cannot_impersonate_superuser'));
+        }
+
         if ($user->deleted_at !== null || $user->activated != 1) {
             return redirect()->route('users.show', $user)
                 ->with('error', trans('admin/users/message.impersonate.target_not_active'));

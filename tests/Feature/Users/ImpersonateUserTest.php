@@ -89,6 +89,45 @@ class ImpersonateUserTest extends TestCase
         $this->assertNull(session('impersonator_id'));
     }
 
+    public function test_allowlisted_superuser_cannot_impersonate_another_superuser()
+    {
+        $actor = User::factory()->superuser()->create();
+        $target = User::factory()->superuser()->create(['activated' => 1]);
+        $this->allow($actor);
+
+        $this->actingAs($actor)
+            ->post(route('users.impersonate.start', $target))
+            ->assertRedirect(route('users.show', $target));
+
+        $this->assertSame($actor->id, auth()->id());
+        $this->assertNull(session('impersonator_id'));
+    }
+
+    public function test_button_hidden_when_target_is_a_superuser()
+    {
+        $actor = User::factory()->superuser()->create();
+        $target = User::factory()->superuser()->create(['activated' => 1]);
+        $this->allow($actor);
+
+        $this->actingAs($actor)
+            ->get(route('users.show', $target))
+            ->assertOk()
+            ->assertDontSee('confirmImpersonateModal');
+    }
+
+    public function test_confirmation_modal_is_rendered_when_button_is_visible()
+    {
+        $actor = User::factory()->superuser()->create();
+        $target = User::factory()->create(['activated' => 1]);
+        $this->allow($actor);
+
+        $this->actingAs($actor)
+            ->get(route('users.show', $target))
+            ->assertOk()
+            ->assertSee('confirmImpersonateModal')
+            ->assertSee(trans('admin/users/general.impersonate_confirm_title'));
+    }
+
     public function test_allowlisted_superuser_cannot_impersonate_themselves()
     {
         $actor = User::factory()->superuser()->create();

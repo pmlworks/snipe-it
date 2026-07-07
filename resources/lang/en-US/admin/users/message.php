@@ -24,6 +24,7 @@ return [
         'started' => 'You are now logged in as :name.',
         'stopped' => 'You are back to your own account.',
         'cannot_impersonate_self' => 'You cannot log in as yourself.',
+        'cannot_impersonate_superuser' => 'You cannot log in as another superuser.',
         'target_not_active' => 'That user is deactivated or deleted and cannot be logged in as.',
         'impersonator_missing' => 'The original account for this impersonation session no longer exists. Please log in again.',
     ],

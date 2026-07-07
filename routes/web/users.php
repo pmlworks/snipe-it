@@ -107,6 +107,14 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
     )->name('users.impersonate.stop');
 
     Route::post(
+        '{user}/two-factor-reset',
+        [
+            Users\UsersController::class,
+            'twoFactorReset',
+        ]
+    )->name('users.two_factor_reset');
+
+    Route::post(
         'bulkedit',
         [
             Users\BulkUsersController::class,
