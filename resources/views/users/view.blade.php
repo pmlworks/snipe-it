@@ -292,11 +292,25 @@
                             </x-well>
 
 
+                                <!-- Impersonation button -->
+                                @if (Auth::check() && Auth::user()->canImpersonate() && ($user->id !== Auth::id()) && ($user->deleted_at === null) && ($user->activated == 1))
+                                    <form action="{{ route('users.impersonate.start', $user->id) }}" method="POST" class="form-inline" style="display: inline;">
+                                        {{ csrf_field() }}
+                                        <button type="submit" class="btn btn-danger hidden-print btn-social btn-block" data-tooltip="true" data-title="{{ trans('admin/users/general.impersonate_user', ['name' => $user->display_name]) }}">
+                                            <x-icon type="impersonate" class="fa-fw" style="font-size: 17px;"/>
+                                            {{ trans('general.impersonate') }}
+                                            <span class="sr-only">{{ trans('admin/users/general.impersonate_user', ['name' => $user->display_name]) }}</span>
+                                        </button>
+                                    </form>
+                                @endif
+
+
                             @if ( ($user->activated == '1') && (auth()->user()->isSuperUser()) && ($user->two_factor_active_and_enrolled()) && ($snipeSettings->two_factor_enabled!='0') && ($snipeSettings->two_factor_enabled!=''))
 
                                 <!-- 2FA reset -->
 
-                                <a class="btn btn-theme btn-sm" id="two_factor_reset" style="margin-right: 10px; margin-top: 10px;">
+                                    <a class="btn btn-theme hidden-print btn-social btn-block" id="two_factor_reset" style="margin-right: 10px; margin-top: 10px;">
+                                        <x-icon type="mobile" class="fa-fw"/>
                                     {{ trans('admin/settings/general.two_factor_reset') }}
                                 </a>
                                 <span id="two_factor_reseticon">
@@ -312,11 +326,6 @@
 
                             @endif
 
-                                @if ($snipeSettings->isQrEnabled())
-                                    <div class="col-md-12 text-center user-qr-img" style="padding-top: 15px;">
-                                        <img src="{{ route('qr_code/common', ['object_type' => 'users', 'id' => $user->id]) }}" class="img-thumbnail" style="height: 150px; width: 150px; margin-right: 10px;" alt="QR code for {{ $user->display_name }}">
-                                    </div>
-                                @endif
 
                         </x-page-column>
                         <!-- end side stats well column-->
@@ -543,7 +552,7 @@
                         <x-table.files object_type="users" :object="$user"/>
                     </x-tabs.pane>
 
-                    <x-tabs.pane name="eulas" :count="$user->accessories()->count()">
+                    <x-tabs.pane name="eulas" :count="$user->eulas()->count()">
                         <x-slot:table_header>
                             {{ trans('general.eula') }}
                         </x-slot:table_header>
@@ -611,7 +620,8 @@
                         <x-button.clone :item="$user" :route="route('users.clone.show', $user)"/>
                         <x-button.restore :item="$user" :route="route('users.restore.store',  $user)"/>
 
-                        @if($user->allAssignedCount() != '0')
+
+                    @if($user->allAssignedCount() != '0')
                         <a href="{{ route('users.print', $user->id) }}" class="btn btn-sm btn-theme hidden-print" target="_blank" rel="noopener" data-tooltip="true" data-title="{{ trans('admin/users/general.print_assigned') }}">
                             <x-icon type="print" class="fa-fw"/>
                         </a>

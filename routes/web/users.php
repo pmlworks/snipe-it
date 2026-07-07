@@ -91,6 +91,22 @@ Route::group(['prefix' => 'users', 'middleware' => ['auth']], function () {
     )->name('users.acceptance_reminder')->withTrashed();
 
     Route::post(
+        '{user}/impersonate',
+        [
+            Users\ImpersonateController::class,
+            'start',
+        ]
+    )->name('users.impersonate.start');
+
+    Route::post(
+        'impersonate/stop',
+        [
+            Users\ImpersonateController::class,
+            'stop',
+        ]
+    )->name('users.impersonate.stop');
+
+    Route::post(
         'bulkedit',
         [
             Users\BulkUsersController::class,
