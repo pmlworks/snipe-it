@@ -233,6 +233,33 @@ class CompanyScopingTest extends TestCase
         $this->assertCannotSee($nullCompanyUser);
     }
 
+    /**
+     * FMCS + floaters on: a company A caller should see themselves and
+     * null-company (floater) users, but NOT a user whose pivot points at a
+     * different company.
+     *
+     * Regression pin for support ticket 56305. Root cause was that the
+     * "no pivot rows at all" branch of the floater query in
+     * Company::scopeCompanyablesDirectly went through
+     * whereDoesntHave('companies'), whose relation subquery had the
+     * companies-table CompanyableScope applied recursively. That scope
+     * filtered the JOIN to the caller's own companies, so a user pivoted
+     * only to OUT-OF-SCOPE companies looked pivot-less and got picked up
+     * by the floater branch. Fix reads the company_user pivot directly.
+     */
+    public function test_company_scoped_user_cannot_see_users_from_other_companies_in_floater_mode()
+    {
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+
+        $companyAUser = $companyA->users()->save(User::factory()->make());
+        $companyBUser = $companyB->users()->save(User::factory()->make());
+
+        $this->settings->enableFloaterMode();
+
+        $this->actingAs($companyAUser);
+        $this->assertCannotSee($companyBUser);
+    }
+
     private function assertCanSee(Model $model)
     {
         $this->assertTrue(

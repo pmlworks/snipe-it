@@ -600,11 +600,24 @@ final class Company extends SnipeModel
             }
 
             // Floater: also show null-company users (no pivot rows) to company-scoped actors.
+            //
+            // The "no pivot rows" branch queries the company_user pivot
+            // directly rather than using whereDoesntHave('companies'). Going
+            // through the relation applies the companies-table CompanyableScope
+            // to the subquery, which restricts the JOIN to the caller's own
+            // companies. A user whose only pivot rows point at OTHER companies
+            // would then look pivot-less under that scoping and get picked up
+            // by the floater branch — leaking cross-company users into the
+            // caller's list. Reading the pivot directly bypasses that
+            // recursive scope and matches the intended "genuinely no pivot
+            // rows at all" semantics.
             if ($floater) {
                 return $query->where(function ($q) use ($companyIds) {
                     $q->whereIn('users.id', function ($sub) use ($companyIds) {
                         $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
-                    })->orWhereDoesntHave('companies');
+                    })->orWhereNotIn('users.id', function ($sub) {
+                        $sub->select('user_id')->from('company_user');
+                    });
                 });
             }
 

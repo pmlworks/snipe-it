@@ -3,6 +3,7 @@
 namespace Tests\Feature\Users\Api;
 
 use App\Models\Asset;
+use App\Models\Company;
 use App\Models\Location;
 use App\Models\Maintenance;
 use App\Models\User;
@@ -136,6 +137,43 @@ class IndexUsersTest extends TestCase
             ->assertJson(function (AssertableJson $json) {
                 $json->has('messages.filter')->etc();
             });
+    }
+
+    /**
+     * FMCS + floaters on: a company-scoped, non-superuser caller must not
+     * see users pivoted to a different company. They should still see their
+     * own company members and floater (null-company) users.
+     *
+     * Regression pin for the ticket where a company-A user going to the
+     * user listing page saw every user in the system. See the same fix in
+     * tests/Unit/CompanyScopingTest.php for the model-level equivalent.
+     */
+    public function test_users_index_hides_other_companies_users_from_company_scoped_caller_in_floater_mode()
+    {
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+
+        $companyACaller = $companyA->users()->save(User::factory()->viewUsers()->make());
+        $companyAPeer = $companyA->users()->save(User::factory()->make(['first_name' => 'PeerInA']));
+        $companyBUser = $companyB->users()->save(User::factory()->make(['first_name' => 'UserInB']));
+        $floater = User::factory()->create(['company_id' => null, 'first_name' => 'FloaterUser']);
+
+        $this->settings->enableFloaterMode();
+
+        $rows = $this->actingAsForApi($companyACaller)
+            ->getJson(route('api.users.index'))
+            ->assertOk()
+            ->json('rows');
+
+        $visibleIds = collect($rows)->pluck('id')->all();
+
+        $this->assertContains($companyACaller->id, $visibleIds);
+        $this->assertContains($companyAPeer->id, $visibleIds);
+        $this->assertContains($floater->id, $visibleIds);
+        $this->assertNotContains(
+            $companyBUser->id,
+            $visibleIds,
+            'Company B user leaked into a company A caller\'s user list under FMCS + floater mode.',
+        );
     }
 
     public function test_returns_result_via_filter()
