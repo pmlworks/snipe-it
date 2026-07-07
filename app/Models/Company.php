@@ -599,15 +599,14 @@ final class Company extends SnipeModel
                 });
             }
 
-            // Floater: also show null-company users (no pivot rows) to company-scoped actors.
-            if ($floater) {
-                return $query->where(function ($q) use ($companyIds) {
-                    $q->whereIn('users.id', function ($sub) use ($companyIds) {
-                        $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
-                    })->orWhereDoesntHave('companies');
-                });
-            }
-
+            // Users, unlike other companyable items, are NOT treated as
+            // floaters just because they have no company. A company-scoped
+            // caller sees only users whose pivot rows include one of their
+            // companies. Floater users (no pivot rows) are only visible to
+            // other floater users (caller with no pivot rows, handled above)
+            // and superusers (handled at the top of scopeCompanyables).
+            // Same query in floater and strict mode for the company-scoped
+            // caller: item-level floater rules don't apply to users.
             return $query->whereIn('users.id', function ($sub) use ($companyIds) {
                 $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
             });
@@ -656,14 +655,15 @@ final class Company extends SnipeModel
      */
     public static function scopeUsersByCompanyIds($query, array $companyIds): mixed
     {
-        if (Setting::getSettings()->null_company_is_floater) {
-            return $query->where(function ($q) use ($companyIds) {
-                $q->whereHas('companies', fn ($q2) => $q2->whereIn('companies.id', $companyIds))
-                    ->orWhereDoesntHave('companies');
-            });
-        }
-
-        return $query->whereHas('companies', fn ($q) => $q->whereIn('companies.id', $companyIds));
+        // Users are never treated as floaters here. A caller filtering the
+        // users list by a specific set of company ids gets exactly those
+        // users, regardless of null_company_is_floater. Item-level floater
+        // rules (visible to any caller if the item has no company) don't
+        // apply to users. Superuser bypass happens upstream in
+        // scopeCompanyables and in the caller's own conditional.
+        return $query->whereIn('users.id', function ($sub) use ($companyIds) {
+            $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
+        });
     }
 
     /**
