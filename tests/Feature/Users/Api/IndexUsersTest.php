@@ -141,14 +141,16 @@ class IndexUsersTest extends TestCase
 
     /**
      * FMCS + floaters on: a company-scoped, non-superuser caller must not
-     * see users pivoted to a different company. They should still see their
-     * own company members and floater (null-company) users.
+     * see users pivoted to a different company, and must NOT see floater
+     * (null-company) users. Floater USERS are only visible to other
+     * floaters and to superusers, unlike floater ASSETS / LOCATIONS which
+     * are visible to everyone under floater mode.
      *
      * Regression pin for the ticket where a company-A user going to the
-     * user listing page saw every user in the system. See the same fix in
-     * tests/Unit/CompanyScopingTest.php for the model-level equivalent.
+     * user listing page saw every user in the system. See the same fix
+     * at tests/Unit/CompanyScopingTest.php for the model-level equivalent.
      */
-    public function test_users_index_hides_other_companies_users_from_company_scoped_caller_in_floater_mode()
+    public function test_users_index_hides_other_companies_and_floater_users_from_company_scoped_caller()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 
@@ -168,12 +170,8 @@ class IndexUsersTest extends TestCase
 
         $this->assertContains($companyACaller->id, $visibleIds);
         $this->assertContains($companyAPeer->id, $visibleIds);
-        $this->assertContains($floater->id, $visibleIds);
-        $this->assertNotContains(
-            $companyBUser->id,
-            $visibleIds,
-            'Company B user leaked into a company A caller\'s user list under FMCS + floater mode.',
-        );
+        $this->assertNotContains($companyBUser->id, $visibleIds, 'Company B user leaked to a company A caller.');
+        $this->assertNotContains($floater->id, $visibleIds, 'Floater user leaked to a company A caller.');
     }
 
     public function test_returns_result_via_filter()

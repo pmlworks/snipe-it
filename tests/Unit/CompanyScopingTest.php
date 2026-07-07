@@ -209,7 +209,14 @@ class CompanyScopingTest extends TestCase
         $this->assertCanSee($companyItem);
     }
 
-    public function test_company_scoped_user_can_see_null_company_users_in_floater_mode()
+    /**
+     * Unlike other companyable items, USERS are never floaters from a
+     * company-scoped caller's perspective. A null-company user is only
+     * visible to other null-company users (see the "floater sees everyone"
+     * branch handled elsewhere) and superusers. Confirms the policy in
+     * both floater and strict modes.
+     */
+    public function test_company_scoped_user_cannot_see_null_company_users_in_floater_mode()
     {
         $company = Company::factory()->create();
         $companyUser = $company->users()->save(User::factory()->make());
@@ -218,7 +225,7 @@ class CompanyScopingTest extends TestCase
         $this->settings->enableFloaterMode();
 
         $this->actingAs($companyUser);
-        $this->assertCanSee($nullCompanyUser);
+        $this->assertCannotSee($nullCompanyUser);
     }
 
     public function test_company_scoped_user_cannot_see_null_company_users_in_strict_mode()
@@ -234,30 +241,47 @@ class CompanyScopingTest extends TestCase
     }
 
     /**
-     * FMCS + floaters on: a company A caller should see themselves and
-     * null-company (floater) users, but NOT a user whose pivot points at a
-     * different company.
-     *
-     * Regression pin for support ticket 56305. Root cause was that the
-     * "no pivot rows at all" branch of the floater query in
-     * Company::scopeCompanyablesDirectly went through
-     * whereDoesntHave('companies'), whose relation subquery had the
-     * companies-table CompanyableScope applied recursively. That scope
-     * filtered the JOIN to the caller's own companies, so a user pivoted
-     * only to OUT-OF-SCOPE companies looked pivot-less and got picked up
-     * by the floater branch. Fix reads the company_user pivot directly.
+     * Floater callers are unrestricted, so they see everyone (their own
+     * kind and every company-scoped user). Superuser bypass is handled
+     * upstream in scopeCompanyables.
      */
-    public function test_company_scoped_user_cannot_see_users_from_other_companies_in_floater_mode()
+    public function test_null_company_user_can_see_null_company_users_in_floater_mode()
     {
-        [$companyA, $companyB] = Company::factory()->count(2)->create();
-
-        $companyAUser = $companyA->users()->save(User::factory()->make());
-        $companyBUser = $companyB->users()->save(User::factory()->make());
+        $company = Company::factory()->create();
+        $companyUser = $company->users()->save(User::factory()->make());
+        $nullCompanyCaller = User::factory()->create(['company_id' => null]);
+        $anotherNullCompanyUser = User::factory()->create(['company_id' => null]);
 
         $this->settings->enableFloaterMode();
 
-        $this->actingAs($companyAUser);
+        $this->actingAs($nullCompanyCaller);
+        $this->assertCanSee($anotherNullCompanyUser);
+        $this->assertCanSee($companyUser);
+    }
+
+    /**
+     * FMCS + floaters on: a company A caller sees ONLY users pivoted to
+     * their own company (or their reachable hierarchy). They do NOT see
+     * users from other companies, and they do NOT see null-company (floater)
+     * users. Regression pin for support ticket 56305 and the follow-up
+     * clarification that floater USERS are not visible to company-scoped
+     * callers, unlike floater ASSETS / LOCATIONS / etc.
+     */
+    public function test_company_scoped_user_only_sees_own_company_users_in_floater_mode()
+    {
+        [$companyA, $companyB] = Company::factory()->count(2)->create();
+
+        $companyACaller = $companyA->users()->save(User::factory()->make());
+        $companyAPeer = $companyA->users()->save(User::factory()->make());
+        $companyBUser = $companyB->users()->save(User::factory()->make());
+        $floaterUser = User::factory()->create(['company_id' => null]);
+
+        $this->settings->enableFloaterMode();
+
+        $this->actingAs($companyACaller);
+        $this->assertCanSee($companyAPeer);
         $this->assertCannotSee($companyBUser);
+        $this->assertCannotSee($floaterUser);
     }
 
     private function assertCanSee(Model $model)
