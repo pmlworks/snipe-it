@@ -599,14 +599,37 @@ final class Company extends SnipeModel
                 });
             }
 
-            // Users, unlike other companyable items, are NOT treated as
-            // floaters just because they have no company. A company-scoped
-            // caller sees only users whose pivot rows include one of their
-            // companies. Floater users (no pivot rows) are only visible to
-            // other floater users (caller with no pivot rows, handled above)
-            // and superusers (handled at the top of scopeCompanyables).
-            // Same query in floater and strict mode for the company-scoped
-            // caller: item-level floater rules don't apply to users.
+            // Floater mode on: a company-scoped caller also sees null-company
+            // (floater) users. This mirrors the item-level floater rule
+            // documented at https://snipe-it.readme.io/docs/multi-tenancy-ish
+            // and is required so checkout dropdowns can offer floater users
+            // as valid targets under the "items from any company can be
+            // checked out to targets with no company assignment" policy.
+            //
+            // The "no pivot rows" branch queries the company_user pivot
+            // directly. Going through the Eloquent relation instead would
+            // apply the companies-table CompanyableScope to the subquery,
+            // restricting the JOIN to the caller's own companies. A user
+            // whose only pivot rows point at OTHER companies would then
+            // look pivot-less under that scoping and get picked up by the
+            // floater branch, leaking cross-company users into the caller's
+            // list. Reading the pivot directly bypasses that recursive
+            // scope and matches the intended "genuinely no pivot rows at
+            // all" semantics. This is the original bug fix from support
+            // ticket 56305. Floater visibility itself is deliberate per
+            // docs; only the cross-company leak was wrong.
+            if ($floater) {
+                return $query->where(function ($q) use ($companyIds) {
+                    $q->whereIn('users.id', function ($sub) use ($companyIds) {
+                        $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
+                    })->orWhereNotIn('users.id', function ($sub) {
+                        $sub->select('user_id')->from('company_user');
+                    });
+                });
+            }
+
+            // Floater mode off (strict): only users pivoted to one of the
+            // caller's companies. Null-company users are not visible.
             return $query->whereIn('users.id', function ($sub) use ($companyIds) {
                 $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
             });
@@ -655,12 +678,21 @@ final class Company extends SnipeModel
      */
     public static function scopeUsersByCompanyIds($query, array $companyIds): mixed
     {
-        // Users are never treated as floaters here. A caller filtering the
-        // users list by a specific set of company ids gets exactly those
-        // users, regardless of null_company_is_floater. Item-level floater
-        // rules (visible to any caller if the item has no company) don't
-        // apply to users. Superuser bypass happens upstream in
-        // scopeCompanyables and in the caller's own conditional.
+        if (Setting::getSettings()->null_company_is_floater) {
+            // The "no pivot rows" branch queries the company_user pivot
+            // directly, for the same reason as scopeCompanyablesDirectly
+            // above: walking the Eloquent companies relation would apply
+            // the companies-table CompanyableScope to the subquery and let
+            // cross-company users leak in as apparent floaters. See ticket 56305.
+            return $query->where(function ($q) use ($companyIds) {
+                $q->whereIn('users.id', function ($sub) use ($companyIds) {
+                    $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
+                })->orWhereNotIn('users.id', function ($sub) {
+                    $sub->select('user_id')->from('company_user');
+                });
+            });
+        }
+
         return $query->whereIn('users.id', function ($sub) use ($companyIds) {
             $sub->select('user_id')->from('company_user')->whereIn('company_id', $companyIds);
         });

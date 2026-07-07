@@ -140,17 +140,19 @@ class IndexUsersTest extends TestCase
     }
 
     /**
-     * FMCS + floaters on: a company-scoped, non-superuser caller must not
-     * see users pivoted to a different company, and must NOT see floater
-     * (null-company) users. Floater USERS are only visible to other
-     * floaters and to superusers, unlike floater ASSETS / LOCATIONS which
-     * are visible to everyone under floater mode.
+     * FMCS + floaters on: a company-scoped, non-superuser caller sees
+     * their own pivot companies AND null-company (floater) users, but
+     * NOT users pivoted to a different company.
      *
-     * Regression pin for the ticket where a company-A user going to the
-     * user listing page saw every user in the system. See the same fix
-     * at tests/Unit/CompanyScopingTest.php for the model-level equivalent.
+     * Regression pin for support ticket 56305. Root cause was that
+     * `orWhereDoesntHave('companies')` in the floater branch had the
+     * companies-table CompanyableScope applied recursively to its
+     * subquery, filtering the JOIN to the caller's own companies. A user
+     * pivoted only to OUT-OF-SCOPE companies then looked pivot-less and
+     * slipped through as an apparent floater. Fix reads the company_user
+     * pivot directly. See the same pin at tests/Unit/CompanyScopingTest.php.
      */
-    public function test_users_index_hides_other_companies_and_floater_users_from_company_scoped_caller()
+    public function test_users_index_hides_other_companies_users_but_includes_floaters_for_company_scoped_caller()
     {
         [$companyA, $companyB] = Company::factory()->count(2)->create();
 
@@ -170,8 +172,8 @@ class IndexUsersTest extends TestCase
 
         $this->assertContains($companyACaller->id, $visibleIds);
         $this->assertContains($companyAPeer->id, $visibleIds);
+        $this->assertContains($floater->id, $visibleIds, 'Floater user should be visible per docs.');
         $this->assertNotContains($companyBUser->id, $visibleIds, 'Company B user leaked to a company A caller.');
-        $this->assertNotContains($floater->id, $visibleIds, 'Floater user leaked to a company A caller.');
     }
 
     public function test_returns_result_via_filter()
