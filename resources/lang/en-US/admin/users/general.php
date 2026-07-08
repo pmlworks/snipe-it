@@ -65,4 +65,10 @@ return [
     'no_companies_assigned' => '(No companies assigned)',
     'cannot_edit_privileged_user_companies' => 'Only an admin or super admin can modify the company assignments of an admin or super admin user.',
     'cannot_manage_companies_without_membership' => 'Full multiple company support with floater mode is enabled, so you must be assigned to at least one company before you can manage another user\'s company assignments.',
+    'impersonate_user' => 'Login as :name',
+    'impersonate_confirm_title' => 'Confirm Impersonation',
+    'impersonate_confirm_body' => 'You are about to log in as :name. Any action you take will be recorded as if :name performed it. Continue?',
+    'impersonating_banner_title' => 'Impersonating:',
+    'impersonating_banner_text' => 'You are currently logged in as :name. Anything you do will be recorded as if :name did it. Your real account is :impersonator.',
+    'impersonating_stop_link' => 'Switch back to :name',
 ];
