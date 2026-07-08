@@ -39,6 +39,15 @@ class ImpersonateController extends Controller
                 ->with('error', trans('admin/users/message.impersonate.target_not_active'));
         }
 
+        $note = trim((string) $request->input('note', ''));
+        if ($note === '') {
+            return redirect()->route('users.show', $user)
+                ->with('error', trans('admin/users/general.impersonate_note_required'));
+        }
+        // Cap length defensively to match the textarea's maxlength; anything longer
+        // is almost certainly a paste error or an abuse attempt.
+        $note = mb_substr($note, 0, 500);
+
         $log = new Actionlog;
         $log->item_type = User::class;
         $log->item_id = $user->id;
@@ -46,6 +55,7 @@ class ImpersonateController extends Controller
         $log->target_id = $user->id;
         $log->created_at = date('Y-m-d H:i:s');
         $log->created_by = $actor->id;
+        $log->note = $note;
         $log->logaction('impersonated');
 
         $impersonatorId = $actor->id;

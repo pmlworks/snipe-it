@@ -661,15 +661,7 @@
     </x-container>
 
     @if (Auth::check() && Auth::user()->mayImpersonate($user))
-        @include('modals.confirm-action', [
-            'modal_name' => 'confirmImpersonateModal',
-            'modal_class' => 'modal-danger',
-            'button_class' => 'btn-outline',
-            'button_label' => trans('general.yes'),
-            'route' => route('users.impersonate.start', $user->id),
-            'title' => trans('admin/users/general.impersonate_confirm_title'),
-            'body' => trans('admin/users/general.impersonate_confirm_body', ['name' => $user->display_name]),
-        ])
+        @include('users.impersonate-confirm-modal')
     @endif
 
     @if (auth()->user()->isSuperUser() && $user->twoFactorResettable())

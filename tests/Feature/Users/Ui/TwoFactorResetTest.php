@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Users\Ui;
 
-use App\Models\Setting;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -13,8 +12,7 @@ class TwoFactorResetTest extends TestCase
         // Optional-mode ("1") lets the actor through the CheckForTwoFactor middleware
         // as long as they don't opt in, while still satisfying the resetTwoFactor policy
         // for an opted-in-and-enrolled target.
-        Setting::unguarded(fn () => Setting::getSettings()->update(['two_factor_enabled' => 1]));
-        Setting::$_cache = null;
+        $this->settings->set(['two_factor_enabled' => 1]);
     }
 
     protected function makeEnrolledTarget(): User
@@ -89,8 +87,7 @@ class TwoFactorResetTest extends TestCase
     {
         // Empty string is the CheckForTwoFactor middleware's real "off" signal —
         // the middleware treats "0" as on-but-misconfigured and still redirects.
-        Setting::unguarded(fn () => Setting::getSettings()->update(['two_factor_enabled' => '']));
-        Setting::$_cache = null;
+        $this->settings->set(['two_factor_enabled' => '']);
 
         $actor = User::factory()->superuser()->create();
         $target = User::factory()->create([

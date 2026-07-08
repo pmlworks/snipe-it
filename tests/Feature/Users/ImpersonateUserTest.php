@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Users;
 
+use App\Models\Actionlog;
 use App\Models\Company;
 use App\Models\User;
 use Tests\TestCase;
@@ -61,18 +62,44 @@ class ImpersonateUserTest extends TestCase
         $this->allow($actor);
 
         $response = $this->actingAs($actor)
-            ->post(route('users.impersonate.start', $target));
+            ->post(route('users.impersonate.start', $target), ['note' => 'Investigating ticket #4242']);
 
         $response->assertRedirect(route('home'));
         $this->assertSame($target->id, auth()->id());
         $this->assertSame($actor->id, session('impersonator_id'));
 
-        $this->assertDatabaseHas('action_logs', [
-            'item_type' => User::class,
-            'item_id' => $target->id,
-            'created_by' => $actor->id,
-            'action_type' => 'impersonated',
-        ]);
+        $log = Actionlog::where('item_type', User::class)
+            ->where('item_id', $target->id)
+            ->where('created_by', $actor->id)
+            ->where('action_type', 'impersonated')
+            ->first();
+
+        $this->assertNotNull($log, 'impersonated action log entry not written');
+        $this->assertSame('Investigating ticket #4242', $log->note);
+    }
+
+    public function test_impersonate_requires_a_note()
+    {
+        $actor = User::factory()->superuser()->create();
+        $target = User::factory()->create(['activated' => 1]);
+        $this->allow($actor);
+
+        // No note
+        $this->actingAs($actor)
+            ->post(route('users.impersonate.start', $target))
+            ->assertRedirect(route('users.show', $target))
+            ->assertSessionHas('error', trans('admin/users/general.impersonate_note_required'));
+
+        $this->assertSame($actor->id, auth()->id());
+        $this->assertNull(session('impersonator_id'));
+
+        // Whitespace-only note
+        $this->actingAs($actor)
+            ->post(route('users.impersonate.start', $target), ['note' => '   '])
+            ->assertRedirect(route('users.show', $target))
+            ->assertSessionHas('error', trans('admin/users/general.impersonate_note_required'));
+
+        $this->assertNull(session('impersonator_id'));
     }
 
     public function test_allowlisted_superuser_cannot_impersonate_deactivated_user()
@@ -125,7 +152,9 @@ class ImpersonateUserTest extends TestCase
             ->get(route('users.show', $target))
             ->assertOk()
             ->assertSee('confirmImpersonateModal')
-            ->assertSee(trans('admin/users/general.impersonate_confirm_title'));
+            ->assertSee(trans('admin/users/general.impersonate_confirm_title'))
+            ->assertSee('name="note"', false)
+            ->assertSee('required', false);
     }
 
     public function test_allowlisted_superuser_cannot_impersonate_themselves()
@@ -147,7 +176,7 @@ class ImpersonateUserTest extends TestCase
         $this->allow($actor);
 
         $this->actingAs($actor)
-            ->post(route('users.impersonate.start', $target))
+            ->post(route('users.impersonate.start', $target), ['note' => 'test note'])
             ->assertRedirect(route('home'));
 
         $this->assertSame($target->id, auth()->id());
@@ -173,7 +202,7 @@ class ImpersonateUserTest extends TestCase
         $this->allow($actor);
 
         $this->actingAs($actor)
-            ->post(route('users.impersonate.start', $target))
+            ->post(route('users.impersonate.start', $target), ['note' => 'test note'])
             ->assertRedirect(route('home'));
 
         $this->assertSame($actor->id, session('impersonator_id'));
@@ -200,7 +229,7 @@ class ImpersonateUserTest extends TestCase
         $this->allow($actor);
 
         $this->actingAs($actor)
-            ->post(route('users.impersonate.start', $target))
+            ->post(route('users.impersonate.start', $target), ['note' => 'test note'])
             ->assertRedirect(route('home'));
 
         $this->assertSame($target->id, auth()->id());
