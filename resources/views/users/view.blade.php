@@ -303,15 +303,17 @@
 
 
 
-                                <!-- 2FA reset -->
-                                <button type="button" class="btn btn-theme hidden-print btn-social btn-block" data-toggle="modal" data-target="#confirmTwoFactorResetModal" style="margin-right: 10px; margin-top: 10px;">
+                                @if (auth()->user()->isSuperUser() && $user->twoFactorResettable())
+                                    <!-- 2FA reset -->
+                                    <button type="button" class="btn btn-theme hidden-print btn-social btn-block" data-toggle="modal" data-target="#confirmTwoFactorResetModal" style="margin-right: 10px; margin-top: 10px;">
                                         <x-icon type="mobile" class="fa-fw"/>
-                                    {{ trans('admin/settings/general.two_factor_reset') }}
-                                </button>
-                                <br>
-                                <p class="help-block" style="line-height: 1.6;">
-                                    {{ trans('admin/settings/general.two_factor_reset_help') }}
-                                </p>
+                                        {{ trans('admin/settings/general.two_factor_reset') }}
+                                    </button>
+                                    <br>
+                                    <p class="help-block" style="line-height: 1.6;">
+                                        {{ trans('admin/settings/general.two_factor_reset_help') }}
+                                    </p>
+                                @endif
 
 
 
