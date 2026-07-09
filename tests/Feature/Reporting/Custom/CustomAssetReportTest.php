@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Reporting\Custom;
 
+use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\Company;
 use App\Models\CustomField;
@@ -260,7 +261,7 @@ class CustomAssetReportTest extends TestCase
 
         // Asset currently checked out to a user AND had a checkout log in range.
         $expected = Asset::factory()->assignedToUser()->create(['name' => 'Should Appear']);
-        $log = new \App\Models\Actionlog;
+        $log = new Actionlog;
         $log->item_type = Asset::class;
         $log->item_id = $expected->id;
         $log->action_type = 'checkout';
@@ -271,7 +272,7 @@ class CustomAssetReportTest extends TestCase
 
         // Currently assigned but checkout log outside range.
         $wrongDate = Asset::factory()->assignedToUser()->create(['name' => 'Wrong Date']);
-        $log2 = new \App\Models\Actionlog;
+        $log2 = new Actionlog;
         $log2->item_type = Asset::class;
         $log2->item_id = $wrongDate->id;
         $log2->action_type = 'checkout';
@@ -282,7 +283,7 @@ class CustomAssetReportTest extends TestCase
 
         // Checkout log in range but currently unassigned (was checked back in).
         $unassigned = Asset::factory()->create(['name' => 'Was Checked Out But Returned']);
-        $log3 = new \App\Models\Actionlog;
+        $log3 = new Actionlog;
         $log3->item_type = Asset::class;
         $log3->item_id = $unassigned->id;
         $log3->action_type = 'checkout';
@@ -318,7 +319,7 @@ class CustomAssetReportTest extends TestCase
 
         $reporter = User::factory()->canViewReports()->create();
 
-        $log = new \App\Models\Actionlog;
+        $log = new Actionlog;
         $log->item_type = Asset::class;
         $log->item_id = $insideRange->id;
         $log->action_type = 'checkout';
@@ -327,7 +328,7 @@ class CustomAssetReportTest extends TestCase
         $log->created_by = $reporter->id;
         $log->save();
 
-        $log2 = new \App\Models\Actionlog;
+        $log2 = new Actionlog;
         $log2->item_type = Asset::class;
         $log2->item_id = $outsideRange->id;
         $log2->action_type = 'checkout';
