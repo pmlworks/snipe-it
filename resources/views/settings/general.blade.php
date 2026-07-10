@@ -246,12 +246,12 @@
                                <div class="col-md-8" id="mailtestrow">
                                    <a class="btn btn-default btn-sm pull-left{{ (config('mail.reply_to.address') == '') ? ' disabled': '' }}" id="mailtest" style="margin-right: 10px;">
                                        {{ trans('admin/settings/general.mail_test') }}</a>
-                                   <span id="mailtesticon"></span>
+                                   <span id="mailtesticon" role="status" aria-live="polite" aria-atomic="true"></span>
                                    <span id="mailtestresult"></span>
-                                   <span id="mailteststatus"></span>
+                                   <span id="mailteststatus" role="status" aria-live="polite" aria-atomic="true"></span>
                                </div>
                                <div class="col-md-8 col-md-offset-3">
-                                   <div id="mailteststatus-error" class="text-danger"></div>
+                                   <div id="mailteststatus-error" class="text-danger" role="alert" aria-live="assertive" aria-atomic="true"></div>
                                </div>
                                <div class="col-md-8 col-md-offset-3">
                                    <div class="help-block">

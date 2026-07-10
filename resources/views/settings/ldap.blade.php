@@ -923,9 +923,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-8 col-md-offset-3">
-                                        <span id="ldaptestloginicon"></span>
+                                        <span id="ldaptestloginicon" role="status" aria-live="polite" aria-atomic="true"></span>
                                         <span id="ldaptestloginresult"></span>
-                                        <span id="ldaptestloginstatus"></span>
+                                        <span id="ldaptestloginstatus" role="status" aria-live="polite" aria-atomic="true"></span>
                                     </div>
                                     <div class="col-md-8 col-md-offset-3">
                                         <p class="help-block">{{ trans('admin/settings/general.ldap_login_test_help') }}</p>
@@ -941,7 +941,7 @@
                                     </div>
                                     <div class="col-md-12">
                                         <br />
-                                        <div id="ldapad_test_results" class="hidden well well-sm"></div>
+                                        <div id="ldapad_test_results" class="hidden well well-sm" role="status" aria-live="polite" aria-atomic="true"></div>
                                     </div>
                                     <div class="col-md-8 col-md-offset-3">
                                         @if (config('app.lock_passwords')===true)
