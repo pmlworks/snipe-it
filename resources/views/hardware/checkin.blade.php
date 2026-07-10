@@ -95,7 +95,7 @@
                                             <div class="col-md-8">
                                                 <input class="form-control" type="text" name="name" aria-label="name"
                                                        id="name" value="{{ old('name', $asset->name) }}"/>
-                                                {!! $errors->first('name', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                                <x-form.error name="name" />
                                             </div>
                                         </div>
 
@@ -113,7 +113,7 @@
                                                     style="width: 100%"
                                                     aria-label="status_id"
                                                 />
-                                                {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                                <x-form.error name="status_id" />
                                             </div>
                                         </div>
 
@@ -172,7 +172,7 @@
                                                             <x-icon type="calendar" />
                                                         </span>
                                                     </div>
-                                                    {!! $errors->first('checkin_at', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                                    <x-form.error name="checkin_at" />
                                                 </div>
                                             </div>
                                         </div>
@@ -185,7 +185,7 @@
                                             <div class="col-md-8">
                                                 <textarea class="col-md-6 form-control" id="note" @required($snipeSettings->require_checkinout_notes)
                                                 name="note">{{ old('note', $asset->note) }}</textarea>
-                                                {!! $errors->first('note', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                                <x-form.error name="note" />
                                             </div>
                                         </div>
 

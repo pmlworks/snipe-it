@@ -28,7 +28,7 @@
             </label>
             @endif
 
-            {!! $errors->first('checkout_to_type', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+            <x-form.error name="checkout_to_type" />
         </div>
     </div>
 </div>

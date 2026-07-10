@@ -34,7 +34,7 @@
                                     <option value="asset_tag">{{ trans('general.asset_tag') }}</option>
                                     <option value="serial" {{ (($settings->unique_serial != '1') ? 'disabled' : '') }}>{{ trans('general.serial_number') }}</option>
                                 </select>
-                                {!! $errors->first('audit_by_field', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <x-form.error name="audit_by_field" />
 
                                 <p class="help-block">
                                     <x-icon type="tip"/>
@@ -50,7 +50,7 @@
                             <div class="col-md-8">
                                 <input type="text" class="form-control" name="audit_key" id="audit_key" required
                                        value="{{ old('audit_key') }}">
-                                {!! $errors->first('audit_key', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <x-form.error name="audit_key" />
                             </div>
                         </div>
 
@@ -81,7 +81,7 @@
                                     <input type="text" class="form-control" placeholder="{{ trans('general.next_audit_date') }}" name="next_audit_date" id="next_audit_date" value="{{ old('next_audit_date', $next_audit_date) }}">
                                     <span class="input-group-addon"><x-icon type="calendar" /></span>
                                 </div>
-                                {!! $errors->first('next_audit_date', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <x-form.error name="next_audit_date" />
                             </div>
                         </div>
 
@@ -91,7 +91,7 @@
                             <label for="note" class="col-md-3 control-label">{{ trans('admin/hardware/form.notes') }}</label>
                             <div class="col-md-8">
                                 <textarea class="col-md-6 form-control" id="note" name="note">{{ old('note') }}</textarea>
-                                {!! $errors->first('note', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <x-form.error name="note" />
                             </div>
                         </div>
 

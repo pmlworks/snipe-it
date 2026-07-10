@@ -29,7 +29,7 @@
             <x-form.tooltip>{{ trans('general.min_amt_help') }}</x-form.tooltip>
         </div>
         <div class="col-md-12">
-            {!! $errors->first('min_amt', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+            <x-form.error name="min_amt" />
         </div>
     </div>
 </div>

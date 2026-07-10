@@ -2030,7 +2030,7 @@
                             </div>
                         @endif
 
-                        @include('notifications')
+                        <x-notifications />
                     </div>
 
 
@@ -2342,6 +2342,10 @@
                     // Screen readers only announce inserted error text when the
                     // error element carries role=alert (aria-live=assertive is
                     // implied, but set explicitly for older AT compatibility).
+                    // The X icon is applied via the .alert-msg::before CSS rule
+                    // (see resources/assets/less/app.less); prepending it here
+                    // would be wiped on re-validation, when jQuery Validate
+                    // calls label.html(msg) on the existing element.
                     error.attr('role', 'alert');
                     error.attr('aria-live', 'assertive');
 

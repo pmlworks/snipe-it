@@ -63,7 +63,7 @@
                                         <p class="text-warning"><i class="fas fa-lock"></i> {{ trans('general.feature_disabled') }}</p>
                                     @endif
 
-                                    {!! $errors->first('two_factor_enabled', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                    <x-form.error name="two_factor_enabled" />
                                 </div>
                             </div>
 
@@ -78,7 +78,7 @@
 
                                 <div class="col-md-9">
                                     <input class="form-control" style="width: 60px;" name="pwd_secure_min" type="number" value="{{ old('pwd_secure_min', $setting->pwd_secure_min) }}" id="pwd_secure_min" maxlength="2" min="8">
-                                    {!! $errors->first('pwd_secure_min', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                    <x-form.error name="pwd_secure_min" />
                                     <p class="help-block">
                                         {{ trans('admin/settings/general.pwd_secure_min_help') }}
                                     </p>
@@ -147,7 +147,7 @@
                                             <label for="login_remote_user_enabled">{{ trans('admin/settings/general.login_remote_user_enabled_text') }}</label>
                                         </label>
 
-                                        {!! $errors->first('login_remote_user_enabled', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                        <x-form.error name="login_remote_user_enabled" />
                                         <p class="help-block">
                                             {{ trans('admin/settings/general.login_remote_user_enabled_help') }}
                                         </p>
@@ -161,7 +161,7 @@
 
                                 <div class="col-md-8">
                                         <input class="form-control" name="login_remote_user_header_name" type="text" value="{{ old('login_remote_user_header_name', $setting->login_remote_user_header_name) }}" id="login_remote_user_header_name">
-                                        {!! $errors->first('login_remote_user_header_name', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                        <x-form.error name="login_remote_user_header_name" />
                                         <p class="help-block">
                                             <x-icon type="warning" class="text-danger"/>
                                             {!! trans('admin/settings/general.login_remote_user_header_name_help') !!}
@@ -175,7 +175,7 @@
 
                                 <div class="col-md-8">
                                         <input class="form-control" aria-label="login_remote_user_custom_logout_url" name="login_remote_user_custom_logout_url" type="url" value="{{ old('login_remote_user_custom_logout_url', $setting->login_remote_user_custom_logout_url) }}" id="login_remote_user_custom_logout_url">
-                                        {!! $errors->first('login_remote_user_custom_logout_url', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                        <x-form.error name="login_remote_user_custom_logout_url" />
                                         <p class="help-block">
                                             {{ trans('admin/settings/general.login_remote_user_custom_logout_url_help') }}
                                         </p>
@@ -191,7 +191,7 @@
                                             {{ trans('admin/settings/general.login_common_disabled_text') }}
                                         </label>
 
-                                        {!! $errors->first('login_common_disabled', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
+                                        <x-form.error name="login_common_disabled" />
                                         <p class="help-block">
                                             {{ trans('admin/settings/general.login_common_disabled_help') }}
                                         </p>
