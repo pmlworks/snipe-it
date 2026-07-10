@@ -1449,3 +1449,15 @@ Radio toggle styles for permission settings and check/uncheck all
   text-decoration: none;
 }
 }
+
+// Respect the user's OS-level "reduce motion" preference. The Font Awesome
+// spinners (.fa-spin) and Font Awesome Animation pulses (.faa-pulse, .animated)
+// loop indefinitely, which can trigger vestibular symptoms. One-shot animations
+// (like the confetti burst on save) are left alone since they don't loop.
+@media (prefers-reduced-motion: reduce) {
+  .fa-spin,
+  .faa-pulse.animated,
+  .faa-pulse.animated-hover:hover {
+    animation: none !important;
+  }
+}
