@@ -62,9 +62,9 @@ class AssetCheckinTest extends TestCase
 
         $content = $response->getContent();
 
-        $this->assertStringContainsString('id="set-requestable-wrapper"', $content);
+        $this->assertStringContainsString('id="requestable-wrapper"', $content);
         $this->assertMatchesRegularExpression(
-            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            '/id="requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
             $content
         );
     }
@@ -83,7 +83,7 @@ class AssetCheckinTest extends TestCase
         $content = $response->getContent();
 
         $this->assertMatchesRegularExpression(
-            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            '/id="requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
             $content
         );
     }
@@ -103,7 +103,7 @@ class AssetCheckinTest extends TestCase
             ->assertOk();
 
         $this->assertDoesNotMatchRegularExpression(
-            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            '/id="requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
             $responseWithDeployableOldInput->getContent()
         );
 
@@ -117,7 +117,7 @@ class AssetCheckinTest extends TestCase
             ->assertOk();
 
         $this->assertMatchesRegularExpression(
-            '/id="set-requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
+            '/id="requestable-wrapper"(?:(?!>).)*style="display:\s*none;"/s',
             $responseWithNonDeployableOldInput->getContent()
         );
     }
@@ -327,7 +327,7 @@ class AssetCheckinTest extends TestCase
         $this->actingAs(User::factory()->checkinAssets()->create())
             ->post(route('hardware.checkin.store', [$asset]), [
                 'status_id' => $deployableStatus->id,
-                'set_requestable' => 1,
+                'requestable' => 1,
             ]);
 
         $this->assertTrue((bool) $asset->fresh()->requestable);
@@ -358,7 +358,7 @@ class AssetCheckinTest extends TestCase
         $this->actingAs(User::factory()->checkinAssets()->create())
             ->post(route('hardware.checkin.store', [$asset]), [
                 'status_id' => $undeployableStatus->id,
-                'set_requestable' => 1,
+                'requestable' => 1,
             ]);
 
         $this->assertFalse((bool) $asset->fresh()->requestable);

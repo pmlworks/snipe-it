@@ -336,7 +336,8 @@ class AssetCheckoutTest extends TestCase
             ->post(route('hardware.checkout.store', $asset), [
                 'checkout_to_type' => 'user',
                 'assigned_user' => $targetUser->id,
-                'set_not_requestable' => 1,
+                // Unchecked checkbox on the form → key absent → boolean()
+                // returns false → asset flipped to not-requestable.
             ]);
 
         $this->assertFalse((bool) $asset->fresh()->requestable);

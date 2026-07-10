@@ -119,17 +119,17 @@
 
                                         <div
                                             class="form-group"
-                                            id="set-requestable-wrapper"
+                                            id="requestable-wrapper"
                                             @if (! $show_requestable_toggle) style="display: none;" @endif
                                         >
                                             <div class="col-md-9 col-md-offset-3">
-                                                <label class="form-control" for="set_requestable">
+                                                <label class="form-control" for="requestable">
                                                     <input
                                                         type="checkbox"
                                                         value="1"
-                                                        name="set_requestable"
-                                                        id="set_requestable"
-                                                        @checked((bool) old('set_requestable', false))
+                                                        name="requestable"
+                                                        id="requestable"
+                                                        @checked((bool) old('requestable', $asset->requestable))
                                                     />
                                                     {{ trans('admin/hardware/general.requestable') }}
                                                 </label>
@@ -224,13 +224,18 @@
             const deployableStatusIds = @json($deployable_status_ids);
             const statusSelect = document.getElementById('modal-statuslabel_types')
                 ?? document.querySelector('select[name="status_id"]');
-            const requestableWrapper = document.getElementById('set-requestable-wrapper');
-            const requestableCheckbox = document.getElementById('set_requestable');
+            const requestableWrapper = document.getElementById('requestable-wrapper');
 
             if (!statusSelect || !requestableWrapper) {
                 return;
             }
 
+            // Preserve the checkbox state when hiding: the server only applies the
+            // checkbox value when the selected status is deployable, so a hidden
+            // wrapper never lets us accidentally clear the asset's requestable
+            // flag. Users who bounce the status between deployable and non-
+            // deployable keep their original tick when they land back on a
+            // deployable status.
             const toggleRequestable = function () {
                 const selectedStatusValue = statusSelect.value;
                 const selectedStatusId = Number.parseInt(selectedStatusValue, 10);
@@ -239,10 +244,6 @@
                     && deployableStatusIds.includes(selectedStatusId);
 
                 requestableWrapper.style.display = isDeployable ? '' : 'none';
-
-                if (!isDeployable && requestableCheckbox) {
-                    requestableCheckbox.checked = false;
-                }
             };
 
             statusSelect.addEventListener('change', toggleRequestable);
@@ -254,10 +255,49 @@
             toggleRequestable();
         };
 
+        // Per-user localStorage preference for the requestable default on
+        // checkin. Namespaced by user id so a shared browser session doesn't
+        // leak one user's habit into another user's default. Only takes over
+        // when the field wasn't repopulated from a validation-error redirect
+        // (old() beats the stored preference). On submit we save whatever the
+        // user actually chose, so the preference tracks their real habit.
+        const initializeRequestablePreference = function () {
+            const storageKey = 'snipeit.checkin.requestable_default.' + @json(auth()->id() ?? 'guest');
+            const hadOldInput = @json((bool) old('requestable', false)) || @json(session()->has('_old_input.requestable'));
+            const checkbox = document.getElementById('requestable');
+            const form = checkbox ? checkbox.closest('form') : null;
+
+            if (!checkbox || !form) {
+                return;
+            }
+
+            if (!hadOldInput) {
+                let stored = null;
+                try {
+                    stored = window.localStorage.getItem(storageKey);
+                } catch (e) {
+                    // localStorage may be unavailable (private mode, disabled).
+                }
+                if (stored === '1' || stored === '0') {
+                    checkbox.checked = stored === '1';
+                }
+            }
+
+            form.addEventListener('submit', function () {
+                try {
+                    window.localStorage.setItem(storageKey, checkbox.checked ? '1' : '0');
+                } catch (e) {
+                    // Non-fatal: preference just won't persist this time.
+                }
+            });
+        };
+
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeRequestableToggle);
+            document.addEventListener('DOMContentLoaded', initializeRequestablePreference);
         } else {
             initializeRequestableToggle();
+            initializeRequestablePreference();
         }
     </script>
 @stop

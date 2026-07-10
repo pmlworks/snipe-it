@@ -101,22 +101,20 @@
                             </div>
                         </div>
 
-                        @if ($asset->requestable)
-                            <div class="form-group">
-                                <div class="col-md-7 col-md-offset-3">
-                                    <label class="form-control" for="set_not_requestable">
-                                        <input
-                                            type="checkbox"
-                                            value="1"
-                                            name="set_not_requestable"
-                                            id="set_not_requestable"
-                                            @checked((bool) old('set_not_requestable', true))
-                                        >
-                                        {{ trans('admin/hardware/general.not_requestable') }}
-                                    </label>
-                                </div>
+                        <div class="form-group">
+                            <div class="col-md-7 col-md-offset-3">
+                                <label class="form-control" for="requestable">
+                                    <input
+                                        type="checkbox"
+                                        value="1"
+                                        name="requestable"
+                                        id="requestable"
+                                        @checked((bool) old('requestable', $asset->requestable))
+                                    />
+                                    {{ trans('admin/hardware/general.requestable') }}
+                                </label>
                             </div>
-                        @endif
+                        </div>
 
                         @include ('partials.forms.checkout-selector', ['user_select' => 'true','asset_select' => 'true', 'location_select' => 'true'])
                         @include ('partials.forms.edit.user-select', ['translated_name' => trans('general.user'), 'fieldname' => 'assigned_user', 'company_id' => $asset->company_id, 'style' => (session('checkout_to_type') ?: 'user') == 'user' ? '' : 'display: none;'])
@@ -271,4 +269,49 @@
 
 @section('moar_scripts')
     @include('partials/assets-assigned')
+
+    <script nonce="{{ csrf_token() }}">
+        // Per-user localStorage preference for the requestable default on
+        // checkout. Namespaced by user id so a shared browser doesn't leak one
+        // user's habit into another user's default. Only takes over when the
+        // field wasn't repopulated from a validation-error redirect (old()
+        // beats the stored preference). On submit we save whatever the user
+        // actually chose, so the preference tracks their real habit.
+        const initializeCheckoutRequestablePreference = function () {
+            const storageKey = 'snipeit.checkout.requestable_default.' + @json(auth()->id() ?? 'guest');
+            const hadOldInput = @json((bool) old('requestable', false)) || @json(session()->has('_old_input.requestable'));
+            const checkbox = document.getElementById('requestable');
+            const form = checkbox ? checkbox.closest('form') : null;
+
+            if (!checkbox || !form) {
+                return;
+            }
+
+            if (!hadOldInput) {
+                let stored = null;
+                try {
+                    stored = window.localStorage.getItem(storageKey);
+                } catch (e) {
+                    // localStorage may be unavailable (private mode, disabled).
+                }
+                if (stored === '1' || stored === '0') {
+                    checkbox.checked = stored === '1';
+                }
+            }
+
+            form.addEventListener('submit', function () {
+                try {
+                    window.localStorage.setItem(storageKey, checkbox.checked ? '1' : '0');
+                } catch (e) {
+                    // Non-fatal: preference just won't persist this time.
+                }
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCheckoutRequestablePreference);
+        } else {
+            initializeCheckoutRequestablePreference();
+        }
+    </script>
 @stop
