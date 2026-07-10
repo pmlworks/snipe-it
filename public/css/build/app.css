@@ -122,6 +122,12 @@ a.accordion-header {
   color: #a94442;
   display: block;
 }
+.alert-msg::before {
+  content: "\f00d";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  margin-right: 0.35em;
+}
 .input-group[class*="col-"] {
   padding-right: 15px;
   padding-left: 15px;
