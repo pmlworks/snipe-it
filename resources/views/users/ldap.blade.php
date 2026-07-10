@@ -100,7 +100,7 @@
                                 @if ($entry['status']=='success')
                                 <span class="text-success"><i class="fas fa-check"></i> {!! $entry['note'] !!}</span>
                                 @else
-                                <span class="alert-msg" aria-hidden="true">{!! $entry['note'] !!}</span>
+                                <span class="alert-msg" role="alert" aria-live="assertive">{!! $entry['note'] !!}</span>
                                 @endif
                                 </td>
                             </tr>

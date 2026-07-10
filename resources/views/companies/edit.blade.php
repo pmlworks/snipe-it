@@ -70,7 +70,7 @@
                     <label for="tag_color" class="col-md-3 control-label">{{ trans('general.tag_color') }}</label>
                     <div class="col-md-9">
                         <x-input.colorpicker :item="$item" id="tag_color" :value="old('tag_color', ($item->tag_color ?? '#f4f4f4'))" name="tag_color" />
-                        {!! $errors->first('tag_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                        {!! $errors->first('tag_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                     </div>
                 </div>
             </fieldset>

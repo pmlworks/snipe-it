@@ -62,7 +62,7 @@
                                                 {{ trans('admin/users/table.username')  }}
                                             </label>
                                             <input class="form-control" placeholder="{{ trans('admin/users/table.username')  }}" name="username" type="text" id="username" autocomplete="{{ (config('auth.login_autocomplete') === true) ? 'on' : 'off'  }}" autocapitalize="off" spellcheck="false" autofocus>
-                                            {!! $errors->first('username', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                            {!! $errors->first('username', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                                         </div>
 
 
@@ -80,7 +80,7 @@
                                                 </span>
                                             </div>
 
-                                            {!! $errors->first('password', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                            {!! $errors->first('password', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                                         </div>
 
                                         <div class="form-group">

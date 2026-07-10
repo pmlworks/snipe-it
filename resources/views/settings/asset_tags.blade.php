@@ -56,7 +56,7 @@
 
                             <div class="col-md-8">
                                 <input class="form-control" style="width: 200px;" aria-label="next_auto_tag_base" name="next_auto_tag_base" type="text" value="{{ old('next_auto_tag_base', $setting->next_auto_tag_base) }}" id="next_auto_tag_base">
-                                {!! $errors->first('next_auto_tag_base', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('next_auto_tag_base', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                             </div>
                         </div>
 
@@ -68,7 +68,7 @@
 
                             <div class="col-md-8">
                                 <input class="form-control" disabled maxlength="100" style="width: 200px;" aria-label="auto_increment_prefix" name="auto_increment_prefix" type="text" id="auto_increment_prefix" value="{{ old('auto_increment_prefix', $setting->auto_increment_prefix) }}">
-                                {!! $errors->first('auto_increment_prefix', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('auto_increment_prefix', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
 
                             </div>
                         </div>
@@ -80,7 +80,7 @@
 
                             <div class="col-md-7">
                                 <input class="form-control" maxlength="100" style="width: 200px;" aria-label="zerofill_count" name="zerofill_count" type="text" value="{{ old('zerofill_count', $setting->zerofill_count) }}" id="zerofill_count">
-                                {!! $errors->first('zerofill_count', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('zerofill_count', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                             </div>
                         </div>
 

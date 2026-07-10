@@ -42,7 +42,7 @@
     <div class="col-md-7">
         <input class="form-control" style="width:100px" type="text" name="currency" aria-label="currency" id="currency" value="{{ old('currency', $item->currency) }}"{!!  (Helper::checkIfRequired($item, 'currency')) ? ' required' : '' !!} maxlength="3" />
         @error('currency')
-        <span class="alert-msg">
+        <span class="alert-msg" role="alert" aria-live="assertive">
             <x-icon type="x" />
             {{ $message }}
         </span>
@@ -62,7 +62,7 @@
         <div class="col-md-7">
             <input class="form-control" type="text" name="ldap_ou" aria-label="ldap_ou" id="ldap_ou" value="{{ old('ldap_ou', $item->ldap_ou) }}"{!!  (Helper::checkIfRequired($item, 'ldap_ou')) ? ' required' : '' !!} maxlength="191" />
             @error('ldap_ou')
-            <span class="alert-msg">
+            <span class="alert-msg" role="alert" aria-live="assertive">
                 <x-icon type="x" />
                 {{ $message }}
         </span>
@@ -85,7 +85,7 @@
                 aria-label="notes"
                 rows="5"
         />
-        {!! $errors->first('notes', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+        {!! $errors->first('notes', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
     </div>
 </div>
 
@@ -100,7 +100,7 @@
         </label>
         <div class="col-md-9">
             <x-input.colorpicker :item="$item" id="color" :value="old('color', ($item->color ?? '#f4f4f4'))" name="tag_color" id="tag_color" />
-            {!! $errors->first('tag_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+            {!! $errors->first('tag_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
         </div>
     </div>
 </fieldset>

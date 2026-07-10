@@ -80,7 +80,7 @@
                             <div class="col-md-7">
                                 <input class="form-control" type="text" name="name" id="name"
                                        value="{{ old('name', $asset->name) }}" tabindex="1">
-                                {!! $errors->first('name', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                {!! $errors->first('name', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
 
@@ -97,7 +97,7 @@
                                     style="width: 100%;"
                                     aria-label="status_id"
                                 />
-                                {!! $errors->first('status_id', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
 
@@ -139,7 +139,7 @@
                                         placeholder="{{ trans('general.select_date') }}"
                                         required="{{ Helper::checkIfRequired($item, 'checkout_at') }}"
                                 />
-                                {!! $errors->first('checkout_at', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                {!! $errors->first('checkout_at', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
 
@@ -157,7 +157,7 @@
                                         placeholder="{{ trans('general.select_date') }}"
                                         required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"
                                 />
-                                {!! $errors->first('expected_checkin', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                {!! $errors->first('expected_checkin', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
 
@@ -170,7 +170,7 @@
                             <div class="col-md-8">
                                 <textarea class="col-md-6 form-control" id="note" @required($snipeSettings->require_checkinout_notes)
                                 name="note">{{ old('note', $asset->note) }}</textarea>
-                                {!! $errors->first('note', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                {!! $errors->first('note', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                             </div>
                         </div>
 
@@ -185,7 +185,7 @@
                         @if ($asset->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $asset->getEula() || ($snipeSettings->webhook_endpoint!=''))
                             <div class="form-group notification-callout" style="display:none;">
                                 <div class="col-md-8 col-md-offset-3">
-                                    <div class="callout callout-info">
+                                    <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
 
                                         @if ($asset->requireAcceptance())
                                             <x-icon type="email"/>

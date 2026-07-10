@@ -27,8 +27,8 @@
       <div class="box box-default">
         <div class="box-body">
 
-          <div class="callout callout-warning">
-            <i class="fas fa-exclamation-triangle"></i> {{ trans_choice('admin/hardware/form.bulk_update_warn', count($assets), ['asset_count' => count($assets)]) }}
+          <div class="callout callout-warning" role="alert" aria-live="assertive" aria-atomic="true">
+            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ trans_choice('admin/hardware/form.bulk_update_warn', count($assets), ['asset_count' => count($assets)]) }}
 
             @if (count($models) > 0)
               {{ trans_choice('admin/hardware/form.bulk_update_with_custom_field', count($models), ['asset_model_count' => count($models)]) }}
@@ -42,7 +42,7 @@
             </label>
             <div class="col-md-4">
                 <input type="text" class="form-control" name="name" id="name" value="{{ old('name') }}" maxlength="191" style="width:100%">
-              {!! $errors->first('name', '<span class="alert-msg" aria-hidden="true">
+              {!! $errors->first('name', '<span class="alert-msg" role="alert" aria-live="assertive">
                 <i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
             <div class="col-md-5">
@@ -64,7 +64,7 @@
                         value="{{ old('purchase_date') }}"
                         placeholder="{{ trans('general.select_date') }}"
                     />
-                    {!! $errors->first('purchase_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                    {!! $errors->first('purchase_date', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
                     <x-form.checkbox-inline
@@ -84,7 +84,7 @@
                         value="{{ old('expected_checkin') }}"
                         placeholder="{{ trans('general.select_date') }}"
                     />
-                    {!! $errors->first('expected_checkin', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                    {!! $errors->first('expected_checkin', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
                     <x-form.checkbox-inline
@@ -104,7 +104,7 @@
                         value="{{ old('asset_eol_date') }}"
                         placeholder="{{ trans('general.select_date') }}"
                     />
-                    {!! $errors->first('asset_eol_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                    {!! $errors->first('asset_eol_date', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
                     <x-form.checkbox-inline
@@ -139,8 +139,8 @@
                   aria-label="status_id"
               />
               <p class="help-block">{{ trans('general.status_compatibility') }}</p>
-                <p id="selected_status_status" style="display:none;"></p>
-              {!! $errors->first('status_id', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                <p id="selected_status_status" role="status" aria-live="polite" aria-atomic="true" style="display:none;"></p>
+              {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
           </div>
 
@@ -178,7 +178,7 @@
             <div class="input-group col-md-3">
               <span class="input-group-addon">{{ $snipeSettings->default_currency }}</span>
                 <input type="text" class="form-control" pattern="^\d+([.,]\d+)?$" maxlength="10" placeholder="{{ trans('admin/hardware/form.cost') }}" name="purchase_cost" id="purchase_cost" value="{{ old('purchase_cost') }}">
-                {!! $errors->first('purchase_cost', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                {!! $errors->first('purchase_cost', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
           </div>
 
@@ -194,7 +194,7 @@
             </label>
             <div class="col-md-7">
               <input class="form-control" type="text" maxlength="200" name="order_number" id="order_number" value="{{ old('order_number') }}" />
-              {!! $errors->first('order_number', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+              {!! $errors->first('order_number', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
           </div>
 
@@ -207,7 +207,7 @@
               <div class="input-group">
                 <input class="col-md-3 form-control" maxlength="4" type="text" name="warranty_months" id="warranty_months" value="{{ old('warranty_months') }}" />
                 <span class="input-group-addon">{{ trans('admin/hardware/form.months') }}</span>
-                {!! $errors->first('warranty_months', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                {!! $errors->first('warranty_months', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@
                         value="{{ old('next_audit_date') }}"
                         placeholder="{{ trans('general.select_date') }}"
                     />
-                    {!! $errors->first('next_audit_date', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                    {!! $errors->first('next_audit_date', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                 </div>
                 <div class="col-md-5">
                     <x-form.checkbox-inline

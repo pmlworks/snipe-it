@@ -130,7 +130,7 @@
                                         {{ trans('admin/settings/general.is_ad') }}
                                         </label>
                                         @error('is_ad')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -158,7 +158,7 @@
 
                                         <p class="help-block">{{ trans('admin/settings/general.ldap_pw_sync_help') }}</p>
                                         @error('ldap_pw_sync')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -183,7 +183,7 @@
                                         <input class="form-control" placeholder="{{ trans('general.example') .'example.com' }}" name="ad_domain" type="text" id="ad_domain" value="{{ old('ad_domain', $setting->ad_domain) }}">
                                         <p class="help-block">{{ trans('admin/settings/general.ad_domain_help') }}</p>
                                         @error('ad_domain')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -212,7 +212,7 @@
                                             :placeholder="sprintf('%s-----BEGIN RSA PRIVATE KEY-----%s1234567890%s-----END RSA PRIVATE KEY-----', trans('general.example'), PHP_EOL, PHP_EOL)"
                                         />
                                         @error('ldap_client_tls_key')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -240,7 +240,7 @@
                                         />
                                         <p class="help-block">{{ trans('admin/settings/general.ldap_client_tls_cert_help') }}</p>
                                         @error('ldap_client_tls_cert')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -263,7 +263,7 @@
                                     <div class="col-md-8">
                                         <input class="form-control" placeholder="{{ trans('general.example') .'ldap://ldap.example.com' }}" name="ldap_server" type="text" id="ldap_server" value="{{ old('ldap_server', $setting->ldap_server) }}">
                                         @error('ldap_server')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -291,7 +291,7 @@
                                             {{ trans('admin/settings/general.ldap_tls_help') }}
                                         </label>
                                         @error('ldap_tls')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -317,7 +317,7 @@
                                             {{ trans('admin/settings/general.ldap_server_cert_ignore') }}
                                         </label>
                                         @error('ldap_server_cert_ignore')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -343,7 +343,7 @@
                                     <div class="col-md-8">
                                         <input class="form-control" autocomplete="off" placeholder="{{ trans('general.example') .'binduser@example.com' }}" name="ldap_uname" type="text" id="ldap_uname" value="{{ old('ldap_uname', $setting->ldap_uname) }}">
                                         @error('ldap_uname')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -366,7 +366,7 @@
                                     <div class="col-md-8">
                                         <input class="form-control" type="password" name="ldap_pword" id="ldap_pword" value="" autocomplete="off" onfocus="this.removeAttribute('readonly');" readonly>
                                         @error('ldap_pword')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -389,7 +389,7 @@
                                     <div class="col-md-8">
                                         <input class="form-control" placeholder="{{ trans('general.example') .'cn=users/authorized,dc=example,dc=com' }}" name="ldap_basedn" type="text" id="ldap_basedn" value="{{ old('ldap_basedn', $setting->ldap_basedn) }}">
                                         @error('ldap_basedn')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -412,7 +412,7 @@
                                     <div class="col-md-8">
                                         <input type="text" name="ldap_filter" id="ldap_filter" value="{{  old('ldap_filter', $setting->ldap_filter) }}" class="form-control" placeholder="{{  trans('general.example') .'&(cn=*)' }}">
                                         @error('ldap_filter')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -436,7 +436,7 @@
 
                                     <input type="text" name="ldap_auth_filter_query" id="ldap_auth_filter_query" value="{{  old('ldap_auth_filter_query', $setting->ldap_auth_filter_query) }}" class="form-control" placeholder="{{ trans('general.example') .'uid='  }}">
                                     @error('ldap_auth_filter_query')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {!! $message !!}
                                             </span>
@@ -510,7 +510,7 @@
                                 <div class="col-md-8">
                                     <input type="text" name="ldap_username_field" id="ldap_username_field" value="{{  old('ldap_username_field', $setting->ldap_username_field) }}" class="form-control" placeholder="{{  trans('general.example') .'samaccountname' }}">
                                     @error('ldap_username_field')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {!! $message !!}
                                             </span>
@@ -527,7 +527,7 @@
                                 <div class="col-md-8">
                                     <input type="text" name="ldap_lname_field" id="ldap_lname_field" value="{{  old('ldap_lname_field', $setting->ldap_lname_field) }}" class="form-control" placeholder="{{  trans('general.example') .'sn' }}">
                                     @error('ldap_lname_field')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -544,7 +544,7 @@
                                 <div class="col-md-8">
                                     <input type="text" name="ldap_fname_field" id="ldap_fname_field" value="{{  old('ldap_fname_field', $setting->ldap_fname_field) }}" class="form-control" placeholder="{{ trans('general.example') .'givenname'  }}">
                                     @error('ldap_fname_field')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -562,7 +562,7 @@
                                     <input type="text" name="ldap_display_name" id="ldap_display_name" value="{{  old('ldap_display_name', $setting->ldap_display_name) }}" class="form-control" placeholder="{{  trans('general.example') .'displayname' }}">
                                     <p class="help-block">{{ trans('admin/settings/general.ldap_display_name_help') }}</p>
                                     @error('ldap_display_name')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                     <x-icon type="x" />
                                                     {{ $message }}
                                                 </span>
@@ -579,7 +579,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'employeenumber/employeeid' }}" name="ldap_emp_num" type="text" id="ldap_emp_num" value="{{ old('ldap_emp_num', $setting->ldap_emp_num) }}">
                                     @error('ldap_emp_num')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -602,7 +602,7 @@
                                     <input class="form-control" placeholder="{{ trans('general.example') .'department' }}" name="ldap_dept" type="text" id="ldap_dept" value="{{ old('ldap_dept', $setting->ldap_dept) }}">
 
                                     @error('ldap_dept')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -624,7 +624,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder=" {{ trans('general.example') .'manager' }}" name="ldap_manager" type="text" value="{{ old('ldap_manager', $setting->ldap_manager) }}">
                                     @error('ldap_manager')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -647,7 +647,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'mail' }}" name="ldap_email" type="text" id="ldap_email" value="{{ old('ldap_email', $setting->ldap_email) }}">
                                     @error('ldap_email')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -670,7 +670,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'telephonenumber' }}" name="ldap_phone" type="text" id="ldap_phone" value="{{ old('ldap_phone', $setting->ldap_phone_field) }}">
                                     @error('ldap_phone')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -693,7 +693,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'mobile' }}" name="ldap_mobile" type="text" id="ldap_mobile" value="{{ old('ldap_mobile', $setting->ldap_mobile) }}">
                                     @error('ldap_mobile')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -709,7 +709,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'title' }}" name="ldap_jobtitle" type="text" id="ldap_jobtitle" value="{{ old('ldap_jobtitle', $setting->ldap_jobtitle) }}">
                                     @error('ldap_jobtitle')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -732,7 +732,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" name="ldap_address" placeholder="{{ trans('general.example') .'streetaddress' }}"  type="text" id="ldap_address" value="{{ old('ldap_address', $setting->ldap_address) }}">
                                     @error('ldap_address')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -748,7 +748,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'l' }}" name="ldap_city" type="text" id="ldap_city" value="{{ old('ldap_city', $setting->ldap_city) }}">
                                     @error('ldap_city')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -764,7 +764,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'st' }}"  name="ldap_state" type="text" id="ldap_state" value="{{ old('ldap_state', $setting->ldap_state) }}">
                                     @error('ldap_state')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -780,7 +780,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" name="ldap_zip" type="text" id="ldap_zip" placeholder="{{ trans('general.example') .'postalcode' }}"  value="{{ old('ldap_zip', $setting->ldap_zip) }}">
                                     @error('ldap_zip')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -797,7 +797,7 @@
                                 <div class="col-md-8">
                                     <input class="form-control" placeholder="{{ trans('general.example') .'co' }}" name="ldap_country" type="text" id="ldap_country" value="{{ old('ldap_country', $setting->ldap_country) }}">
                                     @error('ldap_country')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -821,7 +821,7 @@
                                     <input class="form-control" placeholder="{{ trans('general.example') .'physicaldeliveryofficename' }}" name="ldap_location" type="text" id="ldap_location" value="{{ old('ldap_location', $setting->ldap_location) }}">
                                     <p class="help-block">{!! trans('admin/settings/general.ldap_location_help') !!}</p>
                                     @error('ldap_location')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -846,7 +846,7 @@
                                     <p class="help-block">{!! trans('admin/settings/general.ldap_activated_flag_help') !!}</p>
 
                                     @error('ldap_active_flag')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -874,7 +874,7 @@
                                         {{ trans('general.yes') }}
                                     </label>
                                     @error('ldap_invert_active_flag')
-                                    <span class="alert-msg">
+                                    <span class="alert-msg" role="alert" aria-live="assertive">
                                                  <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
@@ -972,7 +972,7 @@
                                         <input class="form-control" placeholder="{{ trans('general.example') .'https://my.ldapserver-forgotpass.com' }}" name="custom_forgot_pass_url" type="url" id="custom_forgot_pass_url" value="{{ old('custom_forgot_pass_url', $setting->custom_forgot_pass_url) }}">
                                         <p class="help-block">{{ trans('admin/settings/general.custom_forgot_pass_url_help') }}</p>
                                         @error('custom_forgot_pass_url')
-                                            <span class="alert-msg">
+                                            <span class="alert-msg" role="alert" aria-live="assertive">
                                                 <x-icon type="x" />
                                                 {{ $message }}
                                             </span>
