@@ -11,7 +11,7 @@
             />
             <p class="help-block">{!! trans('admin/categories/general.eula_text_help') !!} </p>
             <p class="help-block">{!! trans('admin/settings/general.eula_markdown') !!} </p>
-            {!! $errors->first('eula_text', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+            {!! $errors->first('eula_text', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
         </div>
         @if ($this->eulaTextDisabled)
             <input type="hidden" name="eula_text" wire:model.live="eulaText" />

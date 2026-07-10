@@ -105,7 +105,7 @@
                         </label>
                         <div class="col-md-9">
                             <x-input.colorpicker :item="$item" id="color" :value="old('color', ($item->color ?? '#f4f4f4'))" name="tag_color" id="tag_color" />
-                            {!! $errors->first('tag_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                            {!! $errors->first('tag_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                         </div>
                     </div>
                 </fieldset>

@@ -12,7 +12,7 @@
             style="width:100%;"
             aria-label="status_id"
         />
-        {!! $errors->first('status_id', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+        {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
     </div>
     <div class="col-md-2 col-sm-2 text-left">
 

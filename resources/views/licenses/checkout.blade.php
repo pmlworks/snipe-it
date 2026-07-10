@@ -82,7 +82,7 @@
                         <label for="note" class="col-md-3 control-label">{{ trans('general.checkout_note') }}</label>
                         <div class="col-md-8">
                             <textarea class="col-md-6 form-control" id="notes" name="notes" rows="5">{{ old('note') }}</textarea>
-                            {!! $errors->first('note', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                            {!! $errors->first('note', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
                         </div>
                     </div>
                 </div>

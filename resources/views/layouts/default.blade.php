@@ -1533,7 +1533,7 @@
                                     <?php
 use App\Models\Statuslabel;
 
-$status_navs = Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
+                                    $status_navs = Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
                                     @if (count($status_navs) > 0)
                                         @foreach ($status_navs as $status_nav)
                                             <li{!! (request()->is('statuslabels/'.$status_nav->id) ? ' class="active"' : '') !!}>
@@ -2342,6 +2342,11 @@ $status_navs = Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as a
                 errorClass: 'alert-msg',
                 errorElement: 'div',
                 errorPlacement: function(error, element) {
+                    // Screen readers only announce inserted error text when the
+                    // error element carries role=alert (aria-live=assertive is
+                    // implied, but set explicitly for older AT compatibility).
+                    error.attr('role', 'alert');
+                    error.attr('aria-live', 'assertive');
 
                     if ($(element).hasClass('select2') || $(element).hasClass('js-data-ajax')) {
                         // If the element is a select2 then append the error to the parent div
