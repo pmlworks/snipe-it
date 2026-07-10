@@ -68,7 +68,7 @@
                                     @else
                                         <input maxlength="191" class="form-control" placeholder="Snipe-IT Asset Management" required="required" name="site_name" type="text" value="{{ old('site_name', $setting->site_name) }}" id="site_name">
                                     @endif
-                                    {!! $errors->first('site_name', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                    {!! $errors->first('site_name', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 </div>
                             </div>
 
@@ -83,7 +83,7 @@
                                 <div class="col-md-9">
                                     <x-input.colorpicker :item="$setting" placeholder="#3c8dbc" div_id="header-color" id="header_color" :value="old('header_color', ($setting->header_color ?? '#3c8dbc'))" name="header_color" />
                                     <p class="help-block">{{ trans('admin/settings/general.header_color_help') }}</p>
-                                    {!! $errors->first('header_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                    {!! $errors->first('header_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 </div>
                             </div>
 
@@ -92,7 +92,7 @@
                             <label for="nav_link_color" class="col-md-3 control-label">{{ trans('admin/settings/general.nav_link_color') }}</label>
                             <div class="col-md-9">
                                 <x-input.colorpicker :item="$setting" placeholder="#ffffff" div_id="nav-link-color" id="nav_link_color" :value="old('nav_link_color', ($setting->nav_link_color ?? '#ffffff'))" name="nav_link_color" />
-                                {!! $errors->first('nav_link_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('nav_link_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.nav_link_color_help') }}</p>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                             <label for="link_light_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_light_color') }}</label>
                             <div class="col-md-9">
                                 <x-input.colorpicker :item="$setting" id="link_light_color" placeholder="#296282" :value="old('link_light_color', ($setting->link_light_color ?? '#296282'))" name="link_light_color" />
-                                {!! $errors->first('link_light_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('link_light_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.link_light_color_help') }}</p>
                             </div>
                         </div>
@@ -112,7 +112,7 @@
                             <label for="link_dark_color" class="col-md-3 control-label">{{ trans('admin/settings/general.link_dark_color') }}</label>
                             <div class="col-md-9">
                                 <x-input.colorpicker :item="$setting" id="link_dark_color" placeholder="#5fa4cc" :value="old('link_dark_color', ($setting->link_dark_color ?? '#5fa4cc'))" name="link_dark_color" />
-                                {!! $errors->first('link_dark_color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('link_dark_color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 <p class="help-block">{{ trans('admin/settings/general.link_dark_color_help') }}</p>
                             </div>
                         </div>
@@ -155,7 +155,7 @@
                                         class="form-control"
                                         style="width: 150px"
                                     />
-                                    {!! $errors->first('brand', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                    {!! $errors->first('brand', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                 </div>
                             </div>
 
@@ -243,7 +243,7 @@
                                     <label class="form-control">
                                         <input type="checkbox" name="load_remote" value="1" @checked(old('load_remote', $setting->load_remote)) />
                                         {{ trans('general.yes') }}
-                                        {!! $errors->first('load_remote', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('load_remote', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                     </label>
 
                                     <p class="help-block">
@@ -303,7 +303,7 @@
                                             aria-label="custom_css"
                                             disabled
                                         />
-                                        {!! $errors->first('custom_css', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('custom_css', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                         <p class="text-warning"><i class="fas fa-lock"></i> {{ trans('general.feature_disabled') }}</p>
                                     @else
                                         <x-input.textarea
@@ -312,7 +312,7 @@
                                             placeholder="{{ trans('admin/settings/general.custom_css_placeholder') }}"
                                             aria-label="custom_css"
                                         />
-                                        {!! $errors->first('custom_css', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('custom_css', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                     @endif
                                     <p class="help-block">{!! trans('admin/settings/general.custom_css_help') !!}</p>
                                 </div>
@@ -357,7 +357,7 @@
                                         @endif
 
 
-                                        {!! $errors->first('support_footer', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('support_footer', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                     </div>
                                 </div>
 
@@ -391,7 +391,7 @@
                                         @endif
 
                                         <p class="help-block">{{ trans('admin/settings/general.version_footer_help') }}</p>
-                                        {!! $errors->first('version_footer', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('version_footer', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
                                     </div>
                                 </div>
 
@@ -420,7 +420,7 @@
                                             />
                                         @endif
                                         <p class="help-block">{!! trans('admin/settings/general.footer_text_help') !!}</p>
-                                        {!! $errors->first('footer_text', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                        {!! $errors->first('footer_text', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
 
                                     </div>
                                 </div>

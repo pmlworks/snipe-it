@@ -34,7 +34,7 @@
             style="width: 100%; min-width:400px"
             aria-label="statuslabel_types"
         />
-        {!! $errors->first('statuslabel_types', '<span class="alert-msg" aria-hidden="true"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+        {!! $errors->first('statuslabel_types', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
     </div>
 </div>
 
@@ -43,7 +43,7 @@
     <label for="color" class="col-md-3 control-label">{{ trans('admin/statuslabels/table.color') }}</label>
     <div class="col-md-9">
         <x-input.colorpicker :item="$item" id="color" :value="old('color', ($item->color ?? '#f4f4f4'))" name="color" id="color" />
-        {!! $errors->first('color', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+        {!! $errors->first('color', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
     </div>
 </div>
 

@@ -2024,7 +2024,7 @@
                     <div class="row">
                         @if (config('app.lock_passwords'))
                             <div class="col-md-12">
-                                <div class="callout callout-info">
+                                <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
                                     {{ trans('general.some_features_disabled') }}
                                 </div>
                             </div>
@@ -2339,6 +2339,11 @@
                 errorClass: 'alert-msg',
                 errorElement: 'div',
                 errorPlacement: function(error, element) {
+                    // Screen readers only announce inserted error text when the
+                    // error element carries role=alert (aria-live=assertive is
+                    // implied, but set explicitly for older AT compatibility).
+                    error.attr('role', 'alert');
+                    error.attr('aria-live', 'assertive');
 
                     if ($(element).hasClass('select2') || $(element).hasClass('js-data-ajax')) {
                         // If the element is a select2 then append the error to the parent div

@@ -23,8 +23,8 @@
                         {{csrf_field()}}
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="callout callout-danger">
-                                    <i class="fas fa-exclamation-triangle"></i>
+                                <div class="callout callout-danger" role="alert" aria-live="assertive" aria-atomic="true">
+                                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
                                     {{ trans('general.warning_merge_information') }}
                                 </div>
                             </div>
@@ -33,7 +33,7 @@
                         @if (config('app.lock_passwords'))
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="callout callout-info">
+                                    <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
                                         <p>{{ trans('general.feature_disabled') }}</p>
                                     </div>
                                 </div>

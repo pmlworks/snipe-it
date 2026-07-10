@@ -17,7 +17,7 @@
 
         <span class='label label-default' id="{{ $logoId }}-info"></span>
 
-        {!! $errors->first($logoVariable, '<span class="alert-msg">:message</span>') !!}
+        {!! $errors->first($logoVariable, '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
 
 
         <p class="help-block" style="!important" id="{{ $logoId }}-status">

@@ -41,7 +41,7 @@
                                     {{ trans('admin/settings/general.label2_enable') }}
                                 </label>
 
-                                {!! $errors->first('label2_enable', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
+                                {!! $errors->first('label2_enable', '<span class="alert-msg" role="alert" aria-live="assertive">:message</span>') !!}
 
                                 <p class="help-block">
                                     {!! trans('admin/settings/general.label2_enable_help') !!}

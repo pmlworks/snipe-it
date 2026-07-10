@@ -45,7 +45,7 @@ class AssetPresenter extends Presenter
                 'field' => 'name',
                 'searchable' => true,
                 'sortable' => true,
-                'title' => trans('admin/hardware/form.name'),
+                'title' => trans('general.name'),
                 'visible' => true,
                 'formatter' => 'hardwareLinkFormatter',
             ], [

@@ -16,8 +16,8 @@
           <!-- CSRF Token -->
           {{csrf_field()}}
           <div class="col-md-12">
-            <div class="callout callout-danger">
-              <i class="fas fa-exclamation-triangle"></i>
+            <div class="callout callout-danger" role="alert" aria-live="assertive" aria-atomic="true">
+              <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
               <strong>{{ trans('admin/users/general.warning_deletion_information', array('count' => count($users))) }} </strong>
 
             </div>
@@ -25,7 +25,7 @@
 
           @if (config('app.lock_passwords'))
             <div class="col-md-12">
-              <div class="callout callout-warning">
+              <div class="callout callout-warning" role="alert" aria-live="assertive" aria-atomic="true">
                 <p>{{ trans('general.feature_disabled') }}</p>
               </div>
             </div>
