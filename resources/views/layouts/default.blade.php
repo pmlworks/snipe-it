@@ -1530,10 +1530,7 @@
                                         </a>
                                     </li>
 
-                                    <?php
-use App\Models\Statuslabel;
-
-                                    $status_navs = Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
+                                    <?php $status_navs = \App\Models\Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
                                     @if (count($status_navs) > 0)
                                         @foreach ($status_navs as $status_nav)
                                             <li{!! (request()->is('statuslabels/'.$status_nav->id) ? ' class="active"' : '') !!}>
