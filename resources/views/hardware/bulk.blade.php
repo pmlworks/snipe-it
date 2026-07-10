@@ -139,7 +139,7 @@
                   aria-label="status_id"
               />
               <p class="help-block">{{ trans('general.status_compatibility') }}</p>
-                <p id="selected_status_status" style="display:none;"></p>
+                <p id="selected_status_status" role="status" aria-live="polite" aria-atomic="true" style="display:none;"></p>
               {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
             </div>
           </div>
