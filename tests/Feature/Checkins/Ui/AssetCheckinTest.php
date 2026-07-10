@@ -207,7 +207,7 @@ class AssetCheckinTest extends TestCase
             'company_id' => $companyA->id,
             'rtd_location_id' => $rtdLocation->id,
         ]);
-        $actor = User::factory()->checkinAssets()->viewAssets()->create(['company_id' => $companyA->id]);
+        $actor = User::factory()->checkinAssets()->viewAssets()->forCompany($companyA->id)->create();
 
         $this->actingAs($actor)
             ->post(route('hardware.checkin.store', [$asset]), [
