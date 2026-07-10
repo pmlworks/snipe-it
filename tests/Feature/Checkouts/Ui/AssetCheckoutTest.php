@@ -106,7 +106,7 @@ class AssetCheckoutTest extends TestCase
         $assetCompany = Company::factory()->create();
         $userCompany = Company::factory()->create();
 
-        $user = User::factory()->for($userCompany)->create();
+        $user = User::factory()->forCompany($userCompany)->create();
         $asset = Asset::factory()->for($assetCompany)->create();
 
         $this->actingAs(User::factory()->superuser()->create())
@@ -127,7 +127,7 @@ class AssetCheckoutTest extends TestCase
         $companyB = Company::factory()->create();
 
         // User's primary company is A but is also assigned to B via pivot
-        $user = User::factory()->for($companyA)->create();
+        $user = User::factory()->forCompany($companyA)->create();
         $user->companies()->sync([$companyA->id, $companyB->id]);
 
         // Asset belongs to company B
