@@ -1344,6 +1344,13 @@ Radio toggle styles for permission settings and check/uncheck all
   color: #fff !important;
   text-decoration: none;
 }
+@media (prefers-reduced-motion: reduce) {
+  .fa-spin,
+  .faa-pulse.animated,
+  .faa-pulse.animated-hover:hover {
+    animation: none !important;
+  }
+}
 
 
 /*# sourceMappingURL=overrides.css.map*/
