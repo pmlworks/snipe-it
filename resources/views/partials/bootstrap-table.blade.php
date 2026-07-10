@@ -1,6 +1,21 @@
 @push('css')
     <link rel="stylesheet" href="{{ url(mix('css/dist/bootstrap-table.css')) }}">
 
+    {{-- Bootstrap's default a:hover paints links Bootstrap-blue on hover.
+         For the advanced-search "clear all" pill and the individual
+         tag-remove pills, we want the label chip's white text to stay
+         white on hover (they already carry a colored background). --}}
+    <style>
+        .snipe-advanced-search-tags .snipe-advanced-search-tags-clear-all,
+        .snipe-advanced-search-tags .snipe-advanced-search-tags-clear-all:hover,
+        .snipe-advanced-search-tags .snipe-advanced-search-tags-clear-all:focus,
+        .snipe-advanced-search-tags .snipe-advanced-search-tag-remove,
+        .snipe-advanced-search-tags .snipe-advanced-search-tag-remove:hover,
+        .snipe-advanced-search-tags .snipe-advanced-search-tag-remove:focus {
+            color: #fff !important;
+            text-decoration: none !important;
+        }
+    </style>
 @endpush
 
 @push('js')
@@ -34,6 +49,56 @@
 
         var normalizeAdvancedSearchOperator = function (operator) {
             return (operator || defaultAdvancedSearchOperator).toString().toLowerCase() === 'or' ? 'or' : 'and';
+        };
+
+        // Shared teardown for the transport-error state onLoadError puts up.
+        // Called from onLoadSuccess (retry succeeded), onRefresh (user clicked
+        // the reload button), and any future entry points that should return
+        // the table to its clean baseline.
+        var clearBootstrapTableLoadError = function (instance) {
+            if (!instance || !instance.$el) {
+                return;
+            }
+            var $wrap = instance.$el.closest('.bootstrap-table');
+            $wrap.find('.table-load-error').remove();
+            $wrap.find('.fixed-table-body').show();
+            $wrap.find('.fixed-table-pagination').show();
+        };
+
+        // Both onLoadError banners (session-expired 401/419 and the generic
+        // 500-level failure) share the same DOM shape, insertion point, and
+        // cleanup rules. innerHtml must already be XSS-safe — callers HTML-
+        // encode dynamic pieces before passing them in.
+        //
+        // aria-live=polite is always emitted. role="alert" alone implies
+        // assertive, which interrupts screen readers mid-utterance; a table
+        // that failed to load doesn't warrant that. Polite queues the
+        // announcement for the next natural pause.
+        var renderBootstrapTableLoadErrorCallout = function (options) {
+            var $wrap = options.wrap;
+            $wrap.find('.table-load-error').remove();
+            $wrap.find('.fixed-table-body').hide();
+            $wrap.find('.fixed-table-pagination').hide();
+
+            // Insert below the advanced-search pill container if it's present
+            // (populated by an active filter), otherwise below the toolbar.
+            // Either way the banner ends up above .fixed-table-container.
+            var $tagContainer = $wrap.children('.snipe-advanced-search-tags');
+            var $anchor = $tagContainer.length && $tagContainer.children().length
+                ? $tagContainer
+                : $wrap.find('.fixed-table-toolbar').first();
+
+            // Marker class table-load-error MUST live on the outermost wrapper
+            // so the cleanup selector removes the whole banner in one shot.
+            // A nested layout would leave orphan outer wells behind on each
+            // re-render and stack up.
+            $anchor.after(
+                '<div class="row table-load-error" style="padding-left: 5px;right: 5px;"><div class="well well-sm "' +
+                ' role="alert" aria-live="polite"' +
+                ' style="margin: 10px; position: relative; z-index: 5; text-align: center;">' +
+                options.innerHtml +
+                '</div></div>',
+            );
         };
 
         var getStoredAdvancedSearchOperator = function () {
@@ -730,6 +795,95 @@
                 exportTypes: ['xlsx', 'csv', 'pdf', 'json', 'xml', 'txt', 'sql', 'doc'],
                 onLoadSuccess: function () { // possible 'fixme'? this might be for contents, not for headers?
                     $('[data-tooltip="true"]').tooltip(); // Needed to attach tooltips after ajax call
+
+                    // Clear any lingering "load failed" banner + restore the table body
+                    // that onLoadError hid. Bootstrap-table appends the table instance as
+                    // the last callback arg and binds `this` to the options bag (not the
+                    // DOM), so reach for the table element via arguments rather than
+                    // $(this).
+                    var instance = arguments[arguments.length - 1];
+                    if (instance && instance.$el) {
+                        clearBootstrapTableLoadError(instance);
+                    }
+                },
+                onRefresh: function () {
+                    // Fires the moment the user clicks the toolbar's refresh button,
+                    // before the retry AJAX call is issued. Clear the callout + restore
+                    // the body/pagination up-front so that even if the retry also
+                    // errors, we're not stacking state on top of the previous error.
+                    // If the retry succeeds, onLoadSuccess is a no-op reassertion.
+                    // If the retry errors, onLoadError re-hides the body and re-shows
+                    // the callout with the new status.
+                    var instance = arguments[arguments.length - 1];
+                    if (instance && instance.$el) {
+                        clearBootstrapTableLoadError(instance);
+                    }
+                },
+                onLoadError: function (status, jqXHR) {
+                    // Fires on any real transport-level failure (500, 502, 504, network
+                    // error, 419 CSRF expiry, 401 unauthenticated, etc). Snipe's API
+                    // convention is to return {status: "error"} at HTTP 200 for
+                    // validation/business errors, so anything reaching this callback
+                    // is a genuine "the request itself failed" case that would
+                    // otherwise render as an empty "No matching records found", a
+                    // silent, misleading empty-state.
+                    //
+                    // Blade's JSON directive below is what makes each translation
+                    // string safe to embed in this JS context. It produces a
+                    // properly quoted JS string literal that handles any characters
+                    // the translation might contain (quotes, backslashes, newlines,
+                    // unicode). Every dynamic value from the server response is then
+                    // HTML-encoded via jQuery's .text().html() idiom before we
+                    // concat it into the callout markup, so a poisoned
+                    // responseJSON.message cannot inject script tags or event handlers.
+                    //
+                    // `this` inside bootstrap-table event callbacks is the options
+                    // bag, not the DOM element. The library appends the table
+                    // instance as the trailing callback arg, so we reach the
+                    // wrapper via arguments[last].$el.
+                    var instance = arguments[arguments.length - 1];
+                    if (!instance || !instance.$el) {
+                        return;
+                    }
+                    var $wrap = instance.$el.closest('.bootstrap-table');
+
+                    // 401 / 419 mean the user's session died; show the session-
+                    // expired message and reload so the login redirect can take over.
+                    if (jqXHR && (jqXHR.status === 401 || jqXHR.status === 419)) {
+                        renderBootstrapTableLoadErrorCallout({
+                            wrap: $wrap,
+                            innerHtml:
+                                '<i class="fa fa-exclamation-triangle text-warning" aria-hidden="true" style="margin-right: 6px;"></i>' +
+                                $('<div/>').text(@json(trans('table.load_error_session_expired'))).html(),
+                        });
+                        window.setTimeout(function () {
+                            window.location.reload();
+                        }, 1500);
+                        return;
+                    }
+
+                    // Deliberately do NOT surface the raw server response body /
+                    // statusText / responseJSON.message. On PHP fatals, Laravel's
+                    // debug renderer can leak PDO DSN strings (with hostnames), file
+                    // paths from the stack trace, and other environment detail that
+                    // shouldn't reach a browser. The HTTP status alone is enough
+                    // signal for the user to know something's wrong and enough
+                    // signal for an admin to correlate in the app log.
+                    var httpStatus = (jqXHR && jqXHR.status) || status || '?';
+
+                    renderBootstrapTableLoadErrorCallout({
+                        wrap: $wrap,
+                        innerHtml:
+                            '<div style="font-size: 1.35em;">' +
+                            '<i class="fa fa-exclamation-triangle text-warning" aria-hidden="true" style="margin-right: 6px;"></i>' +
+                            '<strong>' + $('<div/>').text(@json(trans('table.load_error_title'))).html() + '</strong>' +
+                            '</div>' +
+                            '<div style="margin-top: 8px;">' +
+                            $('<div/>').text(@json(trans('table.load_error_body'))).html() +
+                            ' <code>' + $('<div/>').text(@json(trans('table.load_error_http_status'))).html() + ': ' +
+                            $('<div/>').text(httpStatus).html() + '</code>' +
+                            '</div>',
+                    });
                 },
                 onPostHeader: function () {
                     var lookup = {};
