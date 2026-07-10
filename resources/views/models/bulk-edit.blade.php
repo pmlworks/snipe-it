@@ -18,8 +18,8 @@
                 <div class="box box-default">
                     <div class="box-body">
 
-                        <div class="callout callout-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
+                        <div class="callout callout-warning" role="alert" aria-live="assertive" aria-atomic="true">
+                            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
                             {{ trans_choice('admin/models/message.bulkedit.warn', count($models), ['model_count' => count($models)]) }}
                         </div>
 

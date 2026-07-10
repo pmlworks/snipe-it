@@ -36,7 +36,7 @@
             @if ($consumable->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $consumable->getEula() || ($snipeSettings->webhook_endpoint != ''))
                 <div class="form-group notification-callout">
                     <div class="col-md-8 col-md-offset-3">
-                        <div class="callout callout-info">
+                        <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
                             @if ($consumable->category->require_acceptance == '1')
                                 <i class="far fa-envelope" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>

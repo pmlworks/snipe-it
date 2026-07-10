@@ -1530,7 +1530,10 @@
                                         </a>
                                     </li>
 
-                                    <?php $status_navs = \App\Models\Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
+                                    <?php
+use App\Models\Statuslabel;
+
+$status_navs = Statuslabel::where('show_in_nav', '=', 1)->withCount('assets as asset_count')->get(); ?>
                                     @if (count($status_navs) > 0)
                                         @foreach ($status_navs as $status_nav)
                                             <li{!! (request()->is('statuslabels/'.$status_nav->id) ? ' class="active"' : '') !!}>
@@ -2024,7 +2027,7 @@
                     <div class="row">
                         @if (config('app.lock_passwords'))
                             <div class="col-md-12">
-                                <div class="callout callout-info">
+                                <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
                                     {{ trans('general.some_features_disabled') }}
                                 </div>
                             </div>
