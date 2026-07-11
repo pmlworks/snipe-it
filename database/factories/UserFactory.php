@@ -73,6 +73,15 @@ class UserFactory extends Factory
             : $result->all();
 
         foreach ($models as $user) {
+            // Watson\Validating hooks the saving event and silently returns
+            // false from save() when validation fails (its default is not to
+            // throw). Laravel's Factory::store() doesn't check the return
+            // value, so we can arrive here with an unpersisted user whose id
+            // is still null. Attaching a pivot row for that user would insert
+            // NULL into company_user.user_id and violate the NOT NULL. Skip.
+            if (! $user->exists) {
+                continue;
+            }
             if ($this->skipDefaultCompanyAttach) {
                 continue;
             }
