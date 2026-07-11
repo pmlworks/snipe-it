@@ -63,7 +63,7 @@
                                         class="js-fieldset-field"
                                         style="width:350px"
                                     />
-                                    {!! $errors->first('fieldset_id', '<span class="alert-msg" role="alert" aria-live="assertive"><br><i class="fas fa-times"></i> :message</span>') !!}
+                                    <x-form.error name="fieldset_id" />
                                 </div>
                             </div>
 
@@ -80,7 +80,7 @@
                                         :selected="old('depreciation_id', 'NC')"
                                         style="width:350px"
                                     />
-                                    {!! $errors->first('depreciation_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                    <x-form.error name="depreciation_id" />
                                 </div>
                             </div>
 

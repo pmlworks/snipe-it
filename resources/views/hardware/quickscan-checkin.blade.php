@@ -37,7 +37,7 @@
                                 <input type="text" class="form-control" name="asset_tag" id="asset_tag" value="{{ old('asset_tag') }}" required>
 
                             </div>
-                            {!! $errors->first('asset_tag', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                            <x-form.error name="asset_tag" />
                         </div>
                     </div>
 
@@ -54,7 +54,7 @@
                                 style="width:100%"
                                 aria-label="status_id"
                             />
-                            {!! $errors->first('status_id', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                            <x-form.error name="status_id" />
                         </div>
                     </div>
 
@@ -66,7 +66,7 @@
                             <label for="note" class="col-md-3 control-label">{{ trans('admin/hardware/form.notes') }}</label>
                             <div class="col-md-8">
                                 <textarea class="col-md-6 form-control" id="note" name="note">{{ old('note') }}</textarea>
-                                {!! $errors->first('note', '<span class="alert-msg" role="alert" aria-live="assertive"><i class="fas fa-times" aria-hidden="true"></i> :message</span>') !!}
+                                <x-form.error name="note" />
                             </div>
                         </div>
 
