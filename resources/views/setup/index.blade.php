@@ -188,12 +188,12 @@ Create a User ::
     <tr id="mailtestrow" class="info">
       <td>Email</td>
       <td>
-          <span id="mailtesticon"></span>
+          <span id="mailtesticon" role="status" aria-live="polite" aria-atomic="true"></span>
       </td>
         <td>
             <p>This will attempt to send a test mail to {{ config('mail.from.address') }}.</p>
             <a class="btn btn-default btn-sm pull-left" id="mailtest" style="margin-right: 10px;">Send Test</a>
-            <div id="mailteststatus-text" class="text-danger"></div>
+            <div id="mailteststatus-text" class="text-danger" role="status" aria-live="polite" aria-atomic="true"></div>
       </td>
     </tr>
   </tbody>

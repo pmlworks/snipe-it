@@ -126,7 +126,7 @@
                         </div>
                         <div class="box-body">
 
-                            @include('notifications')
+                            <x-notifications />
 
 
                           <!-- Content -->
