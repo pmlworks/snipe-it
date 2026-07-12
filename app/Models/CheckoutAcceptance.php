@@ -267,13 +267,18 @@ class CheckoutAcceptance extends Model
         $pdf->Ln();
         $pdf->writeHTML('<hr>', true, 0, true, 0, '');
 
-        // Break the EULA into lines based on newlines, and check each line for RTL or CJK characters
-        $eula_lines = preg_split("/\r\n|\n|\r/", $data['eula']);
+        // Break the EULA into markdown blocks separated by blank lines (rather than splitting on every
+        // newline), and check each block for RTL or CJK characters. Splitting on blank lines keeps
+        // multi-line markdown constructs - e.g. nested lists - together in a single block, so Parsedown
+        // can render them correctly. Blank lines are Parsedown's own block boundaries, so rendering
+        // block-by-block matches the whole-document rendering used for the acceptance email; splitting
+        // on every newline previously flattened nested lists into a single flat list (#18176).
+        $eula_blocks = preg_split('/\R(?:[ \t]*\R)+/', $data['eula']);
 
-        foreach ($eula_lines as $eula_line) {
-            Helper::hasRtl($eula_line) ? $pdf->setRTL(true) : $pdf->setRTL(false);
-            Helper::isCjk($eula_line) ? $pdf->SetFont('cid0cs', '', 9) : $pdf->SetFont('dejavusans', '', 8, '', true);
-            $pdf->writeHTML(Helper::parseEscapedMarkedown($eula_line), true, 0, true, 0, '');
+        foreach ($eula_blocks as $eula_block) {
+            Helper::hasRtl($eula_block) ? $pdf->setRTL(true) : $pdf->setRTL(false);
+            Helper::isCjk($eula_block) ? $pdf->SetFont('cid0cs', '', 9) : $pdf->SetFont('dejavusans', '', 8, '', true);
+            $pdf->writeHTML(Helper::parseEscapedMarkedown($eula_block), true, 0, true, 0, '');
         }
         $pdf->Ln();
         $pdf->Ln();
