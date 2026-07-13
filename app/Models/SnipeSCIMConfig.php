@@ -377,13 +377,14 @@ class SnipeSCIMConfig
                     {
                         protected function doRead(&$object, $attributes = [])
                         {
-                            return collect([$object->email])->map(function ($email) {
-                                return [
-                                    'value' => $email,
-                                    'type' => 'work', // TODO - is this how we always have done it?
-                                    'primary' => true,
-                                ];
-                            })->toArray();
+                            if (!$object->email) {
+                                return null;
+                            }
+                            return [
+                                'value' => $object->email,
+                                'type' => 'work', // TODO - is this how we always have done it?
+                                'primary' => true,
+                            ];
                         }
 
                         public function doWrite($operation, $subop, $value, Model &$object, ?Path $path = null, $removeIfNotSet = false)
