@@ -217,7 +217,7 @@ class CheckoutAcceptance extends Model
         if ($data['logo'] != null) {
             $pdf->writeHTML('<img src="@'.$data['logo'].'">', true, 0, true, 0, '');
         } else {
-            $pdf->writeHTML('<h3>'.$data['site_name'].'</h3><br /><br />', true, 0, true, 0, 'C');
+            $pdf->writeHTML('<h3>'.e($data['site_name']).'</h3><br /><br />', true, 0, true, 0, 'C');
         }
 
         $pdf->Ln();
@@ -243,13 +243,13 @@ class CheckoutAcceptance extends Model
         if ($data['item_serial'] != null) {
             $pdf->writeHTML(trans('admin/hardware/form.serial').': '.e($data['item_serial']), true, 0, true, 0, '');
         }
-        if (!empty($data['custom_fields']) && is_iterable($data['custom_fields'])) {
+        if (! empty($data['custom_fields']) && is_iterable($data['custom_fields'])) {
             foreach ($data['custom_fields'] as $customField) {
                 $label = $customField['label'] ?? null;
                 $value = $customField['value'] ?? null;
 
                 if (($label !== null) && ($value !== null) && ($value !== '')) {
-                    $pdf->writeHTML(e((string) $label) . ': ' . e((string) $value), true, 0, true, 0, '');
+                    $pdf->writeHTML(e((string) $label).': '.e((string) $value), true, 0, true, 0, '');
                 }
             }
         }
@@ -259,7 +259,7 @@ class CheckoutAcceptance extends Model
         }
         $pdf->Ln();
         $pdf->writeHTML('<hr>', true, 0, true, 0, '');
-        $pdf->writeHTML(trans('general.assignee').': '.e($data['assigned_to']).($data['employee_num'] ? ' ('.$data['employee_num'].')' : ''), true, 0, true, 0, '');
+        $pdf->writeHTML(trans('general.assignee').': '.e($data['assigned_to']).($data['employee_num'] ? ' ('.e($data['employee_num']).')' : ''), true, 0, true, 0, '');
         if ($data['email'] != null) {
             $pdf->writeHTML(trans('general.email').': '.e($data['email']), true, 0, true, 0, '');
         }
@@ -300,6 +300,5 @@ class CheckoutAcceptance extends Model
         $pdf->writeHTML(trans('general.accepted_date').': '.e($data['accepted_date']), true, 0, true, 0, '');
 
         return $pdf->Output($pdf_filename, 'S');
-
     }
 }
