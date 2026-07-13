@@ -22,7 +22,20 @@
 
 				<!-- Select company, only for users with multicompany access - replace default company -->
 				<div class="dynamic-form-row">
-					@include ('partials.forms.edit.company-select', ['translated_name' => trans('general.company'), 'fieldname' => 'company_id'])
+					<div class="col-md-3 col-xs-12"><label for="modal-company_id">{{ trans('general.company') }}:</label></div>
+					<div class="col-md-9 col-xs-12">
+						<select
+							class="js-data-ajax"
+							data-endpoint="companies"
+							data-placeholder="{{ trans('general.select_company') }}"
+							name="company_id"
+							id="modal-company_id"
+							style="width: 100%"
+							aria-label="{{ trans('general.company') }}"
+						>
+							<option value=""></option>
+						</select>
+					</div>
 				</div>
 
                 <div class="dynamic-form-row">
