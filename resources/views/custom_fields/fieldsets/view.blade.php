@@ -33,15 +33,15 @@
                     <tr>
                         {{-- Hide the sorting handle if we can't update the fieldset --}}
                         @can('update', $custom_fieldset)
-                            <th class="col-md-1"><span class="sr-only">{{ trans('admin/custom_fields/general.reorder') }}</span></th>
+                            <th scope="col" class="col-md-1"><span class="sr-only">{{ trans('admin/custom_fields/general.reorder') }}</span></th>
                         @endcan
-                        <th class="col-md-1" style="display: none;">{{ trans('admin/custom_fields/general.order') }}</th>
-                        <th class="col-md-3">{{ trans('admin/custom_fields/general.field_name') }}</th>
-                        <th class="col-md-2">{{ trans('admin/custom_fields/general.field_format') }}</th>
-                        <th class="col-md-2">{{ trans('admin/custom_fields/general.field_element') }}</th>
-                        <th class="col-md-1">{{ trans('admin/custom_fields/general.encrypted') }}</th>
-                        <th class="col-md-1">{{ trans('admin/custom_fields/general.required') }}</th>
-                        <th class="col-md-1"><span class="sr-only">{{ trans('button.remove') }}</span></th>
+                        <th scope="col" class="col-md-1" style="display: none;">{{ trans('admin/custom_fields/general.order') }}</th>
+                        <th scope="col" class="col-md-3">{{ trans('admin/custom_fields/general.field_name') }}</th>
+                        <th scope="col" class="col-md-2">{{ trans('admin/custom_fields/general.field_format') }}</th>
+                        <th scope="col" class="col-md-2">{{ trans('admin/custom_fields/general.field_element') }}</th>
+                        <th scope="col" class="col-md-1">{{ trans('admin/custom_fields/general.encrypted') }}</th>
+                        <th scope="col" class="col-md-1">{{ trans('admin/custom_fields/general.required') }}</th>
+                        <th scope="col" class="col-md-1"><span class="sr-only">{{ trans('button.remove') }}</span></th>
                     </tr>
                     </thead>
                     <tbody>

@@ -595,6 +595,11 @@
         // layout re-init), since bootstrap-table doesn't re-render the head
         // on sort clicks.
         var updateAriaSort = function ($tableEl, sortName, sortOrder) {
+            // scope="col" is emitted by the column presenters (see e.g.
+            // AssetPresenter::dataTableLayout). aria-sort will move upstream
+            // once we're on a bootstrap-table version that includes
+            // https://github.com/wenzhixin/bootstrap-table/pull/8005; until
+            // then we stamp it here.
             $tableEl.find('thead th').each(function () {
                 var $th = $(this);
                 if (sortName && $th.data('field') === sortName) {

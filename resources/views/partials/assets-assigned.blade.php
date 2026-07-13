@@ -27,10 +27,10 @@
                         table_html += '<div class="col-md-12">';
                         table_html += '<table class="table table-striped">';
                         table_html += '<thead><tr>';
-                        table_html += '<th></th>';
-                        table_html += '<th>{{ trans('admin/hardware/form.name') }}</th>';
-                        table_html += '<th>{{ trans('admin/hardware/form.tag') }}</th>';
-                        table_html += '<th>{{ trans('admin/hardware/form.serial') }}</th>';
+                        table_html += '<th scope="col"></th>';
+                        table_html += '<th scope="col">{{ trans('admin/hardware/form.name') }}</th>';
+                        table_html += '<th scope="col">{{ trans('admin/hardware/form.tag') }}</th>';
+                        table_html += '<th scope="col">{{ trans('admin/hardware/form.serial') }}</th>';
                         table_html += '</tr></thead><tbody>';
 
                         $('#current_assets_content').append('');
