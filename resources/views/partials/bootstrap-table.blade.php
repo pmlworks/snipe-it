@@ -588,6 +588,23 @@
 
         /** End handling the responsive tab UI on view detail pages **/
 
+        // Stamp aria-sort on the sorted column's <th> so assistive tech can
+        // announce the current sort direction. Bootstrap-table's own render
+        // draws a visual arrow but doesn't emit aria state. Called from both
+        // onSort (user clicked a header) and onPostHeader (initial paint or
+        // layout re-init), since bootstrap-table doesn't re-render the head
+        // on sort clicks.
+        var updateAriaSort = function ($tableEl, sortName, sortOrder) {
+            $tableEl.find('thead th').each(function () {
+                var $th = $(this);
+                if (sortName && $th.data('field') === sortName) {
+                    $th.attr('aria-sort', sortOrder === 'desc' ? 'descending' : 'ascending');
+                } else {
+                    $th.removeAttr('aria-sort');
+                }
+            });
+        };
+
         $('.snipe-table').bootstrapTable('destroy').each(function () {
 
             data_export_options = $(this).attr('data-export-options');
@@ -686,6 +703,13 @@
             var initialAdvancedSearchOperator = getStoredAdvancedSearchOperator() || normalizeAdvancedSearchOperator(data_with_default('advanced-search-operator', defaultAdvancedSearchOperator));
 
             $(this).data('advanced-search-filter-operator', initialAdvancedSearchOperator);
+
+            // Capture the table element for use inside bootstrap-table callbacks.
+            // bootstrap-table 1.24 invokes those callbacks with `.apply(options, args)`,
+            // so `this` inside them is the options object, not the DOM element —
+            // any $(this).find(...) call silently no-ops. The closure lets the
+            // callbacks reach the real table.
+            var $bootstrapTableEl = $(this);
 
             $(this).bootstrapTable({
 
@@ -885,7 +909,21 @@
                             '</div>',
                     });
                 },
+                onSort: function (sortName, sortOrder) {
+                    // User-triggered sort: bootstrap-table re-renders the body
+                    // (client-side sort) or re-queries the server, but does
+                    // NOT re-render the <thead>, so onPostHeader won't fire
+                    // and aria-sort would go stale. Update the header directly.
+                    updateAriaSort($bootstrapTableEl, sortName, sortOrder);
+                },
                 onPostHeader: function () {
+                    // Initial header render (and any layout re-init) — reflect
+                    // whatever sort state the table booted with, so a table
+                    // configured with data-sort-name/data-sort-order announces
+                    // correctly on first paint too.
+                    var options = $bootstrapTableEl.bootstrapTable('getOptions');
+                    updateAriaSort($bootstrapTableEl, options && options.sortName, options && options.sortOrder);
+
                     var lookup = {};
                     var lookup_initialized = false;
                     var ths = $('th');
