@@ -1729,9 +1729,15 @@ Radio toggle styles for permission settings and check/uncheck all
   color: #fff !important;
   text-decoration: none;
 }
+.tooltip-spin-hover:hover i,
+.tooltip-spin-hover:focus i {
+  animation: fa-spin 2s infinite linear;
+}
 @media (prefers-reduced-motion: reduce) {
   [class*="faa-"].animated,
   [class*="faa-"].animated-hover:hover,
+  .tooltip-spin-hover:hover i,
+  .tooltip-spin-hover:focus i,
   .fa-spin,
   .fa-pulse {
     animation: none !important;
