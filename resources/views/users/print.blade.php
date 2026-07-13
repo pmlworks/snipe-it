@@ -76,13 +76,13 @@
 
         <h2>
             @if ($snipeSettings->acceptance_pdf_logo!='')
-                <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}">
+                <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}" alt="">
             @endif
             {{ $snipeSettings->site_name }}
         </h2>
     @elseif ($snipeSettings->brand == '2')
         @if ($snipeSettings->acceptance_pdf_logo!='')
-            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}">
+            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}" alt="">
         @endif
     @else
         <h2>{{ $snipeSettings->site_name }}</h2>
@@ -150,7 +150,7 @@
                     <td>{{ $counter }}</td>
                     <td>
                         @if ($asset->getImageUrl())
-                            <img src="{{ $asset->getImageUrl() }}" class="thumbnail" style="max-height: 50px;">
+                            <img src="{{ $asset->getImageUrl() }}" class="thumbnail" style="max-height: 50px;" alt="">
                         @endif
                     </td>
                     <td>{{ $asset->asset_tag }}</td>
@@ -164,7 +164,7 @@
                         {{ Helper::getFormattedDateObject($asset->last_checkout, 'datetime', false) }}</td>
                     <td>
                         @if ($asset->getLatestSignedAcceptance($show_user))
-                            <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $asset->getLatestSignedAcceptance($show_user)->accept_signature }}">
+                            <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $asset->getLatestSignedAcceptance($show_user)->accept_signature }}" alt="{{ trans('general.signature') }}">
                         @endif
                     </td>
                 </tr>
@@ -227,7 +227,7 @@
                     </td>
                     <td>
                         @if ($license->getLatestSignedAcceptance($show_user))
-                            <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $license->getLatestSignedAcceptance($show_user)->accept_signature }}">
+                            <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $license->getLatestSignedAcceptance($show_user)->accept_signature }}" alt="{{ trans('general.signature') }}">
                         @endif
                     </td>
                 </tr>
@@ -282,7 +282,7 @@
                         <td>{{ $acounter }}</td>
                         <td>
                             @if ($accessory->getImageUrl())
-                                <img src="{{ $accessory->getImageUrl() }}" class="thumbnail" style="max-height: 50px;">
+                                <img src="{{ $accessory->getImageUrl() }}" class="thumbnail" style="max-height: 50px;" alt="">
                             @endif
                         </td>
                         <td>{{ ($accessory->manufacturer) ? $accessory->manufacturer->name : '' }} {{ $accessory->name }} {{ $accessory->model_number }}</td>
@@ -293,7 +293,7 @@
 
                         <td>
                             @if ($accessory->getLatestSignedAcceptance($show_user))
-                                <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $accessory->getLatestSignedAcceptance($show_user)->accept_signature }}">
+                                <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $accessory->getLatestSignedAcceptance($show_user)->accept_signature }}" alt="{{ trans('general.signature') }}">
                             @endif
                         </td>
                     </tr>
@@ -359,7 +359,7 @@
                         </td>
                         <td>
                             @if ($consumable->getLatestSignedAcceptance($show_user))
-                                <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $consumable->getLatestSignedAcceptance($show_user)->accept_signature }}">
+                                <img style="width:auto;height:100px;" src="{{ asset('/') }}display-sig/{{ $consumable->getLatestSignedAcceptance($show_user)->accept_signature }}" alt="{{ trans('general.signature') }}">
                             @endif
                         </td>
                     </tr>

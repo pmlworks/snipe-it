@@ -118,7 +118,7 @@
 
                                                     @if (($requestableModel->image) && ($requestableModel->getImageUrl()))
                                                         <a href="{{ $requestableModel->getImageUrl() }}" data-toggle="lightbox" data-type="image">
-                                                            <img src="{{ $requestableModel->getImageUrl() }}" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive">
+                                                            <img src="{{ $requestableModel->getImageUrl() }}" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" class="img-responsive" alt="">
                                                         </a>
                                                     @endif
 

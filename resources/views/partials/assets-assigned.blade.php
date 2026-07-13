@@ -41,7 +41,7 @@
                                 var asset = data.rows[i];
                                 table_html += '<tr>';
                                 if (asset.image != null) {
-                                    table_html += '<td class="col-md-1"><a href="' + asset.image + '" data-toggle="lightbox" data-type="image"><img src="' + asset.image + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;"></a></td>';
+                                    table_html += '<td class="col-md-1"><a href="' + asset.image + '" data-toggle="lightbox" data-type="image"><img src="' + asset.image + '" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" alt=""></a></td>';
                                 } else {
                                     table_html += "<td></td> ";
                                 }

@@ -36,13 +36,13 @@
 
         <h3>
         @if ($snipeSettings->acceptance_pdf_logo!='')
-            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}">
+            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}" alt="">
         @endif
         {{ $snipeSettings->site_name }}
         </h3>
     @elseif ($snipeSettings->brand == '2')
         @if ($snipeSettings->acceptance_pdf_logo!='')
-            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}">
+            <img class="print-logo" src="{{ Storage::disk('public')->url($snipeSettings->acceptance_pdf_logo) }}" alt="">
         @endif
     @else
       <h3>{{ $snipeSettings->site_name }}</h3>

@@ -31,7 +31,7 @@
     <!-- existing image -->
     <div class="form-group" id="existing-image">
         <div class="col-md-8 col-md-offset-3">
-            <img src="{{ Storage::disk('public')->url($image_path.e($item->{($fieldname ?? 'image')})) }}" class="img-responsive">
+            <img src="{{ Storage::disk('public')->url($image_path.e($item->{($fieldname ?? 'image')})) }}" class="img-responsive" alt="">
             <x-form.error name="image_delete" />
         </div>
     </div>

@@ -67,14 +67,14 @@
                                 @if ($field->pivot->required)
                                     <form method="post" action="{{ route('fields.optional', [$custom_fieldset->id, $field->id]) }}">
                                         @csrf
-                                        <button type="submit" class="btn btn-link"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
+                                        <button type="submit" class="btn btn-link" data-tooltip="true" title="{{ trans('admin/custom_fields/general.make_optional') }}" aria-label="{{ trans('admin/custom_fields/general.make_optional') }}"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
                                     </form>
 
                                 @else
 
                                     <form method="post" action="{{ route('fields.required', [$custom_fieldset->id, $field->id]) }}">
                                         @csrf
-                                        <button type="submit" class="btn btn-link"><i class="fa fa-times text-danger" aria-hidden="true"></i></button>
+                                        <button type="submit" class="btn btn-link" data-tooltip="true" title="{{ trans('admin/custom_fields/general.make_required') }}" aria-label="{{ trans('admin/custom_fields/general.make_required') }}"><i class="fa fa-times text-danger" aria-hidden="true"></i></button>
                                     </form>
                                 @endif
 
