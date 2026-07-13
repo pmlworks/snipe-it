@@ -1317,7 +1317,7 @@
 
                             @can('admin')
                                 <li class="dropdown user-menu" aria-hidden="true">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" tabindex="-1">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" tabindex="-1" aria-haspopup="true" aria-expanded="false">
                                         {{ trans('general.create') }}
                                         <strong class="caret"></strong>
                                     </a>
@@ -1386,7 +1386,7 @@
                             @auth
                                 <li class="dropdown user user-menu">
 
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         @if (auth()->user()->present()->gravatar())
                                             <img src="{{ Auth::user()->present()->gravatar() }}" class="user-image"
                                                  alt="">

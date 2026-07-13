@@ -105,11 +105,11 @@
                     <table id="checkedin" class="table table-striped snipe-table">
                         <thead>
                         <tr>
-                            <th>{{ trans('general.asset_tag') }}</th>
-                            <th>{{ trans('general.asset_model') }}</th>
-                            <th>{{ trans('general.model_no') }}</th>
-                            <th>{{ trans('general.quickscan_checkin_status') }}</th>
-                            <th></th>
+                            <th scope="col">{{ trans('general.asset_tag') }}</th>
+                            <th scope="col">{{ trans('general.asset_model') }}</th>
+                            <th scope="col">{{ trans('general.model_no') }}</th>
+                            <th scope="col">{{ trans('general.quickscan_checkin_status') }}</th>
+                            <th scope="col"></th>
                         </tr>
                         <tr id="checkin-loader" style="display: none;">
                             <td colspan="3">

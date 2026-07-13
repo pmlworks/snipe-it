@@ -45,28 +45,28 @@
                                 <table class="display table table-hover">
                                     <thead>
                                     <tr>
-                                        <th class="col-md-3">{{ trans('general.name') }}</th>
-                                        <th class="col-md-3">{{ trans('general.email') }}</th>
-                                        <th class="col-md-3">{{ trans('general.username') }}</th>
-                                        <th class="col-md-3">{{ trans('general.employee_number') }}</th>
-                                        <th class="col-md-3">{{ trans('general.groups') }}</th>
-                                        <th class="col-md-1 text-right">
+                                        <th scope="col" class="col-md-3">{{ trans('general.name') }}</th>
+                                        <th scope="col" class="col-md-3">{{ trans('general.email') }}</th>
+                                        <th scope="col" class="col-md-3">{{ trans('general.username') }}</th>
+                                        <th scope="col" class="col-md-3">{{ trans('general.employee_number') }}</th>
+                                        <th scope="col" class="col-md-3">{{ trans('general.groups') }}</th>
+                                        <th scope="col" class="col-md-1 text-right">
                                             <i class="fas fa-barcode fa-fw" aria-hidden="true" style="font-size: 17px;"></i>
                                             <span class="sr-only">{{ trans('general.assets') }}</span>
                                         </th>
-                                        <th class="col-md-1 text-right">
+                                        <th scope="col" class="col-md-1 text-right">
                                             <i class="far fa-keyboard fa-fw" aria-hidden="true" style="font-size: 17px;"></i>
                                             <span class="sr-only">{{ trans('general.accessories') }}</span>
                                         </th>
-                                        <th class="col-md-1 text-right">
+                                        <th scope="col" class="col-md-1 text-right">
                                             <i class="far fa-save fa-fw" aria-hidden="true" style="font-size: 17px;"></i>
                                             <span class="sr-only">{{ trans('general.licenses') }}</span>
                                         </th>
-                                        <th class="col-md-1 text-right">
+                                        <th scope="col" class="col-md-1 text-right">
                                             <i class="fas fa-tint fa-fw" aria-hidden="true" style="font-size: 17px;"></i>
                                             <span class="sr-only">{{ trans('general.consumables') }}</span>
                                         </th>
-                                        <th class="col-md-1 text-right">
+                                        <th scope="col" class="col-md-1 text-right">
                                             <i class="fas fa-paperclip fa-fw" aria-hidden="true" style="font-size: 17px;"></i>
                                             <span class="sr-only">{{ trans('general.files') }}</span>
                                         </th>

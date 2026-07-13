@@ -14,9 +14,9 @@ Create a User ::
 <table class="table">
   <thead>
     <tr>
-      <th class="col-lg-2">Setting</th>
-      <th class="col-lg-1">Valid</th>
-      <th class="col-lg-9">Notes</th>
+      <th scope="col" class="col-lg-2">Setting</th>
+      <th scope="col" class="col-lg-1">Valid</th>
+      <th scope="col" class="col-lg-9">Notes</th>
     </tr>
   </thead>
   <tbody>
