@@ -502,8 +502,11 @@ class SnipeSCIMConfig
                                 $address['type'] = 'work';
                                 $address['primary'] = true;
                             }
-
-                            return [$address];
+                            if ($address) {
+                                return [(object) $address]; //cast-to-object forces "squiggly-brackets" in JSON
+                            } else {
+                                return null; //this should remove the addresses block entirely
+                            }
                         }
 
                         public function doWrite($operation, $subop, $value, Model &$object, ?Path $path = null, $removeIfNotSet = false)
