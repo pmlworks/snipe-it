@@ -130,11 +130,11 @@
                     <table id="audited" class="table table-striped snipe-table">
                         <thead>
                         <tr>
-                            <th>{{ trans('general.audit') }}</th>
-                            <th>{{ trans('general.bulkaudit_status') }}</th>
-                            <th>{{ trans('general.status') }}</th>
-                            <th>{{ trans('general.notes') }}</th>
-                            <th></th>
+                            <th scope="col">{{ trans('general.audit') }}</th>
+                            <th scope="col">{{ trans('general.bulkaudit_status') }}</th>
+                            <th scope="col">{{ trans('general.status') }}</th>
+                            <th scope="col">{{ trans('general.notes') }}</th>
+                            <th scope="col"></th>
                         </tr>
                         <tr id="audit-loader" style="display: none;">
                             <td colspan="3">

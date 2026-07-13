@@ -23066,9 +23066,10 @@ Radio toggle styles for permission settings and check/uncheck all
   text-decoration: none;
 }
 @media (prefers-reduced-motion: reduce) {
+  [class*="faa-"].animated,
+  [class*="faa-"].animated-hover:hover,
   .fa-spin,
-  .faa-pulse.animated,
-  .faa-pulse.animated-hover:hover {
+  .fa-pulse {
     animation: none !important;
   }
 }
@@ -24904,9 +24905,10 @@ Radio toggle styles for permission settings and check/uncheck all
   text-decoration: none;
 }
 @media (prefers-reduced-motion: reduce) {
+  [class*="faa-"].animated,
+  [class*="faa-"].animated-hover:hover,
   .fa-spin,
-  .faa-pulse.animated,
-  .faa-pulse.animated-hover:hover {
+  .fa-pulse {
     animation: none !important;
   }
 }

@@ -1015,7 +1015,7 @@
             ]
             let header = '<thead><tr>'
             for (var i in keys) {
-                header += '<th style="white-space: nowrap;">' + keys[i] + '</th>'
+                header += '<th scope="col" style="white-space: nowrap;">' + keys[i] + '</th>'
             }
             header += "</tr></thead>"
             return header;
