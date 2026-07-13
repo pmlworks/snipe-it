@@ -305,7 +305,7 @@
                   @endif
 
                   
-                  @include ('partials.forms.edit.image-upload', ['fieldname' => 'avatar', 'image_path' => app('users_upload_path')])
+                  <x-input.image-upload :item="$item" fieldname="avatar" :imagePath="app('users_upload_path')" :clonedModel="$cloned_model ?? null" />
 
 
                   <!-- begin optional disclosure arrow stuff -->
