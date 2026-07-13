@@ -7,6 +7,7 @@
     'required' => null,
     'disabled' => false,
     'help_text' => null,
+    'help_icon' => null,
     'info_tooltip_text' => null,
     // Default input column depends on whether the row has a left-hand label.
     // With a label, the row already spends col-md-3 on the left; without one
@@ -76,7 +77,7 @@
 
     @if ($help_text)
         <div class="col-md-8 col-md-offset-3">
-            <x-form.help :name="$name">{!! $help_text !!}</x-form.help>
+            <x-form.help :name="$name" :icon="$help_icon">{!! $help_text !!}</x-form.help>
         </div>
     @endif
 

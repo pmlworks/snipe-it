@@ -8,6 +8,7 @@
     'required' => null,
     'disabled' => false,
     'help_text' => null,
+    'help_icon' => null,
     'info_tooltip_text' => null,
     // Default input column: only skip the offset when a left-hand label
     // column is being rendered (i.e. multi mode with a label). Single mode
@@ -134,7 +135,7 @@
 
     @if ($help_text)
         <div class="col-md-8 col-md-offset-3">
-            <x-form.help :name="$name">{!! $help_text !!}</x-form.help>
+            <x-form.help :name="$name" :icon="$help_icon">{!! $help_text !!}</x-form.help>
         </div>
     @endif
 

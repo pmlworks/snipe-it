@@ -5,6 +5,7 @@
     'item' => null,
     'info_tooltip_text' => null,
     'help_text' => null,
+    'help_icon' => null,
     'label' => null,
     'input_div_class' => 'col-md-8',
     'errors_class' => $errors->has('support_url') ? ' has-error' : '',
@@ -61,7 +62,7 @@
     @if ($help_text)
         <!-- Help Text -->
         <div class="col-md-8 col-md-offset-3">
-            <x-form.help :name="$name">{!! $help_text !!}</x-form.help>
+            <x-form.help :name="$name" :icon="$help_icon">{!! $help_text !!}</x-form.help>
         </div>
     @endif
 

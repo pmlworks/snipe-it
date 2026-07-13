@@ -8,6 +8,7 @@
     'max' => null,
     'value' => null,
     'help_text' => null,
+    'help_icon' => null,
 ])
 
 <div
@@ -38,7 +39,7 @@
         <div class="col-md-12" style="padding-left: 0">
             <x-form.error :name="$name" />
             @if ($help_text)
-                <x-form.help :name="$name">{{ $help_text }}</x-form.help>
+                <x-form.help :name="$name" :icon="$help_icon">{{ $help_text }}</x-form.help>
             @endif
         </div>
     </div>
