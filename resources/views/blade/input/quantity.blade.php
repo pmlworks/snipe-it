@@ -27,6 +27,7 @@
                 name="{{ $name }}"
                 id="{{ $name }}"
                 aria-label="{{ $label ?? trans('general.quantity') }}"
+                @if ($help_text) aria-describedby="{{ $name }}-help" @endif
                 value="{{ old($name, $value ?? $item?->{$name} ?? '') }}"
                 min="{{ $min }}"
                 @if ($max) max="{{ $max }}" @endif
@@ -37,7 +38,7 @@
         <div class="col-md-12" style="padding-left: 0">
             <x-form.error :name="$name" />
             @if ($help_text)
-                <p class="help-block">{{ $help_text }}</p>
+                <x-form.help :name="$name">{{ $help_text }}</x-form.help>
             @endif
         </div>
     </div>

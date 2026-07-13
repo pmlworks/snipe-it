@@ -53,6 +53,7 @@
                     :required="$really_required && $loop->first"
                     :disabled="$disabled"
                     :aria-label="$name"
+                    :aria-describedby="$help_text ? $name.'-help' : null"
                 />
                 {{ $option_label }}
             </label>
@@ -75,9 +76,7 @@
 
     @if ($help_text)
         <div class="col-md-8 col-md-offset-3">
-            <p class="help-block">
-                {!! $help_text !!}
-            </p>
+            <x-form.help :name="$name">{!! $help_text !!}</x-form.help>
         </div>
     @endif
 
