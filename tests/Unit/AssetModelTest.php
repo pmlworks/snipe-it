@@ -195,10 +195,17 @@ class AssetModelTest extends TestCase
 
     public function test_percent_remaining_returns_zero_when_eager_loaded_counts_are_string_zero(): void
     {
-        // Some driver / cache paths return withCount values as string "0"
-        // instead of int 0. A strict `=== 0` guard misses those, letting the
-        // ratio run and throw DivisionByZeroError. The loose truthy check
-        // must catch both.
+        // PDO with MySQL/MariaDB in the default (emulated-prepares) mode
+        // returns COUNT() as PHP string, not int. Eloquent doesn't cast
+        // withCount aliases (no $casts entry for `remaining` / `assets_count`),
+        // so the value lands on the model as-is. A strict `=== 0` guard misses
+        // string "0" — and PHP 8's arithmetic operators auto-convert numeric
+        // strings, so the ratio below still throws DivisionByZeroError. The
+        // fix is to cast to int at read time before the guard fires.
+        //
+        // Real trace from the reporting production instance targeted the
+        // ratio line even with a === 0 guard sitting above it, which is only
+        // possible if $total was "0" (string), not 0 (int).
         $category = Category::factory()->create(['category_type' => 'asset']);
         $model = AssetModel::factory()->create(['category_id' => $category->id]);
         $model->forceFill(['remaining' => '3', 'assets_count' => '0']);
