@@ -1,0 +1,148 @@
+<div class="col-md-5" @if ($targetId === null) style="display: none;" @endif>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h2 class="box-title">
+                {{ trans('admin/users/general.current_items', ['item' => $noun]) }}
+            </h2>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-striped">
+                        @switch($type)
+
+                            @case('assets')
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">{{ trans('general.name') }}</th>
+                                        <th scope="col">{{ trans('admin/hardware/form.tag') }}</th>
+                                        <th scope="col">{{ trans('admin/hardware/form.serial') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($items as $asset)
+                                        <tr>
+                                            <td>
+                                                @if ($asset->image_url ?? null)
+                                                    <img src="{{ $asset->image_url }}" style="max-height: {{ $snipeSettings->thumbnail_max_h }}px; width: auto;" alt="">
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <a href="{{ route('hardware.show', $asset->id) }}">
+                                                    {{ $asset->name ? $asset->name.' ('.$asset->model?->name.')' : $asset->model?->name }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $asset->asset_tag }}</td>
+                                            <td>{{ $asset->serial }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="4">{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                                @break
+
+                            @case('licenses')
+                                @php($canViewKeys = Gate::allows('viewKeys', \App\Models\License::class))
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ trans('general.name') }}</th>
+                                        @if ($canViewKeys)
+                                            <th scope="col">{{ trans('admin/licenses/form.license_key') }}</th>
+                                        @endif
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($items as $license)
+                                        <tr>
+                                            <td><a href="{{ route('licenses.show', $license->id) }}">{{ $license->name }}</a></td>
+                                            @if ($canViewKeys)
+                                                <td>{{ $license->serial }}</td>
+                                            @endif
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="{{ $canViewKeys ? 2 : 1 }}">{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                                @break
+
+                            @case('accessories')
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ trans('general.name') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($items as $accessory)
+                                        <tr>
+                                            <td><a href="{{ route('accessories.show', $accessory->id) }}">{{ $accessory->name }}</a></td>
+                                        </tr>
+                                    @empty
+                                        <tr><td>{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                                @break
+
+                            @case('consumables')
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ trans('general.name') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($items as $consumable)
+                                        <tr>
+                                            <td><a href="{{ route('consumables.show', $consumable->id) }}">{{ $consumable->name }}</a></td>
+                                        </tr>
+                                    @empty
+                                        <tr><td>{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                                @break
+
+                        @endswitch
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @script
+        <script>
+            // Bridge the non-Livewire target selects (user / asset / location)
+            // plus the checkout-selector radio toggle to this component. On
+            // any change we resolve the currently-active target (based on the
+            // radio) + its select value and dispatch. Pages that don't have
+            // the radio (consumables/checkout is user-only) fall back to
+            // 'user' as the assumed target type.
+            //
+            // The surrounding Livewire directive runs once per component
+            // INSTANCE, so binding at this level doesn't accumulate handlers.
+            var dispatchTarget = function () {
+                var radioVal = $('input[name="checkout_to_type"]:checked').val();
+                var targetType = radioVal || 'user';
+                var selectSelectors = {
+                    'user': '#assigned_user_select',
+                    'asset': '#assigned_asset_select',
+                    'location': '#assigned_location_location_select',
+                };
+                var $select = $(selectSelectors[targetType]);
+                var targetId = $select.length ? ($select.val() || null) : null;
+
+                $wire.dispatch('checkout-target-selected', {
+                    targetType: targetType,
+                    targetId: targetId,
+                });
+            };
+
+            $('#assigned_user, #assigned_asset, #assigned_location').on('change', dispatchTarget);
+            $('input[name="checkout_to_type"]').on('change', dispatchTarget);
+
+            // Initial state on page load: pick up whatever the parent form
+            // has server-rendered as the pre-selected target (session
+            // remembers checkout_to_type across errors) so the sidebar shows
+            // straight away instead of waiting for a change event.
+            dispatchTarget();
+        </script>
+    @endscript
+</div>
