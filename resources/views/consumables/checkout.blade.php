@@ -9,11 +9,12 @@
 {{-- Page content --}}
 @section('content')
 
-<x-container class="col-md-9">
+<x-container columns="2">
+    <x-page-column class="col-md-7">
 
-    <x-form route="{{ url()->current() }}" id="checkout_form">
+        <x-form route="{{ url()->current() }}" id="checkout_form">
 
-        <x-box header="{{ $consumable->name }}">
+            <x-box header="{{ $consumable->name }}">
 
             @if ($consumable->name)
                 <x-form.static :label="trans('admin/consumables/general.consumable_name')">{{ $consumable->name }}</x-form.static>
@@ -98,9 +99,13 @@
                 />
             </x-slot:customfooter>
 
-        </x-box>
+            </x-box>
 
-    </x-form>
+        </x-form>
+
+    </x-page-column>
+
+    <livewire:checkout-target-panel type="consumables" />
 
 </x-container>
 

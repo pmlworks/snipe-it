@@ -157,29 +157,13 @@
       </form>
   </div> <!--/.col-md-7-->
 
-  <!-- right column -->
-  <div class="col-md-5" id="current_assets_box" style="display:none;">
-    <div class="box box-primary">
-      <div class="box-header with-border">
-        <h2 class="box-title">{{ trans('admin/users/general.current_assets') }}</h2>
-      </div>
-      <div class="box-body">
-        <div id="current_assets_content">
-        </div>
-      </div>
-    </div>
-  </div>
+  <livewire:checkout-target-panel type="assets" />
 </div>
 @stop
 
 @section('moar_scripts')
-@include('partials/assets-assigned')
 <script nonce="{{ csrf_token() }}">
     $(function () {
-        //if there's already a user selected, make sure their checked-out assets show up
-        // (if there isn't one, it won't do anything)
-        $('#assigned_user').change();
-
         // Add the disabled attribute to empty inputs on submit to handle the case where someone does not pick a status ID
         // and the form is submitted with an empty status ID which will fail validation via the form request
         $("form").submit(function() {

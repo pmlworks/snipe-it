@@ -145,21 +145,6 @@
             </div> <!-- /.box-->
         </form>
     </div> <!-- /.col-md-7-->
-    <!-- right column -->
-    <div class="col-md-5" id="current_license_box" style="display:none;">
-        <div class="box box-primary">
-            <div class="box-header with-border">
-                <h2 class="box-title">{{ trans('admin/users/general.current_items', ['item' => trans('general.licenses')]) }}</h2>
-            </div>
-            <div class="box-body">
-                <div id="current_license_content">
-                </div>
-            </div>
-        </div>
-    </div>
+    <livewire:checkout-target-panel type="licenses" />
 </div>
 @stop
-
-@section('moar_scripts')
-    @include('partials.licenses-assigned')
-@endsection

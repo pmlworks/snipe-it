@@ -13,11 +13,12 @@
 {{-- Page content --}}
 @section('content')
 
-<x-container class="col-md-9">
+<x-container columns="2">
+    <x-page-column class="col-md-7">
 
-    <x-form route="{{ url()->current() }}" id="checkout_form">
+        <x-form route="{{ url()->current() }}" id="checkout_form">
 
-        <x-box header="{{ $accessory->name }}">
+            <x-box header="{{ $accessory->name }}">
 
             @if ($accessory->name)
                 <x-form.static :label="trans('admin/accessories/general.accessory_name')">{{ $accessory->name }}</x-form.static>
@@ -101,9 +102,13 @@
                 />
             </x-slot:customfooter>
 
-        </x-box>
+            </x-box>
 
-    </x-form>
+        </x-form>
+
+    </x-page-column>
+
+    <livewire:checkout-target-panel type="accessories" />
 
 </x-container>
 

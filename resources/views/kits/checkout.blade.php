@@ -74,24 +74,8 @@
       </form>
   </div> <!--/.col-md-7-->
 
-  <!-- right column -->
-  <div class="col-md-5" id="current_assets_box" style="display:none;">
-    <div class="box box-primary">
-      <div class="box-header with-border">
-        <h3 class="box-title">{{ trans('admin/users/general.current_assets') }}</h3>
-      </div>
-      <div class="box-body">
-        <div id="current_assets_content">
-        </div>
-      </div>
-    </div>
-  </div>
+  <livewire:checkout-target-panel type="assets" />
 </div>
-@stop
-
-@section('moar_scripts')
-@include('partials/assets-assigned')
-
 @stop
 
 @section('notifications')
