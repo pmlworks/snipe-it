@@ -193,6 +193,19 @@ class AssetModelTest extends TestCase
         $this->assertSame(0, $model->percentRemaining());
     }
 
+    public function test_percent_remaining_returns_zero_when_eager_loaded_counts_are_string_zero(): void
+    {
+        // Some driver / cache paths return withCount values as string "0"
+        // instead of int 0. A strict `=== 0` guard misses those, letting the
+        // ratio run and throw DivisionByZeroError. The loose truthy check
+        // must catch both.
+        $category = Category::factory()->create(['category_type' => 'asset']);
+        $model = AssetModel::factory()->create(['category_id' => $category->id]);
+        $model->forceFill(['remaining' => '3', 'assets_count' => '0']);
+
+        $this->assertSame(0, $model->percentRemaining());
+    }
+
     public function test_percent_remaining_returns_zero_when_runtime_total_is_zero_but_available_is_not(): void
     {
         // Same guard, exercised through the non-eager-loaded fallback path
