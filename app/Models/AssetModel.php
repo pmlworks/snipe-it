@@ -173,7 +173,15 @@ class AssetModel extends SnipeModel
             return 0;
         }
 
+        // Guard the divisor: in principle available > 0 implies total > 0
+        // (available is a subset of total via the RTD scope), but a data
+        // anomaly — an asset counted by availableAssets but not by assets,
+        // or a race between the two correlated subqueries — has surfaced as
+        // DivisionByZeroError in production. Return 0 rather than throw.
         $total = $raw['assets_count'] ?? $this->assets()->count();
+        if ($total === 0) {
+            return 0;
+        }
 
         return $available / $total * 100;
     }
