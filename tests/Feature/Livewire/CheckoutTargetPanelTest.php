@@ -5,6 +5,7 @@ namespace Tests\Feature\Livewire;
 use App\Livewire\CheckoutTargetPanel;
 use App\Models\Accessory;
 use App\Models\Asset;
+use App\Models\Component;
 use App\Models\LicenseSeat;
 use App\Models\Location;
 use App\Models\User;
@@ -207,5 +208,60 @@ class CheckoutTargetPanelTest extends TestCase
             ->test(CheckoutTargetPanel::class, ['type' => 'licenses'])
             ->dispatch('checkout-target-selected', targetType: 'user', targetId: (string) $target->id)
             ->assertSee($seat->license->name);
+    }
+
+    public function test_asset_target_lists_target_components(): void
+    {
+        $admin = User::factory()->superuser()->create();
+        $target = Asset::factory()->create();
+        $component = Component::factory()->create(['name' => 'PANEL_COMPONENT_TEST']);
+        $target->components()->attach($component->id, [
+            'assigned_qty' => 2,
+            'created_by' => $admin->id,
+            'created_at' => now(),
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CheckoutTargetPanel::class, ['type' => 'components'])
+            ->dispatch('checkout-target-selected', targetType: 'asset', targetId: (string) $target->id)
+            ->assertSee('PANEL_COMPONENT_TEST');
+    }
+
+    public function test_impossible_combo_components_to_user_returns_empty(): void
+    {
+        // Components can only be checked out to assets; picking a user target
+        // on the components panel must fall through to the empty state rather
+        // than surfacing anything the user happens to have.
+        $admin = User::factory()->superuser()->create();
+        $target = User::factory()->create();
+
+        Livewire::actingAs($admin)
+            ->test(CheckoutTargetPanel::class, ['type' => 'components'])
+            ->dispatch('checkout-target-selected', targetType: 'user', targetId: (string) $target->id)
+            ->assertSee(trans('admin/users/message.nothing_currently_assigned'));
+    }
+
+    public function test_mount_rejects_unknown_default_target_type(): void
+    {
+        $this->actingAs(User::factory()->superuser()->create());
+
+        $this->expectExceptionMessage('Unknown checkout-target-panel defaultTargetType: martian');
+
+        Livewire::test(CheckoutTargetPanel::class, [
+            'type' => 'components',
+            'defaultTargetType' => 'martian',
+        ]);
+    }
+
+    public function test_default_target_type_prop_is_locked_against_client_mutation(): void
+    {
+        $this->actingAs(User::factory()->superuser()->create());
+
+        $this->expectException(\Livewire\Features\SupportLockedProperties\CannotUpdateLockedPropertyException::class);
+
+        Livewire::test(CheckoutTargetPanel::class, [
+            'type' => 'components',
+            'defaultTargetType' => 'asset',
+        ])->set('defaultTargetType', 'user');
     }
 }
