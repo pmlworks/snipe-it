@@ -9,11 +9,12 @@
 {{-- Page content --}}
 @section('content')
 
-<x-container class="col-md-9">
+<x-container columns="2">
+    <x-page-column class="col-md-7">
 
-    <x-form route="{{ url()->current() }}" id="checkout_form">
+        <x-form route="{{ url()->current() }}" id="checkout_form">
 
-        <x-box header="{{ $consumable->name }}">
+            <x-box header="{{ $consumable->name }}">
 
             @if ($consumable->name)
                 <x-form.static :label="trans('admin/consumables/general.consumable_name')">{{ $consumable->name }}</x-form.static>
@@ -40,6 +41,10 @@
                             @if ($consumable->category->require_acceptance == '1')
                                 <i class="far fa-envelope" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
+                            @endif
+                            @if ((string) $snipeSettings->require_accept_signature === '1')
+                                <x-icon type="signature"/>
+                                {{ trans('admin/categories/general.required_signature') }}<br>
                             @endif
                             @if ($consumable->getEula())
                                 <i class="far fa-envelope" aria-hidden="true"></i>
@@ -98,9 +103,13 @@
                 />
             </x-slot:customfooter>
 
-        </x-box>
+            </x-box>
 
-    </x-form>
+        </x-form>
+
+    </x-page-column>
+
+    <livewire:checkout-target-panel type="consumables" />
 
 </x-container>
 
