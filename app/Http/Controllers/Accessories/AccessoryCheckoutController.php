@@ -65,11 +65,6 @@ class AccessoryCheckoutController extends Controller
         $this->authorize('checkout', $accessory);
 
         $target = $this->determineCheckoutTarget();
-        // Store the STRING kind ('user' / 'asset' / 'location'), not the
-        // model instance. The checkout-selector partial and the panel bridge
-        // both compare this against string literals — an Eloquent model in
-        // the slot silently mismatches and the "checked" radio disappears.
-        session()->put(['checkout_to_type' => request('checkout_to_type')]);
 
         if (! $accessory->canCheckoutTo($target)) {
             $targetType = match (class_basename($target)) {

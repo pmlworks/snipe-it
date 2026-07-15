@@ -85,11 +85,6 @@ class AssetCheckoutController extends Controller
             $admin = auth()->user();
 
             $target = $this->determineCheckoutTarget();
-            // Store the STRING kind ('user' / 'asset' / 'location') the
-            // operator picked, not the resolved model — the checkout-selector
-            // partial compares against string literals and an Eloquent
-            // instance in the slot silently fails every match.
-            session()->put(['checkout_to_type' => request('checkout_to_type')]);
 
             $asset = $this->updateAssetLocation($asset, $target);
 

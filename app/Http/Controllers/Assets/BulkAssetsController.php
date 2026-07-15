@@ -675,7 +675,10 @@ class BulkAssetsController extends Controller
             // Store the STRING kind ('user' / 'asset' / 'location') the
             // operator picked, not the resolved model — the checkout-selector
             // partial compares against string literals and an Eloquent
-            // instance in the slot silently fails every match.
+            // instance in the slot silently fails every match. Unlike the
+            // per-item Asset / Accessory controllers, this method has no
+            // downstream session put that would overwrite a bad early value,
+            // so this is the sole source of truth.
             session()->put(['checkout_to_type' => request('checkout_to_type')]);
 
             if (! is_array($request->input('selected_assets'))) {
