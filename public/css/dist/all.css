@@ -22228,6 +22228,9 @@ img.navbar-brand-img,
   padding: 5px 5px 5px 0;
   max-height: 50px;
 }
+.asset-qr-img img {
+  image-rendering: pixelated;
+}
 .input-daterange,
 .input-daterange input:first-child,
 .input-daterange input:last-child {
@@ -24072,6 +24075,9 @@ img.navbar-brand-img,
   float: left;
   padding: 5px 5px 5px 0;
   max-height: 50px;
+}
+.asset-qr-img img {
+  image-rendering: pixelated;
 }
 .input-daterange,
 .input-daterange input:first-child,
