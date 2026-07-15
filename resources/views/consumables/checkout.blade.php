@@ -39,23 +39,23 @@
                     <div class="col-md-8 col-md-offset-3">
                         <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
                             @if ($consumable->category->require_acceptance == '1')
-                                <i class="far fa-envelope" aria-hidden="true"></i>
+                                <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
                             @endif
                             @if ((string) $snipeSettings->require_accept_signature === '1')
-                                <x-icon type="signature"/>
+                                <x-icon type="signature" class="fa-fw"/>
                                 {{ trans('admin/categories/general.required_signature') }}<br>
                             @endif
                             @if ($consumable->getEula())
-                                <i class="far fa-envelope" aria-hidden="true"></i>
+                                <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_eula') }}<br>
                             @endif
                             @if ($consumable->category && $consumable->category->checkin_email)
-                                <i class="far fa-envelope" aria-hidden="true"></i>
+                                <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.checkin_email_notification') }}<br>
                             @endif
                             @if ($snipeSettings->webhook_endpoint != '')
-                                <i class="fab fa-slack" aria-hidden="true"></i>
+                                <i class="fab fa-slack fa-fw" aria-hidden="true"></i>
                                 {{ trans('general.webhook_msg_note') }}
                             @endif
                         </div>
