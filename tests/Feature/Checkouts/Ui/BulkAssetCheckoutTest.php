@@ -230,4 +230,44 @@ class BulkAssetCheckoutTest extends TestCase
         // ensure redirected back
         $response->assertRedirectToRoute('hardware.bulkcheckout.show');
     }
+
+    /**
+     * Regression: BulkAssetsController::store used to call
+     *   session()->put(['checkout_to_type' => $target]);
+     * with $target being the resolved Eloquent model. The checkout-selector
+     * partial compares against 'user'/'asset'/'location' string literals, so
+     * an object silently mismatched and no radio rendered `checked`.
+     *
+     * @see \App\Http\Controllers\Assets\BulkAssetsController::store
+     */
+    #[DataProvider('bulkCheckoutTargetTypesProvider')]
+    public function test_bulk_checkout_stores_target_type_as_string_in_session(string $type)
+    {
+        [$field, $target] = match ($type) {
+            'user' => ['assigned_user', User::factory()->create()->id],
+            'asset' => ['assigned_asset', Asset::factory()->create()->id],
+            'location' => ['assigned_location', Location::factory()->create()->id],
+        };
+        $asset = Asset::factory()->create();
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->post(route('hardware.bulkcheckout.store'), [
+                'selected_assets' => [$asset->id],
+                'checkout_to_type' => $type,
+                $field => $target,
+            ]);
+
+        $stored = session('checkout_to_type');
+        $this->assertIsString($stored, 'checkout_to_type must be a string, not an Eloquent model');
+        $this->assertSame($type, $stored);
+    }
+
+    public static function bulkCheckoutTargetTypesProvider(): array
+    {
+        return [
+            'user target' => ['user'],
+            'asset target' => ['asset'],
+            'location target' => ['location'],
+        ];
+    }
 }
