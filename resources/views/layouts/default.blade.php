@@ -2334,7 +2334,13 @@
 
 
             // Reference: https://jqueryvalidation.org/validate/
-            var validator = $('#create-form').validate({
+            //
+            // Two form-ids get the same validator: `create-form` is the default
+            // id emitted by the form blade component, and `checkout_form` is
+            // the anti-double-submit id used by the six checkout flows. Both
+            // need the same error styling + select2 error placement, so we
+            // init in a loop instead of duplicating the options block.
+            var snipeValidatorOptions = {
                 ignore: 'input[type=hidden]',
                 errorClass: 'alert-msg',
                 errorElement: 'div',
@@ -2362,28 +2368,27 @@
 
                 },
                 highlight: function(inputElement) {
-
-                    // We have to go two levels up if it's an input group
-                    if ($(inputElement).parent().hasClass('input-group')) {
-                        $(inputElement).parent().parent().parent().addClass('has-error');
-                    } else {
-                        $(inputElement).parent().addClass('has-error');
-                        $(inputElement).closest('.help-block').remove();
-                    }
-
+                    // Put the error-state class on the enclosing .form-group
+                    // so both the input AND its <label class="control-label">
+                    // get Bootstrap 3's has-error decoration (the label goes
+                    // red via .has-error .control-label). .closest() walks up
+                    // regardless of nesting, so this works for plain inputs,
+                    // input-groups (input + addon), and select2-wrapped selects
+                    // without a per-shape branch.
+                    var $group = $(inputElement).closest('.form-group');
+                    $group.addClass('has-error');
+                    // Blow away any inline help block that would collide with
+                    // the newly-inserted error text.
+                    $group.find('.help-block').remove();
                 },
-                onfocusout: function(element) {
-                    // We have to go two levels up if it's an input group
-                    if ($(element).parent().hasClass('input-group')) {
-                        $(element).parent().parent().parent().removeClass('has-error');
-                        return $(element).valid();
-                    } else {
-                        $(element).parent().removeClass('has-error');
-                        return $(element).valid();
-                    }
-
+                unhighlight: function(inputElement) {
+                    $(inputElement).closest('.form-group').removeClass('has-error');
                 },
 
+            };
+
+            $('#create-form, #checkout_form').each(function () {
+                $(this).validate(snipeValidatorOptions);
             });
 
             $.extend($.validator.messages, {
@@ -2400,6 +2405,45 @@
                 }
                 return param.test(value);
             }, '{{ trans('validation.generic.invalid_value_in_field') }}');
+
+            // Generic radio-toggles-required-select handler. Any form pattern
+            // where a radio group hides/shows sibling <select>s (checkout-to
+            // type in checkout forms today; any future similar toggle) can
+            // opt in by giving the radios a `data-required-select` attribute
+            // whose value is a CSS selector for the field the checked radio
+            // should mark required. Radios that don't set the attribute are
+            // ignored; selects that only appear as data-required-select
+            // targets get their required attribute cleared when a different
+            // radio in the same group is chosen. Runs once on ready + on
+            // every change so page-refresh state and interactive toggles
+            // both stay in sync.
+            var applyRadioRequiredSelects = function () {
+                // Group opted-in radios by name, collecting the list of CSS
+                // selectors each group can point at. Reading via .attr()
+                // rather than .data() because .data() caches on first access
+                // and can miss late-changing values in select2 / Bootstrap
+                // data-toggle="buttons" environments.
+                var groups = {};
+                $('input[type=radio][data-required-select]').each(function () {
+                    var name = this.name;
+                    var target = this.getAttribute('data-required-select');
+                    if (!name || !target) return;
+                    if (!groups[name]) groups[name] = [];
+                    if (groups[name].indexOf(target) === -1) groups[name].push(target);
+                });
+
+                // For each group, pin required on the currently-checked
+                // radio's target and clear it from every sibling target.
+                Object.keys(groups).forEach(function (name) {
+                    var $checked = $('input[name="' + name + '"]:checked');
+                    var checkedTarget = $checked.length ? $checked[0].getAttribute('data-required-select') : null;
+                    groups[name].forEach(function (selector) {
+                        $(selector).prop('required', selector === checkedTarget);
+                    });
+                });
+            };
+            $(document).on('change', 'input[type=radio][data-required-select]', applyRadioRequiredSelects);
+            $(document).ready(applyRadioRequiredSelects);
 
 
             function showHideEncValue(e) {
@@ -2539,12 +2583,26 @@
                 event.preventDefault();
                 $(this).ekkoLightbox();
             });
-            //This prevents multi-click checkouts for accessories, components, consumables
+            // Anti-double-click on checkout forms. The old implementation did
+            //   event.preventDefault(); $btn.prop('disabled', true); this.submit();
+            // which submitted the form NATIVELY (without re-firing the submit
+            // event), bypassing jQuery Validate entirely — hence any JS
+            // validation error was visible for a single frame before the form
+            // shipped straight to the server.
+            //
+            // New shape: let the normal submit lifecycle run, and only disable
+            // the button when the submit has not been cancelled by a prior
+            // handler (jQuery Validate calls event.preventDefault() when the
+            // form is invalid, so we skip the disable in that case and the
+            // operator can fix + retry). jQuery Validate is bound at .validate()
+            // time (line ~2390 above) which runs before this ready() callback,
+            // so its handler is registered — and fires — first.
             $(document).ready(function () {
-                $('#checkout_form').submit(function (event) {
-                    event.preventDefault();
+                $('#checkout_form').on('submit', function (event) {
+                    if (event.isDefaultPrevented()) {
+                        return;
+                    }
                     $('#submit_button').prop('disabled', true);
-                    this.submit();
                 });
             });
 
