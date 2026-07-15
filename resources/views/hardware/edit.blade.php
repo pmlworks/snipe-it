@@ -320,7 +320,11 @@
         });
 
         @if (isset($cloned_model))
-        $('input[name="serials[1]"]').trigger('focus');
+            @if ($snipeSettings->auto_increment_assets == '1')
+                $('input[name="serials[1]"]').trigger('focus');
+            @else
+                $('#asset_tag').trigger('focus');
+            @endif
         @endif
     });
 
