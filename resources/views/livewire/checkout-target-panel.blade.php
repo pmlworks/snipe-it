@@ -2,11 +2,20 @@
     <div class="box box-primary">
         <div class="box-header with-border">
             <h2 class="box-title">
-                {{ trans('admin/users/general.current_items', ['item' => $noun]) }}
+                {{ trans('admin/users/general.current_items', ['item' => $noun, 'target' => $targetNoun]) }}
             </h2>
         </div>
         <div class="box-body">
-            <div class="row">
+            {{-- Shown while any Livewire request to this component is in
+                 flight; the results block below is hidden at the same time
+                 (wire:loading.remove) so the operator sees a clear "we're
+                 fetching new data" state instead of stale results with a
+                 tiny header icon. --}}
+            <div wire:loading class="text-center text-muted" style="padding: 40px 0;">
+                <i class="fas fa-spinner fa-spin fa-3x" aria-hidden="true"></i>
+                <div style="padding-top: 12px;">{{ trans('general.loading') }}</div>
+            </div>
+            <div wire:loading.remove class="row">
                 <div class="col-md-12">
                     <table class="table table-striped">
                         @switch($type)
@@ -113,7 +122,7 @@
             // plus the checkout-selector radio toggle to this component. On
             // any change we resolve the currently-active target (based on the
             // radio) + its select value and dispatch. Pages that don't have
-            // the radio (consumables/checkout is user-only) fall back to
+            // the radio (consumables/checkout is user-only for now) fall back to
             // 'user' as the assumed target type.
             //
             // The surrounding Livewire directive runs once per component
