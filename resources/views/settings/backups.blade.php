@@ -97,20 +97,24 @@
                   @can('superadmin')
                       @if (config('app.allow_backup_delete')=='true')
                       <a data-html="false"
-                         class="btn delete-asset btn-danger btn-sm {{ (config('app.lock_passwords')) ? ' disabled': '' }}" 
-                         data-toggle="modal" href="{{ route('settings.backups.destroy', $file['filename']) }}" 
-                         data-content="{{ trans('admin/settings/message.backup.delete_confirm') }}" 
+                         class="btn delete-asset btn-danger btn-sm {{ (config('app.lock_passwords')) ? ' disabled': '' }}"
+                         data-toggle="modal" href="{{ route('settings.backups.destroy', $file['filename']) }}"
+                         data-content="{{ trans('admin/settings/message.backup.delete_confirm') }}"
                          data-title="{{ trans('general.delete') }}  {{ e($file['filename']) }}?"
                          onClick="return false;">
                           <i class="fas fa-trash icon-white" aria-hidden="true"></i>
                           <span class="sr-only">{{ trans('general.delete') }}</span>
                       </a>
                       @else
-                          <a href="#"
-                             class="btn delete-asset btn-danger btn-sm disabled">
-                              <i class="fas fa-trash icon-white" aria-hidden="true"></i>
-                              <span class="sr-only">{{ trans('general.delete') }}</span>
-                          </a>
+                          <span data-tooltip="true" title="{{ trans('admin/settings/message.backup.delete_disabled_help') }}">
+                              <a href="#"
+                                 class="btn delete-asset btn-danger btn-sm disabled"
+                                 aria-disabled="true"
+                                 onClick="return false;">
+                                  <i class="fas fa-trash icon-white" aria-hidden="true"></i>
+                                  <span class="sr-only">{{ trans('general.delete') }} ({{ trans('admin/settings/message.backup.delete_disabled_help') }})</span>
+                              </a>
+                          </span>
                       @endif
 
                           <a data-html="true"
