@@ -60,6 +60,10 @@
                                 <i class="far fa-envelope" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
                             @endif
+                            @if ((string) $snipeSettings->require_accept_signature === '1')
+                                <x-icon type="signature"/>
+                                {{ trans('admin/categories/general.required_signature') }}<br>
+                            @endif
                             @if ($accessory->getEula())
                                 <i class="far fa-envelope" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_eula') }}<br>

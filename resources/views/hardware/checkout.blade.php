@@ -137,7 +137,7 @@
                                     @endif
 
                                     @if ((string) $snipeSettings->require_accept_signature === '1')
-                                        <x-icon type="edit"/>
+                                            <x-icon type="signature"/>
                                         {{ trans('admin/categories/general.required_signature') }}
                                         <br>
                                     @endif

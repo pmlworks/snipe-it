@@ -66,6 +66,12 @@
                                         <br>
                                     @endif
 
+                                    @if ((string) $snipeSettings->require_accept_signature === '1')
+                                        <x-icon type="signature"/>
+                                        {{ trans('admin/categories/general.required_signature') }}
+                                        <br>
+                                    @endif
+
                                     @if ($license->getEula())
                                         <i class="far fa-envelope"></i>
                                         {{ trans('admin/categories/general.required_eula') }}
