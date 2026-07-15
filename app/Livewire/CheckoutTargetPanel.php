@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\Location;
 use App\Models\User;
@@ -71,6 +72,7 @@ class CheckoutTargetPanel extends Component
         return view('livewire.checkout-target-panel', [
             'items' => $this->items(),
             'noun' => $this->itemNoun(),
+            'targetNoun' => $this->targetNoun(),
         ]);
     }
 
@@ -90,6 +92,13 @@ class CheckoutTargetPanel extends Component
         // or assets. Falling out to an empty collection is intentional:
         // the operator switched to a target type that this item can't
         // actually be checked out to, so there's nothing to show.
+        //
+        // Location targets use the polymorphic `assignedAssets` relation
+        // (assets checked OUT to this location via assigned_to/
+        // assigned_type), NOT Location::assets() which is location_id-based
+        // and means "assets physically at this location". Same story for
+        // accessories: query the checkout pivot rather than the
+        // location_id column.
         return match ("{$this->type}:{$this->targetType}") {
             'assets:user' => $target->assets,
             'licenses:user' => $target->licenses,
@@ -100,8 +109,11 @@ class CheckoutTargetPanel extends Component
             'licenses:asset' => $target->licenses,
             'accessories:asset' => $target->accessories,
 
-            'assets:location' => $target->assets,
-            'accessories:location' => $target->accessories,
+            'assets:location' => $target->assignedAssets,
+            'accessories:location' => Accessory::whereHas('checkouts', function ($q) {
+                $q->where('assigned_type', Location::class)
+                    ->where('assigned_to', $this->targetId);
+            })->get(),
 
             default => collect(),
         };
@@ -124,6 +136,16 @@ class CheckoutTargetPanel extends Component
             'licenses' => trans('general.licenses'),
             'accessories' => trans('general.accessories'),
             'consumables' => trans('general.consumables'),
+        };
+    }
+
+    private function targetNoun(): string
+    {
+        return match ($this->targetType) {
+            'user' => trans('general.user'),
+            'asset' => trans('general.asset'),
+            'location' => trans('general.location'),
+            default => trans('general.user'),
         };
     }
 }
