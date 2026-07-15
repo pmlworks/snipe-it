@@ -94,15 +94,15 @@ class CheckoutTargetPanelTest extends TestCase
             ->assertSee($child->asset_tag);
     }
 
-    public function test_location_target_lists_assets_at_that_location(): void
+    public function test_location_target_lists_assets_checked_out_to_that_location(): void
     {
         $admin = User::factory()->superuser()->create();
         $location = Location::factory()->create();
-        // Location::assets() is a hasMany on the assets.location_id column
-        // (physical location), not on the polymorphic assigned_to/assigned_type
-        // pair — Asset::checkOut() sets both when the target is a Location.
+        // "Checked out to a location" = polymorphic assigned_to / assigned_type
+        // pair. We deliberately do NOT set location_id here so this asserts
+        // the panel is using Location::assignedAssets (checkout target),
+        // not Location::assets (physical/default location).
         $asset = Asset::factory()->create([
-            'location_id' => $location->id,
             'assigned_to' => $location->id,
             'assigned_type' => Location::class,
             'asset_tag' => 'PANEL-TEST-LOCATION-ASSET',
@@ -112,6 +112,27 @@ class CheckoutTargetPanelTest extends TestCase
             ->test(CheckoutTargetPanel::class, ['type' => 'assets'])
             ->dispatch('checkout-target-selected', targetType: 'location', targetId: (string) $location->id)
             ->assertSee($asset->asset_tag);
+    }
+
+    public function test_location_target_does_not_list_assets_merely_assigned_to_that_location_id(): void
+    {
+        // Regression: earlier version used Location::assets() (location_id-
+        // based) which pulls in assets that just happen to have this as their
+        // physical/default location but were never CHECKED OUT to it. That's
+        // wrong for a "current checkouts" sidebar.
+        $admin = User::factory()->superuser()->create();
+        $location = Location::factory()->create();
+        Asset::factory()->create([
+            'location_id' => $location->id,
+            // no assigned_to / assigned_type — asset is at this location
+            // physically but not checked out to it.
+            'asset_tag' => 'PANEL-TEST-PHYSICAL-ONLY',
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(CheckoutTargetPanel::class, ['type' => 'assets'])
+            ->dispatch('checkout-target-selected', targetType: 'location', targetId: (string) $location->id)
+            ->assertDontSee('PANEL-TEST-PHYSICAL-ONLY');
     }
 
     public function test_impossible_combo_consumables_to_asset_returns_empty(): void
