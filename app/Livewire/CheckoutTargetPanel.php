@@ -30,7 +30,7 @@ use Livewire\Component;
  */
 class CheckoutTargetPanel extends Component
 {
-    private const TYPES = ['assets', 'licenses', 'accessories', 'consumables'];
+    private const TYPES = ['assets', 'licenses', 'accessories', 'consumables', 'components'];
 
     private const TARGET_TYPES = ['user', 'asset', 'location'];
 
@@ -42,17 +42,31 @@ class CheckoutTargetPanel extends Component
     #[Locked]
     public string $type;
 
+    /**
+     * Fallback target type for pages that don't render the checkout-selector
+     * radio group (components go only to assets, consumables only to users).
+     * The bridge script uses this as the assumed target when it can't find
+     * an `input[name="checkout_to_type"]:checked`.
+     */
+    #[Locked]
+    public string $defaultTargetType = 'user';
+
     public ?string $targetType = null;
 
     public ?int $targetId = null;
 
-    public function mount(string $type): void
+    public function mount(string $type, string $defaultTargetType = 'user'): void
     {
         if (! in_array($type, self::TYPES, true)) {
             throw new \InvalidArgumentException("Unknown checkout-target-panel type: {$type}");
         }
 
+        if (! in_array($defaultTargetType, self::TARGET_TYPES, true)) {
+            throw new \InvalidArgumentException("Unknown checkout-target-panel defaultTargetType: {$defaultTargetType}");
+        }
+
         $this->type = $type;
+        $this->defaultTargetType = $defaultTargetType;
     }
 
     /**
@@ -115,6 +129,8 @@ class CheckoutTargetPanel extends Component
                     ->where('assigned_to', $this->targetId);
             })->get(),
 
+            'components:asset' => $target->components,
+
             default => collect(),
         };
     }
@@ -136,6 +152,7 @@ class CheckoutTargetPanel extends Component
             'licenses' => trans('general.licenses'),
             'accessories' => trans('general.accessories'),
             'consumables' => trans('general.consumables'),
+            'components' => trans('general.components'),
         };
     }
 

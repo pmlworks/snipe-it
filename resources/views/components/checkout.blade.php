@@ -9,11 +9,12 @@
 {{-- Page content --}}
 @section('content')
 
-<x-container class="col-md-8">
+<x-container columns="2">
+    <x-page-column class="col-md-7">
 
-    <x-form route="{{ route('components.checkout.store', $snipe_component->id) }}" id="checkout_form">
+        <x-form route="{{ route('components.checkout.store', $snipe_component->id) }}" id="checkout_form">
 
-        <x-box header="{{ $snipe_component->name }} ({{ $snipe_component->numRemaining() }} {{ trans('admin/components/general.remaining') }})">
+            <x-box header="{{ $snipe_component->name }} ({{ $snipe_component->numRemaining() }} {{ trans('admin/components/general.remaining') }})">
 
             @if ($snipe_component->company)
                 <x-form.static :label="trans('general.company')">{!! $snipe_component->company->present()->formattedNameLink !!}</x-form.static>
@@ -73,9 +74,13 @@
                 />
             </x-slot:customfooter>
 
-        </x-box>
+            </x-box>
 
-    </x-form>
+        </x-form>
+
+    </x-page-column>
+
+    <livewire:checkout-target-panel type="components" defaultTargetType="asset" />
 
 </x-container>
 

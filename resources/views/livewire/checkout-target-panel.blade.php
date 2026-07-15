@@ -109,6 +109,25 @@
                                 </tbody>
                                 @break
 
+                            @case('components')
+                                <thead>
+                                    <tr>
+                                        <th scope="col">{{ trans('general.name') }}</th>
+                                        <th scope="col">{{ trans('general.qty') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($items as $component)
+                                        <tr>
+                                            <td><a href="{{ route('components.show', $component->id) }}">{{ $component->name }}</a></td>
+                                            <td>{{ $component->pivot->assigned_qty ?? 1 }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="2">{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                    @endforelse
+                                </tbody>
+                                @break
+
                         @endswitch
                     </table>
                 </div>
@@ -122,14 +141,15 @@
             // plus the checkout-selector radio toggle to this component. On
             // any change we resolve the currently-active target (based on the
             // radio) + its select value and dispatch. Pages that don't have
-            // the radio (consumables/checkout is user-only for now) fall back to
-            // 'user' as the assumed target type.
+            // the radio (consumables/checkout is user-only, components/checkout
+            // is asset-only) fall back to the server-supplied defaultTargetType
+            // baked into the component's mount config.
             //
             // The surrounding Livewire directive runs once per component
             // INSTANCE, so binding at this level doesn't accumulate handlers.
             var dispatchTarget = function () {
                 var radioVal = $('input[name="checkout_to_type"]:checked').val();
-                var targetType = radioVal || 'user';
+                var targetType = radioVal || @json($defaultTargetType);
                 var selectSelectors = {
                     'user': '#assigned_user_select',
                     'asset': '#assigned_asset_select',
