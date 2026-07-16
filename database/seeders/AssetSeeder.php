@@ -98,7 +98,7 @@ class AssetSeeder extends Seeder
 
     private function getState()
     {
-        return fn ($sequence) => [
+        return fn () => [
             'rtd_location_id' => $this->locationIds->random(),
             'supplier_id' => $this->supplierIds->random(),
             'created_by' => $this->adminuser->id,

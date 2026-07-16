@@ -49,7 +49,7 @@ class UserSeeder extends Seeder
         // Superusers, one company each.
         User::factory()->count(3)->superuser()
             ->withoutCompany()
-            ->state(new Sequence(fn ($sequence) => [
+            ->state(new Sequence(fn () => [
                 'department_id' => $departmentIds->random(),
             ]))
             ->create()
@@ -61,7 +61,7 @@ class UserSeeder extends Seeder
         // Admins, one company each.
         User::factory()->count(3)->admin()
             ->withoutCompany()
-            ->state(new Sequence(fn ($sequence) => [
+            ->state(new Sequence(fn () => [
                 'department_id' => $departmentIds->random(),
             ]))
             ->create()
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
         // pressure that was pushing seeding into swap.
         $chunk = 200;
 
-        $departmentState = fn () => new Sequence(fn ($sequence) => [
+        $departmentState = fn () => new Sequence(fn () => [
             'department_id' => $departmentIds->random(),
         ]);
 
