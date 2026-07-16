@@ -8,6 +8,7 @@ use App\Models\User;
 use Database\Seeders\Concerns\ReportsMemory;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,6 +24,13 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::truncate();
+
+        // Truncate the company_user pivot too. Truncating users alone leaves
+        // orphaned pivot rows referencing the old user_ids; on the next reseed
+        // AUTO_INCREMENT hands out those same ids again, and any attempt to
+        // reattach a re-created user to the same company hits the
+        // (company_id, user_id) unique constraint.
+        DB::table('company_user')->truncate();
 
         if (! Company::count()) {
             $this->call(CompanySeeder::class);
