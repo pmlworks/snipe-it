@@ -65,7 +65,7 @@ class AssetFactory extends Factory
             // the four cases in App\Console\Commands\SyncAssetLocations so a
             // fresh db:seed doesn't need to run that command as post-processing
             // (which allocated ~130 MB scanning every asset). Any state that
-            // pre-sets location_id (e.g., a caller passes it explicitly) wins.
+            // pre-sets location_id (e.g., a seeder passes it explicitly) wins.
             if ($asset->location_id !== null) {
                 return;
             }
