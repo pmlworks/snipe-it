@@ -60,6 +60,23 @@ class AssetFactory extends Factory
             $asset->asset_eol_date = $this->faker->boolean(5)
                 ? CarbonImmutable::parse($asset->purchase_date)->addMonths(rand(0, 20))->format('Y-m-d')
                 : CarbonImmutable::parse($asset->purchase_date)->addMonths($asset->model?->eol ?? rand(12, 60))->format('Y-m-d');
+
+            // Set location_id to match the asset's current allocation. Mirrors
+            // the four cases in App\Console\Commands\SyncAssetLocations so a
+            // fresh db:seed doesn't need to run that command as post-processing
+            // (which allocated ~130 MB scanning every asset). Any state that
+            // pre-sets location_id (e.g., a caller passes it explicitly) wins.
+            if ($asset->location_id !== null) {
+                return;
+            }
+
+            $asset->location_id = match (true) {
+                $asset->assigned_to === null => $asset->rtd_location_id,
+                $asset->assigned_type === User::class => User::find($asset->assigned_to)?->location_id ?? $asset->rtd_location_id,
+                $asset->assigned_type === Location::class => $asset->assigned_to,
+                $asset->assigned_type === Asset::class => Asset::find($asset->assigned_to)?->location_id ?? $asset->rtd_location_id,
+                default => $asset->rtd_location_id,
+            };
         });
     }
 
