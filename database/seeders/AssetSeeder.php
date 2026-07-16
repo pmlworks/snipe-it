@@ -98,10 +98,20 @@ class AssetSeeder extends Seeder
 
     private function getState()
     {
-        return fn () => [
-            'rtd_location_id' => $this->locationIds->random(),
-            'supplier_id' => $this->supplierIds->random(),
-            'created_by' => $this->adminuser->id,
-        ];
+        return function () {
+            // Seeded assets are unassigned at creation, so location_id matches
+            // rtd_location_id. Setting both here removes the need to run
+            // snipeit:sync-asset-locations after seeding (that command exists
+            // as a manual maintenance tool for production drift, not as a seed
+            // dependency).
+            $locationId = $this->locationIds->random();
+
+            return [
+                'rtd_location_id' => $locationId,
+                'location_id' => $locationId,
+                'supplier_id' => $this->supplierIds->random(),
+                'created_by' => $this->adminuser->id,
+            ];
+        };
     }
 }
