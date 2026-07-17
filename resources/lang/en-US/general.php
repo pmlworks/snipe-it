@@ -312,6 +312,7 @@ return [
     'select_supplier' => 'Select a Supplier',
     'select_user' => 'Select a User',
     'select_date' => 'Select Date (YYYY-MM-DD)',
+    'select_datetime' => 'Select Date and Time (YYYY-MM-DD HH:MM:SS)',
     'select_statuslabel' => 'Select Status',
     'select_company' => 'Select Company',
     'select_asset' => 'Select Asset',
