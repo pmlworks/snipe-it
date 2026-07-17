@@ -443,28 +443,6 @@
             box-shadow: none !important;
         }
 
-        /*!* Toolbar buttons (Today / Clear / Close). *!*/
-        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action] {*/
-        /*    color: var(--color-fg) !important;*/
-        /*    background-color: var(--main-theme-color) !important;*/
-        /*    border-radius: 0 !important;*/
-        /*}*/
-
-        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action] span {*/
-        /*    color: var(--nav-primary-text-color) !important;*/
-        /*    background-color: transparent !important;*/
-        /*    border-radius: 0 !important;*/
-        /*}*/
-        /*.bootstrap-datetimepicker-widget .picker-switch table td:hover {*/
-        /*    border-radius: 0 !important;*/
-        /*    !*background-color: var(--color-bg) !important;*!*/
-        /*}*/
-        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover,*/
-        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover span {*/
-        /*    background-color: var(--main-theme-color) !important;*/
-        /*    color: var(--nav-primary-text-color) !important;*/
-        /*    border-radius: 0 !important;*/
-        /*}*/
 
 
         /* Button hover — matches the whole <a> element */
@@ -475,35 +453,7 @@
 
         }
 
-        /* The icon <span> inside the anchor, when the anchor is hovered.
-           Use this if you want the icon color to change independently of the anchor bg. */
-        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action]:hover > span {*/
-        /*    background-color: var(--main-theme-color) !important;*/
-        /*    border-radius: 0;*/
-        /*    border: none;*/
-        /*}*/
-
-        /*!* The <td> cell around the anchor, on hover. Handy for suppressing the*/
-        /*   generic table td:hover rule that would otherwise tint the cell before*/
-        /*   the anchor's own hover kicks in. *!*/
-        /*.bootstrap-datetimepicker-widget li.picker-switch td:hover {*/
-        /*    background-color: orange !important;*/
-        /*}*/
-
-        /*!* Per-button hover if you want each colored differently *!*/
-        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="today"]:hover {*/
-        /*    background-color: green !important;*/
-        /*}*/
-
-        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="clear"]:hover {*/
-        /*    background-color: blue !important;*/
-        /*}*/
-
-        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="close"]:hover {*/
-        /*    background-color: pink !important;*/
-        /*}*/
-
-
+        
         .input-group-addon {
             background-color: var(--input-group-bg) !important;
             color: var(--input-group-fg) !important;
@@ -1090,29 +1040,13 @@
             color: var(--color-fg) !important;
         }
 
-        .datepicker.dropdown-menu th, .datepicker.datepicker-inline th,
-        .datepicker.dropdown-menu td,
-        .datepicker.datepicker-inline td
 
-        {
-            color: var(--color-fg);
-            border-color: var(--color-fg);
-            background-color: var(--box-bg) !important;
-        }
-
-        .datepicker.dropdown-menu th:hover,
-        .datepicker.datepicker-inline th:hover,
-        .datepicker.dropdown-menu td:hover,
-        .datepicker.datepicker-inline td:hover,
-        .datepicker table tr td span:hover,
-        .datepicker table tr td span.focused,
         .logo:hover
         {
             background-color: var(--main-theme-color) !important;
             color: var(--nav-primary-text-color) !important;
         }
 
-        .datepicker.dropdown-menu,
         .modal-content,
         .popover.help-popover,
         .popover.help-popover .popover-content,
@@ -1125,31 +1059,6 @@
             color: var(--color-fg) !important;
         }
 
-        /** this handles the arrows for the datepicker widget **/
-
-        /** arrow on the bottom - bg color **/
-        .datepicker-dropdown.datepicker-orient-top:after {
-            border-top: 6px solid var(--box-bg);
-        }
-
-        /** arrow on the bottom - border color **/
-        .datepicker-dropdown.datepicker-orient-top:before {
-            border-top: 6px solid var(--color-bg);
-        }
-
-        /** arrow on the top - bg color **/
-        .datepicker-dropdown:after {
-            border-bottom: 6px solid var(--box-bg);
-        }
-
-        /** arrow on the top - border color **/
-        .datepicker-dropdown:before {
-            border-bottom: 7px solid var(--color-bg);
-        }
-
-        /** end handling arrows for the datepicker widget **/
-
-
         .treeview-menu > li {
             background-color: #2c3b41;
             color: var(--sidenav-text-nohover-color) !important;
@@ -1161,7 +1070,6 @@
         {
             color: white !important;
             background-color: var(--sidenav-hover-color-bg) !important;
-            /*color: var(--sidenav-text-hover-color) !important;*/
         }
 
         .sidebar-toggle.btn,
