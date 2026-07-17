@@ -999,7 +999,15 @@
             border-color: var(--text-danger);
         }
 
-        .alert a {
+        .alert a,
+        .callout.callout-warning,
+        .callout.callout-danger,
+        .callout.callout-success,
+        .callout.callout-info,
+        .alert.alert-warning,
+        .alert.alert-danger,
+        .alert.alert-info,
+        .alert.alert-success {
             color: white !important;
         }
 
