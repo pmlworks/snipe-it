@@ -1097,6 +1097,14 @@ class Helper
      */
     public static function checkIfRequired($class, $field)
     {
+        // Transient forms with no bound model (e.g. bulk-checkout) can't be
+        // introspected for required-ness; treat the field as not required
+        // rather than crashing on `null::rules()`. Callers that need the
+        // real required flag will pass an $item.
+        if (! $class) {
+            return false;
+        }
+
         $rules = $class::rules();
         foreach ($rules as $rule_name => $rule) {
             if ($rule_name == $field) {
