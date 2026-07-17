@@ -106,6 +106,8 @@
 
             <x-input.image-upload :item="$item" :imagePath="app('accessories_upload_path')" :clonedModel="$cloned_model ?? null" />
 
+            @include ('partials.forms.edit.requestable', ['requestable_text' => trans('admin/accessories/general.requestable')])
+
             <x-slot:customfooter>
                 <x-redirect_submit_options
                     index_route="accessories.index"
