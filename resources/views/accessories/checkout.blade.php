@@ -55,7 +55,7 @@
             @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $accessory->getEula() || ($snipeSettings->webhook_endpoint != ''))
                 <div class="form-group notification-callout">
                     <div class="col-md-8 col-md-offset-3">
-                        <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
+                        <x-callout type="info" role="status">
                             @if ($accessory->requireAcceptance())
                                 <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
@@ -72,7 +72,7 @@
                                 <i class="fab fa-slack fa-fw" aria-hidden="true"></i>
                                 {{ trans('general.webhook_msg_note') }}
                             @endif
-                        </div>
+                        </x-callout>
                     </div>
 
                     @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')

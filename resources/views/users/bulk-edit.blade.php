@@ -24,9 +24,9 @@
 
             <p>{{ trans('admin/users/general.bulk_update_help') }}</p>
 
-            <div class="callout callout-warning" role="alert" aria-live="assertive" aria-atomic="true">
-                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ trans('admin/users/general.bulk_update_warn', ['user_count' => count($users)]) }}
-            </div>
+            <x-callout type="warning" icon="warning" live="assertive">
+                {{ trans('admin/users/general.bulk_update_warn', ['user_count' => count($users)]) }}
+            </x-callout>
 
             <form class="form-horizontal" method="post" action="{{ route('users/bulkeditsave') }}" autocomplete="off" role="form">
                 {{ csrf_field() }}

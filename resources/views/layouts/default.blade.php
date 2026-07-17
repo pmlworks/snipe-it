@@ -2232,9 +2232,9 @@
                     <div class="row">
                         @if (config('app.lock_passwords'))
                             <div class="col-md-12">
-                                <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
+                                <x-callout type="info" role="status">
                                     {{ trans('general.some_features_disabled') }}
-                                </div>
+                                </x-callout>
                             </div>
                         @endif
 

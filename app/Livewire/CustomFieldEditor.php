@@ -58,10 +58,13 @@ class CustomFieldEditor extends Component
     // the fieldset ID (matching the associate_fieldsets[id]=id POST pattern).
     public array $associate_fieldsets = [];
 
-    public function mount(?int $fieldId = null): void
+    // Signature accepts an optional CustomField for the edit route
+    // (fields/{field}/edit) and no argument for the create route
+    // (fields/create). Livewire resolves the route parameter via Laravel's
+    // model binding and passes it here.
+    public function mount(?CustomField $field = null): void
     {
-        if ($fieldId) {
-            $field = CustomField::findOrFail($fieldId);
+        if ($field?->exists) {
             $this->authorize('update', CustomField::class);
             $this->fieldId = $field->id;
             $this->isEdit = true;
@@ -379,6 +382,10 @@ class CustomFieldEditor extends Component
             'fieldsets' => CustomFieldset::orderBy('name')->get(),
             'predefinedFormats' => Helper::predefined_formats(),
             'elementOptions' => $this->elementOptions(),
+        ])->layout('layouts.livewire-default', [
+            'title' => trans('admin/custom_fields/general.custom_fields'),
+            'helpText' => trans('admin/custom_fields/general.about_fieldsets_text'),
+            'helpPosition' => 'right',
         ]);
     }
 }
