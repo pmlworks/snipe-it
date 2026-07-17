@@ -50,6 +50,13 @@ class DeleteAssetTest extends TestCase
 
     public function test_action_logs_action_date_is_populated_when_asset_deleted()
     {
+        // Freeze wall-clock time so every timestamp captured in this request
+        // (asset->updated_at, action_log->action_date, action_log->created_at)
+        // shares the same "now". Without this the test flakes across a whole-
+        // second boundary: the log gets stamped at N and the asset's final
+        // updated_at ends up at N+1, and the equality assertion fails.
+        $this->freezeTime();
+
         $actor = User::factory()->deleteAssets()->create();
 
         $asset = Asset::factory()->create();
@@ -68,7 +75,6 @@ class DeleteAssetTest extends TestCase
             'item_type' => Asset::class,
             'item_id' => $asset->id,
         ]);
-
     }
 
     public function test_asset_is_checked_in_when_deleted()
