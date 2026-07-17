@@ -31,6 +31,12 @@ class CustomField extends Model
         'ALPHA-NUMERIC' => 'alpha_num',
         'EMAIL' => 'email',
         'DATE' => 'date',
+        // Distinct pattern so getFormatAttribute() can reverse-map back to
+        // 'DATETIME'. If both DATE and DATETIME shared 'date' the first-match
+        // loop would always return 'DATE' and the DATETIME picker never fires.
+        // The datetimepicker widget always outputs Y-m-d H:i:s, so this
+        // date_format is the exact shape we expect.
+        'DATETIME' => 'date_format:Y-m-d H:i:s',
         'URL' => 'url',
         'IP' => 'ip',
         'IPV4' => 'ipv4',

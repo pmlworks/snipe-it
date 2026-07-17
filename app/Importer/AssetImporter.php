@@ -159,7 +159,9 @@ class AssetImporter extends ItemImporter
         }
 
         if ($this->item['expected_checkin'] != '') {
-            $item['expected_checkin'] = $this->parseOrNullDate('expected_checkin');
+            // datetime format preserves any time portion in the CSV. Date-only
+            // values still parse fine and land as 00:00:00.
+            $item['expected_checkin'] = $this->parseOrNullDate('expected_checkin', 'datetime');
         }
 
         if ($this->item['last_audit_date'] != '') {
