@@ -715,20 +715,17 @@
               <x-form.legend help_text="{{ trans('permissions.use_groups') }}"/>
 
               @if (auth()->user()->isAdmin() && !auth()->user()->isSuperUser())
-                  <p class="alert alert-info">
-                      <x-icon type="info"/>
+                  <x-alert type="info" icon="info">
                       {{ trans('admin/users/general.superadmin_permission_warning') }}
-                  </p>
+                  </x-alert>
               @elseif (!auth()->user()->isAdmin() && !auth()->user()->isSuperUser() && auth()->id() === $user->id)
-                  <p class="alert alert-danger">
-                      <x-icon type="alert"/>
+                  <x-alert type="danger" icon="warning">
                       {{ trans('admin/users/general.self_permission_warning') }}
-                  </p>
+                  </x-alert>
               @elseif (!auth()->user()->isAdmin() && !auth()->user()->isSuperUser() && auth()->id() !== $user->id)
-                  <p class="alert alert-danger">
-                      <x-icon type="warning"/>
+                  <x-alert type="danger" icon="warning">
                       {{ trans('admin/users/general.admin_permission_warning') }}
-                  </p>
+                  </x-alert>
               @endif
 
               @if (auth()->user()->isSuperUser() || auth()->user()->isAdmin() || (auth()->id() !== $user->id && !$user->isSuperUser()))

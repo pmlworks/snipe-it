@@ -37,7 +37,7 @@
             @if ($consumable->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $consumable->getEula() || ($snipeSettings->webhook_endpoint != ''))
                 <div class="form-group notification-callout">
                     <div class="col-md-8 col-md-offset-3">
-                        <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
+                        <x-callout type="info" role="status">
                             @if ($consumable->category->require_acceptance == '1')
                                 <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
@@ -58,7 +58,7 @@
                                 <i class="fab fa-slack fa-fw" aria-hidden="true"></i>
                                 {{ trans('general.webhook_msg_note') }}
                             @endif
-                        </div>
+                        </x-callout>
                     </div>
 
                     @if ($consumable->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')

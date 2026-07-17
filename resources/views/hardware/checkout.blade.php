@@ -82,33 +82,20 @@
                     <x-form.row
                         :label="trans('admin/hardware/form.checkout_date')"
                         name="checkout_at"
+                        type="datetimepicker"
+                        :item="$item"
+                        :default="date('Y-m-d H:i:s')"
                         input_div_class="col-md-4"
-                    >
-                        <x-slot:input>
-                            <x-input.datepicker
-                                name="checkout_at"
-                                end_date="0d"
-                                :value="old('expected_checkin', date('Y-m-d'))"
-                                :placeholder="trans('general.select_date')"
-                                required="{{ Helper::checkIfRequired($item, 'checkout_at') }}"
-                            />
-                        </x-slot:input>
-                    </x-form.row>
+                    />
 
                     <x-form.row
                         :label="trans('admin/hardware/form.expected_checkin')"
                         name="expected_checkin"
+                        type="datetimepicker"
+                        :item="$item"
+                        :default_now="false"
                         input_div_class="col-md-4"
-                    >
-                        <x-slot:input>
-                            <x-input.datepicker
-                                name="expected_checkin"
-                                :value="old('expected_checkin', $item->expected_checkin)"
-                                :placeholder="trans('general.select_date')"
-                                required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"
-                            />
-                        </x-slot:input>
-                    </x-form.row>
+                    />
 
                     <x-form.row
                         :label="trans('general.notes')"
@@ -128,7 +115,7 @@
                     @if ($asset->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $asset->getEula() || ($snipeSettings->webhook_endpoint != ''))
                         <div class="form-group notification-callout" style="display:none;">
                             <div class="col-md-8 col-md-offset-3">
-                                <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
+                                <x-callout type="info" role="status">
 
                                     @if ($asset->requireAcceptance())
                                         <x-icon type="email" class="fa-fw"/>
@@ -158,7 +145,7 @@
                                         <i class="fab fa-slack fa-fw" aria-hidden="true"></i>
                                         {{ trans('general.webhook_msg_note') }}
                                     @endif
-                                </div>
+                                </x-callout>
                             </div>
 
                             <!-- Sign in place checkbox -->

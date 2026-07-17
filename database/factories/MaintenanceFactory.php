@@ -40,7 +40,7 @@ class MaintenanceFactory extends Factory
             'maintenance_type_id' => $maintenanceType->id,
             'asset_maintenance_type' => $maintenanceType->name,
             'name' => $this->faker->sentence(3),
-            'start_date' => $this->faker->date(),
+            'start_date' => $this->faker->dateTime()->format('Y-m-d H:i:s'),
             'is_warranty' => $this->faker->boolean(),
             'notes' => $this->faker->paragraph(),
             'url' => $this->faker->url(),

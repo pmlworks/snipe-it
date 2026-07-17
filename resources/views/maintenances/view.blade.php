@@ -83,12 +83,12 @@ use Carbon\Carbon;
                                 </x-data-row>
 
                                 <x-data-row :label="trans('general.start_date')" copy_what="start_date">
-                                    {{ Helper::getFormattedDateObject($maintenance->start_date, 'date', false) }}
+                                    {{ Helper::getFormattedDateObject($maintenance->start_date, 'datetime', false) }}
                                 </x-data-row>
 
                                 <x-data-row :label="trans('admin/maintenances/form.completion_date')" copy_what="completion_date">
                                     @if ($maintenance->completion_date)
-                                        {{ Helper::getFormattedDateObject($maintenance->completion_date, 'date', false) }}
+                                        {{ Helper::getFormattedDateObject($maintenance->completion_date, 'datetime', false) }}
                                     @else
                                         {{ trans('admin/maintenances/message.asset_maintenance_incomplete') }}
                                     @endif

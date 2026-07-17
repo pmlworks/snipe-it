@@ -19,11 +19,9 @@
         @if (($assets->count() < 1) && ($models->count() < 1) && ($accessories->count() < 1))
 
             <div class="col-md-12">
-                <div class="alert alert-info fade in">
-                    <i class="fas fa-info-circle faa-pulse animated"></i>
-                    <strong>{{ trans('general.notification_info') }}: </strong>
+                <x-alert type="info" icon="info" :title="trans('general.notification_info')">
                     {{ trans('general.no_requestable') }}
-                </div>
+                </x-alert>
             </div>
 
         @else

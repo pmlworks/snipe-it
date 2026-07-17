@@ -752,6 +752,14 @@ class Helper
         $keys = array_keys(CustomField::PREDEFINED_FORMATS);
         $stuff = array_combine($keys, $keys);
 
+        // Display-only label swap. 'ANY' as a label reads like the format
+        // requires something; 'ANY/NONE' makes it clear that no validation
+        // is applied. The KEY stays 'ANY' so submitted form values,
+        // JS lookups, and stored/compared values all keep working.
+        if (isset($stuff['ANY'])) {
+            $stuff['ANY'] = 'ANY/NONE';
+        }
+
         return $stuff;
     }
 

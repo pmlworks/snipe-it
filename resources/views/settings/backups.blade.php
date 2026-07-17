@@ -158,7 +158,7 @@
         </p>
 
         @if (config('app.lock_passwords')===true)
-        <p class="alert alert-warning"><i class="fas fa-lock"></i> {{ trans('general.feature_disabled') }}</p>
+        <x-alert type="warning"><i class="fas fa-lock"></i> {{ trans('general.feature_disabled') }}</x-alert>
           @else
 
       <form method="POST" action="{{ route('settings.backups.upload') }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">

@@ -22,6 +22,11 @@
     'rows' => null,
     'placeholder' => null,
     'default' => null,
+    // Datepicker / datetimepicker widget knobs. Only consumed when
+    // type="datepicker" or type="datetimepicker".
+    'end_date' => null,
+    'default_now' => true,
+    'side_by_side' => false,
 ])
 
 <div {{ $attributes->merge(['class' => 'form-group'. $errors_class]) }}>
@@ -67,6 +72,25 @@
                     :id="$name"
                     :item="$item"
                     :default="$default"
+                />
+            @elseif ($blade_type === 'datepicker')
+                <x-input.datepicker
+                    :name="$name"
+                    :id="$name"
+                    :value="old($name, $item?->{$name} ?? $default)"
+                    :required="Helper::checkIfRequired($item, $name)"
+                    :placeholder="$placeholder"
+                    :end_date="$end_date"
+                />
+            @elseif ($blade_type === 'datetimepicker')
+                <x-input.datetimepicker
+                    :name="$name"
+                    :id="$name"
+                    :value="old($name, $item?->{$name}?->format('Y-m-d H:i:s') ?? $item?->{$name} ?? $default)"
+                    :required="Helper::checkIfRequired($item, $name)"
+                    :placeholder="$placeholder"
+                    :default_now="$default_now"
+                    :side_by_side="$side_by_side"
                 />
             @else
                 <x-dynamic-component
