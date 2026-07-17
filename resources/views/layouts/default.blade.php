@@ -519,6 +519,7 @@
         .select2-container--default.select2-container--disabled .select2-selection--single,
         .select2-container--default.select2-container--disabled .select2-selection--multiple,
         .select2-container--default.select2-container--disabled .select2-selection__rendered,
+        .select2-results__option[aria-disabled=true],
         .select2-container--default.select2-container--disabled .select2-selection--multiple .select2-search--inline {
             background-color: light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
             cursor: not-allowed !important;
