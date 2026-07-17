@@ -21,7 +21,9 @@ require('jquery-slimscroll');
 require('jquery.iframe-transport'); //probably not needed anymore, if I'm honest
 require('blueimp-file-upload')
 require('bootstrap-colorpicker')
-require('bootstrap-datepicker')
+// eonasdan-bootstrap-datetimepicker (BS3) needs moment on window before it loads
+window.moment = require('moment')
+require('eonasdan-bootstrap-datetimepicker')
 require('ekko-lightbox') //TODO - this doesn't seem jquery-ish, we might need to do something weird here
                          // it *does* require Bootstrap, which requires jquery, so maybe that's OK
                          // it seems to work...
@@ -628,6 +630,115 @@ $(document).ready(function () {
             input.attr("type", "password");
         }
     });
+
+    // Auto-init eonasdan datetimepickers. bootstrap-datepicker has a native
+    // data-provide auto-init; eonasdan does not, so we do it ourselves.
+    // Options are read from data-attributes on the wrapper so blade components
+    // can tune format/side-by-side without touching this JS.
+    //
+    // Icon set is overridden to Font Awesome — the picker defaults to
+    // Glyphicon classes, which we do not ship, so up/down arrows and clock
+    // glyphs would otherwise render as empty boxes.
+    // Exposed so callers who insert new [data-provide="datetimepicker"]
+    // wrappers into the DOM post-load (e.g., AJAX-loaded custom fields on
+    // asset create/edit when the model changes) can re-run the init on the
+    // freshly-inserted elements. Pass a jQuery scope to narrow the search;
+    // omit to init every uninitialised picker on the page.
+    window.snipeitInitDatetimepickers = function (scope) {
+        var $targets = scope ? $(scope).find('[data-provide="datetimepicker"]') : $('[data-provide="datetimepicker"]');
+        $targets.each(initDatetimepicker);
+    };
+
+    function initDatetimepicker() {
+        var $wrapper = $(this);
+        // Skip if this wrapper already has an eonasdan instance attached
+        // (data('DateTimePicker') is set by the library on init).
+        if ($wrapper.data('DateTimePicker')) {
+            return;
+        }
+        var $input = $wrapper.find('input');
+        var existingValue = ($input.val() || '').trim();
+
+        var options = {
+            format: $wrapper.data('format') || 'YYYY-MM-DD HH:mm:ss',
+            // Default to the compact (collapsed) view — calendar shows first
+            // and a small clock icon toggles the time view. Callers that want
+            // date + time visible side by side can set data-side-by-side="true".
+            sideBySide: $wrapper.data('side-by-side') === true,
+            showClear: true,
+            showClose: true,
+            showTodayButton: true,
+            // In sideBySide mode the toolbar row (Today/Clear/Close) is only
+            // rendered when placement is explicitly 'top' or 'bottom'; the
+            // library drops it entirely on the default 'default' placement.
+            toolbarPlacement: 'bottom',
+            // Open the popup on any focus/click of the input (not just the
+            // calendar addon icon), matching the behavior of the bootstrap
+            // datepicker used elsewhere in the app.
+            allowInputToggle: true,
+            locale: $wrapper.data('locale') || 'en',
+            icons: {
+                time: 'fa-regular fa-clock',
+                date: 'fa-regular fa-calendar',
+                up: 'fa-solid fa-chevron-up',
+                down: 'fa-solid fa-chevron-down',
+                previous: 'fa-solid fa-chevron-left',
+                next: 'fa-solid fa-chevron-right',
+                today: 'fa-solid fa-calendar-day',
+                clear: 'fa-solid fa-trash',
+                close: 'fa-solid fa-xmark',
+            },
+        };
+
+        // Pre-fill empty inputs with the user's current local datetime by
+        // default. Callers that render a picker where "now" is NOT a safe
+        // default (e.g., user-defined custom fields) can opt out by setting
+        // data-default-now="false" on the wrapper.
+        var wantsDefaultNow = $wrapper.data('default-now') !== false;
+        if (existingValue === '' && wantsDefaultNow) {
+            options.defaultDate = moment();
+        }
+
+        // data-max-date="today" caps the picker at today (replaces the
+        // bootstrap-datepicker era's data-date-end-date="0d"); any other
+        // value is parsed as a moment-compatible date string.
+        var maxDate = $wrapper.data('max-date');
+        if (maxDate) {
+            options.maxDate = maxDate === 'today' ? moment().endOf('day') : moment(maxDate);
+        }
+
+        $wrapper.datetimepicker(options);
+    }
+
+    // Wires up the linked-pickers pattern for <x-input.date-range>. Each
+    // .js-date-range wrapper holds a .js-date-range-start and .js-date-range-end
+    // datetimepicker; changing one bounds the other so a user can't pick an
+    // end date before the start (or vice versa). Runs after the plain
+    // datetimepicker init above so both instances already exist.
+    function initDateRangeLinking() {
+        $('.js-date-range').each(function () {
+            var $start = $(this).find('.js-date-range-start');
+            var $end = $(this).find('.js-date-range-end');
+            if (!$start.length || !$end.length) {
+                return;
+            }
+            $start.off('dp.change.snipeitDateRange').on('dp.change.snipeitDateRange', function (e) {
+                var picker = $end.data('DateTimePicker');
+                if (picker) {
+                    picker.minDate(e.date);
+                }
+            });
+            $end.off('dp.change.snipeitDateRange').on('dp.change.snipeitDateRange', function (e) {
+                var picker = $start.data('DateTimePicker');
+                if (picker) {
+                    picker.maxDate(e.date);
+                }
+            });
+        });
+    }
+
+    window.snipeitInitDatetimepickers();
+    initDateRangeLinking();
 });
 
 

@@ -96,10 +96,12 @@
                     {{ trans('admin/hardware/form.checkin_date') }}
                 </label>
                 <div class="col-md-8">
-                    <div class="input-group date col-md-5" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-end-date="0d" data-date-clear-btn="true">
-                        <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="checkin_at" id="checkin_at" value="{{ old('checkin_at') }}">
-                        <span class="input-group-addon"><x-icon type="calendar" /></span>
-                    </div>
+                    <x-input.datetimepicker
+                        id="checkin_at"
+                        name="checkin_at"
+                        :value="old('checkin_at')"
+                        col_size_class="col-md-5"
+                    />
                     <x-form.error name="checkin_at" />
                 </div>
             </div>

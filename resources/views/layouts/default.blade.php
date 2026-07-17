@@ -304,7 +304,156 @@
             overflow-y: auto;
         }
 
+        /*
+        eonasdan bootstrap-datetimepicker widget: match the app's theme color
+        for selected/today cells and follow light/dark mode for the popup
+        chrome. Ships with Bootstrap's stock #337ab7 which looks off next to
+        AdminLTE.
 
+        - All toolbar buttons: .bootstrap-datetimepicker-widget li.picker-switch a[data-action]
+        - Individual buttons: a[data-action="today"], a[data-action="clear"], a[data-action="close"]                                                                                                                       - -
+        - The <td> cell each button sits in: .bootstrap-datetimepicker-widget li.picker-switch td
+        - The icon <span> inside the anchor: .bootstrap-datetimepicker-widget li.picker-switch a[data-action] > span
+        */
+        .bootstrap-datetimepicker-widget {
+            z-index: 1030 !important;
+            background-color: var(--box-bg) !important;
+            color: var(--color-fg) !important;
+        }
+
+        /* Widget border in the theme color so the popup edge visually
+           matches other themed boxes in the app. */
+        .bootstrap-datetimepicker-widget.dropdown-menu {
+            border: 1px solid var(--main-theme-color) !important;
+        }
+
+        /* The connecting caret between the input and the popup is drawn
+           with two triangles: :before is the outer border outline (7px),
+           :after is the inner fill (6px, sits inside the :before). Match
+           the widget's own theme-color border on the outer triangle, and
+           the widget's background on the inner. */
+        .bootstrap-datetimepicker-widget.dropdown-menu.bottom:before {
+            border-bottom-color: var(--main-theme-color) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.bottom:after {
+            border-bottom-color: var(--box-bg) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.top:before {
+            border-top-color: var(--main-theme-color) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.top:after {
+            border-top-color: var(--box-bg) !important;
+        }
+
+        /* Side-by-side (date + time) mode ships at 38em, not wide enough
+           once the format includes seconds. Bump up to give the time cells
+           room. */
+        .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
+            width: 42em !important;
+        }
+
+        /* Compact (non-sideBySide) mode. Library default is 19em, which is
+           too narrow for the time-picker view — hour/minute/second cells
+           are 54px each and the increment/decrement arrow buttons add width
+           on top of that, so under ~300px the time view gets clipped. Sizing
+           to fit the widest child (the time view) also gives the calendar
+           view plenty of room. */
+        .bootstrap-datetimepicker-widget.dropdown-menu:not(.timepicker-sbs) {
+            min-width: 320px;
+        }
+
+        .bootstrap-datetimepicker-widget table td.active,
+        .bootstrap-datetimepicker-widget table td.active:hover,
+        .bootstrap-datetimepicker-widget table td span.active,
+        .bootstrap-datetimepicker-widget table td span.active:hover {
+            background-color: var(--main-theme-color) !important;
+            color: var(--nav-primary-text-color) !important;
+            text-shadow: none !important;
+        }
+        .bootstrap-datetimepicker-widget table td.today:before {
+            border-bottom-color: var(--main-theme-color) !important;
+        }
+
+        /* Cell hover: theme color background + white text — same shape as
+           "active" so contrast is guaranteed in both light and dark mode. */
+        .bootstrap-datetimepicker-widget table td:hover,
+        .bootstrap-datetimepicker-widget table td span:hover,
+        .bootstrap-datetimepicker-widget table thead tr:first-child th:hover {
+            background-color: var(--main-theme-color) !important;
+            color: var(--nav-primary-text-color) !important;
+        }
+
+        /* Time-picker text (compact mode). Bootstrap's .btn base color is
+           #333 which is invisible on the dark box-bg in dark mode; force
+           these text elements to inherit the widget's --color-fg instead
+           so they read in both themes.
+             - .timepicker-hour / -minute / -second : the big clickable digits
+             - .separator                            : the colon between them
+             - .timepicker-picker .btn               : the up/down arrow buttons
+             - .timepicker-picker .btn span          : the FA icon inside those
+             - .timepicker-hours / -minutes / -seconds .btn : the expanded grid
+               of pickable hour/minute/second numbers when you click a digit  */
+        .bootstrap-datetimepicker-widget .timepicker-hour,
+        .bootstrap-datetimepicker-widget .timepicker-minute,
+        .bootstrap-datetimepicker-widget .timepicker-second,
+        .bootstrap-datetimepicker-widget .separator,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn span,
+        .bootstrap-datetimepicker-widget .timepicker-hours td,
+        .bootstrap-datetimepicker-widget .timepicker-minutes td,
+        .bootstrap-datetimepicker-widget .timepicker-seconds td {
+            color: var(--color-fg) !important;
+        }
+
+        /* The empty <td class="separator"> cells above and below the ":"
+           are pure spacers, but were rendering visible "lines" around the
+           colon. Force their background to match the popup so they blend
+           into the widget in both light and dark mode.
+
+           Also kill the ::before / ::after pseudo-elements — the app's own
+           .separator class elsewhere in the codebase draws horizontal grey
+           border-bottom lines via those pseudos (for section dividers), and
+           class-name collides with the library's timepicker separator td. */
+        .bootstrap-datetimepicker-widget .separator {
+            background-color: var(--box-bg) !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .bootstrap-datetimepicker-widget .separator::before,
+        .bootstrap-datetimepicker-widget .separator::after {
+            display: none !important;
+            content: none !important;
+            border: none !important;
+        }
+        /* Same treatment for the increment/decrement arrow buttons — no
+           border/box-shadow/focus outline so the time-picker column doesn't
+           get sub-lines between each button. */
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn {
+            background-color: var(--box-bg) !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn:focus,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+
+
+        /* Button hover — matches the whole <a> element */
+        .bootstrap-datetimepicker-widget li.picker-switch a[data-action]:hover,
+        .bootstrap-datetimepicker-widget li.picker-switch td:hover {
+            background-color: transparent !important;
+            border-radius: 0 !important;
+
+        }
+
+        
         .input-group-addon {
             background-color: var(--input-group-bg) !important;
             color: var(--input-group-fg) !important;
@@ -320,6 +469,7 @@
         .select2-container--default.select2-container--disabled .select2-selection--single,
         .select2-container--default.select2-container--disabled .select2-selection--multiple,
         .select2-container--default.select2-container--disabled .select2-selection__rendered,
+        .select2-results__option[aria-disabled=true],
         .select2-container--default.select2-container--disabled .select2-selection--multiple .select2-search--inline {
             background-color: light-dark(rgb(234, 232, 232), rgb(117, 116, 117)) !important;
             cursor: not-allowed !important;
@@ -799,7 +949,15 @@
             border-color: var(--text-danger);
         }
 
-        .alert a {
+        .alert a,
+        .callout.callout-warning,
+        .callout.callout-danger,
+        .callout.callout-success,
+        .callout.callout-info,
+        .alert.alert-warning,
+        .alert.alert-danger,
+        .alert.alert-info,
+        .alert.alert-success {
             color: white !important;
         }
 
@@ -882,29 +1040,13 @@
             color: var(--color-fg) !important;
         }
 
-        .datepicker.dropdown-menu th, .datepicker.datepicker-inline th,
-        .datepicker.dropdown-menu td,
-        .datepicker.datepicker-inline td
 
-        {
-            color: var(--color-fg);
-            border-color: var(--color-fg);
-            background-color: var(--box-bg) !important;
-        }
-
-        .datepicker.dropdown-menu th:hover,
-        .datepicker.datepicker-inline th:hover,
-        .datepicker.dropdown-menu td:hover,
-        .datepicker.datepicker-inline td:hover,
-        .datepicker table tr td span:hover,
-        .datepicker table tr td span.focused,
         .logo:hover
         {
             background-color: var(--main-theme-color) !important;
             color: var(--nav-primary-text-color) !important;
         }
 
-        .datepicker.dropdown-menu,
         .modal-content,
         .popover.help-popover,
         .popover.help-popover .popover-content,
@@ -917,31 +1059,6 @@
             color: var(--color-fg) !important;
         }
 
-        /** this handles the arrows for the datepicker widget **/
-
-        /** arrow on the bottom - bg color **/
-        .datepicker-dropdown.datepicker-orient-top:after {
-            border-top: 6px solid var(--box-bg);
-        }
-
-        /** arrow on the bottom - border color **/
-        .datepicker-dropdown.datepicker-orient-top:before {
-            border-top: 6px solid var(--color-bg);
-        }
-
-        /** arrow on the top - bg color **/
-        .datepicker-dropdown:after {
-            border-bottom: 6px solid var(--box-bg);
-        }
-
-        /** arrow on the top - border color **/
-        .datepicker-dropdown:before {
-            border-bottom: 7px solid var(--color-bg);
-        }
-
-        /** end handling arrows for the datepicker widget **/
-
-
         .treeview-menu > li {
             background-color: #2c3b41;
             color: var(--sidenav-text-nohover-color) !important;
@@ -953,7 +1070,6 @@
         {
             color: white !important;
             background-color: var(--sidenav-hover-color-bg) !important;
-            /*color: var(--sidenav-text-hover-color) !important;*/
         }
 
         .sidebar-toggle.btn,
@@ -2024,9 +2140,9 @@
                     <div class="row">
                         @if (config('app.lock_passwords'))
                             <div class="col-md-12">
-                                <div class="callout callout-info" role="status" aria-live="polite" aria-atomic="true">
+                                <x-callout type="info" role="status">
                                     {{ trans('general.some_features_disabled') }}
-                                </div>
+                                </x-callout>
                             </div>
                         @endif
 

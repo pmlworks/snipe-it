@@ -86,32 +86,18 @@
                 <x-form.row
                     :label="trans('admin/maintenances/form.start_date')"
                     name="start_date"
+                    type="datetimepicker"
+                    :item="$item"
                     input_div_class="col-md-4"
-                >
-                    <x-slot:input>
-                        <x-input.datepicker
-                            name="start_date"
-                            :value="old('start_date', $item->start_date)"
-                            :placeholder="trans('general.select_date')"
-                            :required="Helper::checkIfRequired($item, 'start_date')"
-                        />
-                    </x-slot:input>
-                </x-form.row>
+                />
 
                 <x-form.row
                     :label="trans('admin/maintenances/form.completion_date')"
                     name="completion_date"
+                    type="datetimepicker"
+                    :item="$item"
                     input_div_class="col-md-4"
-                >
-                    <x-slot:input>
-                        <x-input.datepicker
-                            name="completion_date"
-                            :value="old('completion_date', $item->completion_date)"
-                            :placeholder="trans('general.select_date')"
-                            :required="Helper::checkIfRequired($item, 'completion_date')"
-                        />
-                    </x-slot:input>
-                </x-form.row>
+                />
 
                 <x-input.supplier-select
                     :label="trans('general.supplier')"
