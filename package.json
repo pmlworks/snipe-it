@@ -70,6 +70,9 @@
         },
         "create-hash": {
             "sha.js": ">=2.4.12"
+        },
+        "eonasdan-bootstrap-datetimepicker": {
+            "moment-timezone": "^0.6.2"
         }
     }
 }
