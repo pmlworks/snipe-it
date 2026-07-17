@@ -57,13 +57,13 @@ class CustomField extends Model
      */
     protected $rules = [
         'name' => 'required|unique:custom_fields',
-        'element' => 'required|in:text,listbox,textarea,markdown-textarea,checkbox,radio',
+        'element' => 'required|in:text,listbox,textarea,markdown-textarea,checkbox,radio,date_picker,datetime_picker',
         'field_encrypted' => 'nullable|boolean',
         'auto_add_to_fieldsets' => 'boolean',
         'show_in_listview' => 'boolean',
         'show_in_requestable_list' => 'boolean',
         'show_in_email' => 'boolean',
-        'format' => 'nullable|string|max:191',
+        'format' => 'nullable|string',
     ];
 
     protected $casts = [
@@ -173,10 +173,23 @@ class CustomField extends Model
                     return false;
                 }
 
-                // Update the column name in the assets table
+                // Add the column to the assets table. Most custom-field types
+                // land in a TEXT column so we don't have to worry about width
+                // or type coercion for freeform values. DATE and DATETIME
+                // are the exceptions: creating them as native DATE / DATETIME
+                // columns lets MySQL/MariaDB sort and range-filter
+                // chronologically on that column instead of lexicographically
+                // on a text string.
                 Schema::table(
                     self::$table_name, function ($table) use ($custom_field) {
-                        $table->text($custom_field->convertUnicodeDbSlug())->nullable();
+                        $column = $custom_field->convertUnicodeDbSlug();
+                        if ($custom_field->format === 'DATETIME') {
+                            $table->dateTime($column)->nullable();
+                        } elseif ($custom_field->format === 'DATE') {
+                            $table->date($column)->nullable();
+                        } else {
+                            $table->text($column)->nullable();
+                        }
                     }
                 );
 
@@ -186,8 +199,75 @@ class CustomField extends Model
             }
         );
 
+        self::saving(
+            function ($custom_field) {
+                // DATE / DATETIME format implies the matching picker
+                // element (widget rendering is driven by the element; format
+                // additionally drives the native column type). Force it here
+                // so callers (UI, factories, API, seeders) don't have to
+                // specify both — format is the source of truth.
+                //   format=DATE     => element=date_picker
+                //   format=DATETIME => element=datetime_picker
+                // For non-DATE/DATETIME formats, date_picker / datetime_picker
+                // are still allowed as manual picks (renders the widget on
+                // a TEXT column, which supports encryption).
+                $forcedElement = match ($custom_field->format) {
+                    'DATE' => 'date_picker',
+                    'DATETIME' => 'datetime_picker',
+                    default => null,
+                };
+                if ($forcedElement !== null) {
+                    $custom_field->element = $forcedElement;
+                }
+
+                // DATE / DATETIME fields cannot be encrypted: they're
+                // backed by a native DATE / DATETIME column which only
+                // accepts valid date values, not ciphertext strings.
+                if (in_array($custom_field->format, ['DATE', 'DATETIME'], true)
+                    && $custom_field->field_encrypted == 1
+                ) {
+                    $custom_field->getErrors()->add(
+                        'field_encrypted',
+                        $custom_field->format.' custom fields cannot be encrypted; the underlying database column only accepts valid date values.'
+                    );
+
+                    return false;
+                }
+            }
+        );
+
         self::updating(
             function ($custom_field) {
+
+                // DATE and DATETIME custom fields are backed by native
+                // DATE / DATETIME columns on the assets table (created in
+                // the `created` hook above). Once created, changing the
+                // format would need a column-type alter AND data
+                // conversion — a footgun in both directions:
+                //   - DATE/DATETIME -> anything else: existing rows would
+                //     need to stringify their values.
+                //   - anything else -> DATE/DATETIME: existing TEXT values
+                //     might not be valid dates and would fail conversion.
+                // Simpler contract: format is locked once a DATE / DATETIME
+                // column exists on either side of the change. Applies to
+                // pre-existing TEXT-backed DATE fields too, since the risk
+                // of a bad format change is the same.
+                if ($custom_field->isDirty('format')) {
+                    $original = $custom_field->getOriginal('format');
+                    $originalFriendly = collect(self::PREDEFINED_FORMATS)
+                        ->search(fn ($pattern) => $pattern === $original) ?: $original;
+                    $lockedFormats = ['DATE', 'DATETIME'];
+                    $isOrWasLocked = in_array($originalFriendly, $lockedFormats, true)
+                        || in_array($custom_field->format, $lockedFormats, true);
+                    if ($isOrWasLocked) {
+                        $custom_field->getErrors()->add(
+                            'format',
+                            'The format cannot be changed on a '.$originalFriendly.' custom field.'
+                        );
+
+                        return false;
+                    }
+                }
 
                 // Column already exists on the assets table - nothing to do here.
                 if ($custom_field->isDirty('name')) {
