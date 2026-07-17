@@ -71,6 +71,33 @@
                           </label>
                       </div>
                   @endforeach
+
+              @elseif ($field->element=='date_picker')
+                  {{-- Datepicker widget on a plain TEXT column (allows the
+                       field to be encrypted). Format DATE uses a separate
+                       native-column path below. --}}
+                  <div class="input-group col-md-5" style="padding-left: 0px;">
+                      <x-input.datepicker
+                          id="{{ $field->db_column_name() }}"
+                          name="{{ $field->db_column_name() }}"
+                          :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
+                          required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
+                      />
+                  </div>
+
+              @elseif ($field->element=='datetime_picker')
+                  {{-- Datetimepicker widget on a plain TEXT column (allows
+                       the field to be encrypted). Format DATETIME uses a
+                       separate native-column path below. --}}
+                  <div class="input-group col-md-6" style="padding-left: 0px;">
+                      <x-input.datetimepicker
+                          id="{{ $field->db_column_name() }}"
+                          name="{{ $field->db_column_name() }}"
+                          :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
+                          required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
+                          :default_now="false"
+                      />
+                  </div>
               @endif
 
 
@@ -79,10 +106,12 @@
                 @if ($field->format=='DATE')
 
                         <div class="input-group col-md-5" style="padding-left: 0px;">
-                            <div class="input-group date" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-autoclose="true" data-date-clear-btn="true">
-                                <input type="text" class="form-control" placeholder="{{ trans('general.select_date') }}" name="{{ $field->db_column_name() }}" id="{{ $field->db_column_name() }}" readonly value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))) }}"  style="background-color:inherit"{{ ($field->pivot->required=='1') ? ' required' : '' }}>
-                                <span class="input-group-addon"><x-icon type="calendar" /></span>
-                            </div>
+                            <x-input.datepicker
+                                id="{{ $field->db_column_name() }}"
+                                name="{{ $field->db_column_name() }}"
+                                :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
+                                required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
+                            />
                         </div>
 
 
@@ -93,7 +122,7 @@
                              .input-group[class*="col-"] CSS rules re-apply
                              15px padding that would otherwise indent the
                              widget; the inline style forces it to zero. --}}
-                        <div class="input-group col-md-5" style="padding-left: 0px;">
+                    <div class="input-group col-md-6" style="padding-left: 0px;">
                             <x-input.datetimepicker
                                 id="{{ $field->db_column_name() }}"
                                 name="{{ $field->db_column_name() }}"
