@@ -2417,14 +2417,22 @@
             // radio in the same group is chosen. Runs once on ready + on
             // every change so page-refresh state and interactive toggles
             // both stay in sync.
+            //
+            // The visibility check is critical for asset create/edit, where
+            // the checkout-selector partial is rendered hidden and only
+            // revealed after a deployable status is picked. Without it, the
+            // browser tries to enforce required on an invisible select and
+            // silently blocks the save.
             var applyRadioRequiredSelects = function () {
                 // Group opted-in radios by name, collecting the list of CSS
                 // selectors each group can point at. Reading via .attr()
                 // rather than .data() because .data() caches on first access
                 // and can miss late-changing values in select2 / Bootstrap
-                // data-toggle="buttons" environments.
+                // data-toggle="buttons" environments. Only VISIBLE radios
+                // count — a hidden checkout-selector on asset create/edit
+                // is inert and shouldn't be pinning required on anything.
                 var groups = {};
-                $('input[type=radio][data-required-select]').each(function () {
+                $('input[type=radio][data-required-select]:visible').each(function () {
                     var name = this.name;
                     var target = this.getAttribute('data-required-select');
                     if (!name || !target) return;
@@ -2434,11 +2442,17 @@
 
                 // For each group, pin required on the currently-checked
                 // radio's target and clear it from every sibling target.
+                // If the target select itself is hidden (e.g., the "user"
+                // form-group is display:none because a non-deployable status
+                // was picked), don't set required on it — the browser would
+                // block form submit on an invisible element.
                 Object.keys(groups).forEach(function (name) {
                     var $checked = $('input[name="' + name + '"]:checked');
                     var checkedTarget = $checked.length ? $checked[0].getAttribute('data-required-select') : null;
                     groups[name].forEach(function (selector) {
-                        $(selector).prop('required', selector === checkedTarget);
+                        var $target = $(selector);
+                        var shouldBeRequired = selector === checkedTarget && $target.is(':visible');
+                        $target.prop('required', shouldBeRequired);
                     });
                 });
             };
