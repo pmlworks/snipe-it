@@ -161,8 +161,7 @@ class CustomFieldFactory extends Factory
             return [
                 'name' => 'Sample Date',
                 'help_text' => 'This shows a datepicker',
-                // element is auto-forced to date_picker by the saving hook
-                // when format is DATE; no need to specify both.
+                'element' => 'date_picker',
                 'format' => 'DATE',
             ];
         });
@@ -174,6 +173,7 @@ class CustomFieldFactory extends Factory
             return [
                 'name' => 'Sample Datetime',
                 'help_text' => 'This shows a datetimepicker',
+                'element' => 'datetime_picker',
                 'format' => 'DATETIME',
             ];
         });
