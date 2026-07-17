@@ -640,14 +640,32 @@ $(document).ready(function () {
     // Icon set is overridden to Font Awesome — the picker defaults to
     // Glyphicon classes, which we do not ship, so up/down arrows and clock
     // glyphs would otherwise render as empty boxes.
-    $('[data-provide="datetimepicker"]').each(function () {
+    // Exposed so callers who insert new [data-provide="datetimepicker"]
+    // wrappers into the DOM post-load (e.g., AJAX-loaded custom fields on
+    // asset create/edit when the model changes) can re-run the init on the
+    // freshly-inserted elements. Pass a jQuery scope to narrow the search;
+    // omit to init every uninitialised picker on the page.
+    window.snipeitInitDatetimepickers = function (scope) {
+        var $targets = scope ? $(scope).find('[data-provide="datetimepicker"]') : $('[data-provide="datetimepicker"]');
+        $targets.each(initDatetimepicker);
+    };
+
+    function initDatetimepicker() {
         var $wrapper = $(this);
+        // Skip if this wrapper already has an eonasdan instance attached
+        // (data('DateTimePicker') is set by the library on init).
+        if ($wrapper.data('DateTimePicker')) {
+            return;
+        }
         var $input = $wrapper.find('input');
         var existingValue = ($input.val() || '').trim();
 
         var options = {
             format: $wrapper.data('format') || 'YYYY-MM-DD HH:mm:ss',
-            sideBySide: $wrapper.data('side-by-side') !== false,
+            // Default to the compact (collapsed) view — calendar shows first
+            // and a small clock icon toggles the time view. Callers that want
+            // date + time visible side by side can set data-side-by-side="true".
+            sideBySide: $wrapper.data('side-by-side') === true,
             showClear: true,
             showClose: true,
             showTodayButton: true,
@@ -682,8 +700,18 @@ $(document).ready(function () {
             options.defaultDate = moment();
         }
 
+        // data-max-date="today" caps the picker at today (replaces the
+        // bootstrap-datepicker era's data-date-end-date="0d"); any other
+        // value is parsed as a moment-compatible date string.
+        var maxDate = $wrapper.data('max-date');
+        if (maxDate) {
+            options.maxDate = maxDate === 'today' ? moment().endOf('day') : moment(maxDate);
+        }
+
         $wrapper.datetimepicker(options);
-    });
+    }
+
+    window.snipeitInitDatetimepickers();
 });
 
 
