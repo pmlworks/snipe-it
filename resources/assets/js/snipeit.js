@@ -21,7 +21,6 @@ require('jquery-slimscroll');
 require('jquery.iframe-transport'); //probably not needed anymore, if I'm honest
 require('blueimp-file-upload')
 require('bootstrap-colorpicker')
-require('bootstrap-datepicker')
 // eonasdan-bootstrap-datetimepicker (BS3) needs moment on window before it loads
 window.moment = require('moment')
 require('eonasdan-bootstrap-datetimepicker')
@@ -711,7 +710,35 @@ $(document).ready(function () {
         $wrapper.datetimepicker(options);
     }
 
+    // Wires up the linked-pickers pattern for <x-input.date-range>. Each
+    // .js-date-range wrapper holds a .js-date-range-start and .js-date-range-end
+    // datetimepicker; changing one bounds the other so a user can't pick an
+    // end date before the start (or vice versa). Runs after the plain
+    // datetimepicker init above so both instances already exist.
+    function initDateRangeLinking() {
+        $('.js-date-range').each(function () {
+            var $start = $(this).find('.js-date-range-start');
+            var $end = $(this).find('.js-date-range-end');
+            if (!$start.length || !$end.length) {
+                return;
+            }
+            $start.off('dp.change.snipeitDateRange').on('dp.change.snipeitDateRange', function (e) {
+                var picker = $end.data('DateTimePicker');
+                if (picker) {
+                    picker.minDate(e.date);
+                }
+            });
+            $end.off('dp.change.snipeitDateRange').on('dp.change.snipeitDateRange', function (e) {
+                var picker = $start.data('DateTimePicker');
+                if (picker) {
+                    picker.maxDate(e.date);
+                }
+            });
+        });
+    }
+
     window.snipeitInitDatetimepickers();
+    initDateRangeLinking();
 });
 
 
