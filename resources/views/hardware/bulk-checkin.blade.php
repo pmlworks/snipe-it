@@ -15,9 +15,8 @@
   }
 </style>
 
-<div class="row">
-  <!-- left column -->
-  <div class="col-md-7">
+<x-container columns="2">
+  <x-page-column class="col-md-7">
     <div class="box box-default">
       <div class="box-header with-border">
         <h2 class="box-title"> {{ trans('admin/hardware/form.tag') }} </h2>
@@ -25,26 +24,6 @@
       <div class="box-body">
         <form class="form-horizontal" method="post" action="{{ route('hardware.bulkcheckin.store') }}" autocomplete="off">
           {{ csrf_field() }}
-
-            @if ($removed_assets->isNotEmpty())
-                <div class="box box-solid box-warning">
-                    <div class="box-header with-border">
-                        <span class="box-title col-xs-12">Warning</span>
-                    </div>
-                    <div class="box-body">
-                        <p>{{ trans('general.unassigned_assets_removed') }}</p>
-                        <ul>
-                            @foreach($removed_assets as $removed_asset)
-                                <li>
-                                    <a href="{{ route('hardware.show', $removed_asset->id) }}">
-                                        {{ $removed_asset->present()->fullName }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
 
             @include('partials.forms.edit.asset-select', [
                 'translated_name'       => trans('general.assets'),
@@ -148,8 +127,15 @@
       </div>
         </form>
     </div>
-  </div> <!--/.col-md-7-->
-</div>
+  </x-page-column>
+
+  <x-page-column class="col-md-5">
+    <x-side-panel.removed-assets
+      :items="$removed_assets"
+      :message="trans('general.unassigned_assets_removed')"
+    />
+  </x-page-column>
+</x-container>
 @stop
 
 @section('moar_scripts')

@@ -22,21 +22,6 @@
 
                 <x-box header="{{ trans('admin/hardware/form.tag') }}">
 
-                    @if ($removed_assets->isNotEmpty())
-                        <x-box box_style="solid box-warning" header="Warning">
-                            <p>{{ trans('general.assigned_assets_removed') }}</p>
-                            <ul>
-                                @foreach ($removed_assets as $removed_asset)
-                                    <li>
-                                        <a href="{{ route('hardware.show', $removed_asset->id) }}">
-                                            {{ $removed_asset->present()->fullName }}
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </x-box>
-                    @endif
-
                     @include ('partials.forms.edit.asset-select', [
                         'translated_name' => trans('general.assets'),
                         'fieldname' => 'selected_assets[]',
@@ -126,7 +111,14 @@
 
         </x-page-column>
 
-        <livewire:checkout-target-panel type="assets" />
+        <x-page-column class="col-md-5">
+            <x-side-panel.removed-assets
+                :items="$removed_assets"
+                :message="trans('general.assigned_assets_removed')"
+                :hideOnTargetSelected="true"
+            />
+            <livewire:checkout-target-panel type="assets" rootClass="col-md-12" />
+        </x-page-column>
 
     </x-container>
 @stop
