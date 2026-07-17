@@ -7,6 +7,12 @@
     'default_now' => true,
     'side_by_side' => false,
 ])
+@php
+    // Belt-and-suspenders: if a caller (or old() after a validation error)
+    // hands us an array/object rather than a scalar, cast it to empty so
+    // htmlspecialchars() doesn't blow up rendering the value attribute.
+    $value = is_scalar($value) ? (string) $value : '';
+@endphp
 
 <!-- Datetimepicker (eonasdan-bootstrap-datetimepicker) -->
 <div class="input-group date {{ $col_size_class }}"

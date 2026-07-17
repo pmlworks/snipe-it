@@ -5,6 +5,12 @@
     'col_size_class' => null,
     'placeholder' => trans('general.select_date'),
 ])
+@php
+    // Belt-and-suspenders: if a caller (or old() after a validation error)
+    // hands us an array/object rather than a scalar, cast it to empty so
+    // htmlspecialchars() doesn't blow up rendering the value attribute.
+    $value = is_scalar($value) ? (string) $value : '';
+@endphp
 
 <div class="input-group date {{ $col_size_class }}"
      data-provide="datetimepicker"
