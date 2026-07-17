@@ -120,13 +120,18 @@
 
                 @elseif ($field->format=='DATETIME')
 
-                    <x-input.datetimepicker
-                        id="{{ $field->db_column_name() }}"
-                        name="{{ $field->db_column_name() }}"
-                        :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')"
-                        col_size_class="col-md-5"
-                        :default_now="false"
-                    />
+                    {{-- Outer wrapper with inline padding-left: 0 to match
+                         the DATE case above; conflicting duplicate CSS
+                         rules for .input-group[class*="col-"] otherwise
+                         re-apply the 15px grid padding. --}}
+                    <div class="input-group col-md-5" style="padding-left: 0px;">
+                        <x-input.datetimepicker
+                            id="{{ $field->db_column_name() }}"
+                            name="{{ $field->db_column_name() }}"
+                            :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')"
+                            :default_now="false"
+                        />
+                    </div>
 
 
                 @else

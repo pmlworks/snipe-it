@@ -148,7 +148,19 @@
             <div id="optional_details" class="col-md-12" style="display:none">
                 @include ('partials.forms.edit.name', ['translated_name' => trans('admin/hardware/form.name')])
                 @include ('partials.forms.edit.warranty')
-                @include ('partials.forms.edit.datetimepicker', ['translated_name' => trans('admin/hardware/form.expected_checkin'),'fieldname' => 'expected_checkin'])
+                <x-form.row
+                    :label="trans('admin/hardware/form.expected_checkin')"
+                    name="expected_checkin"
+                    input_div_class="input-group col-md-4"
+                >
+                    <x-slot:input>
+                        <x-input.datetimepicker
+                            name="expected_checkin"
+                            :value="old('expected_checkin', $item->expected_checkin?->format('Y-m-d H:i:s'))"
+                            :required="Helper::checkIfRequired($item, 'expected_checkin')"
+                        />
+                    </x-slot:input>
+                </x-form.row>
                 @include ('partials.forms.edit.datepicker', ['translated_name' => trans('general.next_audit_date'),'fieldname' => 'next_audit_date', 'help_text' => trans('general.next_audit_date_help')])
                 <!-- byod checkbox -->
                 <div class="form-group byod">

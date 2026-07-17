@@ -88,14 +88,20 @@
 
                 @elseif ($field->format=='DATETIME')
 
-                        <x-input.datetimepicker
-                            id="{{ $field->db_column_name() }}"
-                            name="{{ $field->db_column_name() }}"
-                            :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
-                            col_size_class="col-md-5"
-                            required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
-                            :default_now="false"
-                        />
+                        {{-- Outer wrapper with inline padding-left: 0 to
+                             match the DATE case above. Later duplicate
+                             .input-group[class*="col-"] CSS rules re-apply
+                             15px padding that would otherwise indent the
+                             widget; the inline style forces it to zero. --}}
+                        <div class="input-group col-md-5" style="padding-left: 0px;">
+                            <x-input.datetimepicker
+                                id="{{ $field->db_column_name() }}"
+                                name="{{ $field->db_column_name() }}"
+                                :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
+                                required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
+                                :default_now="false"
+                            />
+                        </div>
 
 
                 @else
