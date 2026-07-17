@@ -86,6 +86,18 @@
                         </div>
 
 
+                @elseif ($field->format=='DATETIME')
+
+                        <x-input.datetimepicker
+                            id="{{ $field->db_column_name() }}"
+                            name="{{ $field->db_column_name() }}"
+                            :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))"
+                            col_size_class="col-md-5"
+                            required="{{ ($field->pivot->required=='1') ? '1' : '' }}"
+                            :default_now="false"
+                        />
+
+
                 @else
                     @if (($field->field_encrypted=='0') || (Gate::allows('assets.view.encrypted_custom_fields')))
                     <input type="text" value="{{ old($field->db_column_name(),(isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : $field->defaultValue($model->id))) }}" id="{{ $field->db_column_name() }}" class="form-control" name="{{ $field->db_column_name() }}" placeholder="Enter {{ strtolower($field->format) }} text"{{ ($field->pivot->required=='1') ? ' required' : '' }}>

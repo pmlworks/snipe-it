@@ -89,10 +89,9 @@
                     input_div_class="col-md-4"
                 >
                     <x-slot:input>
-                        <x-input.datepicker
+                        <x-input.datetimepicker
                             name="start_date"
-                            :value="old('start_date', $item->start_date)"
-                            :placeholder="trans('general.select_date')"
+                            :value="old('start_date', $item->start_date?->format('Y-m-d H:i:s'))"
                             :required="Helper::checkIfRequired($item, 'start_date')"
                         />
                     </x-slot:input>
@@ -104,10 +103,9 @@
                     input_div_class="col-md-4"
                 >
                     <x-slot:input>
-                        <x-input.datepicker
+                        <x-input.datetimepicker
                             name="completion_date"
-                            :value="old('completion_date', $item->completion_date)"
-                            :placeholder="trans('general.select_date')"
+                            :value="old('completion_date', $item->completion_date?->format('Y-m-d H:i:s'))"
                             :required="Helper::checkIfRequired($item, 'completion_date')"
                         />
                     </x-slot:input>
