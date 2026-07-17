@@ -81,6 +81,7 @@
                     <x-input.datetimepicker
                         name="expected_checkin"
                         value="{{ old('expected_checkin') }}"
+                        :default_now="false"
                     />
                     <x-form.error name="expected_checkin" />
                 </div>

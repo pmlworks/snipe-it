@@ -82,32 +82,20 @@
                     <x-form.row
                         :label="trans('admin/hardware/form.checkout_date')"
                         name="checkout_at"
+                        type="datetimepicker"
+                        :item="$item"
+                        :default="date('Y-m-d H:i:s')"
                         input_div_class="col-md-4"
-                    >
-                        <x-slot:input>
-                            <x-input.datepicker
-                                name="checkout_at"
-                                end_date="0d"
-                                :value="old('expected_checkin', date('Y-m-d'))"
-                                :placeholder="trans('general.select_date')"
-                                required="{{ Helper::checkIfRequired($item, 'checkout_at') }}"
-                            />
-                        </x-slot:input>
-                    </x-form.row>
+                    />
 
                     <x-form.row
                         :label="trans('admin/hardware/form.expected_checkin')"
                         name="expected_checkin"
+                        type="datetimepicker"
+                        :item="$item"
+                        :default_now="false"
                         input_div_class="col-md-4"
-                    >
-                        <x-slot:input>
-                            <x-input.datetimepicker
-                                name="expected_checkin"
-                                :value="old('expected_checkin', $item->expected_checkin?->format('Y-m-d H:i:s'))"
-                                required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"
-                            />
-                        </x-slot:input>
-                    </x-form.row>
+                    />
 
                     <x-form.row
                         :label="trans('general.notes')"

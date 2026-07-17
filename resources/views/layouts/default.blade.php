@@ -309,18 +309,62 @@
         for selected/today cells and follow light/dark mode for the popup
         chrome. Ships with Bootstrap's stock #337ab7 which looks off next to
         AdminLTE.
+
+        - All toolbar buttons: .bootstrap-datetimepicker-widget li.picker-switch a[data-action]
+        - Individual buttons: a[data-action="today"], a[data-action="clear"], a[data-action="close"]                                                                                                                       - -
+        - The <td> cell each button sits in: .bootstrap-datetimepicker-widget li.picker-switch td
+        - The icon <span> inside the anchor: .bootstrap-datetimepicker-widget li.picker-switch a[data-action] > span
         */
         .bootstrap-datetimepicker-widget {
             z-index: 1030 !important;
             background-color: var(--box-bg) !important;
             color: var(--color-fg) !important;
         }
-        /* Side-by-side (date + time) mode ships at 38em, which isn't wide
-           enough once the format includes seconds — the seconds column runs
-           past the right edge. Bump it up to give the time cells room. */
+
+        /* Widget border in the theme color so the popup edge visually
+           matches other themed boxes in the app. */
+        .bootstrap-datetimepicker-widget.dropdown-menu {
+            border: 1px solid var(--main-theme-color) !important;
+        }
+
+        /* The connecting caret between the input and the popup is drawn
+           with two triangles: :before is the outer border outline (7px),
+           :after is the inner fill (6px, sits inside the :before). Match
+           the widget's own theme-color border on the outer triangle, and
+           the widget's background on the inner. */
+        .bootstrap-datetimepicker-widget.dropdown-menu.bottom:before {
+            border-bottom-color: var(--main-theme-color) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.bottom:after {
+            border-bottom-color: var(--box-bg) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.top:before {
+            border-top-color: var(--main-theme-color) !important;
+        }
+
+        .bootstrap-datetimepicker-widget.dropdown-menu.top:after {
+            border-top-color: var(--box-bg) !important;
+        }
+
+        /* Side-by-side (date + time) mode ships at 38em, not wide enough
+           once the format includes seconds. Bump up to give the time cells
+           room. */
         .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
             width: 42em !important;
         }
+
+        /* Compact (non-sideBySide) mode. Library default is 19em, which is
+           too narrow for the time-picker view — hour/minute/second cells
+           are 54px each and the increment/decrement arrow buttons add width
+           on top of that, so under ~300px the time view gets clipped. Sizing
+           to fit the widest child (the time view) also gives the calendar
+           view plenty of room. */
+        .bootstrap-datetimepicker-widget.dropdown-menu:not(.timepicker-sbs) {
+            min-width: 320px;
+        }
+
         .bootstrap-datetimepicker-widget table td.active,
         .bootstrap-datetimepicker-widget table td.active:hover,
         .bootstrap-datetimepicker-widget table td span.active,
@@ -332,37 +376,132 @@
         .bootstrap-datetimepicker-widget table td.today:before {
             border-bottom-color: var(--main-theme-color) !important;
         }
+
+        /* Cell hover: theme color background + white text — same shape as
+           "active" so contrast is guaranteed in both light and dark mode. */
         .bootstrap-datetimepicker-widget table td:hover,
         .bootstrap-datetimepicker-widget table td span:hover,
         .bootstrap-datetimepicker-widget table thead tr:first-child th:hover {
-            background-color: hsl(from var(--main-theme-color) h s calc(l + 40)) !important;
-            color: var(--color-fg) !important;
-        }
-        /* The toolbar wrapper (<li class="picker-switch">) intentionally is
-           NOT included in the generic hover rule above — that would tint the
-           entire toolbar bar when hovering ANY single button, washing out the
-           non-hovered buttons around it. Hover state is per-button only, via
-           the a[data-action]:hover rule further down. */
-        /* Today / Clear / Close toolbar buttons. Default link color is the
-           app-wide bright blue which clashes on the widget; use the standard
-           foreground color for the icons and highlight with the theme color
-           on hover. Hover uses a DARKER shade of the theme color so the white
-           icon has enough contrast against it — the +40 lightness tint used
-           for calendar cells makes toolbar icons wash out. Container td
-           background is neutralised on hover so it doesn't peek around the
-           button and dilute the contrast. */
-        .bootstrap-datetimepicker-widget .picker-switch a[data-action],
-        .bootstrap-datetimepicker-widget .picker-switch a[data-action] span {
-            color: var(--color-fg) !important;
-        }
-        .bootstrap-datetimepicker-widget .picker-switch table td:hover {
-            background-color: transparent !important;
-        }
-        .bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover,
-        .bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover span {
-            background-color: hsl(from var(--main-theme-color) h s calc(l - 10)) !important;
+            background-color: var(--main-theme-color) !important;
             color: var(--nav-primary-text-color) !important;
         }
+
+        /* Time-picker text (compact mode). Bootstrap's .btn base color is
+           #333 which is invisible on the dark box-bg in dark mode; force
+           these text elements to inherit the widget's --color-fg instead
+           so they read in both themes.
+             - .timepicker-hour / -minute / -second : the big clickable digits
+             - .separator                            : the colon between them
+             - .timepicker-picker .btn               : the up/down arrow buttons
+             - .timepicker-picker .btn span          : the FA icon inside those
+             - .timepicker-hours / -minutes / -seconds .btn : the expanded grid
+               of pickable hour/minute/second numbers when you click a digit  */
+        .bootstrap-datetimepicker-widget .timepicker-hour,
+        .bootstrap-datetimepicker-widget .timepicker-minute,
+        .bootstrap-datetimepicker-widget .timepicker-second,
+        .bootstrap-datetimepicker-widget .separator,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn span,
+        .bootstrap-datetimepicker-widget .timepicker-hours td,
+        .bootstrap-datetimepicker-widget .timepicker-minutes td,
+        .bootstrap-datetimepicker-widget .timepicker-seconds td {
+            color: var(--color-fg) !important;
+        }
+
+        /* The empty <td class="separator"> cells above and below the ":"
+           are pure spacers, but were rendering visible "lines" around the
+           colon. Force their background to match the popup so they blend
+           into the widget in both light and dark mode.
+
+           Also kill the ::before / ::after pseudo-elements — the app's own
+           .separator class elsewhere in the codebase draws horizontal grey
+           border-bottom lines via those pseudos (for section dividers), and
+           class-name collides with the library's timepicker separator td. */
+        .bootstrap-datetimepicker-widget .separator {
+            background-color: var(--box-bg) !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .bootstrap-datetimepicker-widget .separator::before,
+        .bootstrap-datetimepicker-widget .separator::after {
+            display: none !important;
+            content: none !important;
+            border: none !important;
+        }
+        /* Same treatment for the increment/decrement arrow buttons — no
+           border/box-shadow/focus outline so the time-picker column doesn't
+           get sub-lines between each button. */
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn {
+            background-color: var(--box-bg) !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn:focus,
+        .bootstrap-datetimepicker-widget .timepicker-picker .btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /*!* Toolbar buttons (Today / Clear / Close). *!*/
+        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action] {*/
+        /*    color: var(--color-fg) !important;*/
+        /*    background-color: var(--main-theme-color) !important;*/
+        /*    border-radius: 0 !important;*/
+        /*}*/
+
+        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action] span {*/
+        /*    color: var(--nav-primary-text-color) !important;*/
+        /*    background-color: transparent !important;*/
+        /*    border-radius: 0 !important;*/
+        /*}*/
+        /*.bootstrap-datetimepicker-widget .picker-switch table td:hover {*/
+        /*    border-radius: 0 !important;*/
+        /*    !*background-color: var(--color-bg) !important;*!*/
+        /*}*/
+        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover,*/
+        /*.bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover span {*/
+        /*    background-color: var(--main-theme-color) !important;*/
+        /*    color: var(--nav-primary-text-color) !important;*/
+        /*    border-radius: 0 !important;*/
+        /*}*/
+
+
+        /* Button hover — matches the whole <a> element */
+        .bootstrap-datetimepicker-widget li.picker-switch a[data-action]:hover,
+        .bootstrap-datetimepicker-widget li.picker-switch td:hover {
+            background-color: transparent !important;
+            border-radius: 0 !important;
+
+        }
+
+        /* The icon <span> inside the anchor, when the anchor is hovered.
+           Use this if you want the icon color to change independently of the anchor bg. */
+        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action]:hover > span {*/
+        /*    background-color: var(--main-theme-color) !important;*/
+        /*    border-radius: 0;*/
+        /*    border: none;*/
+        /*}*/
+
+        /*!* The <td> cell around the anchor, on hover. Handy for suppressing the*/
+        /*   generic table td:hover rule that would otherwise tint the cell before*/
+        /*   the anchor's own hover kicks in. *!*/
+        /*.bootstrap-datetimepicker-widget li.picker-switch td:hover {*/
+        /*    background-color: orange !important;*/
+        /*}*/
+
+        /*!* Per-button hover if you want each colored differently *!*/
+        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="today"]:hover {*/
+        /*    background-color: green !important;*/
+        /*}*/
+
+        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="clear"]:hover {*/
+        /*    background-color: blue !important;*/
+        /*}*/
+
+        /*.bootstrap-datetimepicker-widget li.picker-switch a[data-action="close"]:hover {*/
+        /*    background-color: pink !important;*/
+        /*}*/
 
 
         .input-group-addon {

@@ -43,29 +43,88 @@
             </div>
           </div>
 
+          @php
+              $field_format = '';
+              if (stripos($field->format, 'regex') === 0){
+                $field_format = 'CUSTOM REGEX';
+              }
+              // DATE / DATETIME fields are backed by native DATE / DATETIME
+              // columns on the assets table AND always render via the
+              // datepicker widgets, so we lock BOTH the format dropdown and
+              // the element dropdown once the field exists as DATE/DATETIME.
+              $format_locked = $field->exists && in_array($field->format, ['DATE', 'DATETIME'], true);
+              // When creating a new field, the format hasn't been chosen yet;
+              // JS ($('.format').change) reveals/hides the element block based
+              // on the selected format at runtime. Server-side we still
+              // enforce (element = text) when saving with DATE/DATETIME.
+          @endphp
+
+          <!-- Format -->
+          <div class="form-group {{ $errors->has('format') ? ' has-error' : '' }}" id="format_values">
+            <label for="format" class="col-md-3 control-label">
+              {{ trans('admin/custom_fields/general.field_format') }}
+            </label>
+            <div class="col-md-8 required">
+                <x-input.select
+                    name="format"
+                    :options="Helper::predefined_formats()"
+                    :selected="($field_format == '') ? $field->format : $field_format"
+                    class="format form-control"
+                    style="width:100%"
+                    aria-label="format"
+                    :disabled="$format_locked"
+                />
+                @if ($format_locked)
+                    <input type="hidden" name="format" value="{{ $field->format }}">
+                    <x-form.help name="format-locked">
+                        {{ trans('admin/custom_fields/general.format_locked_for_native_column', ['format' => $field->format]) }}
+                    </x-form.help>
+                @else
+                    <x-form.help name="format">
+                        {{ trans('admin/custom_fields/general.field_format_help') }}
+                    </x-form.help>
+                @endif
+                {{-- Shown by JS when element is date_picker / datetime_picker AND format is ANY.
+                     Explains the encryption use case for that combo. Component
+                     renders id="format_picker_note-help" — matched by the JS
+                     toggle in updateFormatPickerNote(). --}}
+                <x-form.help name="format_picker_note" style="display:none;">
+                    {{ trans('admin/custom_fields/general.format_any_with_date_picker_help') }}
+                </x-form.help>
+              <x-form.error name="format" />
+            </div>
+          </div>
+
           <!-- Element Type -->
-          <div class="form-group {{ $errors->has('element') ? ' has-error' : '' }}">
+          <div class="form-group {{ $errors->has('element') ? ' has-error' : '' }}" id="element_row">
             <label for="element" class="col-md-3 control-label">
               {{ trans('admin/custom_fields/general.field_element') }}
             </label>
             <div class="col-md-8 required">
-
-            <x-input.select
-                name="element"
-                :selected="old('element', $field->element)"
-                class="field_element"
-                style="width: 100%;"
-                :options="[
-                    'text' => trans('admin/custom_fields/general.types.text'),
-                    'listbox' => trans('admin/custom_fields/general.types.listbox'),
-                    'textarea' => trans('admin/custom_fields/general.types.textarea'),
-                    'markdown-textarea' => trans('admin/custom_fields/general.types.markdown-textarea'),
-                    'checkbox' => trans('admin/custom_fields/general.types.checkbox'),
-                    'radio' => trans('admin/custom_fields/general.types.radio'),
-                ]"
-            />
-            <x-form.error name="element" />
-
+                {{-- When format is DATE / DATETIME, JS below auto-selects the
+                     matching picker option AND disables the other options in
+                     this dropdown so the user can't pick something invalid. --}}
+                <x-input.select
+                    name="element"
+                    :selected="old('element', $field->element)"
+                    class="field_element"
+                    id="element_select"
+                    style="width: 100%;"
+                    :options="[
+                        'text' => trans('admin/custom_fields/general.types.text'),
+                        'listbox' => trans('admin/custom_fields/general.types.listbox'),
+                        'textarea' => trans('admin/custom_fields/general.types.textarea'),
+                        'markdown-textarea' => trans('admin/custom_fields/general.types.markdown-textarea'),
+                        'checkbox' => trans('admin/custom_fields/general.types.checkbox'),
+                        'radio' => trans('admin/custom_fields/general.types.radio'),
+                        'date_picker' => trans('admin/custom_fields/general.types.date_picker'),
+                        'datetime_picker' => trans('admin/custom_fields/general.types.datetime_picker'),
+                    ]"
+                />
+                <x-form.help name="element">
+                    {{ trans('admin/custom_fields/general.field_element_help') }}
+                </x-form.help>
+                <x-form.error name="element" />
             </div>
           </div>
 
@@ -84,30 +143,6 @@
                 />
               <x-form.error name="field_values" />
               <p class="help-block">{{ trans('admin/custom_fields/general.field_values_help') }}</p>
-            </div>
-          </div>
-
-          <!-- Format -->
-          <div class="form-group {{ $errors->has('format') ? ' has-error' : '' }}" id="format_values">
-            <label for="format" class="col-md-3 control-label">
-              {{ trans('admin/custom_fields/general.field_format') }}
-            </label>
-              @php
-              $field_format = '';
-              if (stripos($field->format, 'regex') === 0){
-                $field_format = 'CUSTOM REGEX';
-              }
-              @endphp
-            <div class="col-md-8 required">
-                <x-input.select
-                    name="format"
-                    :options="Helper::predefined_formats()"
-                    :selected="($field_format == '') ? $field->format : $field_format"
-                    class="format form-control"
-                    style="width:100%"
-                    aria-label="format"
-                />
-              <x-form.error name="format" />
             </div>
           </div>
           <!-- Custom Format -->
@@ -158,6 +193,15 @@
                       <input type="checkbox" value="1" name="field_encrypted" id="field_encrypted"{{ (old('field_encrypted') || $field->field_encrypted) ? ' checked="checked"' : '' }}>
                       {{ trans('admin/custom_fields/general.encrypt_field') }}
                   </label>
+                  {{-- Shown by JS when format is DATE or DATETIME. Sits inside
+                       encryption_section so it disappears alongside the section
+                       for any element type that hides the section entirely
+                       (e.g., checkbox / radio). Component renders id
+                       "encrypt_disabled_note-help" — matched by the JS toggle
+                       in the format-change handler. --}}
+                  <x-form.help name="encrypt_disabled_note" style="display:none;">
+                      {{ trans('admin/custom_fields/general.encrypt_disabled_for_date_format') }}
+                  </x-form.help>
               </div>
               <div class="col-md-9 col-md-offset-3" id="encrypt_warning" style="display:none;">
                   <div class="callout callout-danger" role="alert" aria-live="assertive" aria-atomic="true">
@@ -327,7 +371,61 @@
                     $("#custom_regex").hide();
                 }
             });
+
+            var pickedFormat = $(this).val();
+            var isDateFormat = (pickedFormat === 'DATE' || pickedFormat === 'DATETIME');
+
+            // DATE / DATETIME fields are stored in native date columns which
+            // can't hold ciphertext, so encryption is disallowed. Leave the
+            // checkbox visible so the user sees the option exists, but
+            // uncheck + disable it. Trigger change so the dependent warning
+            // and related visibility toggles run.
+            $("#field_encrypted")
+                .prop('disabled', isDateFormat)
+                .prop('checked', isDateFormat ? false : $("#field_encrypted").prop('checked'))
+                .trigger('change');
+
+            // Explain WHY the checkbox is disabled when the format is DATE
+            // or DATETIME. ID is generated by <x-form.help name="..."> as
+            // "{name}-help".
+            $("#encrypt_disabled_note-help").toggle(isDateFormat);
+
+            // With DATE/DATETIME format, force the element to the matching
+            // picker option and disable the other options so the user can't
+            // pick something invalid. Anything else — re-enable everything.
+            var $elementOptions = $("#element_select > option");
+            if (isDateFormat) {
+                var matchingElement = (pickedFormat === 'DATETIME') ? 'datetime_picker' : 'date_picker';
+                $elementOptions.each(function () {
+                    $(this).prop('disabled', $(this).val() !== matchingElement);
+                });
+                $("#element_select").val(matchingElement).trigger('change');
+            } else {
+                $elementOptions.prop('disabled', false);
+                // Don't force-change the user's element pick here — only
+                // reset if the previous value was one of the forced pickers.
+                var currentEl = $("#element_select").val();
+                if (currentEl === 'date_picker' || currentEl === 'datetime_picker') {
+                    // Leave whatever they had; user can pick another manually.
+                }
+            }
+
+            // Nudge the format-picker help note (element handler recomputes
+            // it too — this catches the case where format alone changed).
+            updateFormatPickerNote();
         }).change();
+
+        // Shown when the user has explicitly picked date_picker /
+        // datetime_picker as the element AND left the format as ANY. That
+        // combo IS supported (needed for encrypted date fields) but isn't
+        // the common path — surface the reason so users don't wonder.
+        function updateFormatPickerNote() {
+            var el = $("#element_select").val();
+            var fmt = $(".format").val();
+            var isPickerElement = (el === 'date_picker' || el === 'datetime_picker');
+            var isAnyFormat = (fmt === 'ANY' || fmt === '' || fmt == null);
+            $("#format_picker_note-help").toggle(isPickerElement && isAnyFormat);
+        }
 
         // If the element is a radiobutton/checkbox, doesn't show the format input box
         $(".field_element").change(function(){
@@ -340,20 +438,26 @@
             });
         }).change();
 
-        // Only display the field element if the type is not text
-        // and don't display encryption option for checkbox or radio
+        // Field Values input is only meaningful for elements that need a
+        // predefined set of options (listbox, checkbox, radio). Datepickers
+        // and text inputs have no options list, so hide it there.
+        // Encryption is disallowed for checkbox / radio elements (those
+        // store comma-separated values that don't play nicely with encrypt).
         $(".field_element").change(function(){
-            $(this).find("option:selected").each(function(){
-                if (($(this).attr("value") != "text") && ($(this).attr("value") != "textarea") && ($(this).attr("value") != "markdown-textarea")) {
-                    $("#field_values_text").show();
-                if ($(this).attr("value") == "checkbox" || $(this).attr("value") == "radio") {
-                    $("#encryption_section").hide();
-                }
-                } else{
-                    $("#encryption_section").show();
-                    $("#field_values_text").hide();
-                }
-            });
+            var el = $(this).val();
+            var needsValues = (el === 'listbox' || el === 'checkbox' || el === 'radio');
+            var blocksEncryption = (el === 'checkbox' || el === 'radio');
+
+            $("#field_values_text").toggle(needsValues);
+            if (blocksEncryption) {
+                $("#encryption_section").hide();
+            } else {
+                $("#encryption_section").show();
+            }
+
+            // Also re-evaluate the format-picker help note when element
+            // changes (e.g., user switches to date_picker on an ANY format).
+            updateFormatPickerNote();
         }).change();
     });
 
