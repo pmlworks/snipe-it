@@ -155,6 +155,35 @@ class CustomFieldFactory extends Factory
         });
     }
 
+    public function testDate()
+    {
+        return $this->state(function () {
+            return [
+                'name' => 'Sample Date',
+                'help_text' => 'This shows a datepicker',
+                // element must be one of text/listbox/textarea/markdown-
+                // textarea/checkbox/radio; the date widget is picked by
+                // format, not element.
+                'element' => 'text',
+                'format' => 'DATE',
+            ];
+        });
+    }
+
+    public function testDatetime()
+    {
+        return $this->state(function () {
+            return [
+                'name' => 'Sample Datetime',
+                'help_text' => 'This shows a datetimepicker',
+                // Same story as testDate: element stays 'text', the
+                // datetimepicker fires when format == 'DATETIME'.
+                'element' => 'text',
+                'format' => 'DATETIME',
+            ];
+        });
+    }
+
     public function testMarkdownTextarea()
     {
         return $this->state(function () {
