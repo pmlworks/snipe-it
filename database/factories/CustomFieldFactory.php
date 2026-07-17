@@ -161,10 +161,8 @@ class CustomFieldFactory extends Factory
             return [
                 'name' => 'Sample Date',
                 'help_text' => 'This shows a datepicker',
-                // element must be one of text/listbox/textarea/markdown-
-                // textarea/checkbox/radio; the date widget is picked by
-                // format, not element.
-                'element' => 'text',
+                // element is auto-forced to date_picker by the saving hook
+                // when format is DATE; no need to specify both.
                 'format' => 'DATE',
             ];
         });
@@ -176,9 +174,6 @@ class CustomFieldFactory extends Factory
             return [
                 'name' => 'Sample Datetime',
                 'help_text' => 'This shows a datetimepicker',
-                // Same story as testDate: element stays 'text', the
-                // datetimepicker fires when format == 'DATETIME'.
-                'element' => 'text',
                 'format' => 'DATETIME',
             ];
         });

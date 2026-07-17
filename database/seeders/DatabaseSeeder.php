@@ -46,6 +46,14 @@ class DatabaseSeeder extends Seeder
         $this->reportMemory('after ManufacturerSeeder');
         $this->call(SupplierSeeder::class);
         $this->reportMemory('after SupplierSeeder');
+        // CustomFieldSeeder MUST run before AssetModelSeeder. Mobile-phone
+        // model factories look up CustomFieldset by name (e.g., "Mobile
+        // Devices") to attach — if the fieldsets aren't seeded yet, the
+        // ?? fallback creates ad-hoc fieldsets that CustomFieldSeeder
+        // then truncates, leaving the models pointing at orphan
+        // fieldset_ids.
+        $this->call(CustomFieldSeeder::class);
+        $this->reportMemory('after CustomFieldSeeder');
         $this->call(AssetModelSeeder::class);
         $this->reportMemory('after AssetModelSeeder');
         $this->call(DepreciationSeeder::class);
@@ -54,8 +62,6 @@ class DatabaseSeeder extends Seeder
         $this->reportMemory('after StatuslabelSeeder');
         $this->call(AccessorySeeder::class);
         $this->reportMemory('after AccessorySeeder');
-        $this->call(CustomFieldSeeder::class);
-        $this->reportMemory('after CustomFieldSeeder');
         $this->call(AssetSeeder::class);
         $this->reportMemory('after AssetSeeder');
         $this->call(LicenseSeeder::class);
