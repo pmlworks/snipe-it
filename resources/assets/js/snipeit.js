@@ -673,12 +673,12 @@ $(document).ready(function () {
             },
         };
 
-        // Pre-fill an empty input with the user's current local datetime so
-        // the picker opens showing "now" AND the input reflects that value.
-        // useCurrent alone only moves the picker's focus; defaultDate also
-        // writes to the input. We only set it when the input is empty so
-        // edits don't clobber the existing value.
-        if (existingValue === '') {
+        // Pre-fill empty inputs with the user's current local datetime by
+        // default. Callers that render a picker where "now" is NOT a safe
+        // default (e.g., user-defined custom fields) can opt out by setting
+        // data-default-now="false" on the wrapper.
+        var wantsDefaultNow = $wrapper.data('default-now') !== false;
+        if (existingValue === '' && wantsDefaultNow) {
             options.defaultDate = moment();
         }
 
