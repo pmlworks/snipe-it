@@ -43,6 +43,23 @@ class CustomField extends Model
         'IPV6' => 'ipv6',
         'MAC' => 'regex:/^[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}:[a-fA-F0-9]{2}$/',
         'BOOLEAN' => 'boolean',
+        // Phone / fax validation is famously unreliable (international
+        // formats, extensions, punctuation variance), so PHONE / FAX
+        // deliberately use no-op patterns. 'string' / 'present' are chosen
+        // over '' because an empty pattern would collide with 'ANY' in the
+        // getFormatAttribute reverse-map. Both pass for any form input.
+        'PHONE' => 'string',
+        'FAX' => 'present',
+    ];
+
+    public const ELEMENT_KEYS = [
+        'text', 'listbox', 'textarea', 'markdown-textarea',
+        'checkbox', 'radio', 'date_picker', 'datetime_picker',
+    ];
+
+    public const TEXT_ONLY_FORMATS = [
+        'EMAIL', 'URL', 'PHONE', 'FAX', 'MAC', 'IP', 'IPV4', 'IPV6',
+        'ALPHA', 'ALPHA-DASH', 'ALPHA-NUMERIC', 'NUMERIC',
     ];
 
     public $guarded = [
@@ -148,6 +165,141 @@ class CustomField extends Model
     }
 
     /**
+     * Returns the element keys valid for a given format label.
+     *
+     * Single source of truth for the format/element compatibility matrix.
+     * Consumed both by getRules() (server-side validation for UI and API)
+     * and by the Livewire editor for live dropdown option disabling.
+     */
+    public static function allowedElementKeysForFormat(?string $formatLabel): array
+    {
+        if ($formatLabel === 'DATE') {
+            return ['date_picker'];
+        }
+        if ($formatLabel === 'DATETIME') {
+            return ['datetime_picker'];
+        }
+
+        // 'CUSTOM REGEX' is the friendly label; on saved records the
+        // stored value is the actual regex pattern (e.g. 'regex:/^\d+$/').
+        if ($formatLabel === 'CUSTOM REGEX' || str_starts_with((string) $formatLabel, 'regex:')) {
+            return ['text'];
+        }
+
+        if (in_array($formatLabel, self::TEXT_ONLY_FORMATS, true)) {
+            return ['text'];
+        }
+
+        if ($formatLabel === 'BOOLEAN') {
+            return ['text', 'checkbox'];
+        }
+
+        // ANY / null / empty — all elements allowed.
+        return self::ELEMENT_KEYS;
+    }
+
+    /**
+     * Returns whether encryption is allowed for a given element/format combo.
+     *
+     * DATE / DATETIME formats are backed by native date columns that can't
+     * hold ciphertext. checkbox / radio elements store comma-separated
+     * values that don't round-trip through encrypt/decrypt cleanly.
+     */
+    public static function canEncryptFor(?string $element, ?string $formatLabel): bool
+    {
+        if (in_array($formatLabel, ['DATE', 'DATETIME'], true)) {
+            return false;
+        }
+        if (in_array($element, ['checkbox', 'radio'], true)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Whether an element needs a field_values list (options to pick from).
+     */
+    public static function elementRequiresFieldValues(?string $element): bool
+    {
+        return in_array($element, ['listbox', 'checkbox', 'radio'], true);
+    }
+
+    /**
+     * Returns the icon type (matching IconHelper keys) that should decorate
+     * a text input for the given format, or null when no icon applies.
+     * Kept in one place so the preview and the real asset-form render agree.
+     */
+    public static function iconForFormat(?string $formatLabel): ?string
+    {
+        return match ($formatLabel) {
+            'EMAIL' => 'email',
+            'URL' => 'link',
+            'PHONE' => 'phone',
+            'FAX' => 'fax',
+            default => null,
+        };
+    }
+
+    /**
+     * Override Watson's getRules() to layer per-instance dynamic rules on
+     * top of the static $rules array. Ensures the format/element matrix,
+     * encryption compatibility, and field_values requirement are enforced
+     * on ALL entry points (UI, API, factories, seeders) — not just the UI.
+     */
+    public function getRules()
+    {
+        $rules = $this->rules;
+
+        // Uses the accessor, which reverse-maps stored patterns like
+        // 'date' back to the label 'DATE' so the matrix keys line up.
+        $format = $this->format;
+        $element = $this->element;
+
+        $allowedElements = self::allowedElementKeysForFormat($format);
+        $rules['element'] = [
+            'required',
+            Rule::in(self::ELEMENT_KEYS),
+            function ($attribute, $value, $fail) use ($allowedElements, $format) {
+                if (! in_array($value, $allowedElements, true)) {
+                    $fail(trans('admin/custom_fields/general.validation.element_not_valid_for_format', [
+                        'element' => $value,
+                        'format' => $format ?: 'ANY',
+                        'allowed' => implode(', ', $allowedElements),
+                    ]));
+                }
+            },
+        ];
+
+        if (self::elementRequiresFieldValues($element)) {
+            $rules['field_values'] = ['required', 'string', function ($attribute, $value, $fail) use ($element) {
+                if (trim((string) $value) === '') {
+                    $fail(trans('admin/custom_fields/general.validation.field_values_required', [
+                        'element' => $element,
+                    ]));
+                }
+            }];
+        }
+
+        if ($this->field_encrypted && ! self::canEncryptFor($element, $format)) {
+            $rules['field_encrypted'] = [function ($attribute, $value, $fail) use ($element, $format) {
+                if (in_array($format, ['DATE', 'DATETIME'], true)) {
+                    $fail(trans('admin/custom_fields/general.validation.cannot_encrypt_format', [
+                        'format' => $format,
+                    ]));
+
+                    return;
+                }
+                $fail(trans('admin/custom_fields/general.validation.cannot_encrypt_element', [
+                    'element' => $element,
+                ]));
+            }];
+        }
+
+        return $rules;
+    }
+
+    /**
      * Set some boot methods for creating and updating.
      *
      * There is never ever a time when we wouldn't want to be updating those asset
@@ -193,65 +345,36 @@ class CustomField extends Model
                     }
                 );
 
-                // Update the db_column property in the custom fields table
+                // Update the db_column property in the custom fields table.
+                // syncOriginal() first because Laravel doesn't call it until
+                // finishSave() completes, and finishSave() hasn't run yet at
+                // this point in the `created` event. Without the explicit
+                // sync, the internal save below arrives at the `updating`
+                // hook with $original == [] — making every attribute look
+                // dirty and tripping the format-lock check.
+                $custom_field->syncOriginal();
                 $custom_field->db_column = $custom_field->convertUnicodeDbSlug();
                 $custom_field->save();
             }
         );
 
-        self::saving(
-            function ($custom_field) {
-                // DATE / DATETIME format implies the matching picker
-                // element (widget rendering is driven by the element; format
-                // additionally drives the native column type). Force it here
-                // so callers (UI, factories, API, seeders) don't have to
-                // specify both — format is the source of truth.
-                //   format=DATE     => element=date_picker
-                //   format=DATETIME => element=datetime_picker
-                // For non-DATE/DATETIME formats, date_picker / datetime_picker
-                // are still allowed as manual picks (renders the widget on
-                // a TEXT column, which supports encryption).
-                $forcedElement = match ($custom_field->format) {
-                    'DATE' => 'date_picker',
-                    'DATETIME' => 'datetime_picker',
-                    default => null,
-                };
-                if ($forcedElement !== null) {
-                    $custom_field->element = $forcedElement;
-                }
-
-                // DATE / DATETIME fields cannot be encrypted: they're
-                // backed by a native DATE / DATETIME column which only
-                // accepts valid date values, not ciphertext strings.
-                if (in_array($custom_field->format, ['DATE', 'DATETIME'], true)
-                    && $custom_field->field_encrypted == 1
-                ) {
-                    $custom_field->getErrors()->add(
-                        'field_encrypted',
-                        $custom_field->format.' custom fields cannot be encrypted; the underlying database column only accepts valid date values.'
-                    );
-
-                    return false;
-                }
-            }
-        );
+        // Format/element/encryption compatibility is enforced by getRules()
+        // so both UI (Livewire) and API callers hit the same validation.
+        // See allowedElementKeysForFormat() / canEncryptFor() above.
 
         self::updating(
             function ($custom_field) {
 
-                // DATE and DATETIME custom fields are backed by native
-                // DATE / DATETIME columns on the assets table (created in
-                // the `created` hook above). Once created, changing the
-                // format would need a column-type alter AND data
-                // conversion — a footgun in both directions:
-                //   - DATE/DATETIME -> anything else: existing rows would
-                //     need to stringify their values.
-                //   - anything else -> DATE/DATETIME: existing TEXT values
-                //     might not be valid dates and would fail conversion.
-                // Simpler contract: format is locked once a DATE / DATETIME
-                // column exists on either side of the change. Applies to
-                // pre-existing TEXT-backed DATE fields too, since the risk
-                // of a bad format change is the same.
+                // DATE / DATETIME custom fields are backed by native
+                // DATE / DATETIME columns on the assets table. Changing
+                // format to or from these types is a HARD block because
+                // it requires an ALTER TABLE column-type change: existing
+                // text values would fail conversion to a date column, and
+                // existing date values can't round-trip back to text
+                // without an explicit stringify step. Other format changes
+                // (e.g. PHONE -> EMAIL) affect only validation rules and
+                // are allowed — the Livewire UI warns the user before they
+                // save that existing assets may fail future validation.
                 if ($custom_field->isDirty('format')) {
                     $original = $custom_field->getOriginal('format');
                     $originalFriendly = collect(self::PREDEFINED_FORMATS)
@@ -262,7 +385,7 @@ class CustomField extends Model
                     if ($isOrWasLocked) {
                         $custom_field->getErrors()->add(
                             'format',
-                            'The format cannot be changed on a '.$originalFriendly.' custom field.'
+                            'The format cannot be changed to or from '.($originalFriendly ?: 'the current type').' on an existing field. Create a new field with the desired format instead.'
                         );
 
                         return false;
@@ -296,6 +419,17 @@ class CustomField extends Model
         // Drop the assets column if we've deleted it from custom fields
         self::deleting(
             function ($custom_field) {
+                // Guard against orphans from an earlier bug that could leave
+                // db_column empty. There's no column to drop in that case;
+                // still allow the custom_fields row itself to be deleted so
+                // the record can be cleaned up.
+                if (empty($custom_field->db_column)) {
+                    return true;
+                }
+                if (! Schema::hasColumn(self::$table_name, $custom_field->db_column)) {
+                    return true;
+                }
+
                 return Schema::table(
                     self::$table_name, function ($table) use ($custom_field) {
                         $table->dropColumn($custom_field->db_column);
@@ -463,6 +597,24 @@ class CustomField extends Model
         }
 
         return $value;
+    }
+
+    /**
+     * Returns the display label of the ORIGINAL format (before any pending
+     * in-memory changes). getFormatAttribute reads the current value; this
+     * reads $original — needed to answer "is this field ALREADY locked into
+     * DATE/DATETIME on disk" so the UI can render a readonly control.
+     */
+    public function getOriginalFormat(): string
+    {
+        $raw = $this->getOriginal('format') ?? '';
+        foreach (self::PREDEFINED_FORMATS as $name => $pattern) {
+            if ($pattern === $raw || $name === $raw) {
+                return $name;
+            }
+        }
+
+        return $raw;
     }
 
     /**
