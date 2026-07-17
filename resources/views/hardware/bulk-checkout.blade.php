@@ -110,10 +110,9 @@
                         input_div_class="col-md-4"
                     >
                         <x-slot:input>
-                            <x-input.datepicker
+                            <x-input.datetimepicker
                                 name="expected_checkin"
                                 :value="old('expected_checkin')"
-                                :placeholder="trans('general.select_date')"
                             />
                         </x-slot:input>
                     </x-form.row>

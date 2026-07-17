@@ -78,10 +78,9 @@
             <div class="form-group{{ $errors->has('expected_checkin') ? ' has-error' : '' }}">
                 <label for="expected_checkin" class="col-md-3 control-label">{{ trans('admin/hardware/form.expected_checkin') }}</label>
                 <div class="col-md-4">
-                    <x-input.datepicker
+                    <x-input.datetimepicker
                         name="expected_checkin"
                         value="{{ old('expected_checkin') }}"
-                        placeholder="{{ trans('general.select_date') }}"
                     />
                     <x-form.error name="expected_checkin" />
                 </div>

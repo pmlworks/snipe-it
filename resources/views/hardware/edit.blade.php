@@ -148,7 +148,7 @@
             <div id="optional_details" class="col-md-12" style="display:none">
                 @include ('partials.forms.edit.name', ['translated_name' => trans('admin/hardware/form.name')])
                 @include ('partials.forms.edit.warranty')
-                @include ('partials.forms.edit.datepicker', ['translated_name' => trans('admin/hardware/form.expected_checkin'),'fieldname' => 'expected_checkin'])
+                @include ('partials.forms.edit.datetimepicker', ['translated_name' => trans('admin/hardware/form.expected_checkin'),'fieldname' => 'expected_checkin'])
                 @include ('partials.forms.edit.datepicker', ['translated_name' => trans('general.next_audit_date'),'fieldname' => 'next_audit_date', 'help_text' => trans('general.next_audit_date_help')])
                 <!-- byod checkbox -->
                 <div class="form-group byod">

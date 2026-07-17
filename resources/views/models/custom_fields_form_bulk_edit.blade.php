@@ -118,6 +118,17 @@
             </div>
 
 
+                @elseif ($field->format=='DATETIME')
+
+                    <x-input.datetimepicker
+                        id="{{ $field->db_column_name() }}"
+                        name="{{ $field->db_column_name() }}"
+                        :value="old($field->db_column_name(), isset($item) ? Helper::gracefulDecrypt($field, $item->{$field->db_column_name()}) : '')"
+                        col_size_class="col-md-5"
+                        :default_now="false"
+                    />
+
+
                 @else
                     
                     @if (($field->field_encrypted=='0') || (Gate::allows('admin')))

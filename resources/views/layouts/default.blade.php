@@ -304,6 +304,66 @@
             overflow-y: auto;
         }
 
+        /*
+        eonasdan bootstrap-datetimepicker widget: match the app's theme color
+        for selected/today cells and follow light/dark mode for the popup
+        chrome. Ships with Bootstrap's stock #337ab7 which looks off next to
+        AdminLTE.
+        */
+        .bootstrap-datetimepicker-widget {
+            z-index: 1030 !important;
+            background-color: var(--box-bg) !important;
+            color: var(--color-fg) !important;
+        }
+        /* Side-by-side (date + time) mode ships at 38em, which isn't wide
+           enough once the format includes seconds — the seconds column runs
+           past the right edge. Bump it up to give the time cells room. */
+        .bootstrap-datetimepicker-widget.dropdown-menu.timepicker-sbs {
+            width: 42em !important;
+        }
+        .bootstrap-datetimepicker-widget table td.active,
+        .bootstrap-datetimepicker-widget table td.active:hover,
+        .bootstrap-datetimepicker-widget table td span.active,
+        .bootstrap-datetimepicker-widget table td span.active:hover {
+            background-color: var(--main-theme-color) !important;
+            color: var(--nav-primary-text-color) !important;
+            text-shadow: none !important;
+        }
+        .bootstrap-datetimepicker-widget table td.today:before {
+            border-bottom-color: var(--main-theme-color) !important;
+        }
+        .bootstrap-datetimepicker-widget table td:hover,
+        .bootstrap-datetimepicker-widget table td span:hover,
+        .bootstrap-datetimepicker-widget table thead tr:first-child th:hover {
+            background-color: hsl(from var(--main-theme-color) h s calc(l + 40)) !important;
+            color: var(--color-fg) !important;
+        }
+        /* The toolbar wrapper (<li class="picker-switch">) intentionally is
+           NOT included in the generic hover rule above — that would tint the
+           entire toolbar bar when hovering ANY single button, washing out the
+           non-hovered buttons around it. Hover state is per-button only, via
+           the a[data-action]:hover rule further down. */
+        /* Today / Clear / Close toolbar buttons. Default link color is the
+           app-wide bright blue which clashes on the widget; use the standard
+           foreground color for the icons and highlight with the theme color
+           on hover. Hover uses a DARKER shade of the theme color so the white
+           icon has enough contrast against it — the +40 lightness tint used
+           for calendar cells makes toolbar icons wash out. Container td
+           background is neutralised on hover so it doesn't peek around the
+           button and dilute the contrast. */
+        .bootstrap-datetimepicker-widget .picker-switch a[data-action],
+        .bootstrap-datetimepicker-widget .picker-switch a[data-action] span {
+            color: var(--color-fg) !important;
+        }
+        .bootstrap-datetimepicker-widget .picker-switch table td:hover {
+            background-color: transparent !important;
+        }
+        .bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover,
+        .bootstrap-datetimepicker-widget .picker-switch a[data-action]:hover span {
+            background-color: hsl(from var(--main-theme-color) h s calc(l - 10)) !important;
+            color: var(--nav-primary-text-color) !important;
+        }
+
 
         .input-group-addon {
             background-color: var(--input-group-bg) !important;

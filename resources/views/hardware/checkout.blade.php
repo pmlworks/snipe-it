@@ -101,10 +101,9 @@
                         input_div_class="col-md-4"
                     >
                         <x-slot:input>
-                            <x-input.datepicker
+                            <x-input.datetimepicker
                                 name="expected_checkin"
-                                :value="old('expected_checkin', $item->expected_checkin)"
-                                :placeholder="trans('general.select_date')"
+                                :value="old('expected_checkin', $item->expected_checkin?->format('Y-m-d H:i:s'))"
                                 required="{{ Helper::checkIfRequired($item, 'expected_checkin') }}"
                             />
                         </x-slot:input>

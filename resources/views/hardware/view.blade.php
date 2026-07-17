@@ -114,7 +114,7 @@
                                 <x-icon type="expected_checkin" class="fa-fw"/>
                                 <strong>{{ trans('general.expected_checkin') }}</strong>
                                 @if ($asset->expected_checkin!='')
-                                    {{ Helper::getFormattedDateObject($asset->expected_checkin, 'date', false) }}
+                                    {{ Helper::getFormattedDateObject($asset->expected_checkin, 'datetime', false) }}
                                     <span class="text-muted hidden-sm hidden-md">{{ Carbon::parse($asset->expected_checkin)->diffForHumans(['parts' => 2]) }}</span>
                                 @else
                                     {{ trans('general.na') }}
