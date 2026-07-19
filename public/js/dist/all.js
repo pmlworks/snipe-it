@@ -74554,6 +74554,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _typeof
   \****************************************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 window.jQuery = jQuery;
 window.$ = jQuery;
@@ -75393,6 +75399,79 @@ $.fn.sort_select_box = function () {
   // clearing any selections
   $("#" + this.attr('id') + " option").attr('selected', true);
 };
+
+/*
+ * Data-attribute driven initializers. Blades attach behavior by adding
+ * `data-toggle="..."` (plus supporting data-* attributes) to elements
+ * instead of shipping an inline <script> block. Add new handlers here
+ * as inline scripts get migrated out of blades.
+ */
+$(function () {
+  // Sound preview on account/profile. Fires the URL in data-sound-url
+  // when the user toggles the checkbox on.
+  $(document).on('click', '[data-toggle="sound-test"]', function () {
+    if (!$(this).is(':checked')) return;
+    var url = $(this).data('sound-url');
+    if (!url) return;
+    new Audio(url).play();
+  });
+
+  // Confetti preview on account/profile. Same shape as sound-test.
+  $(document).on('click', '[data-toggle="confetti-test"]', function () {
+    if (!$(this).is(':checked')) return;
+    var duration = 1500;
+    var animationEnd = Date.now() + duration;
+    var defaults = {
+      startVelocity: 30,
+      spread: 360,
+      ticks: 60,
+      zIndex: 0
+    };
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+    var interval = setInterval(function () {
+      var timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+      var particleCount = 50 * (timeLeft / duration);
+      confetti(_objectSpread(_objectSpread({}, defaults), {}, {
+        particleCount: particleCount,
+        origin: {
+          x: randomInRange(0.1, 0.3),
+          y: Math.random() - 0.2
+        }
+      }));
+      confetti(_objectSpread(_objectSpread({}, defaults), {}, {
+        particleCount: particleCount,
+        origin: {
+          x: randomInRange(0.7, 0.9),
+          y: Math.random() - 0.2
+        }
+      }));
+    }, 250);
+  });
+
+  // Live color preview for the nav-link colorpicker on account/profile.
+  // The colorpicker widget itself is initialized by $(".color").colorpicker()
+  // in the default layout; this just wires the changeColor listener.
+  if ($('#nav-link-color').length) {
+    $('#nav-link-color').on('changeColor', function (e) {
+      var color = e.color.toString('rgba');
+      $('.navbar-nav > li > a:link').attr('style', 'color: ' + color + ' !important');
+      $('.btn-theme').attr('style', 'color: ' + color + ' !important');
+    });
+  }
+
+  // Reset the localStorage theme override when the user clicks the
+  // "system default" link (any element carrying data-theme-toggle-clear).
+  document.querySelectorAll('[data-theme-toggle-clear]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      localStorage.removeItem('theme');
+    });
+  });
+});
 
 /***/ }),
 
