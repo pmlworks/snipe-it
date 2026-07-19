@@ -2377,69 +2377,6 @@
 
 
 
-            $.fn.datepicker.dates['{{ app()->getLocale() }}'] = {
-                days: [
-                    "{{ trans('datepicker.days.sunday') }}",
-                    "{{ trans('datepicker.days.monday') }}",
-                    "{{ trans('datepicker.days.tuesday') }}",
-                    "{{ trans('datepicker.days.wednesday') }}",
-                    "{{ trans('datepicker.days.thursday') }}",
-                    "{{ trans('datepicker.days.friday') }}",
-                    "{{ trans('datepicker.days.saturday') }}"
-                ],
-                daysShort: [
-                    "{{ trans('datepicker.short_days.sunday') }}",
-                    "{{ trans('datepicker.short_days.monday') }}",
-                    "{{ trans('datepicker.short_days.tuesday') }}",
-                    "{{ trans('datepicker.short_days.wednesday') }}",
-                    "{{ trans('datepicker.short_days.thursday') }}",
-                    "{{ trans('datepicker.short_days.friday') }}",
-                    "{{ trans('datepicker.short_days.saturday') }}"
-                ],
-                daysMin: [
-                    "{{ trans('datepicker.min_days.sunday') }}",
-                    "{{ trans('datepicker.min_days.monday') }}",
-                    "{{ trans('datepicker.min_days.tuesday') }}",
-                    "{{ trans('datepicker.min_days.wednesday') }}",
-                    "{{ trans('datepicker.min_days.thursday') }}",
-                    "{{ trans('datepicker.min_days.friday') }}",
-                    "{{ trans('datepicker.min_days.saturday') }}"
-                ],
-                months: [
-                    "{{ trans('datepicker.months.january') }}",
-                    "{{ trans('datepicker.months.february') }}",
-                    "{{ trans('datepicker.months.march') }}",
-                    "{{ trans('datepicker.months.april') }}",
-                    "{{ trans('datepicker.months.may') }}",
-                    "{{ trans('datepicker.months.june') }}",
-                    "{{ trans('datepicker.months.july') }}",
-                    "{{ trans('datepicker.months.august') }}",
-                    "{{ trans('datepicker.months.september') }}",
-                    "{{ trans('datepicker.months.october') }}",
-                    "{{ trans('datepicker.months.november') }}",
-                    "{{ trans('datepicker.months.december') }}",
-                ],
-                monthsShort:  [
-                    "{{ trans('datepicker.months_short.january') }}",
-                    "{{ trans('datepicker.months_short.february') }}",
-                    "{{ trans('datepicker.months_short.march') }}",
-                    "{{ trans('datepicker.months_short.april') }}",
-                    "{{ trans('datepicker.months_short.may') }}",
-                    "{{ trans('datepicker.months_short.june') }}",
-                    "{{ trans('datepicker.months_short.july') }}",
-                    "{{ trans('datepicker.months_short.august') }}",
-                    "{{ trans('datepicker.months_short.september') }}",
-                    "{{ trans('datepicker.months_short.october') }}",
-                    "{{ trans('datepicker.months_short.november') }}",
-                    "{{ trans('datepicker.months_short.december') }}",
-                ],
-                today: "{{ trans('datepicker.today') }}",
-                clear: "{{ trans('datepicker.clear') }}",
-                format: "yyyy-mm-dd",
-                weekStart: {{ $snipeSettings->week_start ?? 0 }},
-            };
-
-
             var clipboard = new ClipboardJS('.js-copy-link');
 
             clipboard.on('success', function(e) {
