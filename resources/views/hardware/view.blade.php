@@ -69,7 +69,7 @@
                     />
                     <x-tabs.note-tab :item="$asset" count="{{ $asset->journal->count() }}"/>
                     <x-tabs.files-tab :item="$asset" count="{{ $asset->uploads()->count() }}"/>
-                    <x-tabs.model-files-tab count="{{ $asset->model?->uploads()->count() }}"/>
+                    <x-tabs.model-files-tab :item="$asset->model" count="{{ $asset->model?->uploads()->count() }}"/>
                     <x-tabs.history-tab count="{{ $asset->history()->count() }}" :model="$asset"/>
                     <x-tabs.upload-tab :item="$asset"/>
                 </x-slot:tabnav>
