@@ -22,16 +22,16 @@ use Tests\TestCase;
  */
 class AssetModelFilesPolicyBypassTest extends TestCase
 {
-    public function test_read_cascade_from_assets_files_is_preserved_for_index()
+    public function test_asset_viewer_can_list_model_files()
     {
         // Seed one file on the model as a superuser so there is something to see.
         $model = AssetModel::factory()->create();
         $this->uploadFileAs(User::factory()->superuser()->create(), $model);
 
-        // A user with only assets.files (no models.files) can still see model files
-        // because the model's files show up on the asset detail page and blocking
-        // that read would be a UX regression.
-        $reader = User::factory()->manageAssetFiles()->create();
+        // Anyone who can view assets can see the model's file attachments
+        // (user manuals, spec sheets) because they show up on the asset
+        // detail page and apply to every asset of that model.
+        $reader = User::factory()->viewAssets()->create();
 
         $this->actingAsForApi($reader)
             ->getJson(route('api.files.index', ['object_type' => 'models', 'id' => $model->id]))
@@ -39,21 +39,49 @@ class AssetModelFilesPolicyBypassTest extends TestCase
             ->assertJsonPath('total', 1);
     }
 
-    public function test_read_cascade_from_assets_files_is_preserved_for_show()
+    public function test_asset_viewer_can_download_model_file()
     {
         // Seed one file as superuser.
         $model = AssetModel::factory()->create();
         $fileId = $this->uploadFileAndReturnId(User::factory()->superuser()->create(), $model);
 
-        $reader = User::factory()->manageAssetFiles()->create();
+        $reader = User::factory()->viewAssets()->create();
 
         $this->actingAsForApi($reader)
             ->get(route('api.files.show', ['object_type' => 'models', 'id' => $model->id, 'file_id' => $fileId]))
             ->assertOk();
     }
 
+    public function test_asset_viewer_cannot_upload_to_model()
+    {
+        $model = AssetModel::factory()->create();
+        $writer = User::factory()->viewAssets()->create();
+
+        $this->actingAsForApi($writer)
+            ->post(
+                route('api.files.store', ['object_type' => 'models', 'id' => $model->id]),
+                ['file' => [UploadedFile::fake()->create('test.jpg', 100)]]
+            )
+            ->assertForbidden();
+    }
+
+    public function test_asset_viewer_cannot_delete_model_file()
+    {
+        // Seed a file as superuser so there is something for the low-priv user to try to delete.
+        $model = AssetModel::factory()->create();
+        $fileId = $this->uploadFileAndReturnId(User::factory()->superuser()->create(), $model);
+
+        $writer = User::factory()->viewAssets()->create();
+
+        $this->actingAsForApi($writer)
+            ->delete(route('api.files.destroy', ['object_type' => 'models', 'id' => $model->id, 'file_id' => $fileId]))
+            ->assertForbidden();
+    }
+
     public function test_user_with_only_assets_files_cannot_upload_to_model()
     {
+        // The originally-reported bypass scenario: assets.files alone used to
+        // grant model file upload/delete. It must not anymore.
         $model = AssetModel::factory()->create();
         $writer = User::factory()->manageAssetFiles()->create();
 
@@ -67,7 +95,6 @@ class AssetModelFilesPolicyBypassTest extends TestCase
 
     public function test_user_with_only_assets_files_cannot_delete_model_file()
     {
-        // Seed a file as superuser so there is something for the low-priv user to try to delete.
         $model = AssetModel::factory()->create();
         $fileId = $this->uploadFileAndReturnId(User::factory()->superuser()->create(), $model);
 

@@ -13,13 +13,14 @@ class AssetModelPolicy extends SnipePermissionsPolicy
 
     /**
      * READ ability for model files (index / show / download). Cascades from
-     * assets.files because a model's file attachments (user manuals, spec
-     * sheets, etc.) show up on the asset detail page and are legitimately
-     * useful to anyone who can see the asset itself.
+     * asset visibility: model file attachments (user manuals, spec sheets,
+     * etc.) apply to every asset of a given model, so anyone who can view
+     * assets can see them. Managing (upload/delete) still requires the
+     * dedicated `models.files` grant via manageFiles() below.
      */
     public function files(User $user, $item = null)
     {
-        if ($user->hasAccess('assets.files')) {
+        if ($user->hasAccess('assets.view')) {
             return true;
         }
 
