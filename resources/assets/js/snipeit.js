@@ -954,3 +954,84 @@ $.fn.sort_select_box = function(){
     // clearing any selections
     $("#"+this.attr('id')+" option").attr('selected', true);
 }
+
+
+/*
+ * Data-attribute driven initializers. Blades attach behavior by adding
+ * `data-toggle="..."` (plus supporting data-* attributes) to elements
+ * instead of shipping an inline <script> block. Add new handlers here
+ * as inline scripts get migrated out of blades.
+ */
+$(function () {
+
+    // Sound preview on account/profile. Fires the URL in data-sound-url
+    // when the user toggles the checkbox on.
+    $(document).on('click', '[data-toggle="sound-test"]', function () {
+        if (!$(this).is(':checked')) return;
+        var url = $(this).data('sound-url');
+        if (!url) return;
+        new Audio(url).play();
+    });
+
+    // Confetti preview on account/profile. Same shape as sound-test.
+    $(document).on('click', '[data-toggle="confetti-test"]', function () {
+        if (!$(this).is(':checked')) return;
+
+        var duration = 1500;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        var interval = setInterval(function () {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+            var particleCount = 50 * (timeLeft / duration);
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            });
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            });
+        }, 250);
+    });
+
+    // Live color preview for the nav-link colorpicker on account/profile.
+    // The colorpicker widget itself is initialized by $(".color").colorpicker()
+    // in the default layout; this just wires the changeColor listener.
+    if ($('#nav-link-color').length) {
+        $('#nav-link-color').on('changeColor', function (e) {
+            var color = e.color.toString('rgba');
+            $('.navbar-nav > li > a:link').attr('style', 'color: ' + color + ' !important');
+            $('.btn-theme').attr('style', 'color: ' + color + ' !important');
+        });
+    }
+
+    // Reset the localStorage theme override when the user clicks the
+    // "system default" link (any element carrying data-theme-toggle-clear).
+    document.querySelectorAll('[data-theme-toggle-clear]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            localStorage.removeItem('theme');
+        });
+    });
+
+    // Master checkbox → target field disabled state. Callers pair a
+    // <input type="checkbox" data-toggle="disable-when-unchecked"
+    // data-disable-target="#some-field"> with a target rendered
+    // server-side with the matching @disabled state (avoids FOUC).
+    // Handler keeps them in sync on change.
+    $(document).on('change', '[data-toggle="disable-when-unchecked"]', function () {
+        var target = $(this).data('disable-target');
+        if (target) {
+            $(target).prop('disabled', !$(this).is(':checked'));
+        }
+    });
+});
