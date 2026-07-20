@@ -1034,4 +1034,58 @@ $(function () {
             $(target).prop('disabled', !$(this).is(':checked'));
         }
     });
+
+    // Disable empty REQUIRED inputs on submit so browser HTML5 validation
+    // doesn't block the request before Laravel's form-request validator
+    // gets a chance to return a nicer error. Non-required empties (like a
+    // "Do not change" select with an explicit value="" option) are left
+    // enabled so they submit their intentional empty value. Opt in per
+    // form with data-disable-empty-on-submit.
+    $(document).on('submit', 'form[data-disable-empty-on-submit]', function () {
+        $(this).find(':input[required]').filter(function () { return !this.value; }).attr('disabled', 'disabled');
+    });
+
+    // Master checkbox → toggle every non-disabled checkbox in the closest
+    // form or table (or a caller-specified selector via data-check-scope).
+    // Used by bulk-delete confirmation pages to select or deselect the
+    // whole list of rows at once.
+    $(document).on('change', '[data-toggle="check-all"]', function () {
+        var $master = $(this);
+        var scope = $master.data('check-scope');
+        var $container = scope ? $(scope) : $master.closest('form, table');
+        $container.find('input[type="checkbox"]').not($master).not(':disabled').prop('checked', $master.prop('checked'));
+    });
+
+    // A <select data-gates-submit> disables the submit button(s) in its
+    // form until a value is chosen. Used by users/confirm-bulk-delete
+    // where the operator must pick a status for the deleted users' assets
+    // before the form can be submitted. Runs once on load to reflect
+    // whatever value was pre-selected (old input after a validation
+    // redirect) and re-syncs on change and on select2's own event.
+    $('select[data-gates-submit]').each(function () {
+        var $select = $(this);
+        var $submits = $select.closest('form').find(':submit');
+        var sync = function () {
+            $submits.prop('disabled', ! $select.val());
+        };
+        sync();
+        $select.on('change select2:select', sync);
+    });
+
+    // Auto-focus the first select2 search input on pages that ask for it.
+    // Bulk-checkout uses this so the operator lands directly on the
+    // assets-to-checkout picker and can start typing immediately. Results
+    // are hidden until the first keystroke so the operator doesn't see a
+    // full-list flash on open.
+    if ($('[data-autofocus-select2-search]').length) {
+        setTimeout(function () {
+            var $searchField = $('.select2-search__field');
+            var $results = $('.select2-results');
+            $searchField.focus();
+            $results.hide();
+            $searchField.on('input', function () {
+                $results.show();
+            });
+        }, 0);
+    }
 });
