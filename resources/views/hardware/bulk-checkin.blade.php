@@ -22,7 +22,7 @@
         <h2 class="box-title"> {{ trans('admin/hardware/form.tag') }} </h2>
       </div>
       <div class="box-body">
-        <form class="form-horizontal" method="post" action="{{ route('hardware.bulkcheckin.store') }}" autocomplete="off">
+        <form class="form-horizontal" method="post" action="{{ route('hardware.bulkcheckin.store') }}" autocomplete="off" data-disable-empty-on-submit>
           {{ csrf_field() }}
 
             @include('partials.forms.edit.asset-select', [
@@ -138,13 +138,3 @@
 </x-container>
 @stop
 
-@section('moar_scripts')
-<script nonce="{{ csrf_token() }}">
-    $(function () {
-        $("form").submit(function() {
-            $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
-            return true;
-        });
-    });
-</script>
-@stop

@@ -18,7 +18,7 @@
     <x-container columns="2">
         <x-page-column class="col-md-7">
 
-            <x-form id="checkout_form" route="{{ url()->current() }}">
+            <x-form id="checkout_form" route="{{ url()->current() }}" data-disable-empty-on-submit data-autofocus-select2-search>
 
                 <x-box header="{{ trans('admin/hardware/form.tag') }}">
 
@@ -42,7 +42,6 @@
                                 name="status_id"
                                 :options="$statusLabel_list"
                                 :selected="old('status_id', $status_id ?? null)"
-                                required
                                 style="width: 100%;"
                                 aria-label="status_id"
                             />
@@ -122,31 +121,3 @@
     </x-container>
 @stop
 
-@section('moar_scripts')
-    <script nonce="{{ csrf_token() }}">
-        $(function () {
-            // Add the disabled attribute to empty inputs on submit to handle the case where someone does not pick a status ID
-            // and the form is submitted with an empty status ID which will fail validation via the form request
-            $("form").submit(function() {
-                $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
-                return true; // ensure form still submits
-            });
-
-            setTimeout(function () {
-                const $searchField = $('.select2-search__field');
-                const $results = $('.select2-results');
-
-                // Focus the search input
-                $searchField.focus();
-
-                // Hide results initially
-                $results.hide();
-
-                // Show results when a user starts typing
-                $searchField.on('input', function () {
-                    $results.show();
-                });
-            }, 0);
-        });
-    </script>
-@stop

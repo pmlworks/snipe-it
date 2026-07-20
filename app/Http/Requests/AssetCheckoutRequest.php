@@ -29,7 +29,7 @@ class AssetCheckoutRequest extends Request
             'assigned_user' => 'numeric|nullable|required_without_all:assigned_asset,assigned_location',
             'assigned_asset' => 'numeric|nullable|required_without_all:assigned_user,assigned_location',
             'assigned_location' => 'numeric|nullable|required_without_all:assigned_user,assigned_asset',
-            'status_id' => 'exists:status_labels,id,deployable,1',
+            'status_id' => 'nullable|exists:status_labels,id,deployable,1',
             'checkout_to_type' => 'required|in:asset,location,user',
             'checkout_at' => [
                 'nullable',
