@@ -925,19 +925,25 @@ class BulkAssetsController extends Controller
 
     public function restore(Request $request): RedirectResponse
     {
-        $this->authorize('update', Asset::class);
+        // Restore is a delete-level action across the codebase. The bulk
+        // POST handler used to gate on authorize('update', Asset::class),
+        // letting an assets.edit user undo an admin's soft-delete.
+        $this->authorize('delete', Asset::class);
         $assetIds = $request->input('ids');
 
         if (empty($assetIds)) {
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.restore.nothing_updated'));
-        } else {
-            foreach ($assetIds as $key => $assetId) {
-                $asset = Asset::withTrashed()->find($assetId);
+        }
+
+        foreach ($assetIds as $assetId) {
+            // Skip invalid or forged IDs. Prior code called ->restore() on
+            // null and 500'd on the first bad id in the payload.
+            if ($asset = Asset::withTrashed()->find($assetId)) {
                 $asset->restore();
             }
-
-            return redirect()->route('hardware.index')->with('success', trans('admin/hardware/message.restore.success'));
         }
+
+        return redirect()->route('hardware.index')->with('success', trans('admin/hardware/message.restore.success'));
     }
 
     public function hasUndeployableStatus(array $asset_ids)
