@@ -551,6 +551,11 @@ class UserFactory extends Factory
         return $this->appendPermission(['assets.audit' => '1']);
     }
 
+    public function manageAssetFiles()
+    {
+        return $this->appendPermission(['assets.files' => '1']);
+    }
+
     public function manageModelFiles()
     {
         return $this->appendPermission(['models.files' => '1']);
