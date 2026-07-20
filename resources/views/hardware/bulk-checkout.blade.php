@@ -115,9 +115,8 @@
             <x-side-panel.removed-assets
                 :items="$removed_assets"
                 :message="trans('general.assigned_assets_removed')"
-                :hideOnTargetSelected="true"
             />
-            <livewire:checkout-target-panel type="assets" rootClass="col-md-12" />
+            <livewire:checkout-target-panel type="assets" />
         </x-page-column>
 
     </x-container>

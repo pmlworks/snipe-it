@@ -112,7 +112,9 @@
 
     </x-page-column>
 
-    <livewire:checkout-target-panel type="accessories" />
+    <x-page-column class="col-md-5">
+        <livewire:checkout-target-panel type="accessories" />
+    </x-page-column>
 
 </x-container>
 

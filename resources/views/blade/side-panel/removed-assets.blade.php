@@ -2,12 +2,6 @@
     'items',
     'message',
     'title' => trans('general.notification_warning'),
-    // On bulk-checkout the checkout-target-panel Livewire component takes
-    // over the right column once the user picks a target, so this warning
-    // is only useful in the "picking assets, no target yet" phase — pass
-    // hideOnTargetSelected=true and the small script at the bottom will
-    // hide the box the moment a target select gets a value.
-    'hideOnTargetSelected' => false,
 ])
 
 {{-- Warning side-panel used by bulk checkin/checkout to explain which assets
@@ -57,40 +51,4 @@
             </table>
         </div>
     </div>
-
-    @if ($hideOnTargetSelected)
-        <script nonce="{{ csrf_token() }}">
-            (function () {
-                // Hide the removed-assets warning as soon as the user picks a
-                // checkout target — the checkout-target-panel Livewire component
-                // becomes the primary side-column content at that point and the
-                // stale warning would just eat vertical space. We piggyback on
-                // the same target selects the panel's bridge script watches so
-                // there's no coordination between the two.
-                var $warning = $('#removed-assets-warning');
-                if (!$warning.length) return;
-
-                var syncVisibility = function () {
-                    var radioVal = $('input[name="checkout_to_type"]:checked').val() || 'user';
-                    var selectSelectors = {
-                        'user': '#assigned_user_select',
-                        'asset': '#assigned_asset_select',
-                        'location': '#assigned_location_location_select',
-                    };
-                    var val = $(selectSelectors[radioVal]).val();
-                    var hasTarget = val !== null && val !== undefined && val !== '';
-                    $warning.toggle(!hasTarget);
-                };
-
-                $('#assigned_user_select, #assigned_asset_select, #assigned_location_location_select')
-                    .on('change', syncVisibility);
-                $('input[name="checkout_to_type"]').on('change', syncVisibility);
-
-                // Run once on ready so a server-side pre-selected target
-                // (session-remembered after a validation redirect) hides the
-                // warning immediately instead of flashing it on the first paint.
-                syncVisibility();
-            })();
-        </script>
-    @endif
 @endif

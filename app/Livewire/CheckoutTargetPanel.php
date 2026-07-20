@@ -51,22 +51,11 @@ class CheckoutTargetPanel extends Component
     #[Locked]
     public string $defaultTargetType = 'user';
 
-    /**
-     * Grid class applied to the component's root element. Defaults to
-     * `col-md-5` which matches the single-target checkout pages that host
-     * this panel directly next to a col-md-7 form. Pages that stack this
-     * panel with another box inside their own col-md-5 wrapper pass
-     * `col-md-12` so the component fills its parent instead of collapsing
-     * to a nested 5/12 width.
-     */
-    #[Locked]
-    public string $rootClass = 'col-md-5';
-
     public ?string $targetType = null;
 
     public ?int $targetId = null;
 
-    public function mount(string $type, string $defaultTargetType = 'user', string $rootClass = 'col-md-5'): void
+    public function mount(string $type, string $defaultTargetType = 'user'): void
     {
         if (! in_array($type, self::TYPES, true)) {
             throw new \InvalidArgumentException("Unknown checkout-target-panel type: {$type}");
@@ -78,7 +67,6 @@ class CheckoutTargetPanel extends Component
 
         $this->type = $type;
         $this->defaultTargetType = $defaultTargetType;
-        $this->rootClass = $rootClass;
     }
 
     /**
