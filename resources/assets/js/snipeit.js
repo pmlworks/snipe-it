@@ -1045,6 +1045,33 @@ $(function () {
         $(this).find(':input[required]').filter(function () { return !this.value; }).attr('disabled', 'disabled');
     });
 
+    // Master checkbox → toggle every non-disabled checkbox in the closest
+    // form or table (or a caller-specified selector via data-check-scope).
+    // Used by bulk-delete confirmation pages to select or deselect the
+    // whole list of rows at once.
+    $(document).on('change', '[data-toggle="check-all"]', function () {
+        var $master = $(this);
+        var scope = $master.data('check-scope');
+        var $container = scope ? $(scope) : $master.closest('form, table');
+        $container.find('input[type="checkbox"]').not($master).not(':disabled').prop('checked', $master.prop('checked'));
+    });
+
+    // A <select data-gates-submit> disables the submit button(s) in its
+    // form until a value is chosen. Used by users/confirm-bulk-delete
+    // where the operator must pick a status for the deleted users' assets
+    // before the form can be submitted. Runs once on load to reflect
+    // whatever value was pre-selected (old input after a validation
+    // redirect) and re-syncs on change and on select2's own event.
+    $('select[data-gates-submit]').each(function () {
+        var $select = $(this);
+        var $submits = $select.closest('form').find(':submit');
+        var sync = function () {
+            $submits.prop('disabled', ! $select.val());
+        };
+        sync();
+        $select.on('change select2:select', sync);
+    });
+
     // Auto-focus the first select2 search input on pages that ask for it.
     // Bulk-checkout uses this so the operator lands directly on the
     // assets-to-checkout picker and can start typing immediately. Results
