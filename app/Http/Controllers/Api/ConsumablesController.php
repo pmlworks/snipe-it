@@ -334,7 +334,11 @@ class ConsumablesController extends Controller
                 $consumable->users()->attach($consumable->id,
                     [
                         'consumable_id' => $consumable->id,
-                        'created_by' => $user->id,
+                        // The pivot's created_by is the operator recording the
+                        // checkout, not the checkout target. Sibling paths
+                        // (web ConsumableCheckoutController, web + API
+                        // ComponentCheckoutController) all key off auth()->id().
+                        'created_by' => auth()->id(),
                         'assigned_to' => $request->input('assigned_to'),
                         'note' => $request->input('note'),
                     ]
