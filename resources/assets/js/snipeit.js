@@ -1034,4 +1034,31 @@ $(function () {
             $(target).prop('disabled', !$(this).is(':checked'));
         }
     });
+
+    // Disable empty REQUIRED inputs on submit so browser HTML5 validation
+    // doesn't block the request before Laravel's form-request validator
+    // gets a chance to return a nicer error. Non-required empties (like a
+    // "Do not change" select with an explicit value="" option) are left
+    // enabled so they submit their intentional empty value. Opt in per
+    // form with data-disable-empty-on-submit.
+    $(document).on('submit', 'form[data-disable-empty-on-submit]', function () {
+        $(this).find(':input[required]').filter(function () { return !this.value; }).attr('disabled', 'disabled');
+    });
+
+    // Auto-focus the first select2 search input on pages that ask for it.
+    // Bulk-checkout uses this so the operator lands directly on the
+    // assets-to-checkout picker and can start typing immediately. Results
+    // are hidden until the first keystroke so the operator doesn't see a
+    // full-list flash on open.
+    if ($('[data-autofocus-select2-search]').length) {
+        setTimeout(function () {
+            var $searchField = $('.select2-search__field');
+            var $results = $('.select2-results');
+            $searchField.focus();
+            $results.hide();
+            $searchField.on('input', function () {
+                $results.show();
+            });
+        }, 0);
+    }
 });

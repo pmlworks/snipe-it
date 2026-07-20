@@ -61,7 +61,9 @@
 
         </x-page-column>
 
-        <livewire:checkout-target-panel type="assets" />
+        <x-page-column class="col-md-5">
+            <livewire:checkout-target-panel type="assets" />
+        </x-page-column>
 
     </x-container>
 @stop
