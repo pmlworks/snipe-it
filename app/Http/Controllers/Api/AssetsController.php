@@ -1252,6 +1252,14 @@ class AssetsController extends Controller
             $error_payload['target_type'] = 'user';
         }
 
+        // withoutGlobalScopes above bypasses the SoftDeletes scope so we
+        // can distinguish "target not found" from "target in another company"
+        // for FMCS error messaging. Trashed targets must not be treated as
+        // valid checkout destinations though, so exclude them here.
+        if (isset($target) && ! empty($target->deleted_at)) {
+            $target = null;
+        }
+
         if ($request->filled('status_id')) {
             $asset->status_id = $request->input('status_id');
         }
