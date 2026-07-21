@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ActionType;
 use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\AssetModel;
@@ -43,85 +44,6 @@ class Purge extends Command
         {--dry-run : Report what would be purged without deleting anything.}';
 
     protected $description = 'Purge all soft-deleted records in the database. Walks every model that uses the SoftDeletes trait, DELETEs the trashed rows, cleans up their polymorphic action_log children, and removes their uploaded files and image assets from disk. No undo.';
-
-    /**
-     * Non-soft-deletable child tables that get nuked when their parent
-     * is purged, even if the child itself was not soft-deleted. Auto-
-     * discovery finds all soft-deletable models, but a trashed License
-     * with live LicenseSeats or a trashed Asset with live Maintenances
-     * would leave orphans behind if we only nuked soft-deleted rows.
-     * Keyed by parent model class, value maps `child_table => foreign_key`.
-     */
-    private const CHILD_TABLES = [
-        Asset::class => ['maintenances' => 'asset_id'],
-        License::class => ['license_seats' => 'license_id'],
-    ];
-
-    /**
-     * Image/avatar files stored on the public disk, keyed by parent
-     * model. Value is `column_name => public-disk subpath`. When the
-     * parent is purged, the file at `{subpath}/{column_value}` gets
-     * removed from the `public` disk.
-     *
-     * Only lives here in the purge (not in each controller's destroy
-     * method) so that soft-deleting a row does NOT delete the image.
-     * That way a soft-deleted row can be restored with its image intact.
-     * The image is only permanently removed when the row is permanently
-     * removed (via this purge).
-     */
-    private const IMAGE_FILES = [
-        User::class => ['avatar' => 'avatars'],
-        Asset::class => ['image' => 'assets'],
-        AssetModel::class => ['image' => 'models'],
-        Accessory::class => ['image' => 'accessories'],
-        Category::class => ['image' => 'categories'],
-        Company::class => ['image' => 'companies'],
-        Component::class => ['image' => 'components'],
-        Consumable::class => ['image' => 'consumables'],
-        Department::class => ['image' => 'departments'],
-        Location::class => ['image' => 'locations'],
-        Manufacturer::class => ['image' => 'manufacturers'],
-        Supplier::class => ['image' => 'suppliers'],
-    ];
-
-    /**
-     * "Files" tab attachment roots under `private_uploads/`, keyed by
-     * parent model. These are the contracts, receipts, photos, etc.
-     * tracked in `action_logs` with `action_type = 'uploaded'`. On
-     * purge, all such files for the trashed parent get unlinked from
-     * the default disk.
-     *
-     * As with IMAGE_FILES, this is deliberately not done at soft-delete
-     * time so restoring a soft-deleted row brings the files back with it.
-     */
-    private const UPLOAD_ROOTS = [
-        Accessory::class => 'private_uploads/accessories',
-        Asset::class => 'private_uploads/assets',
-        AssetModel::class => 'private_uploads/models',
-        Company::class => 'private_uploads/companies',
-        Component::class => 'private_uploads/components',
-        Consumable::class => 'private_uploads/consumables',
-        Department::class => 'private_uploads/departments',
-        License::class => 'private_uploads/licenses',
-        Location::class => 'private_uploads/locations',
-        Maintenance::class => 'private_uploads/maintenances',
-        Supplier::class => 'private_uploads/suppliers',
-        User::class => 'private_uploads/users',
-    ];
-
-    /**
-     * Additional file-holding columns on the parent row itself (not on
-     * action_logs), keyed by model. `CheckoutAcceptance` stores the
-     * signature filename and the rendered EULA PDF filename inline;
-     * both need to be unlinked when the acceptance row is purged.
-     * Value is `column_name => private-disk subpath`.
-     */
-    private const PRIVATE_FILE_COLUMNS = [
-        CheckoutAcceptance::class => [
-            'signature_filename' => 'private_uploads/signatures',
-            'stored_eula_file' => 'private_uploads/eula-pdfs',
-        ],
-    ];
 
     public function handle(): int
     {
@@ -285,19 +207,27 @@ class Purge extends Command
         }
 
         // Child-table cleanup: rows in other tables that belong to a
-        // trashed parent by a plain foreign key (see CHILD_TABLES
-        // docblock). Nuked whole rather than only-trashed because a
-        // live LicenseSeat pointing at a purged License is an orphan
-        // by definition.
+        // trashed parent by a plain foreign key. Nuked whole rather than
+        // only-trashed because a live LicenseSeat pointing at a purged
+        // License is an orphan by definition. Auto-discovery finds all
+        // soft-deletable models, but a trashed License with live
+        // LicenseSeats or a trashed Asset with live Maintenances would
+        // leave orphans behind if we only nuked soft-deleted rows.
+        $childTables = [
+            Asset::class => ['maintenances' => 'asset_id'],
+            License::class => ['license_seats' => 'license_id'],
+        ];
         $childCounts = [];
-        foreach (self::CHILD_TABLES[$modelClass] ?? [] as $childTable => $foreignKey) {
-            $count = 0;
-            foreach ($ids as $id) {
-                $q = DB::table($childTable)->where($foreignKey, $id);
-                $count += $dryRun ? $q->count() : $q->delete();
-            }
-            if ($count > 0) {
-                $childCounts[$childTable] = $count;
+        if (array_key_exists($modelClass, $childTables)) {
+            foreach ($childTables[$modelClass] as $childTable => $foreignKey) {
+                $count = 0;
+                foreach ($ids as $id) {
+                    $q = DB::table($childTable)->where($foreignKey, $id);
+                    $count += $dryRun ? $q->count() : $q->delete();
+                }
+                if ($count > 0) {
+                    $childCounts[$childTable] = $count;
+                }
             }
         }
 
@@ -322,10 +252,39 @@ class Purge extends Command
      * Delete image/avatar files stored on the public disk for the
      * trashed rows. Reads the filename off each trashed parent row,
      * then unlinks `{subpath}/{filename}` from the public disk.
+     *
+     * Only lives here in the purge (not in each controller's destroy
+     * method) so that soft-deleting a row does NOT delete the image.
+     * That way a soft-deleted row can be restored with its image intact.
+     * The image is only permanently removed when the row is permanently
+     * removed (via this purge).
      */
     private function deleteImageFiles(string $modelClass, string $table, Collection $ids): void
     {
-        foreach (self::IMAGE_FILES[$modelClass] ?? [] as $column => $subpath) {
+        // Image/avatar files stored on the public disk, keyed by parent
+        // model. Value is `column_name => public-disk subpath`. Purge
+        // reads the filename off each trashed parent row and unlinks
+        // `{subpath}/{column_value}` from the public disk.
+        $imageFiles = [
+            User::class => ['avatar' => 'avatars'],
+            Asset::class => ['image' => 'assets'],
+            AssetModel::class => ['image' => 'models'],
+            Accessory::class => ['image' => 'accessories'],
+            Category::class => ['image' => 'categories'],
+            Company::class => ['image' => 'companies'],
+            Component::class => ['image' => 'components'],
+            Consumable::class => ['image' => 'consumables'],
+            Department::class => ['image' => 'departments'],
+            Location::class => ['image' => 'locations'],
+            Manufacturer::class => ['image' => 'manufacturers'],
+            Supplier::class => ['image' => 'suppliers'],
+        ];
+
+        if (! array_key_exists($modelClass, $imageFiles)) {
+            return;
+        }
+
+        foreach ($imageFiles[$modelClass] as $column => $subpath) {
             $filenames = DB::table($table)
                 ->whereIn('id', $ids)
                 ->pluck($column)
@@ -370,6 +329,26 @@ class Purge extends Command
      */
     private function deleteActionLogFiles(string $modelClass, Collection $ids): void
     {
+        // "Files" tab attachment roots under private_uploads/, keyed by
+        // the parent model of the file. These are the contracts, receipts,
+        // photos, etc. tracked in action_logs with action_type = 'uploaded'.
+        // Not done at soft-delete time so restoring a soft-deleted row
+        // brings the files back with it.
+        $uploadRoots = [
+            Accessory::class => 'private_uploads/accessories',
+            Asset::class => 'private_uploads/assets',
+            AssetModel::class => 'private_uploads/models',
+            Company::class => 'private_uploads/companies',
+            Component::class => 'private_uploads/components',
+            Consumable::class => 'private_uploads/consumables',
+            Department::class => 'private_uploads/departments',
+            License::class => 'private_uploads/licenses',
+            Location::class => 'private_uploads/locations',
+            Maintenance::class => 'private_uploads/maintenances',
+            Supplier::class => 'private_uploads/suppliers',
+            User::class => 'private_uploads/users',
+        ];
+
         $logs = DB::table('action_logs')
             ->select('action_type', 'item_type', 'filename', 'accept_signature')
             ->where(function ($outer) use ($modelClass, $ids) {
@@ -383,10 +362,17 @@ class Purge extends Command
 
         $paths = [];
         foreach ($logs as $log) {
+            // Map action_type to disk path for the attached file, or
+            // skip if the log carries no attachment we know how to route.
+            // Mirrors Actionlog::uploads_file_path() but works off raw
+            // query-builder rows (no Eloquent).
             if (! empty($log->filename)) {
-                $path = $this->actionLogFilePath($log->action_type, $log->item_type, $log->filename);
-                if ($path !== null) {
-                    $paths[] = $path;
+                if ($log->action_type === ActionType::Accepted->value || $log->action_type === ActionType::Declined->value) {
+                    $paths[] = 'private_uploads/eula-pdfs/'.$log->filename;
+                } elseif ($log->action_type === ActionType::Audit->value) {
+                    $paths[] = 'private_uploads/audits/'.$log->filename;
+                } elseif ($log->item_type && isset($uploadRoots[$log->item_type])) {
+                    $paths[] = rtrim($uploadRoots[$log->item_type], '/').'/'.$log->filename;
                 }
             }
             if (! empty($log->accept_signature)) {
@@ -400,27 +386,6 @@ class Purge extends Command
     }
 
     /**
-     * Map an action_log entry to the disk path of its attached file, or
-     * null if the log carries no attachment we know how to route. Mirrors
-     * the logic in `Actionlog::uploads_file_path()` but kept inline here
-     * so purge can work off raw query-builder rows (no Eloquent).
-     */
-    private function actionLogFilePath(?string $actionType, ?string $itemType, string $filename): ?string
-    {
-        if ($actionType === 'accepted' || $actionType === 'declined') {
-            return 'private_uploads/eula-pdfs/'.$filename;
-        }
-        if ($actionType === 'audit') {
-            return 'private_uploads/audits/'.$filename;
-        }
-        if ($itemType !== null && isset(self::UPLOAD_ROOTS[$itemType])) {
-            return rtrim(self::UPLOAD_ROOTS[$itemType], '/').'/'.$filename;
-        }
-
-        return null;
-    }
-
-    /**
      * Delete files referenced by columns on the parent row itself
      * (as opposed to action_logs). Covers CheckoutAcceptance's
      * `signature_filename` and `stored_eula_file`, which store their
@@ -428,7 +393,18 @@ class Purge extends Command
      */
     private function deletePrivateFileColumns(string $modelClass, string $table, Collection $ids): void
     {
-        foreach (self::PRIVATE_FILE_COLUMNS[$modelClass] ?? [] as $column => $subpath) {
+        $privateFileColumns = [
+            CheckoutAcceptance::class => [
+                'signature_filename' => 'private_uploads/signatures',
+                'stored_eula_file' => 'private_uploads/eula-pdfs',
+            ],
+        ];
+
+        if (! array_key_exists($modelClass, $privateFileColumns)) {
+            return;
+        }
+
+        foreach ($privateFileColumns[$modelClass] as $column => $subpath) {
             $filenames = DB::table($table)
                 ->whereIn('id', $ids)
                 ->pluck($column)
