@@ -469,6 +469,7 @@
         @include ('modals.add-note', ['type' => 'asset', 'id' => $asset->id])
     @endcan
         @include ('partials.bootstrap-table')
+        <x-modals.maintenance-complete />
     @endsection
 
 @stop

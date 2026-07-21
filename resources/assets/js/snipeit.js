@@ -139,6 +139,16 @@ $(function () {
         return false;
     });
 
+    // Mark-a-maintenance-complete modal (green checkmark button in the
+    // maintenances table actions column). Sets the modal form's action to
+    // the row's completion URL and opens it.
+    $el.on('click', '.complete-maintenance', function () {
+        var url = $(this).data('url');
+        $('#completeMaintenanceForm').attr('action', url);
+        $('#completionNote').val('');
+        $('#completeMaintenanceModal').modal('show');
+    });
+
     // confirm delete modal
     $el.on('click', '.delete-asset', function (evnt) {
         var $context = $(this);
