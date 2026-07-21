@@ -74,10 +74,16 @@
                     :default="$default"
                 />
             @elseif ($blade_type === 'datepicker')
+                {{-- $item->{$name} may be a Carbon (models that cast the
+                     column to `date`, e.g. License::purchase_date) or a
+                     plain string. Normalize to Y-m-d via strtotime so the
+                     datepicker JS can parse it. Without this, Carbon
+                     stringifies as "Y-m-d H:i:s", the picker fails to
+                     parse it, renders blank, and submit wipes the field. --}}
                 <x-input.datepicker
                     :name="$name"
                     :id="$name"
-                    :value="old($name, $item?->{$name} ?? $default)"
+                    :value="old($name, $item?->{$name} ? date('Y-m-d', strtotime((string) $item->{$name})) : $default)"
                     :required="Helper::checkIfRequired($item, $name)"
                     :placeholder="$placeholder"
                     :end_date="$end_date"

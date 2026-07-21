@@ -17,11 +17,17 @@ class BulkAssetCheckoutTest extends TestCase
 {
     public function test_requires_permission()
     {
+        // The target user must actually exist and be undeleted, or the
+        // FormRequest's `exists_undeleted:users,id` rule on `assigned_user`
+        // trips first and returns 422 before the controller's permission
+        // check ever runs. Rule was added in 8acedc241f (FD-56263).
+        $target = User::factory()->create();
+
         $this->actingAs(User::factory()->create())
             ->post(route('hardware.bulkcheckout.store'), [
                 'selected_assets' => [1],
                 'checkout_to_type' => 'user',
-                'assigned_user' => 1,
+                'assigned_user' => $target->id,
                 'assigned_asset' => null,
                 'checkout_at' => null,
                 'expected_checkin' => null,
