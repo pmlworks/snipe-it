@@ -34,7 +34,7 @@ class Purge extends Command
      * users (LDAP-sync placeholders, etc.) set this to '0' and shouldn't be
      * garbage-collected here.
      */
-    private const array PARENT_QUERY_FILTERS = [
+    private const PARENT_QUERY_FILTERS = [
         User::class => [['column' => 'show_in_list', 'op' => '!=', 'value' => '0']],
     ];
 
@@ -47,7 +47,7 @@ class Purge extends Command
      * covers the parent→child relations where the parent "owns" the child
      * outright and orphaning it makes no sense.
      */
-    private const array FK_CHILDREN = [
+    private const FK_CHILDREN = [
         Asset::class => [
             ['table' => 'maintenances', 'foreign_key' => 'asset_id'],
         ],
