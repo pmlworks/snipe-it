@@ -164,4 +164,79 @@ class IndexMaintenanceTest extends TestCase
             ->getJson(route('api.maintenances.index', ['sort' => 'completed_at', 'order' => 'desc']))
             ->assertOk();
     }
+
+    public function test_search_matches_asset_company_name()
+    {
+        // The maintenances table shows the asset's company, so searching
+        // for a company name from the search box should return matching
+        // rows. Before this fix, asset.company wasn't in the Maintenance
+        // model's $searchableRelations, so the search silently matched
+        // nothing.
+        $actor = User::factory()->superuser()->create();
+
+        $company = \App\Models\Company::factory()->create(['name' => 'Acme Widgets Ltd']);
+        $matchingAsset = Asset::factory()->create(['company_id' => $company->id]);
+        $matchingMaintenance = Maintenance::factory()->create(['asset_id' => $matchingAsset->id]);
+
+        $otherAsset = Asset::factory()->create();
+        $otherMaintenance = Maintenance::factory()->create(['asset_id' => $otherAsset->id]);
+
+        $ids = collect($this->actingAsForApi($actor)
+            ->getJson(route('api.maintenances.index', ['search' => 'Acme Widgets']))
+            ->assertOk()
+            ->json('rows'))
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($matchingMaintenance->id, $ids);
+        $this->assertNotContains($otherMaintenance->id, $ids);
+    }
+
+    public function test_search_matches_asset_location_name()
+    {
+        $actor = User::factory()->superuser()->create();
+
+        $location = \App\Models\Location::factory()->create(['name' => 'Zanzibar HQ']);
+        $matchingAsset = Asset::factory()->create(['location_id' => $location->id]);
+        $matchingMaintenance = Maintenance::factory()->create(['asset_id' => $matchingAsset->id]);
+
+        $otherAsset = Asset::factory()->create();
+        $otherMaintenance = Maintenance::factory()->create(['asset_id' => $otherAsset->id]);
+
+        $ids = collect($this->actingAsForApi($actor)
+            ->getJson(route('api.maintenances.index', ['search' => 'Zanzibar']))
+            ->assertOk()
+            ->json('rows'))
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($matchingMaintenance->id, $ids);
+        $this->assertNotContains($otherMaintenance->id, $ids);
+    }
+
+    public function test_search_matches_asset_default_location_name()
+    {
+        // defaultLoc is the RTD (return-to) location on the asset. When an
+        // asset is unassigned, the maintenance table shows the RTD
+        // location as its location column; searching that value should
+        // still find the row.
+        $actor = User::factory()->superuser()->create();
+
+        $rtd = \App\Models\Location::factory()->create(['name' => 'Reykjavik Warehouse']);
+        $matchingAsset = Asset::factory()->create(['rtd_location_id' => $rtd->id, 'location_id' => null]);
+        $matchingMaintenance = Maintenance::factory()->create(['asset_id' => $matchingAsset->id]);
+
+        $otherAsset = Asset::factory()->create();
+        $otherMaintenance = Maintenance::factory()->create(['asset_id' => $otherAsset->id]);
+
+        $ids = collect($this->actingAsForApi($actor)
+            ->getJson(route('api.maintenances.index', ['search' => 'Reykjavik']))
+            ->assertOk()
+            ->json('rows'))
+            ->pluck('id')
+            ->all();
+
+        $this->assertContains($matchingMaintenance->id, $ids);
+        $this->assertNotContains($otherMaintenance->id, $ids);
+    }
 }
