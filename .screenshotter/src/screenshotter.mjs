@@ -37,12 +37,13 @@
  *   Other sections' shots from prior runs are preserved (not wiped).
  *
  * Ad-hoc single-shot mode (skips the full walkthrough):
- *   node .screenshotter/src/screenshotter.mjs --one <path> [--as <username>] [--name <slug>]
+ *   node .screenshotter/src/screenshotter.mjs --one <path> [--as <username>] [--name <slug>] [--tab <label>]
  *
  *   Examples:
  *     node .screenshotter/src/screenshotter.mjs --one /hardware
  *     node .screenshotter/src/screenshotter.mjs --one /hardware/create --as assetmgr
  *     node .screenshotter/src/screenshotter.mjs --one /licenses/5 --as licensemgr --name license-detail
+ *     node .screenshotter/src/screenshotter.mjs --one /hardware/1 --tab licenses
  *
  * DATA WARNING: this script captures whatever is currently rendering in
  * the connected database, in full. Do not run against production,
@@ -94,6 +95,7 @@ const {values: cli} = parseArgs({
         as: {type: 'string'},
         name: {type: 'string'},
         section: {type: 'string'},
+        tab: {type: 'string'},
     },
     strict: false,
 });
@@ -659,7 +661,12 @@ if (ONE_SHOT) {
     const asUsername = cli.as ?? USERNAME;
     const uri = ONE_SHOT.replace(/^\//, '');
     const baseName = cli.name ?? (uri === '' ? 'root' : uri.replace(/[/?&=]/g, '__'));
-    const outName = `adhoc/${asUsername}-${baseName}`;
+    // If --tab was requested, append its slug to the filename so the
+    // shot is self-identifying.
+    const tabSuffix = cli.tab
+        ? '-tab-' + cli.tab.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        : '';
+    const outName = `adhoc/${asUsername}-${baseName}${tabSuffix}`;
 
     console.log(`→ logging in as ${asUsername}`);
     await loginAs(asUsername, PASSWORD);
@@ -668,6 +675,39 @@ if (ONE_SHOT) {
     await page.goto(`${BASE_URL}/${uri}`, {waitUntil: 'domcontentloaded'});
     await page.waitForLoadState('networkidle').catch(() => {});
     await capPagination();
+
+    // If --tab was requested, find the matching Bootstrap tab and
+    // activate it before shooting. Case-insensitive substring match on
+    // the visible tab labels, so `--tab licenses` matches "Licenses"
+    // or "Licenses (5)". Fails loudly if nothing matches so the user
+    // isn't left staring at a "why did this shoot the wrong tab" shot.
+    if (cli.tab) {
+        const wanted = cli.tab.toLowerCase();
+        const tabs = await page.locator('.nav-tabs a[data-toggle="tab"]:visible').all();
+        let matched = false;
+        // Normalize labels so multiline tab text (icon + label + count
+        // wrapped across nodes) doesn't blow up the log line or trip
+        // the substring match on stray whitespace.
+        const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+        for (const t of tabs) {
+            const label = norm(await t.textContent()).toLowerCase();
+            if (label.includes(wanted)) {
+                await t.click();
+                await page.waitForTimeout(400);
+                await capPagination();
+                matched = true;
+                console.log(`  ↪ tab: "${label}"`);
+                break;
+            }
+        }
+        if (!matched) {
+            const labels = await Promise.all(tabs.map(async (t) => norm(await t.textContent())));
+            console.log(`  ! tab "${cli.tab}" not found. Available: ${labels.filter(Boolean).join(', ') || '(none)'}`);
+            await browser.close();
+            process.exit(1);
+        }
+    }
+
     await shot(outName);
 
     const elapsedMs = performance.now() - RUN_STARTED_AT;

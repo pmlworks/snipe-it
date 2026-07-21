@@ -167,17 +167,22 @@ node .screenshotter/src/screenshotter.mjs --one /hardware/create --as assetmgr
 # With a custom output name
 node .screenshotter/src/screenshotter.mjs --one /licenses/5 --as licensemgr --name license-detail
 
+# Shoot a specific tab on a view page
+node .screenshotter/src/screenshotter.mjs --one /hardware/1 --tab licenses
+node .screenshotter/src/screenshotter.mjs --one /hardware/1 --tab "components"
+
 # Dark mode, no framing
 COLOR_SCHEME=dark FRAME=false node .screenshotter/src/screenshotter.mjs --one /hardware --as admin
 ```
 
-Ad-hoc shots land in `.screenshotter/screenshots/adhoc/{username}-{name}-{timestamp}.png`. The `adhoc/` directory is deliberately preserved across full walkthrough runs so historical one-off images stick around, and every ad-hoc shot carries a timestamp so repeated captures of the same URL never overwrite each other.
+Ad-hoc shots land in `.screenshotter/screenshots/adhoc/{username}-{name}-{timestamp}.png`, or with `-tab-{slug}` in the filename when `--tab` is used. The `adhoc/` directory is deliberately preserved across full walkthrough runs so historical one-off images stick around, and every ad-hoc shot carries a timestamp so repeated captures of the same URL never overwrite each other.
 
 Arguments:
 
 - `--one <path>` (required) URL path to shoot, with or without a leading slash.
 - `--as <username>` (default: `USERNAME` env, which defaults to `admin`) user to log in as. Any seeded user works: `admin`, `snipe`, `assetmgr`, `licensemgr`, `accessorymgr`, `consumablemgr`, `componentmgr`, `usermgr`, etc.
 - `--name <slug>` (default: URL path with `/` replaced by `__`) filename slug. The timestamp is appended automatically.
+- `--tab <label>` case-insensitive substring match against the visible Bootstrap tab labels on the target page. `--tab licenses` matches "Licenses" or "Licenses (5)" alike. If nothing matches, the run aborts with a list of available tabs so you can pick a valid one.
 
 ## What a full run produces
 
