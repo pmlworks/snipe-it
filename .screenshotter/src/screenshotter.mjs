@@ -82,6 +82,11 @@ const SUBMIT_FORMS = process.env.SUBMIT_FORMS !== 'false';
 // (a page with 5 tabs adds 4 extra shots per user). Set TABS=true to
 // opt in when you want the full sweep.
 const TABS = process.env.TABS === 'true';
+// Color scheme: "light" (default), "dark", or "no-preference". Passed
+// through to Playwright's emulateMedia which sets prefers-color-scheme.
+// Snipe-IT honors the OS preference for dark mode when the user's
+// account preference is set to "system".
+const COLOR_SCHEME = process.env.COLOR_SCHEME ?? 'light';
 
 const {values: cli} = parseArgs({
     options: {
@@ -107,6 +112,7 @@ const RUN_TIMESTAMP = (() => {
     const pad = (n) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 })();
+const RUN_STARTED_AT = performance.now();
 
 console.log(`Base URL:  ${BASE_URL}`);
 console.log(`Login as:  ${cli.as ?? USERNAME}`);
@@ -115,6 +121,7 @@ console.log(`Viewport:  ${VIEWPORT.width}x${VIEWPORT.height}`);
 console.log(`Framing:   ${FRAME ? 'local (generic-light)' : 'off'}`);
 console.log(`Submit:    ${SUBMIT_FORMS ? 'on (edit forms are posted after shot)' : 'off (edit forms are not posted)'}`);
 console.log(`Tabs:      ${TABS ? 'on (view pages walk each tab)' : 'off (view pages shoot base only)'}`);
+console.log(`Color:     ${COLOR_SCHEME}`);
 if (SECTION_FILTER) console.log(`Sections:  ${[...SECTION_FILTER].join(', ')}`);
 if (ONE_SHOT) console.log(`Mode:      ad-hoc single shot (${ONE_SHOT})`);
 console.log('');
@@ -142,7 +149,25 @@ const context = await browser.newContext({
     viewport: VIEWPORT,
     // Herd's local .test domains use self-signed certs.
     ignoreHTTPSErrors: true,
+    // Set prefers-color-scheme so apps that honor it (Snipe-IT, when
+    // the user's theme preference is "system") render in the requested
+    // scheme without needing to click any in-app toggle.
+    colorScheme: COLOR_SCHEME,
 });
+
+// Block debugbar / telescope / clockwork asset requests at the network
+// level. If their JS never loads, their overlays can never render, and
+// we don't have to fight CSS specificity to hide them (which was the
+// approach in an earlier version and broke on Snipe-IT error pages
+// where debugbar rendered visible JSON collector panels that our
+// CSS selectors couldn't reach). Belt-and-suspenders: we also inject
+// the hiding CSS via addInitScript below for any dev-tool asset paths
+// this block misses.
+await context.route('**/_debugbar/**', (route) => route.abort());
+await context.route('**/telescope/**', (route) => route.abort());
+await context.route('**/telescope-toolbar/**', (route) => route.abort());
+await context.route('**/clockwork/**', (route) => route.abort());
+await context.route('**/__clockwork/**', (route) => route.abort());
 
 // Hide dev-only UI chrome from every page. Debugbar/Telescope/Clockwork
 // would otherwise land in the middle of shots.
@@ -152,9 +177,15 @@ await context.addInitScript(() => {
         const style = document.createElement('style');
         style.id = '__screenshotter-hide';
         style.textContent = `
-            #phpdebugbar, #phpdebugbar-openhandler,
-            .phpdebugbar, .phpdebugbar-openhandler,
-            #telescope-toolbar, .telescope-toolbar,
+            /* Laravel Debugbar: hide any element whose id or class
+               starts with / contains "phpdebugbar". Catches the main
+               toolbar, the resize handle, the open handler, and the
+               expanded collector panels that render on error pages
+               (which the narrower "exact-id" selectors missed). */
+            [id^="phpdebugbar"], [class*="phpdebugbar"],
+            /* Laravel Telescope Toolbar */
+            [id^="telescope-toolbar"], [class*="telescope-toolbar"],
+            /* Clockwork */
             #clockwork, #clockwork-toolbar,
             [data-clockwork], iframe[src*="clockwork"] {
                 display: none !important;
@@ -182,6 +213,12 @@ async function shot(name, opts = {}) {
     await mkdir(dirname(path), {recursive: true});
     const {element, ...playwrightOpts} = opts;
     await page.waitForLoadState('networkidle').catch(() => {});
+    // Capture the current URL path for the frame address bar (relative
+    // path only, so the frame doesn't leak / dumb-look the local .test
+    // hostname). Grabbed at shot time rather than inside frameLocally
+    // because element-scoped screenshots may not represent a whole page.
+    const pageUrl = new URL(page.url());
+    const addressBar = pageUrl.pathname + (pageUrl.search || '');
     if (element) {
         await element.screenshot({path, ...playwrightOpts});
     } else {
@@ -189,7 +226,7 @@ async function shot(name, opts = {}) {
     }
     shotCount++;
     if (FRAME) {
-        await frameLocally(path);
+        await frameLocally(path, addressBar);
         console.log(`  ✓ ${name}-${RUN_TIMESTAMP}.png (framed)`);
     } else {
         console.log(`  ✓ ${name}-${RUN_TIMESTAMP}.png`);
@@ -201,7 +238,7 @@ async function shot(name, opts = {}) {
  * generic-light style. Runs entirely local via an inline HTML template.
  */
 let framePage = null;
-async function frameLocally(imagePath) {
+async function frameLocally(imagePath, urlPath = '') {
     if (!framePage) framePage = await context.newPage();
     const fp = framePage;
     const buf = await readFile(imagePath);
@@ -218,6 +255,14 @@ async function frameLocally(imagePath) {
     const outerHeight = dims.height + CHROME_HEIGHT + PADDING_TOP + PADDING_BOTTOM;
 
     await fp.setViewportSize({width: outerWidth, height: outerHeight});
+
+    // HTML-escape the URL path so a literal `<` / `>` / `&` in a
+    // query string (rare, but possible) can't break out of the address
+    // bar's text content.
+    const escapedPath = urlPath.replace(/[&<>"']/g, (c) => (
+        {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]
+    ));
+
     await fp.setContent(`
 <!doctype html>
 <html>
@@ -244,27 +289,51 @@ async function frameLocally(imagePath) {
     align-items: center;
     padding: 0 14px;
     box-sizing: border-box;
+    gap: 12px;
   }
+  .dots { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     display: inline-block;
-    margin-right: 8px;
     box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.15);
   }
   .dot.red { background: #ff5f57; }
   .dot.yellow { background: #febc2e; }
   .dot.green { background: #28c840; }
+  /* Address bar: rounded pill, muted background, small monospace-ish
+     text. Grown to fit the space between the traffic-light dots and
+     the right edge, capped so long paths ellipsis instead of stretching
+     the chrome. */
+  .addr {
+    flex: 1;
+    max-width: 60%;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    line-height: 1;
+    color: #4a4a4a;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .shot { display: block; width: ${dims.width}px; height: ${dims.height}px; }
 </style>
 </head>
 <body>
   <div class="frame">
     <div class="chrome">
-      <span class="dot red"></span>
-      <span class="dot yellow"></span>
-      <span class="dot green"></span>
+      <div class="dots">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+      </div>
+      ${escapedPath ? `<div class="addr">${escapedPath}</div>` : ''}
     </div>
     <img class="shot" src="${dataUri}"/>
   </div>
@@ -349,7 +418,7 @@ async function getFirstEntityId(segment) {
  * post-save, whether that's the success callout on the redirect target
  * or the validation-error state on the same page.
  */
-async function shootIndexViewEdit({segment, name, hasView = true, hasEdit = true, viewer}) {
+async function shootIndexViewEdit({segment, name, hasView = true, hasEdit = true, hasCheckout = false, viewer}) {
     const who = viewer ?? USERNAME;
     console.log(`→ ${name} (as ${who})`);
     await page.goto(`${BASE_URL}/${segment}`);
@@ -368,6 +437,7 @@ async function shootIndexViewEdit({segment, name, hasView = true, hasEdit = true
         await page.goto(`${BASE_URL}/${segment}/${id}`);
         await page.waitForLoadState('networkidle').catch(() => {});
         await shot(`${name}/${who}-${name}-view`);
+        await toggleInfoPanelAndShoot(`${name}/${who}-${name}-view`);
         await walkTabs(`${name}/${who}-${name}-view`);
     }
     if (hasEdit) {
@@ -375,6 +445,11 @@ async function shootIndexViewEdit({segment, name, hasView = true, hasEdit = true
         await page.waitForLoadState('networkidle').catch(() => {});
         await shot(`${name}/${who}-${name}-edit`);
         await submitEditForm(`${name}/${who}-${name}-edit-submitted`);
+    }
+    if (hasCheckout) {
+        await page.goto(`${BASE_URL}/${segment}/${id}/checkout`);
+        await page.waitForLoadState('networkidle').catch(() => {});
+        await shot(`${name}/${who}-${name}-checkout`);
     }
 }
 
@@ -384,6 +459,39 @@ async function shootIndexViewEdit({segment, name, hasView = true, hasEdit = true
  * the base shot already captured), wait a beat for the pane transition,
  * and screenshot. Skips silently on pages with no tabs.
  */
+/**
+ * If the current page has the info-panel toggle button, capture the
+ * opposite state as an extra shot. The base view shot already caught
+ * whatever state the page loaded in (expanded by default); this adds
+ * `{basename}-info-collapsed` (or -expanded, depending on the starting
+ * state) so docs can show what a compact/expanded view looks like.
+ *
+ * Info-panel state is persisted in localStorage.side_panel_state, but
+ * we don't need to touch that. Clicking the toggle button drives the
+ * DOM changes directly via the expandInfoSidePanel / collapseInfoSidePanel
+ * functions defined in the default layout.
+ */
+async function toggleInfoPanelAndShoot(basename) {
+    const toggle = page.locator('#expand-info-panel-button:visible');
+    if (!(await toggle.count().catch(() => 0))) return;
+
+    // Look at the panel's current expanded state so the suffix reflects
+    // what we actually captured (not what we requested).
+    const wasExpanded = await page.evaluate(
+        () => !!document.querySelector('.side-box.expanded')
+    ).catch(() => true);
+
+    await toggle.click().catch(() => {});
+    await page.waitForTimeout(400); // let the panel fade / column resize
+    const suffix = wasExpanded ? 'info-collapsed' : 'info-expanded';
+    await shot(`${basename}-${suffix}`);
+
+    // Restore original state so subsequent shots on this page (tabs,
+    // etc.) aren't stuck in the toggled layout.
+    await toggle.click().catch(() => {});
+    await page.waitForTimeout(200);
+}
+
 async function walkTabs(basename) {
     if (!TABS) return;
     const tabs = await page.locator('.nav-tabs a[data-toggle="tab"]:visible').all();
@@ -416,6 +524,18 @@ async function walkTabs(basename) {
  */
 async function submitEditForm(outName) {
     if (!SUBMIT_FORMS) return;
+    // Force redirect_option=index so the post-submit destination is
+    // always the section's index page. Without this, Snipe-IT's
+    // Helper::getRedirectOption reads redirect_option=back (the form
+    // default) and uses session's url.intended, which for pages whose
+    // view template embeds a `<img src=".../qr_code">` gets set to the
+    // qr_code endpoint (because that image load counts as a "previous
+    // URL"). The result is that Save lands on a raw PNG, which isn't
+    // what we want to screenshot.
+    await page.evaluate(() => {
+        const field = document.querySelector('form [name="redirect_option"]');
+        if (field) field.value = 'index';
+    });
     // Find the primary Save button of the edit form:
     //   - Exclude the topbar search form (#topSearchButton) which is the
     //     first `[type=submit]` on every page and would fire an empty
@@ -492,7 +612,7 @@ async function asUser(username, fn, password) {
  * view, edit, create) scoped strictly to the resource they manage.
  * Shots land in `${name}/{username}-{page}` alongside the admin shots.
  */
-async function shootManager({username, segment, name}) {
+async function shootManager({username, segment, name, hasCheckout = true}) {
     await asUser(username, async () => {
         await page.goto(`${BASE_URL}/${segment}`);
         await waitForTable();
@@ -503,12 +623,19 @@ async function shootManager({username, segment, name}) {
             await page.goto(`${BASE_URL}/${segment}/${id}`);
             await page.waitForLoadState('networkidle').catch(() => {});
             await shot(`${name}/${username}-${name}-view`);
+            await toggleInfoPanelAndShoot(`${name}/${username}-${name}-view`);
             await walkTabs(`${name}/${username}-${name}-view`);
 
             await page.goto(`${BASE_URL}/${segment}/${id}/edit`);
             await page.waitForLoadState('networkidle').catch(() => {});
             await shot(`${name}/${username}-${name}-edit`);
             await submitEditForm(`${name}/${username}-${name}-edit-submitted`);
+
+            if (hasCheckout) {
+                await page.goto(`${BASE_URL}/${segment}/${id}/checkout`);
+                await page.waitForLoadState('networkidle').catch(() => {});
+                await shot(`${name}/${username}-${name}-checkout`);
+            }
         } else {
             console.log(`  ! ${username}: no rows in ${name}, skipping view/edit`);
         }
@@ -537,7 +664,8 @@ if (ONE_SHOT) {
     await capPagination();
     await shot(outName);
 
-    console.log(`Done. 1 screenshot written to ${OUT}/${outName}-${RUN_TIMESTAMP}.png`);
+    const elapsedMs = performance.now() - RUN_STARTED_AT;
+    console.log(`Done. 1 screenshot written to ${OUT}/${outName}-${RUN_TIMESTAMP}.png in ${(elapsedMs / 1000).toFixed(2)}s.`);
     await browser.close();
     process.exit(0);
 }
@@ -552,11 +680,12 @@ await loginAs(USERNAME, PASSWORD);
 // First-class objects: index + view + edit for each.
 // `hasView: false` skips the view shot for entities without a detail page.
 const firstClassObjects = [
-    {segment: 'hardware', name: 'assets'},
-    {segment: 'licenses', name: 'licenses'},
-    {segment: 'accessories', name: 'accessories'},
-    {segment: 'consumables', name: 'consumables'},
-    {segment: 'components', name: 'components'},
+    {segment: 'hardware', name: 'assets', hasCheckout: true},
+    {segment: 'licenses', name: 'licenses', hasCheckout: true},
+    {segment: 'accessories', name: 'accessories', hasCheckout: true},
+    {segment: 'consumables', name: 'consumables', hasCheckout: true},
+    {segment: 'components', name: 'components', hasCheckout: true},
+    {segment: 'kits', name: 'kits', hasCheckout: true},
     {segment: 'users', name: 'users'},
     {segment: 'models', name: 'models'},
     {segment: 'categories', name: 'categories'},
@@ -564,7 +693,6 @@ const firstClassObjects = [
     {segment: 'suppliers', name: 'suppliers'},
     {segment: 'locations', name: 'locations'},
     {segment: 'departments', name: 'departments'},
-    {segment: 'kits', name: 'kits'},
     {segment: 'companies', name: 'companies'},
     {segment: 'statuslabels', name: 'statuslabels'},
     {segment: 'depreciations', name: 'depreciations'},
@@ -577,7 +705,7 @@ for (const obj of firstClassObjects) {
     await shootIndexViewEdit(obj);
 }
 
-// Extras: create form + status-dropdown interaction on assets.
+// Extras: create form, status-dropdown interaction, bulk pages.
 if (includesSection('assets')) {
     console.log('→ assets extras');
     await page.goto(`${BASE_URL}/hardware/create`);
@@ -588,6 +716,13 @@ if (includesSection('assets')) {
     });
     await page.waitForSelector('.select2-dropdown', {timeout: 5_000}).catch(() => {});
     await shot(`assets/${USERNAME}-assets-create-status-dropdown`, {fullPage: false});
+
+    // Bulk actions live on the assets side of the app.
+    await page.goto(`${BASE_URL}/hardware/bulkcheckout`);
+    await shot(`assets/${USERNAME}-assets-bulk-checkout`);
+
+    await page.goto(`${BASE_URL}/hardware/bulkcheckin`);
+    await shot(`assets/${USERNAME}-assets-bulk-checkin`);
 }
 
 // Extra create forms for users and licenses (bundled with those sections
@@ -632,7 +767,9 @@ const managers = [
     {username: 'accessorymgr', segment: 'accessories', name: 'accessories'},
     {username: 'consumablemgr', segment: 'consumables', name: 'consumables'},
     {username: 'componentmgr', segment: 'components', name: 'components'},
-    {username: 'usermgr', segment: 'users', name: 'users'},
+    // Users are checkout targets, not checkoutable subjects, so no
+    // `/users/{id}/checkout` route to shoot.
+    {username: 'usermgr', segment: 'users', name: 'users', hasCheckout: false},
 ];
 for (const mgr of managers) {
     if (!includesSection(mgr.name)) continue;
@@ -694,5 +831,9 @@ if (ALL_ROUTES && !SECTION_FILTER) {
 }
 
 console.log('');
-console.log(`Done. ${shotCount} screenshots written to ${OUT}`);
+const elapsedMs = performance.now() - RUN_STARTED_AT;
+const elapsed = elapsedMs > 60_000
+    ? `${Math.floor(elapsedMs / 60_000)}m ${((elapsedMs % 60_000) / 1000).toFixed(1)}s`
+    : `${(elapsedMs / 1000).toFixed(2)}s`;
+console.log(`Done. ${shotCount} screenshots written to ${OUT} in ${elapsed}.`);
 await browser.close();
