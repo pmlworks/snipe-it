@@ -41,11 +41,11 @@ class MaintenanceReportTest extends TestCase
 
     public function test_export_includes_both_active_and_completed_maintenances()
     {
-        $active = Maintenance::factory()->create([
+        Maintenance::factory()->create([
             'name' => 'Active-Repair-XYZ',
             'completed_at' => null,
         ]);
-        $completed = Maintenance::factory()->create([
+        Maintenance::factory()->create([
             'name' => 'Completed-Repair-ABC',
             'start_date' => '2021-01-01 00:00:00',
             'completed_at' => '2021-01-10 12:00:00',
@@ -106,22 +106,18 @@ class MaintenanceReportTest extends TestCase
     {
         // supplier_id is nullable on the maintenances table; the pre-fix
         // report did $maintenance->supplier->name unconditionally and
-        // would fatal-error on any row without one.
-        $maintenance = Maintenance::factory()->create([
+        // would fatal-error on any row without one. The presence of the
+        // row in the output doubles as a "no 500" assertion.
+        Maintenance::factory()->create([
             'name' => 'Supplier-Less',
             'supplier_id' => null,
         ]);
 
-        $this->actingAs(User::factory()->canViewReports()->create())
+        $content = $this->actingAs(User::factory()->canViewReports()->create())
             ->get(route('reports/export/maintenances'))
             ->assertOk()
             ->streamedContent();
 
-        // Just confirming no 500. The presence assertion is that the row
-        // still made it into the output.
-        $content = $this->actingAs(User::factory()->canViewReports()->create())
-            ->get(route('reports/export/maintenances'))
-            ->streamedContent();
         $this->assertStringContainsString('Supplier-Less', $content);
     }
 
