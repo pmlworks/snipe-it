@@ -75043,6 +75043,37 @@ $(function () {
     $('a[href="' + $(this).attr('href') + '"]').tab('show');
   });
 
+  // Bootstrap-table's fixed-columns extension computes the overlay widths
+  // at init time. Tables inside a hidden tab pane initialize with a
+  // zero-width container and the fixed left/right columns never recover
+  // on their own once the pane becomes visible. Force a resetView on any
+  // snipe-tables inside the newly-shown pane so fixed columns line up.
+  $('body').on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+    var pane = $(e.target).attr('href');
+    if (!pane) return;
+    $(pane).find('.snipe-table').each(function () {
+      if ($(this).data('bootstrap.table')) {
+        $(this).bootstrapTable('resetView');
+      }
+    });
+  });
+
+  // Same story for viewport resizes: the fixed-columns overlay caches
+  // widths from the initial layout and doesn't recompute when the window
+  // width changes. Debounce so a drag-resize doesn't fire resetView on
+  // every intermediate pixel.
+  var snipeTableResizeTimer;
+  $(window).on('resize', function () {
+    clearTimeout(snipeTableResizeTimer);
+    snipeTableResizeTimer = setTimeout(function () {
+      $('.snipe-table').each(function () {
+        if ($(this).data('bootstrap.table')) {
+          $(this).bootstrapTable('resetView');
+        }
+      });
+    }, 150);
+  });
+
   // ------------------------------------------------
   // End Deep Linking for Bootstrap tabs
   // ------------------------------------------------

@@ -94,6 +94,7 @@ return [
     'component' => 'Component',
     'components' => 'Components',
     'complete' => 'Complete',
+    'completed' => 'completed',
     'consumable' => 'Consumable',
     'consumables' => 'Consumables',
     'country' => 'Country',

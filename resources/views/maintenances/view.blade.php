@@ -71,7 +71,7 @@ use Carbon\Carbon;
                             <!-- definition list content -->
                             <x-page-data>
                                 <x-data-row :label="trans('admin/hardware/form.tag')" copy_what="asset_tag">
-                                    {{ $maintenance->asset?->asset_tag }}
+                                    {!!  $maintenance->asset?->present()->formattedTagLink !!}
                                 </x-data-row>
 
                                 <x-data-row :label="trans('general.asset_model')" copy_what="model">
