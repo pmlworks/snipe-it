@@ -213,6 +213,12 @@ async function shot(name, opts = {}) {
     await mkdir(dirname(path), {recursive: true});
     const {element, ...playwrightOpts} = opts;
     await page.waitForLoadState('networkidle').catch(() => {});
+    // Cap bootstrap-table pagination on every shot, not just after
+    // explicit waitForTable() calls. Post-submit redirects and other
+    // "arrived here without knowing there's a table" flows would
+    // otherwise render at the user's persisted per-page preference
+    // (often 20 or 25). Safe no-op on pages without a snipe-table.
+    await capPagination();
     // Capture the current URL path for the frame address bar (relative
     // path only, so the frame doesn't leak / dumb-look the local .test
     // hostname). Grabbed at shot time rather than inside frameLocally
