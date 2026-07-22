@@ -472,7 +472,12 @@ class ValidationServiceProvider extends ServiceProvider
         //    for them. Forcing them to pick a non-null company would
         //    both lock them out of their normal workflow and produce a
         //    row they wouldn't be able to see afterward.
-        Validator::extend('fmcs_company', function ($attribute, $value, $parameters, $validator) {
+        // extendImplicit (not extend) — Laravel skips "explicit" rules
+        // when the field is null/absent. Since the whole point of
+        // fmcs_company is to fire ON blank submissions, it must run
+        // implicitly. Same reason built-in rules like `required`,
+        // `filled`, `present`, `accepted` are all registered implicit.
+        Validator::extendImplicit('fmcs_company', function ($attribute, $value, $parameters, $validator) {
             $settings = Setting::getSettings();
             if (! $settings->full_multiple_companies_support) {
                 return true;

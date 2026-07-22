@@ -204,6 +204,84 @@ class StrictModeRequiresCompanyOnCreateTest extends TestCase
         $this->assertDatabaseMissing('users', ['username' => $username]);
     }
 
+    // ------------------------------------------------------------------
+    // Bulk asset edit: same gate reaches through ValidatingTrait
+    // ------------------------------------------------------------------
+
+    public function test_bulk_asset_edit_clear_company_is_rejected_for_companied_non_superuser()
+    {
+        // BulkAssetsController::update() calls $asset->update($updateArray)
+        // per row; the model-level fmcs_company rule fires when
+        // company_id gets filled to null via the 'clear' bulk option.
+        // Locked in here so a future refactor of the bulk controller
+        // can't quietly bypass the gate.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $company = \App\Models\Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->editAssets()->create());
+        $target = \App\Models\Asset::factory()->create(['company_id' => $company->id]);
+
+        $this->actingAs($actor)
+            ->post(route('hardware/bulksave'), [
+                'ids' => [$target->id => '1'],
+                'company_id' => 'clear',
+                'bulk_actions' => 'edit',
+            ]);
+
+        // Row's company should NOT have been cleared.
+        $this->assertEquals($company->id, $target->fresh()->company_id);
+    }
+
+    public function test_bulk_asset_edit_clear_company_is_allowed_for_uncompanied_non_superuser()
+    {
+        // Uncompanied non-superusers work in the null pseudo-company
+        // namespace under strict mode. Bulk-clearing Company on rows
+        // they own is a legitimate operation for them and the gate
+        // steps aside.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $actor = User::factory()->withoutCompany()->editAssets()->create();
+        $target = \App\Models\Asset::factory()->create(['company_id' => null]);
+
+        $this->actingAs($actor)
+            ->post(route('hardware/bulksave'), [
+                'ids' => [$target->id => '1'],
+                'company_id' => 'clear',
+                'bulk_actions' => 'edit',
+            ]);
+
+        $this->assertNull($target->fresh()->company_id);
+    }
+
+    public function test_bulk_asset_edit_unrelated_field_still_works_for_companied_non_superuser()
+    {
+        // If the bulk edit doesn't touch Company at all, ValidatingTrait
+        // sees the existing non-null company_id on each row and passes
+        // — this is the "make sure we haven't broken ordinary bulk
+        // edits" sanity guard.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $company = \App\Models\Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->editAssets()->create());
+        $target = \App\Models\Asset::factory()->create([
+            'company_id' => $company->id,
+            'notes' => 'before',
+        ]);
+
+        $this->actingAs($actor)
+            ->post(route('hardware/bulksave'), [
+                'ids' => [$target->id => '1'],
+                'notes' => 'after',
+                'bulk_actions' => 'edit',
+            ]);
+
+        $this->assertEquals('after', $target->fresh()->notes);
+        $this->assertEquals($company->id, $target->fresh()->company_id);
+    }
+
     public function test_users_strict_fmcs_allows_empty_company_ids_for_superuser()
     {
         $this->settings->enableMultipleFullCompanySupport();
