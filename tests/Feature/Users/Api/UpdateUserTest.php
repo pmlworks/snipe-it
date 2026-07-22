@@ -377,20 +377,16 @@ class UpdateUserTest extends TestCase
             ->assertStatusMessageIs('error')
             ->json();
 
-        // Behavior change note (#19192): an admin with no company
-        // memberships in strict FMCS mode cannot successfully PATCH any
-        // user. Empty company_ids trips the new gate; any non-empty
-        // list is filtered to empty by Company::getIdsForCurrentUser()
-        // because they have no accessible companies. Before the gate,
-        // the no-company-user case below was a permissive no-op
-        // success — that path is now closed. Practical impact: strict
-        // FMCS deployments should grant such admins at least one
-        // company (or superuser) so they can act.
+        // Admin without a company should allow updating user without
+        // a company. Under strict FMCS mode uncompanied users operate
+        // in the null pseudo-company namespace (Company scoping shows
+        // them null-company rows); the #19192 gate steps aside for
+        // them so this normal workflow keeps working.
         $this->actingAsForApi($adminNoCompany)
             ->patchJson(route('api.users.update', $scoped_user_in_no_company))
             ->assertOk()
             ->assertStatus(200)
-            ->assertStatusMessageIs('error')
+            ->assertStatusMessageIs('success')
             ->json();
 
         // Admin without a company should get denied updating user from Company A

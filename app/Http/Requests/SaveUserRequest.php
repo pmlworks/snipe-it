@@ -116,20 +116,25 @@ class SaveUserRequest extends FormRequest
 
             if (empty($effective)) {
                 $settings = Setting::getSettings();
-                $creatorIsSuper = (bool) auth()->user()?->isSuperUser();
+                $actor = auth()->user();
+                $creatorIsSuper = (bool) $actor?->isSuperUser();
+                $creatorHasCompanies = (bool) $actor?->companies()->exists();
                 $strictFmcs = $settings->full_multiple_companies_support && ! $settings->null_company_is_floater;
 
                 // Strict-FMCS #19192 gate — hits before the older floater
                 // gate so its more specific error message wins when both
-                // apply.
-                if ($strictFmcs && ! $creatorIsSuper) {
+                // apply. Skips uncompanied actors because they legitimately
+                // work in the null pseudo-company namespace under strict
+                // mode; forcing them to add memberships they don't have
+                // would lock them out of their normal workflow.
+                if ($strictFmcs && ! $creatorIsSuper && $creatorHasCompanies) {
                     $validator->errors()->add('company_ids', trans('validation.fmcs_company', ['attribute' => trans('general.company')]));
 
                     return;
                 }
 
                 // Original #19200 floater-grant gate.
-                if (! auth()->user()?->canGrantFloaterStatus()) {
+                if (! $actor?->canGrantFloaterStatus()) {
                     $validator->errors()->add('company_ids', trans('admin/users/general.cannot_make_floater'));
                 }
             }

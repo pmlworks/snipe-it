@@ -118,6 +118,56 @@ class FloaterModeGateTest extends TestCase
         $this->assertNotEmpty($victim->fresh()->companies);
     }
 
+    public function test_non_superuser_cannot_bulk_clear_companies_in_strict_fmcs_mode()
+    {
+        // #19192 companion to the floater-mode test above: strict FMCS
+        // (floaters OFF) also blocks a non-superuser from bulk-clearing
+        // pivot memberships, because doing so would make every targeted
+        // user instantly invisible to the acting admin's own scope.
+        // Pre-fix, BulkUsersController's only gate was canGrantFloaterStatus,
+        // which returns true in strict mode and let the clear proceed.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $company = Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->editUsers()->create());
+        $victim = $company->users()->save(User::factory()->create());
+
+        $this->actingAs($actor)
+            ->post(route('users/bulkeditsave'), [
+                'ids' => [$victim->id => '1'],
+                'null_company_ids' => '1',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $this->assertContains($company->id, $victim->fresh()->companies->pluck('id')->all(), 'Bulk clear in strict mode should be refused');
+        $this->assertNotEmpty($victim->fresh()->companies);
+    }
+
+    public function test_strict_fmcs_bulk_clear_gate_does_not_fire_for_superuser()
+    {
+        // Superusers see everything (their scope reaches null-pivot
+        // rows), so leaving pivots empty is a deliberate action for
+        // them, not the visibility trap that motivates #19192. The
+        // gate must not fire — whether the pivot ends up actually
+        // cleared is a separate concern owned by the bulk-clear
+        // controller flow, tested elsewhere.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $company = Company::factory()->create();
+        $actor = User::factory()->superuser()->create();
+        $victim = $company->users()->save(User::factory()->create());
+
+        $this->actingAs($actor)
+            ->post(route('users/bulkeditsave'), [
+                'ids' => [$victim->id => '1'],
+                'null_company_ids' => '1',
+            ])
+            ->assertSessionMissing('error');
+    }
+
     public function test_non_superuser_cannot_create_a_new_user_with_no_companies_in_floater_mode()
     {
         // Covers the web POST path — SaveUserRequest's withValidator fires on

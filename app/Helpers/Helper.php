@@ -1151,8 +1151,15 @@ class Helper
         if (! auth()->check()) {
             return false;
         }
+        $actor = auth()->user();
+        if ($actor->isSuperUser()) {
+            return false;
+        }
 
-        return ! auth()->user()->isSuperUser();
+        // Uncompanied users work in the null pseudo-company namespace
+        // under strict mode; null IS a valid company id for them, so
+        // don't render the field as required.
+        return $actor->companies()->exists();
     }
 
     /**

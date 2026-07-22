@@ -103,6 +103,45 @@ class StrictModeRequiresCompanyOnCreateTest extends TestCase
         $this->assertFalse($validator->fails());
     }
 
+    public function test_rule_accepts_null_for_uncompanied_non_superuser_in_strict_mode()
+    {
+        // Regression guard for the pseudo-company workflow. Under
+        // Company::scopeCompanyablesDirectly in strict mode, actors
+        // with no company memberships are scoped to null-company rows
+        // (whereNull($column)). Null IS a valid company id for them —
+        // forcing them to pick a non-null company would both lock them
+        // out of their normal workflow AND produce a row they wouldn't
+        // be able to see afterward.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $actor = User::factory()->withoutCompany()->create();
+        $this->assertFalse($actor->companies()->exists(), 'test precondition: actor is uncompanied');
+        auth()->login($actor);
+
+        $validator = Validator::make(['company_id' => null], ['company_id' => 'fmcs_company']);
+
+        $this->assertFalse($validator->fails());
+    }
+
+    public function test_rule_still_rejects_null_for_companied_non_superuser_in_strict_mode()
+    {
+        // Reporter's #19192 case: a non-superuser WITH company
+        // memberships submitting a null company_id would land an
+        // invisible row. That must still fail.
+        $this->settings->enableMultipleFullCompanySupport();
+        $this->settings->disableFloaterMode();
+
+        $company = Company::factory()->create();
+        $actor = $company->users()->save(User::factory()->create());
+        $this->assertTrue($actor->companies()->exists(), 'test precondition: actor has memberships');
+        auth()->login($actor);
+
+        $validator = Validator::make(['company_id' => null], ['company_id' => 'fmcs_company']);
+
+        $this->assertTrue($validator->fails());
+    }
+
     // ------------------------------------------------------------------
     // Sanity: every model the reporter listed has the rule wired
     // ------------------------------------------------------------------

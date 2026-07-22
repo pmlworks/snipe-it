@@ -454,17 +454,24 @@ class ValidationServiceProvider extends ServiceProvider
 
         // Enforces "Company must be picked" when FMCS is on AND
         // null_company_is_floater is disabled (strict mode). Without this
-        // rule non-superuser users can save a form with an unset company
-        // dropdown, land a row with company_id=NULL, and then have that
-        // row instantly filtered out of their own view by the strict-mode
-        // scope. See #19192. Passes when:
+        // rule a companied non-superuser can save a form with an unset
+        // company dropdown, land a row with company_id=NULL, and then
+        // have that row instantly filtered out of their own view by the
+        // strict-mode scope. See #19192. Passes when:
         //  - FMCS is off (nothing to enforce)
         //  - null_company_is_floater is on (nulls are legal floaters)
         //  - value is present (form was filled in)
+        //  - no auth context (CLI / seeders / importers bypass — same
+        //    posture as SaveUserRequest's cannot_make_floater gate)
         //  - acting user is a superuser (they see everything; a null is
         //    an explicit choice, not an accident)
-        //  - no auth context (CLI / seeders / importers bypass — same
-        //    posture as SaveUserRequest's cannot_make_floater gate).
+        //  - acting user has NO company memberships. In strict mode
+        //    such users legitimately operate in the null "pseudo-company"
+        //    namespace — Company::scopeCompanyablesDirectly scopes them
+        //    to whereNull($company_id), so null IS a valid company id
+        //    for them. Forcing them to pick a non-null company would
+        //    both lock them out of their normal workflow and produce a
+        //    row they wouldn't be able to see afterward.
         Validator::extend('fmcs_company', function ($attribute, $value, $parameters, $validator) {
             $settings = Setting::getSettings();
             if (! $settings->full_multiple_companies_support) {
@@ -479,8 +486,15 @@ class ValidationServiceProvider extends ServiceProvider
             if (! auth()->check()) {
                 return true;
             }
+            $actor = auth()->user();
+            if ($actor->isSuperUser()) {
+                return true;
+            }
+            if (! $actor->companies()->exists()) {
+                return true;
+            }
 
-            return (bool) auth()->user()->isSuperUser();
+            return false;
         });
 
         Validator::replacer('fmcs_company', function ($message, $attribute, $rule, $parameters) {
