@@ -1685,14 +1685,27 @@ class Helper
 
         // return to index
         if ($redirect_option == 'index') {
-            return match ($table) {
-                'Assets' => redirect()->route('hardware.index'),
-                'Users' => redirect()->route('users.index'),
-                'Licenses' => redirect()->route('licenses.index'),
-                'Accessories' => redirect()->route('accessories.index'),
-                'Components' => redirect()->route('components.index'),
-                'Consumables' => redirect()->route('consumables.index'),
+            $indexUrl = match ($table) {
+                'Assets' => route('hardware.index'),
+                'Users' => route('users.index'),
+                'Licenses' => route('licenses.index'),
+                'Accessories' => route('accessories.index'),
+                'Components' => route('components.index'),
+                'Consumables' => route('consumables.index'),
             };
+
+            // #15214: preserve query-string filters when the user came
+            // from a filtered view of the same index they're being sent
+            // back to (side-nav status filter, category filter, etc.).
+            // Without this the plain index route drops the caller's
+            // context and the user has to re-select their side-nav
+            // filter after every edit. $backUrl was already vetted for
+            // off-site hosts above.
+            if ($backUrl && parse_url($backUrl, PHP_URL_PATH) === parse_url($indexUrl, PHP_URL_PATH)) {
+                return redirect($backUrl);
+            }
+
+            return redirect($indexUrl);
         }
 
         // return to thing being assigned
