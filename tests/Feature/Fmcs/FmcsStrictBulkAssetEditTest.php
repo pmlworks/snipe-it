@@ -97,12 +97,18 @@ class FmcsStrictBulkAssetEditTest extends TestCase
                 'bulk_actions' => 'edit',
             ]);
 
-        // Fail loudly if the controller redirected back with a flash
-        // error (the notes assertion below is a downstream symptom and
-        // hides the real cause). Seen on MySQL CI as a full-suite flake.
-        // Pinning the response state up front turns any recurrence into
-        // an actionable diagnostic.
-        $response->assertSessionMissing('error');
+        // Fail loudly if the controller redirected with per-row errors
+        // (the notes assertion below is a downstream symptom that hides
+        // the actual validation failure). BulkAssetsController flashes
+        // `bulk_asset_errors` (not `error`) when $asset->update() returns
+        // false because ValidatingTrait rejected the save. Pulling those
+        // errors into the assertion message turns any recurrence of the
+        // MySQL CI full-suite flake into a concrete diagnostic.
+        $bulkErrors = session('bulk_asset_errors');
+        $this->assertNull(
+            $bulkErrors,
+            'Bulk asset edit produced per-row validation errors: '.json_encode($bulkErrors, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+        );
 
         $this->assertEquals('after', $target->fresh()->notes);
         $this->assertEquals($company->id, $target->fresh()->company_id);
