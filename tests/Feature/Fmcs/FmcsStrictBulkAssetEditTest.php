@@ -34,7 +34,7 @@ class FmcsStrictBulkAssetEditTest extends TestCase
 
         $this->actingAs($actor)
             ->post(route('hardware/bulksave'), [
-                'ids' => [$target->id => '1'],
+                'ids' => [$target->id],
                 'company_id' => 'clear',
                 'bulk_actions' => 'edit',
             ]);
@@ -56,7 +56,7 @@ class FmcsStrictBulkAssetEditTest extends TestCase
 
         $this->actingAs($actor)
             ->post(route('hardware/bulksave'), [
-                'ids' => [$target->id => '1'],
+                'ids' => [$target->id],
                 'company_id' => 'clear',
                 'bulk_actions' => 'edit',
             ]);
@@ -92,7 +92,7 @@ class FmcsStrictBulkAssetEditTest extends TestCase
 
         $response = $this->actingAs($actor)
             ->post(route('hardware/bulksave'), [
-                'ids' => [$target->id => '1'],
+                'ids' => [$target->id],
                 'notes' => 'after',
                 'bulk_actions' => 'edit',
             ]);
