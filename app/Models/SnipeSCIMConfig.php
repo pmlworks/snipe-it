@@ -17,6 +17,7 @@ use ArieTimmerman\Laravel\SCIMServer\Parser\Path;
 use ArieTimmerman\Laravel\SCIMServer\SCIM\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Tmilos\ScimFilterParser\Error\FilterException;
 
 function a($name = null): Attribute
 {
@@ -60,7 +61,18 @@ class SnipeRootComplex extends Complex
                 throw new SCIMException('Invalid key: '.$key.' for complex object '.$this->getFullKey());
             }
 
-            $path = Parser::parse($key);
+            // Malformed keys like `[type eq "work"]` (a value-path filter
+            // with no leading attribute name) make the Tmilos parser throw
+            // FilterException before we can inspect the parsed shape.
+            // Same class of misconfigured-client problem as the null-guard
+            // below, one layer further back — turn it into a 400 so the
+            // caller sees "your key is malformed" instead of a 500 that
+            // looks like our fault.
+            try {
+                $path = Parser::parse($key);
+            } catch (FilterException $e) {
+                throw new SCIMException('SnipeRootComplex::add: Malformed SCIM key: '.$key.' ('.$e->getMessage().')', 400);
+            }
 
             if ($path->isNotEmpty()) {
                 // Path::isNotEmpty() returns true when EITHER the
@@ -128,7 +140,11 @@ class SnipeRootComplex extends Complex
             $key = trim($key);
 
             if (strpos($key, ':') !== false) {
-                $parsed = Parser::parse($key);
+                try {
+                    $parsed = Parser::parse($key);
+                } catch (FilterException $e) {
+                    throw new SCIMException('SnipeRootComplex::replace: Malformed SCIM key: '.$key.' ('.$e->getMessage().')', 400);
+                }
                 $schemaUrn = $parsed->getAttributePath()?->path?->schema;
                 $attrName = $parsed->getAttributePathAttributes()[0] ?? null;
                 if ($schemaUrn !== null && $attrName !== null) {
@@ -138,7 +154,14 @@ class SnipeRootComplex extends Complex
                     $subNode = $this->getSubNode($key);
                 }
             } else {
-                $path = Parser::parse($key);
+                // See the matching try/catch in add() — malformed keys
+                // starting with `[` throw FilterException from the parser
+                // itself, before any of our null-guards fire.
+                try {
+                    $path = Parser::parse($key);
+                } catch (FilterException $e) {
+                    throw new SCIMException('SnipeRootComplex::replace: Malformed SCIM key: '.$key.' ('.$e->getMessage().')', 400);
+                }
                 if ($path->isNotEmpty()) {
                     // See the matching guard in add() — isNotEmpty() lets
                     // a value-path-only key through (e.g. emails[type eq
@@ -437,11 +460,18 @@ class SnipeSCIMConfig
                                 return null;
                             }
 
-                            return [
+                            // RFC 7643 §4.1.2: multi-valued attributes MUST be
+                            // JSON arrays even when they hold a single element.
+                            // Return an array-of-objects so `emails` serializes
+                            // as `[{...}]`. Previously returned a bare
+                            // associative array and Rollbar surfaced downstream
+                            // clients constructing malformed filter keys against
+                            // the scalar shape.
+                            return [[
                                 'value' => $object->email,
-                                'type' => 'work', // TODO - is this how we always have done it?
+                                'type' => 'work',
                                 'primary' => true,
-                            ];
+                            ]];
                         }
 
                         public function doWrite($operation, $subop, $value, Model &$object, ?Path $path = null, $removeIfNotSet = false)
