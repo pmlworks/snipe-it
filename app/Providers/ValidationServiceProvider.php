@@ -461,20 +461,20 @@ class ValidationServiceProvider extends ServiceProvider
         //  - FMCS is off (nothing to enforce)
         //  - null_company_is_floater is on (nulls are legal floaters)
         //  - value is present (form was filled in)
-        //  - no auth context (CLI / seeders / importers bypass — same
-        //    posture as SaveUserRequest's cannot_make_floater gate)
-        //  - acting user is a superuser (they see everything; a null is
-        //    an explicit choice, not an accident)
+        //  - no auth context (CLI, seeders, or importers bypass, matching
+        //    the SaveUserRequest cannot_make_floater gate posture)
+        //  - acting user is a superuser (they see everything, so a null
+        //    is an explicit choice, not an accident)
         //  - acting user has NO company memberships. In strict mode
         //    such users legitimately operate in the null "pseudo-company"
-        //    namespace — Company::scopeCompanyablesDirectly scopes them
-        //    to whereNull($company_id), so null IS a valid company id
-        //    for them. Forcing them to pick a non-null company would
+        //    namespace, where Company::scopeCompanyablesDirectly scopes
+        //    them to whereNull($company_id) and null IS a valid company
+        //    id for them. Forcing them to pick a non-null company would
         //    both lock them out of their normal workflow and produce a
         //    row they wouldn't be able to see afterward.
-        // extendImplicit (not extend) — Laravel skips "explicit" rules
-        // when the field is null/absent. Since the whole point of
-        // fmcs_company is to fire ON blank submissions, it must run
+        // extendImplicit (not extend) because Laravel skips "explicit"
+        // rules when the field is null or absent. Since the whole point
+        // of fmcs_company is to fire ON blank submissions, it must run
         // implicitly. Same reason built-in rules like `required`,
         // `filled`, `present`, `accepted` are all registered implicit.
         Validator::extendImplicit('fmcs_company', function ($attribute, $value, $parameters, $validator) {
@@ -502,7 +502,7 @@ class ValidationServiceProvider extends ServiceProvider
             return false;
         });
 
-        Validator::replacer('fmcs_company', function ($message, $attribute, $rule, $parameters) {
+        Validator::replacer('fmcs_company', function ($message) {
             return str_replace(':attribute', trans('general.company'), $message);
         });
 
