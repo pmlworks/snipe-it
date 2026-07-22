@@ -65,7 +65,7 @@ class SnipeRootComplex extends Complex
             // with no leading attribute name) make the Tmilos parser throw
             // FilterException before we can inspect the parsed shape.
             // Same class of misconfigured-client problem as the null-guard
-            // below, one layer further back — turn it into a 400 so the
+            // below, one layer further back. Turn it into a 400 so the
             // caller sees "your key is malformed" instead of a 500 that
             // looks like our fault.
             try {
@@ -154,7 +154,7 @@ class SnipeRootComplex extends Complex
                     $subNode = $this->getSubNode($key);
                 }
             } else {
-                // See the matching try/catch in add() — malformed keys
+                // See the matching try/catch in add(). Malformed keys
                 // starting with `[` throw FilterException from the parser
                 // itself, before any of our null-guards fire.
                 try {
