@@ -48,19 +48,18 @@ return [
     // 'proxies' => '*',
 
     /*
-     * Which headers to use to detect proxy-related data (For, Host, Proto, Port).
+     * Trusted forwarded-header list intentionally not configured here.
      *
-     * This key is intentionally not set here. app/Http/Middleware/TrustProxies.php
-     * already sets $headers on the middleware itself as a bitmask of the individual
-     * Illuminate\Http\Request::HEADER_X_FORWARDED_* constants (FOR, HOST, PORT,
-     * PROTO, AWS_ELB), which is what runtime uses. Prior versions of this file
-     * carried a commented-out example referencing HEADER_X_FORWARDED_ALL, but that
-     * constant was removed from Symfony (see symfony/symfony#38928) and uncommenting
-     * it produced a fatal "Undefined constant" error. See #6852.
+     * The runtime defaults trust X-Forwarded-For, X-Forwarded-Host,
+     * X-Forwarded-Port, X-Forwarded-Proto, and the AWS ELB set. This is
+     * the right answer for essentially every reverse-proxy deployment,
+     * so there is nothing to change under normal circumstances.
      *
-     * If you need to change which forwarded headers are trusted, edit the $headers
-     * property on App\Http\Middleware\TrustProxies rather than adding a 'headers'
-     * key here.
+     * Older versions of this file shipped a commented-out example
+     * referencing Illuminate\Http\Request::HEADER_X_FORWARDED_ALL. That
+     * constant was removed from Symfony (see symfony/symfony#38928) and
+     * uncommenting the example produced a fatal "Undefined constant"
+     * error. It has been removed to avoid the foot-gun. See #6852.
      *
      * @link https://symfony.com/doc/current/deployment/proxies.html
      */
