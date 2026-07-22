@@ -33,10 +33,13 @@ trait UniqueUndeletedTrait
      * other locations whose parent_id (and company_id) match, not
      * globally as `unique_undeleted` does.
      *
+     * ValidatingTrait calls this via `call_user_func_array` with
+     * `[$parameters, $field]`, but we do not use the field name here so
+     * only $parameters is declared. PHP silently discards the extra arg.
+     *
      * @param  array  $parameters  the scope column names declared on the model
-     * @param  string  $field  the attribute being validated
      */
-    protected function prepareUniqueUndeletedInScopeRule($parameters, $field)
+    protected function prepareUniqueUndeletedInScopeRule($parameters)
     {
         $id = $this->exists ? $this->getKey() : 0;
 
