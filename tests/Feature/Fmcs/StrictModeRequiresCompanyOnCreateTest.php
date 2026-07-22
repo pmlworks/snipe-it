@@ -258,9 +258,19 @@ class StrictModeRequiresCompanyOnCreateTest extends TestCase
     public function test_bulk_asset_edit_unrelated_field_still_works_for_companied_non_superuser()
     {
         // If the bulk edit doesn't touch Company at all, ValidatingTrait
-        // sees the existing non-null company_id on each row and passes
-        // — this is the "make sure we haven't broken ordinary bulk
-        // edits" sanity guard.
+        // sees the existing non-null company_id on each row and passes.
+        // This is the "make sure we haven't broken ordinary bulk edits"
+        // sanity guard.
+        //
+        // Defensive Setting cache flush. Some upstream tests in the full
+        // MySQL sweep can leave the memoized Setting instance in a state
+        // where full_multiple_companies_support looks enabled at the
+        // moment auth loads but disabled by the time the fmcs_company
+        // validator reads it, or vice versa. The Support helper's update()
+        // clears the cache too, but only after both writes have landed.
+        // Clearing here first pins the pre-state so the two writes below
+        // are the only source of truth for this test's fmcs_company check.
+        \App\Models\Setting::$_cache = null;
         $this->settings->enableMultipleFullCompanySupport();
         $this->settings->disableFloaterMode();
 
@@ -271,12 +281,19 @@ class StrictModeRequiresCompanyOnCreateTest extends TestCase
             'notes' => 'before',
         ]);
 
-        $this->actingAs($actor)
+        $response = $this->actingAs($actor)
             ->post(route('hardware/bulksave'), [
                 'ids' => [$target->id => '1'],
                 'notes' => 'after',
                 'bulk_actions' => 'edit',
             ]);
+
+        // Fail loudly if the controller redirected back with a flash
+        // error (the notes assertion below is a downstream symptom and
+        // hides the real cause). Seen on MySQL CI as a full-suite flake
+        // — pinning the response state up front turns any recurrence
+        // into an actionable diagnostic.
+        $response->assertSessionMissing('error');
 
         $this->assertEquals('after', $target->fresh()->notes);
         $this->assertEquals($company->id, $target->fresh()->company_id);
