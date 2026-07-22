@@ -72,8 +72,17 @@ class FloaterModeGateTest extends TestCase
         $this->assertEmpty($target->fresh()->companies->pluck('id')->all(), 'Superuser is trusted to grant floater status');
     }
 
-    public function test_guard_does_not_apply_when_floater_mode_is_off()
+    public function test_strict_mode_now_blocks_non_superuser_from_clearing_company_ids()
     {
+        // Prior to #19192 this test documented that the #19200 floater
+        // gate skipped strict mode entirely (canGrantFloaterStatus()
+        // returns true when floaters are off, so no check fired). The
+        // reporter's #19192 case demonstrated that same permissive
+        // behavior lets a non-superuser end up with an empty pivot in
+        // strict FMCS mode, making the target instantly invisible to
+        // its creator's scope. The gate now also fires in strict mode
+        // for non-superusers, so a non-superuser cannot clear a user's
+        // company memberships to empty either.
         $this->settings->enableMultipleFullCompanySupport();
         $this->settings->disableFloaterMode();
 
@@ -86,7 +95,7 @@ class FloaterModeGateTest extends TestCase
                 'username' => $actor->username,
                 'company_ids' => [],
             ])
-            ->assertSessionDoesntHaveErrors('company_ids');
+            ->assertSessionHasErrors('company_ids');
     }
 
     public function test_non_superuser_cannot_bulk_clear_companies_in_floater_mode()

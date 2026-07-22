@@ -75,10 +75,18 @@ class SaveUserRequest extends FormRequest
 
     /**
      * Block non-superusers from saving a user whose resulting company set would
-     * be empty *while floater mode is enabled* — that combination promotes the
-     * target user to a system-wide floater (sees everything), and is the
-     * privilege-escalation vector flagged in #19200. Superusers can still make
-     * floaters intentionally. Applies to web and API store/update.
+     * be empty:
+     *
+     *  - Floater mode ON:  the resulting user would become a system-wide
+     *    floater (sees everything). That's the privilege-escalation vector
+     *    flagged in #19200 — only superusers (and users already able to grant
+     *    floater status) may do this deliberately.
+     *  - Floater mode OFF (strict FMCS): the resulting user would land with
+     *    an empty pivot and be immediately invisible to the creator's own
+     *    scope. That's the visibility bug flagged in #19192 — only superusers
+     *    (whose scope reaches nulls) may do this.
+     *
+     * Applies to both web and API store/update.
      */
     public function withValidator(Validator $validator): void
     {
@@ -91,7 +99,7 @@ class SaveUserRequest extends FormRequest
             // the PHPUnit/Pest runner, which also reports as "in console" but
             // is using the HTTP stack and must see the gate fire.
             $inActualConsole = app()->runningInConsole() && ! app()->runningUnitTests();
-            if ($inActualConsole || auth()->user()?->canGrantFloaterStatus()) {
+            if ($inActualConsole) {
                 return;
             }
 
@@ -107,7 +115,23 @@ class SaveUserRequest extends FormRequest
             $effective = Company::getIdsForCurrentUser($submitted);
 
             if (empty($effective)) {
-                $validator->errors()->add('company_ids', trans('admin/users/general.cannot_make_floater'));
+                $settings = Setting::getSettings();
+                $creatorIsSuper = (bool) auth()->user()?->isSuperUser();
+                $strictFmcs = $settings->full_multiple_companies_support && ! $settings->null_company_is_floater;
+
+                // Strict-FMCS #19192 gate — hits before the older floater
+                // gate so its more specific error message wins when both
+                // apply.
+                if ($strictFmcs && ! $creatorIsSuper) {
+                    $validator->errors()->add('company_ids', trans('validation.fmcs_company', ['attribute' => trans('general.company')]));
+
+                    return;
+                }
+
+                // Original #19200 floater-grant gate.
+                if (! auth()->user()?->canGrantFloaterStatus()) {
+                    $validator->errors()->add('company_ids', trans('admin/users/general.cannot_make_floater'));
+                }
             }
         });
     }

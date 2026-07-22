@@ -1111,20 +1111,48 @@ class Helper
                 if (is_array($rule)) {
                     if (in_array('required', $rule)) {
                         return true;
-                    } else {
-                        return false;
                     }
-                } else {
-                    if (strpos($rule, 'required') === false) {
-                        return false;
-                    } else {
+                    if (in_array('fmcs_company', $rule) && self::fmcsCompanyIsCurrentlyRequired()) {
                         return true;
                     }
+
+                    return false;
+                } else {
+                    if (strpos($rule, 'required') !== false) {
+                        return true;
+                    }
+                    if (strpos($rule, 'fmcs_company') !== false && self::fmcsCompanyIsCurrentlyRequired()) {
+                        return true;
+                    }
+
+                    return false;
                 }
             }
         }
 
         return false;
+    }
+
+    /**
+     * Mirror of the fmcs_company validator's runtime condition, used by
+     * checkIfRequired() so Blade fields render the "required" indicator
+     * (asterisk / aria-required) in the same conditions the backend will
+     * reject a blank submission. See ValidationServiceProvider.
+     */
+    protected static function fmcsCompanyIsCurrentlyRequired(): bool
+    {
+        $settings = \App\Models\Setting::getSettings();
+        if (! $settings->full_multiple_companies_support) {
+            return false;
+        }
+        if ((bool) $settings->null_company_is_floater) {
+            return false;
+        }
+        if (! auth()->check()) {
+            return false;
+        }
+
+        return ! auth()->user()->isSuperUser();
     }
 
     /**

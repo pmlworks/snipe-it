@@ -322,9 +322,16 @@ class UpdateUserTest extends TestCase
         $scoped_user_in_companyB = User::factory()->forCompany($companyB->id)->create();
         $scoped_user_in_no_company = User::factory()->withoutCompany()->create();
 
+        // Each PATCH carries company_ids so the strict-FMCS gate added
+        // for #19192 doesn't hijack the authorization assertion — the
+        // test's intent is to verify company-scoped authorization, not
+        // to exercise the empty-pivot gate.
+        $bodyA = ['company_ids' => [$companyA->id]];
+        $bodyB = ['company_ids' => [$companyB->id]];
+
         // Admin for Company A should allow updating user from Company A
         $this->actingAsForApi($adminA)
-            ->patchJson(route('api.users.update', $scoped_user_in_companyA))
+            ->patchJson(route('api.users.update', $scoped_user_in_companyA), $bodyA)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('success')
@@ -332,7 +339,7 @@ class UpdateUserTest extends TestCase
 
         // Admin for Company A should get denied updating user from Company B
         $this->actingAsForApi($adminA)
-            ->patchJson(route('api.users.update', $scoped_user_in_companyB))
+            ->patchJson(route('api.users.update', $scoped_user_in_companyB), $bodyB)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('error')
@@ -340,7 +347,7 @@ class UpdateUserTest extends TestCase
 
         // Admin for Company A should get denied updating user without a company
         $this->actingAsForApi($adminA)
-            ->patchJson(route('api.users.update', $scoped_user_in_no_company))
+            ->patchJson(route('api.users.update', $scoped_user_in_no_company), $bodyA)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('error')
@@ -348,7 +355,7 @@ class UpdateUserTest extends TestCase
 
         // Admin for Company B should allow updating user from Company B
         $this->actingAsForApi($adminB)
-            ->patchJson(route('api.users.update', $scoped_user_in_companyB))
+            ->patchJson(route('api.users.update', $scoped_user_in_companyB), $bodyB)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('success')
@@ -356,7 +363,7 @@ class UpdateUserTest extends TestCase
 
         // Admin for Company B should get denied updating user from Company A
         $this->actingAsForApi($adminB)
-            ->patchJson(route('api.users.update', $scoped_user_in_companyA))
+            ->patchJson(route('api.users.update', $scoped_user_in_companyA), $bodyA)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('error')
@@ -364,18 +371,26 @@ class UpdateUserTest extends TestCase
 
         // Admin for Company B should get denied updating user without a company
         $this->actingAsForApi($adminB)
-            ->patchJson(route('api.users.update', $scoped_user_in_no_company))
+            ->patchJson(route('api.users.update', $scoped_user_in_no_company), $bodyB)
             ->assertOk()
             ->assertStatus(200)
             ->assertStatusMessageIs('error')
             ->json();
 
-        // Admin without a company should allow updating user without a company
+        // Behavior change note (#19192): an admin with no company
+        // memberships in strict FMCS mode cannot successfully PATCH any
+        // user. Empty company_ids trips the new gate; any non-empty
+        // list is filtered to empty by Company::getIdsForCurrentUser()
+        // because they have no accessible companies. Before the gate,
+        // the no-company-user case below was a permissive no-op
+        // success — that path is now closed. Practical impact: strict
+        // FMCS deployments should grant such admins at least one
+        // company (or superuser) so they can act.
         $this->actingAsForApi($adminNoCompany)
             ->patchJson(route('api.users.update', $scoped_user_in_no_company))
             ->assertOk()
             ->assertStatus(200)
-            ->assertStatusMessageIs('success')
+            ->assertStatusMessageIs('error')
             ->json();
 
         // Admin without a company should get denied updating user from Company A

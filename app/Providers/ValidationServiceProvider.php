@@ -452,6 +452,41 @@ class ValidationServiceProvider extends ServiceProvider
             );
         });
 
+        // Enforces "Company must be picked" when FMCS is on AND
+        // null_company_is_floater is disabled (strict mode). Without this
+        // rule non-superuser users can save a form with an unset company
+        // dropdown, land a row with company_id=NULL, and then have that
+        // row instantly filtered out of their own view by the strict-mode
+        // scope. See #19192. Passes when:
+        //  - FMCS is off (nothing to enforce)
+        //  - null_company_is_floater is on (nulls are legal floaters)
+        //  - value is present (form was filled in)
+        //  - acting user is a superuser (they see everything; a null is
+        //    an explicit choice, not an accident)
+        //  - no auth context (CLI / seeders / importers bypass — same
+        //    posture as SaveUserRequest's cannot_make_floater gate).
+        Validator::extend('fmcs_company', function ($attribute, $value, $parameters, $validator) {
+            $settings = Setting::getSettings();
+            if (! $settings->full_multiple_companies_support) {
+                return true;
+            }
+            if ((bool) $settings->null_company_is_floater) {
+                return true;
+            }
+            if (! empty($value)) {
+                return true;
+            }
+            if (! auth()->check()) {
+                return true;
+            }
+
+            return (bool) auth()->user()->isSuperUser();
+        });
+
+        Validator::replacer('fmcs_company', function ($message, $attribute, $rule, $parameters) {
+            return str_replace(':attribute', trans('general.company'), $message);
+        });
+
         // Validates that the company of the validated object matches the company of the location in case of scoped locations
         Validator::extend('fmcs_location', function ($attribute, $value, $parameters, $validator) {
             $settings = Setting::getSettings();
