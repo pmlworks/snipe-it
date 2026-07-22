@@ -15,6 +15,7 @@ use ArieTimmerman\Laravel\SCIMServer\Exceptions\SCIMException;
 use ArieTimmerman\Laravel\SCIMServer\Parser\Parser;
 use ArieTimmerman\Laravel\SCIMServer\Parser\Path;
 use ArieTimmerman\Laravel\SCIMServer\SCIM\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 function a($name = null): Attribute
@@ -180,6 +181,34 @@ class SnipeRootComplex extends Complex
                 }
             }
         }
+    }
+
+    // #19347: Complex::applyComparison ignores the schema URN on the
+    // filter path and always falls back to the FIRST schema node (core).
+    // A filter like:
+    //   ?filter=urn:...enterprise:2.0:User:employeeNumber eq "1234567"
+    // parses with schema=<enterprise URN> and attributeNames=['employeeNumber'],
+    // but the library calls getSubNode('employeeNumber') on root, misses,
+    // then dispatches to getSchemaNode() (always core) which reports
+    // "Unknown path" since employeeNumber lives on the enterprise schema.
+    // Same shape of bug as the URN-blind add()/replace() routing above.
+    // If the path carries a schema URN and we have a schema node for it,
+    // dispatch the whole path there so its own applyComparison finds the
+    // attribute; otherwise defer to the library.
+    public function applyComparison(Builder &$query, Path $path, $parentAttribute = null)
+    {
+        $schemaUrn = $path->getAttributePath()?->path?->schema;
+
+        if ($schemaUrn !== null) {
+            $schemaNode = $this->getSubNode($schemaUrn);
+            if ($schemaNode instanceof AttributeSchema) {
+                $schemaNode->applyComparison($query, $path, $parentAttribute);
+
+                return;
+            }
+        }
+
+        parent::applyComparison($query, $path, $parentAttribute);
     }
 }
 
