@@ -75,7 +75,7 @@ class SnipeRootComplex extends Complex
                 // the misconfiguration is on their end, versus the previous 500,
                 // which made it look like it was on our end.
                 if ($path->getAttributePath() === null) {
-                    throw new SCIMException('Cannot route SCIM key with no attribute path: '.$key, 400);
+                    throw new SCIMException('SnipeRootComplex::add: Cannot route SCIM key with no attribute path: '.$key, 400);
                 }
 
                 $attributeNames = $path->getAttributePathAttributes();
@@ -147,7 +147,7 @@ class SnipeRootComplex extends Complex
                     // wild for misconfigured SCIM clients sending
                     // filter-key bodies to PUT /Users/{id}.
                     if ($path->getAttributePath() === null) {
-                        throw new SCIMException('Cannot route SCIM key with no attribute path: '.$key, 400);
+                        throw new SCIMException('SnipeRootComplex::replace: Cannot route SCIM key with no attribute path: '.$key, 400);
                     }
 
                     $attributeNames = $path->getAttributePathAttributes();
