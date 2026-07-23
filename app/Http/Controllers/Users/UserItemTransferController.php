@@ -57,103 +57,134 @@ class UserItemTransferController extends Controller
     {
         $validated = $request->validated();
         $target = User::findOrFail($validated['target_user_id']);
-
-        $assetIds = $validated['asset_ids'] ?? [];
-        $accessoryCheckoutIds = $validated['accessory_checkout_ids'] ?? [];
-        $licenseSeatIds = $validated['license_seat_ids'] ?? [];
         $note = $validated['note'];
 
-        $result = DB::transaction(function () use ($user, $target, $assetIds, $accessoryCheckoutIds, $licenseSeatIds, $note) {
-            $assetsTransferred = 0;
-            $accessoriesTransferred = 0;
-            $licensesTransferred = 0;
-            $skipped = [];
-
-            foreach ($assetIds as $assetId) {
-                $asset = Asset::find($assetId);
-
-                if (! $asset || (int) $asset->assigned_to !== (int) $user->id || $asset->assigned_type !== User::class) {
-                    $skipped[] = 'asset:'.$assetId;
-
-                    continue;
-                }
-
-                if (! $asset->canCheckoutTo($target)) {
-                    $skipped[] = 'asset:'.$assetId;
-
-                    continue;
-                }
-
-                $this->checkInAsset($asset, $user, $note);
-                $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), null, $note);
-                $assetsTransferred++;
-            }
-
-            foreach ($accessoryCheckoutIds as $checkoutId) {
-                $checkout = AccessoryCheckout::with('accessory')->find($checkoutId);
-
-                if (! $checkout || (int) $checkout->assigned_to !== (int) $user->id || $checkout->assigned_type !== User::class) {
-                    $skipped[] = 'accessory:'.$checkoutId;
-
-                    continue;
-                }
-
-                $accessory = $checkout->accessory;
-
-                if (! $accessory || ! $accessory->canCheckoutTo($target)) {
-                    $skipped[] = 'accessory:'.$checkoutId;
-
-                    continue;
-                }
-
-                $this->checkInAccessory($checkout, $accessory, $note);
-                $this->checkOutAccessory($accessory, $target, $note);
-                $accessoriesTransferred++;
-            }
-
-            foreach ($licenseSeatIds as $seatId) {
-                $seat = LicenseSeat::with('license')->find($seatId);
-
-                if (! $seat || (int) $seat->assigned_to !== (int) $user->id || $seat->asset_id !== null) {
-                    $skipped[] = 'license:'.$seatId;
-
-                    continue;
-                }
-
-                $license = $seat->license;
-
-                // Non-reassignable licenses stay with the original assignee.
-                // Transferring one would defeat the whole point of the flag,
-                // so we skip and surface it in the warning bucket.
-                if (! $license || ! $license->reassignable || ! $license->canCheckoutTo($target)) {
-                    $skipped[] = 'license:'.$seatId;
-
-                    continue;
-                }
-
-                $this->transferLicenseSeat($seat, $user, $target, $note);
-                $licensesTransferred++;
-            }
-
-            return compact('assetsTransferred', 'accessoriesTransferred', 'licensesTransferred', 'skipped');
-        });
+        $result = DB::transaction(fn () => [
+            'assets' => $this->transferAssets($validated['asset_ids'] ?? [], $user, $target, $note),
+            'accessories' => $this->transferAccessories($validated['accessory_checkout_ids'] ?? [], $user, $target, $note),
+            'licenses' => $this->transferLicenseSeats($validated['license_seat_ids'] ?? [], $user, $target, $note),
+        ]);
 
         $flash = trans('admin/users/general.transfer.success', [
-            'assets' => $result['assetsTransferred'],
-            'accessories' => $result['accessoriesTransferred'],
-            'licenses' => $result['licensesTransferred'],
+            'assets' => $result['assets']['count'],
+            'accessories' => $result['accessories']['count'],
+            'licenses' => $result['licenses']['count'],
             'target' => $target->display_name,
         ]);
 
         $redirect = redirect()->route('users.show', $target)->with('success', $flash);
 
-        if (! empty($result['skipped'])) {
+        $skipped = array_merge(
+            $result['assets']['skipped'],
+            $result['accessories']['skipped'],
+            $result['licenses']['skipped'],
+        );
+
+        if (! empty($skipped)) {
             $redirect->with('warning', trans('admin/users/general.transfer.some_skipped', [
-                'count' => count($result['skipped']),
+                'count' => count($skipped),
             ]));
         }
 
         return $redirect;
+    }
+
+    /**
+     * @return array{count: int, skipped: array<int, string>}
+     */
+    private function transferAssets(array $ids, User $source, User $target, ?string $note): array
+    {
+        $count = 0;
+        $skipped = [];
+
+        foreach ($ids as $assetId) {
+            $asset = Asset::find($assetId);
+            if (! $this->assetBelongsToSource($asset, $source) || ! $asset->canCheckoutTo($target)) {
+                $skipped[] = 'asset:'.$assetId;
+
+                continue;
+            }
+
+            $this->checkInAsset($asset, $source, $note);
+            $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), null, $note);
+            $count++;
+        }
+
+        return ['count' => $count, 'skipped' => $skipped];
+    }
+
+    /**
+     * @return array{count: int, skipped: array<int, string>}
+     */
+    private function transferAccessories(array $ids, User $source, User $target, ?string $note): array
+    {
+        $count = 0;
+        $skipped = [];
+
+        foreach ($ids as $checkoutId) {
+            $checkout = AccessoryCheckout::with('accessory')->find($checkoutId);
+            $accessory = $checkout?->accessory;
+            if (! $this->accessoryCheckoutBelongsToSource($checkout, $source) || ! $accessory?->canCheckoutTo($target)) {
+                $skipped[] = 'accessory:'.$checkoutId;
+
+                continue;
+            }
+
+            $this->checkInAccessory($checkout, $accessory, $note);
+            $this->checkOutAccessory($accessory, $target, $note);
+            $count++;
+        }
+
+        return ['count' => $count, 'skipped' => $skipped];
+    }
+
+    /**
+     * Non-reassignable licenses stay with the original assignee. Transferring
+     * one would defeat the whole point of the flag, so we drop it into the
+     * skipped bucket and surface a warning.
+     *
+     * @return array{count: int, skipped: array<int, string>}
+     */
+    private function transferLicenseSeats(array $ids, User $source, User $target, ?string $note): array
+    {
+        $count = 0;
+        $skipped = [];
+
+        foreach ($ids as $seatId) {
+            $seat = LicenseSeat::with('license')->find($seatId);
+            $license = $seat?->license;
+            if (! $this->licenseSeatBelongsToSource($seat, $source) || ! $license?->reassignable || ! $license->canCheckoutTo($target)) {
+                $skipped[] = 'license:'.$seatId;
+
+                continue;
+            }
+
+            $this->transferLicenseSeat($seat, $source, $target, $note);
+            $count++;
+        }
+
+        return ['count' => $count, 'skipped' => $skipped];
+    }
+
+    private function assetBelongsToSource(?Asset $asset, User $source): bool
+    {
+        return $asset !== null
+            && (int) $asset->assigned_to === (int) $source->id
+            && $asset->assigned_type === User::class;
+    }
+
+    private function accessoryCheckoutBelongsToSource(?AccessoryCheckout $checkout, User $source): bool
+    {
+        return $checkout !== null
+            && (int) $checkout->assigned_to === (int) $source->id
+            && $checkout->assigned_type === User::class;
+    }
+
+    private function licenseSeatBelongsToSource(?LicenseSeat $seat, User $source): bool
+    {
+        return $seat !== null
+            && (int) $seat->assigned_to === (int) $source->id
+            && $seat->asset_id === null;
     }
 
     private function checkInAsset(Asset $asset, User $source, ?string $note): void
