@@ -1124,6 +1124,31 @@ $(function () {
             }
         });
     };
+
+    // Sensitive fields (username, email, password) ship with a
+    // `readonly` + onfocus-removes-readonly anti-autofill trick to
+    // stop password managers from prefilling or overwriting the
+    // operator's own login credentials on user-create forms. The
+    // side-effect is that HTML5 `required` constraint validation is
+    // SILENTLY skipped for readonly inputs, so hitting submit without
+    // ever focusing a required field lets the empty form through the
+    // browser check entirely.
+    //
+    // On submit-button click we strip `readonly` from any
+    // required+readonly input inside the form. The browser then runs
+    // its normal constraint check (all fields participating) and
+    // shows the "please fill in this field" popup on empties. Autofill
+    // was already prevented at page load, so removing readonly at
+    // click time doesn't reopen that hole.
+    $(document).on('click', 'button[type="submit"], input[type="submit"]', function () {
+        var $form = $(this).closest('form');
+        if (! $form.length) {
+            return;
+        }
+        $form.find('input[required][readonly]').each(function () {
+            this.removeAttribute('readonly');
+        });
+    });
     $('input[name="activated"][type="checkbox"]').each(function () {
         syncPasswordFields($(this));
     });
