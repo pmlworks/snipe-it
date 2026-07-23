@@ -19,7 +19,7 @@ class CreateInactiveUserWithoutPasswordTest extends TestCase
     {
         $actor = User::factory()->createUsers()->create();
 
-        $response = $this->actingAs($actor)
+        $this->actingAs($actor)
             ->from(route('users.create'))
             ->post(route('users.store'), [
                 'first_name' => 'Inactive',
