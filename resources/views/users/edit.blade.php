@@ -121,8 +121,71 @@
 
                 </div>
 
+              <!-- Activation Status (Can the user login?) -->
+              {{-- Rendered ABOVE the password fields so the activated checkbox
+                   sits above the password inputs whose visibility it controls.
+                   snipeit.js hides the password rows when this checkbox is
+                   unchecked. Keeping the checkbox above avoids the layout
+                   jump caused by rows above the toggle appearing/disappearing. --}}
+                  <div class="form-group {{ $errors->has('activated') ? 'has-error' : '' }}">
+                          <div class="col-md-9 col-md-offset-3">
+
+                              <!-- disallow changes to the user's login status -->
+                              @if (((!Gate::allows('editableOnDemo'))  && ($user->id)) || (!Gate::allows('canEditAuthFields', $user)) || ($user->id == auth()->user()->id))
+                                  <!-- demo mode - disallow changes -->
+                                  <label class="form-control form-control--disabled">
+                                      <input type="checkbox" value="1" name="activated" class="disabled" {{ (old('activated', $user->activated)) == '1' ? ' checked="checked"' : '' }} disabled aria-label="activated">
+                                      {{ trans('admin/users/general.activated_help_text') }}
+                                  </label>
+
+                                  @cannot('canEditAuthFields', $user)
+                                  <!-- authed user is an admin or regular user and is trying to edit someone higher -->
+                                      <p class="help-block">
+                                      <x-icon type="locked" />
+                                          {{ trans('general.action_permission_generic', ['action' => trans('general.edit'), 'item_type' => trans('general.login_status')]) }}
+                                  </p>
+                                  @endcannot
+
+                                  @if ((auth()->user()->cannot('editableOnDemo')) && ($user->id))
+                                      <!-- app is locked -->
+                                      <p class="text-warning">
+                                          <x-icon type="locked" />
+                                          {{ trans('admin/users/table.lock_passwords') }}
+                                      </p>
+                                  @endif
+
+                                  @if ($user->id == auth()->user()->id)
+                                      <!-- disallow editing activation on your own account -->
+                                      <p class="help-block">
+                                          <x-icon type="locked" />
+                                          {{ trans('admin/users/general.activated_disabled_help_text') }}
+                                      </p>
+                                  @endcannot
+
+                              @else
+                                  <!-- everything is normal - as you were -->
+                                  <label class="form-control">
+                                      <input type="checkbox" value="1" name="activated"{{ ((old('activated') == '1') || ($user->activated) == '1') ? ' checked="checked"' : '' }} aria-label="activated" id="activated">
+                                      {{ trans('admin/users/general.activated_help_text') }}
+                                  </label>
+                                  <x-form.help name="activated" icon="tip">
+                                      {{ trans('admin/users/general.activated_password_required_help') }}
+                                  </x-form.help>
+
+                              @endif
+
+
+                          </div>
+                  </div>
+
                 <!-- Password -->
-                <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
+                {{-- Inline display style pre-hides the row when the user is
+                     landing on the form with activated unchecked (typical for
+                     new-user create). Avoids the FOUC that would happen if we
+                     rendered the fields visible and let snipeit.js hide them
+                     on document-ready. JS still toggles visibility on
+                     subsequent changes to the activated checkbox. --}}
+                <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}" @unless ((old('activated') == '1') || ($user->activated == '1')) style="display: none;" @endunless>
 
                   <label class="col-md-3 control-label" for="password">
                     {{ trans('admin/users/table.password') }}
@@ -172,7 +235,7 @@
 
                 @if (($user->ldap_import!='1') || str_contains(Route::currentRouteName(), 'clone'))
                     <!-- Password Confirm -->
-                    <div class="form-group {{ $errors->has('password_confirmation') ? 'has-error' : '' }}">
+                    <div class="form-group {{ $errors->has('password_confirmation') ? 'has-error' : '' }}" @unless ((old('activated') == '1') || ($user->activated == '1')) style="display: none;" @endunless>
                       <label class="col-md-3 control-label" for="password_confirmation">
                         {{ trans('admin/users/table.password_confirm') }}
                       </label>
@@ -202,55 +265,6 @@
                       </div>
                     </div>
                 @endif
-
-              <!-- Activation Status (Can the user login?) -->
-                  <div class="form-group {{ $errors->has('activated') ? 'has-error' : '' }}">
-                          <div class="col-md-9 col-md-offset-3">
-
-                              <!-- disallow changes to the user's login status -->
-                              @if (((!Gate::allows('editableOnDemo'))  && ($user->id)) || (!Gate::allows('canEditAuthFields', $user)) || ($user->id == auth()->user()->id))
-                                  <!-- demo mode - disallow changes -->
-                                  <label class="form-control form-control--disabled">
-                                      <input type="checkbox" value="1" name="activated" class="disabled" {{ (old('activated', $user->activated)) == '1' ? ' checked="checked"' : '' }} disabled aria-label="activated">
-                                      {{ trans('admin/users/general.activated_help_text') }}
-                                  </label>
-
-                                  @cannot('canEditAuthFields', $user)
-                                  <!-- authed user is an admin or regular user and is trying to edit someone higher -->
-                                      <p class="help-block">
-                                      <x-icon type="locked" />
-                                          {{ trans('general.action_permission_generic', ['action' => trans('general.edit'), 'item_type' => trans('general.login_status')]) }}
-                                  </p>
-                                  @endcannot
-
-                                  @if ((auth()->user()->cannot('editableOnDemo')) && ($user->id))
-                                      <!-- app is locked -->
-                                      <p class="text-warning">
-                                          <x-icon type="locked" />
-                                          {{ trans('admin/users/table.lock_passwords') }}
-                                      </p>
-                                  @endif
-
-                                  @if ($user->id == auth()->user()->id)
-                                      <!-- disallow editing activation on your own account -->
-                                      <p class="help-block">
-                                          <x-icon type="locked" />
-                                          {{ trans('admin/users/general.activated_disabled_help_text') }}
-                                      </p>
-                                  @endcannot
-
-                              @else
-                                  <!-- everything is normal - as you were -->
-                                  <label class="form-control">
-                                      <input type="checkbox" value="1" name="activated"{{ ((old('activated') == '1') || ($user->activated) == '1') ? ' checked="checked"' : '' }} aria-label="activated" id="activated">
-                                      {{ trans('admin/users/general.activated_help_text') }}
-                                  </label>
-
-                              @endif
-
-
-                          </div>
-                  </div>
 
                   <!-- Email -->
                 <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">

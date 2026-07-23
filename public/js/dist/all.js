@@ -75548,6 +75548,38 @@ $(function () {
     $container.find('input[type="checkbox"]').not($master).not(':disabled').prop('checked', $master.prop('checked'));
   });
 
+  // When the "This user can login" (activated) checkbox is off, the
+  // password + confirmation fields are functionally useless because
+  // login is gated by the activated flag. Hide the whole form-group
+  // (or dynamic-form-row in the modal) so the form doesn't show
+  // fields the user can't meaningfully fill in, and also drop the
+  // HTML `required` attribute so the browser doesn't block submission.
+  // The server side already skips the password rule for this case
+  // via SaveUserRequest::rules(), and the controller stores
+  // User::noPassword() raw so no Hash::check can ever match.
+  // Applies to both the main users/edit create form and the
+  // users/modal form since they share the input names.
+  var syncPasswordFields = function syncPasswordFields($checkbox) {
+    var $form = $checkbox.closest('form');
+    var $passwords = $form.find('input[name="password"], input[name="password_confirmation"]');
+    var visible = $checkbox.is(':checked');
+    $passwords.prop('required', visible);
+    $passwords.each(function () {
+      var $wrap = $(this).closest('.form-group, .dynamic-form-row');
+      if (visible) {
+        $wrap.show();
+      } else {
+        $wrap.hide();
+      }
+    });
+  };
+  $('input[name="activated"][type="checkbox"]').each(function () {
+    syncPasswordFields($(this));
+  });
+  $(document).on('change', 'input[name="activated"][type="checkbox"]', function () {
+    syncPasswordFields($(this));
+  });
+
   // A <select data-gates-submit> disables the submit button(s) in its
   // form until a value is chosen. Used by users/confirm-bulk-delete
   // where the operator must pick a status for the deleted users' assets

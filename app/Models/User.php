@@ -1248,6 +1248,13 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
      *
      * @since  [v6.2.0]
      *
+     * Stored raw (not bcrypted) on users who have no meaningful password
+     * on file — created deactivated via the UI, imported without a
+     * password, synced from LDAP/SCIM, or otherwise. Because it is stored
+     * as a plain string, Hash::check at login will never return true no
+     * matter what the input is, so there is no possible authentication
+     * path against this placeholder.
+     *
      * @return string
      */
     public function noPassword()

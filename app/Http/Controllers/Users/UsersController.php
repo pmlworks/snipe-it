@@ -115,6 +115,14 @@ class UsersController extends Controller
         $user->display_name = $request->input('display_name');
         if ($request->filled('password')) {
             $user->password = bcrypt($request->input('password'));
+        } else {
+            // SaveUserRequest only skips password validation when the
+            // user is being created deactivated. If we got here with no
+            // password, the user cannot log in anyway, so store the
+            // noPassword placeholder raw. Hash::check at login always
+            // fails against a plain string, so no authentication path
+            // can ever match this value.
+            $user->password = $user->noPassword();
         }
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
