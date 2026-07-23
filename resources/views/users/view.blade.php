@@ -619,7 +619,7 @@
                         @can('checkout', \App\Models\Asset::class)
                             @if (($user->assets()->whereNull('deleted_at')->count() + $user->accessories()->count() + $user->licenses()->count()) > 0)
                                 <a href="{{ route('users.transfer.show', $user) }}" class="btn btn-sm btn-theme hidden-print" data-tooltip="true" data-title="{{ trans('admin/users/general.transfer.button_tooltip') }}">
-                                    <x-icon type="checkout" class="fa-fw"/>
+                                    <x-icon type="transfer" class="fa-fw"/>
                                 </a>
                             @endif
                         @endcan
