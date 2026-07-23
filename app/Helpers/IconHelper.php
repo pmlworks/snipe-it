@@ -123,6 +123,8 @@ class IconHelper
             case 'api-key':
                 return 'fas fa-user-secret';
             case 'impersonate':
+                return 'fa-solid fa-user-ninja';
+            case 'transfer':
                 return 'fa-solid fa-person-walking-arrow-right';
             case 'undo':
                 return 'fas fa-arrow-left';
@@ -212,8 +214,6 @@ class IconHelper
                 return 'fa-solid fa-signature';
             case 'ldap':
                 return 'fas fa-sitemap';
-            case 'google':
-                return 'fa-brands fa-google';
             case 'saml':
                 return 'fas fa-sign-in-alt';
             case 'backups':
