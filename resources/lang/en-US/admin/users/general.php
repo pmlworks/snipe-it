@@ -2,6 +2,7 @@
 
 return [
     'activated_help_text' => 'This user can login',
+    'activated_password_required_help' => 'If you activate this user, you will need to provide a password so they can log in.',
     'activated_disabled_help_text' => 'You cannot edit activation status for your own account.',
     'assets_user' => 'Assets assigned to :name',
     'bulk_update_warn' => 'You are about to edit the properties of :user_count users. Please note that you cannot change your own user attributes using this form, and must make edits to your own user individually.',

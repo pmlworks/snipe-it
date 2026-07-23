@@ -75,7 +75,24 @@
                     <div class="col-md-9 col-xs-12"><input type="text" name="username" id="modal-username" class="form-control" maxlength="191" required></div>
                 </div>
 
+                {{-- Activated checkbox is rendered ABOVE the password fields
+                     so the toggle sits above the inputs whose visibility it
+                     controls (see snipeit.js). Defaults to unchecked because
+                     the modal is typically used to create a user on-the-fly
+                     for asset assignment, where login is not usually needed. --}}
                 <div class="dynamic-form-row">
+                    <div class="col-md-offset-3 col-md-9">
+                        <label class="form-control">
+                            <input type="checkbox" value="1" name="activated" id="modal-activated" aria-label="activated">
+                            {{ trans('general.login_enabled') }}
+                        </label>
+                        <x-form.help name="modal-activated" icon="tip">
+                            {{ trans('admin/users/general.activated_password_required_help') }}
+                        </x-form.help>
+                    </div>
+                </div>
+
+                <div class="dynamic-form-row" style="display: none;">
                     <label for="modal-password" class="col-md-3 control-label">
                         {{ trans('admin/users/table.password') }}:
                     </label>
@@ -95,7 +112,7 @@
                     </div>
                 </div>
 
-                <div class="dynamic-form-row">
+                <div class="dynamic-form-row" style="display: none;">
                     <label for="modal-password_confirmation" class="col-md-3 control-label">
                         {{ trans('admin/users/table.password_confirm') }}:
                     </label>
@@ -116,15 +133,6 @@
                     </label>
                     <div class="col-md-9 col-xs-12">
                         <input type="text" name="display_name" id="modal-display_name" class="form-control" maxlength="191">
-                    </div>
-                </div>
-
-                <div class="dynamic-form-row">
-                    <div class="col-md-offset-3 col-md-9">
-                        <label class="form-control">
-                            <input type="checkbox" value="1" name="activated" id="modal-activated" checked aria-label="activated">
-                            {{ trans('general.login_enabled') }}
-                        </label>
                     </div>
                 </div>
 
