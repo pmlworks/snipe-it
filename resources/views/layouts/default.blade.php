@@ -2440,7 +2440,7 @@
 
             };
 
-            $('#create-form, #checkout_form').each(function () {
+            $('#create-form, #checkout_form, #userForm').each(function () {
                 $(this).validate(snipeValidatorOptions);
             });
 
