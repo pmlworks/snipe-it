@@ -3,6 +3,8 @@
 namespace Tests\Feature\Livewire;
 
 use App\Livewire\Importer;
+use App\Models\CustomField;
+use App\Models\CustomFieldset;
 use App\Models\Import;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -505,6 +507,55 @@ class ImporterTest extends TestCase
             ->tap(function ($c) {
                 $required = $c->instance()->requiredForType('user');
                 $this->assertContains('first_name', $required);
+            });
+    }
+
+    public function test_license_required_fields_do_not_include_seats(): void
+    {
+        // Regression for #19467 follow-up. License::$rules requires seats
+        // for the create path, but a seat-assignment import (matching an
+        // existing license) does not use seats. The wizard cannot know
+        // per-row whether the caller intends create or update, so it must
+        // not enforce seats at wizard level. Per-row server-side validation
+        // still enforces seats on License::save() for genuine creates.
+        Livewire::actingAs(User::factory()->canImport()->create())
+            ->test(Importer::class)
+            ->tap(function ($c) {
+                $required = $c->instance()->requiredForType('license');
+                $this->assertNotContains(
+                    'seats',
+                    $required,
+                    'Seats should not be flagged as required at the wizard level for license imports.',
+                );
+                $this->assertContains('item_name', $required, 'item_name should still be required at the wizard level for license imports.');
+            });
+    }
+
+    public function test_asset_required_fields_do_not_include_custom_fields_required_in_some_fieldsets_only(): void
+    {
+        // Regression for #19468. A CSV of assets can span multiple asset
+        // models with different fieldsets. A custom field required in one
+        // fieldset but not in another (or not attached to another) must not
+        // be flagged as required at the wizard level, because rows destined
+        // for the other fieldset don't need it. Per-asset server-side
+        // validation on Asset::save() enforces the correct rule at save-time.
+        $customField = CustomField::factory()->create(['name' => 'Priority']);
+
+        $laptopFieldset = CustomFieldset::factory()->create();
+        $laptopFieldset->fields()->attach($customField, ['required' => 1, 'order' => 1]);
+
+        // Second fieldset that does NOT include the custom field at all.
+        CustomFieldset::factory()->create();
+
+        Livewire::actingAs(User::factory()->canImport()->create())
+            ->test(Importer::class)
+            ->tap(function ($c) use ($customField) {
+                $required = $c->instance()->requiredForType('asset');
+                $this->assertNotContains(
+                    $customField->db_column_name(),
+                    $required,
+                    'Custom field required in only some fieldsets should not be flagged as required at the wizard level.',
+                );
             });
     }
 
