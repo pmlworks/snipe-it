@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Session\TokenMismatchException;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Intervention\Image\Exception\NotSupportedException;
 use JsonException;
@@ -60,12 +59,34 @@ class Handler extends ExceptionHandler
     public function report(Throwable $exception)
     {
         if ($this->shouldReport($exception)) {
-            if (class_exists(Log::class)) {
-                Log::error($exception);
-            }
-
             return parent::report($exception);
         }
+    }
+
+    /**
+     * Report a caught exception, and rethrow in dev when the underlying
+     * cause is a programmer-error \Error (TypeError, ArgumentCountError,
+     * etc.) so it fails loud with a stack trace in dev instead of hiding behind
+     * a friendly "something went wrong" flash. Plain \Exception (sub)types
+     * (QueryException, ItemStillHasAssets, etc.) *always* report + return so
+     * bulk operations can keep swallowing runtime-data failures per row.
+     *
+     * We should use this as a drop-in for `report($e)` inside the wide-net
+     * catch (\Throwable $e) blocks in the bulk destroy / import paths.
+     */
+    public static function reportOrRethrow(Throwable $e): void
+    {
+        // Both APP_DEBUG must be on AND the environment must
+        // not be production before the raw \Error is allowed to
+        // escape past the friendly user-facing error.
+        if (
+            config('app.debug')
+            && ! app()->environment('production')
+            && $e instanceof \Error
+        ) {
+            throw $e;
+        }
+        report($e);
     }
 
     /**
@@ -161,7 +182,7 @@ class Handler extends ExceptionHandler
         // This is traaaaash but it handles models that are not found while using route model binding :(
         // The only alternative is to set that at *each* route, which is crazypants
         if ($e instanceof ModelNotFoundException) {
-            $ids = method_exists($e, 'getIds') ? $e->getIds() : [];
+            $ids = $e->getIds();
 
             if (in_array('bulkedit', $ids, true)) {
                 $error_array = session()->get('bulk_asset_errors');
@@ -198,7 +219,7 @@ class Handler extends ExceptionHandler
             // Normalize the space-separated derived name to underscore
             // so compound class names (AssetModel -> "asset model" -> "asset_model")
             // resolve to keys that actually exist in general.php.
-            $translationKey = 'general.' . str_replace(' ', '_', $model_name);
+            $translationKey = 'general.'.str_replace(' ', '_', $model_name);
             $translatedName = Lang::has($translationKey) ? trans($translationKey) : $model_name;
 
             return redirect()
