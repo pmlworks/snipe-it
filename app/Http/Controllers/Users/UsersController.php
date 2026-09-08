@@ -485,16 +485,13 @@ class UsersController extends Controller
      */
     public function getClone(Request $request, User $user)
     {
-        $this->authorize('create', $user);
-
         // We need to reverse the UI specific logic for our
         // permissions here before we update the user.
         $permissions = $request->input('permissions', []);
         app('request')->request->set('permissions', $permissions);
 
         $user_to_clone = User::with('userloc', 'companies')->withTrashed()->find($user->id);
-        // Make sure they can view this particular user
-        $this->authorize('view', $user_to_clone);
+        $this->authorize('clone', $user_to_clone);
 
         if ($user_to_clone) {
 
