@@ -793,7 +793,7 @@ class AssetsController extends Controller
      */
     public function getClone(Asset $asset)
     {
-        $this->authorize('create', Asset::class);
+        $this->authorize('clone', $asset);
         $cloned = clone $asset;
         $cloned_model = $asset;
         $cloned->id = null;
