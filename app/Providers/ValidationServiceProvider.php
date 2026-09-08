@@ -575,7 +575,16 @@ class ValidationServiceProvider extends ServiceProvider
                     return true;
                 }
 
-                $location = Location::find($value);
+                // Bypass CompanyableScope on the lookup. With scope_locations_fmcs=1
+                // Location has the scope applied, so Location::find() on a
+                // location whose company_id sits outside the current user's
+                // scope returns null. That would drop through to the trailing
+                // `return true` and let a cross-tenant location_id write pass
+                // validation, which is the opposite of what this rule exists
+                // to enforce. withoutGlobalScopes() ensures the rule sees the
+                // real record every time and can compare it against the
+                // request's company scope.
+                $location = Location::withoutGlobalScopes()->find($value);
 
                 if ($location) {
                     $effectiveCompanyId = $location->effectiveFmcsCompanyId();
