@@ -1623,10 +1623,6 @@ class ReportsController extends Controller
         fputcsv($handle, $header);
 
         foreach ($itemsForReport as $item) {
-            if ($item === null) {
-                continue;
-            }
-
             $row = [
                 $item->acceptance->created_at,
                 $item->type,
