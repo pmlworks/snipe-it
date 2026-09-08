@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Company;
 use App\Models\CustomField;
 use App\Models\Location;
 use App\Models\Setting;
@@ -321,6 +322,42 @@ class ValidationServiceProvider extends ServiceProvider
             }
 
             return ! DB::table($table)->where('parent_id', $modelId)->exists();
+        });
+
+        // Companion to `parent_must_be_top_level` / `must_have_no_children`:
+        // enforce that the caller is authorized to re-parent the row under the
+        // chosen new parent. Without this check, a scoped non-superuser
+        // holding companies.edit could PATCH their own company's parent_id to
+        // a foreign top-level company id — the structural rules above accept
+        // it because they only look at the parent's shape (top-level, no
+        // children), not the caller's scope. Company::getCurrentUserCompanyIds
+        // then walks parent+children so re-parenting A under B silently
+        // expands every B member's scope to include A. Bypasses CompanyableScope
+        // on the lookup for the same reason `fmcs_location` does: the scope
+        // hides foreign rows and would fall through to "not found" here.
+        Validator::extend('parent_within_scope', function ($attribute, $value, $parameters, $validator) {
+            if ($value === null || $value === '' || (int) $value === 0) {
+                return true;
+            }
+
+            // CLI / system context (seeders, artisan) has no auth user to scope
+            // against. Skip the check so trusted callers still work.
+            if (! auth()->user()) {
+                return true;
+            }
+
+            // Deliberately not going through Company::isCurrentUserHasAccess.
+            // That helper short-circuits `return true` for any Companyable
+            // whose table has no `company_id` column, which includes the
+            // companies table itself (the tenant boundary). Directly filtering
+            // the requested id against the actor's expanded company set
+            // matches what CompanyableScope enforces on reads and applies the
+            // superuser / non-FMCS bypasses via getIdsForCurrentUser.
+            return ! empty(Company::getIdsForCurrentUser([(int) $value]));
+        });
+
+        Validator::replacer('parent_within_scope', function ($message) {
+            return str_replace(':attribute', trans('general.company'), $message);
         });
 
         // Yo dawg. I heard you like validators.
