@@ -10,21 +10,14 @@ use DOMDocument;
 use DOMElement;
 use DOMXPath;
 use Illuminate\Support\Facades\Blade;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Tests\TestCase;
 
 class InfoPanelNotesTest extends TestCase
 {
-    public static function item_types(): array
-    {
-        return [
-            'asset' => [Asset::class],
-            'accessory' => [Accessory::class],
-            'license' => [License::class],
-        ];
-    }
-
-    #[DataProvider('item_types')]
+    #[TestWith([Asset::class], 'asset')]
+    #[TestWith([Accessory::class], 'accessory')]
+    #[TestWith([License::class], 'license')]
     public function test_notes_preserve_text_after_an_unclosed_html_tag(string $modelClass): void
     {
         $notes = "prefix <unfinished\nRemaining details";
@@ -53,17 +46,10 @@ class InfoPanelNotesTest extends TestCase
         $this->assertSame(0, $element->getElementsByTagName('p')->length);
     }
 
-    public static function literal_notes(): array
-    {
-        return [
-            'script tag' => ['<script>alert(1)</script>'],
-            'event handler' => ['<img src=x onerror=alert(1)>'],
-            'technical text' => ['Δοκιμή <value> & "quoted" > end'],
-            'plain text' => ['Symbols: < > & "quoted"'],
-        ];
-    }
-
-    #[DataProvider('literal_notes')]
+    #[TestWith(['<script>alert(1)</script>'], 'script tag')]
+    #[TestWith(['<img src=x onerror=alert(1)>'], 'event handler')]
+    #[TestWith(['Δοκιμή <value> & "quoted" > end'], 'technical text')]
+    #[TestWith(['Symbols: < > & "quoted"'], 'plain text')]
     public function test_notes_escape_html_without_removing_text(string $notes): void
     {
         $element = $this->notes_element($this->render_info_panel($notes));
@@ -82,16 +68,9 @@ class InfoPanelNotesTest extends TestCase
         }
     }
 
-    public static function multiline_notes(): array
-    {
-        return [
-            'LF' => ["First\nSecond\nThird"],
-            'CRLF' => ["First\r\nSecond\r\nThird"],
-            'blank line' => ["First\n\nThird"],
-        ];
-    }
-
-    #[DataProvider('multiline_notes')]
+    #[TestWith(["First\nSecond\nThird"], 'LF')]
+    #[TestWith(["First\r\nSecond\r\nThird"], 'CRLF')]
+    #[TestWith(["First\n\nThird"], 'blank line')]
     public function test_notes_preserve_line_breaks_without_doubling_them(string $notes): void
     {
         $element = $this->notes_element($this->render_info_panel($notes));
@@ -108,15 +87,8 @@ class InfoPanelNotesTest extends TestCase
         $this->assertSame(1, $element->getElementsByTagName('br')->length);
     }
 
-    public static function empty_notes(): array
-    {
-        return [
-            'empty string' => [''],
-            'null' => [null],
-        ];
-    }
-
-    #[DataProvider('empty_notes')]
+    #[TestWith([''], 'empty string')]
+    #[TestWith([null], 'null')]
     public function test_empty_notes_do_not_render_a_notes_entry(?string $notes): void
     {
         $document = $this->render_info_panel($notes);
