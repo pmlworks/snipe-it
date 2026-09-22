@@ -8,12 +8,13 @@ use App\SyncAdapters\PushableAdapter;
 use Illuminate\Console\Command;
 use Throwable;
 
-
 class PushInventory extends Command
 {
     protected $signature = 'snipeit:push-inventory {adapter? : The adapter instance slug. Omit to push every enabled instance that supports push.}';
 
     protected $description = 'Push Snipe-IT-authoritative field values to configured sync-adapter instances that support pushing.';
+
+    private const TABLE_HEADERS = ['Adapter', 'Status', 'Pushed', 'Errors', 'Elapsed'];
 
     public function handle(): int
     {
@@ -22,12 +23,16 @@ class PushInventory extends Command
         if ($slug !== null) {
             $instance = SyncAdapterInstance::query()->where('slug', $slug)->first();
             if ($instance === null) {
-                $this->error(sprintf('Unknown adapter instance "%s".', $slug));
+                $this->error("Unknown adapter instance \"{$slug}\".");
 
                 return self::FAILURE;
             }
 
-            return $this->runInstance($instance);
+            $rows = [];
+            $exit = $this->runInstance($instance, $rows);
+            $this->table(self::TABLE_HEADERS, $rows);
+
+            return $exit;
         }
 
         $instances = SyncAdapterInstance::query()->orderBy('slug')->get();
@@ -39,25 +44,30 @@ class PushInventory extends Command
 
         $anyFailed = false;
         $ranCount = 0;
+        $totalStartedAt = microtime(true);
+        $rows = [];
 
         foreach ($instances as $instance) {
             $adapter = $instance->adapter();
-            if (!$adapter instanceof PushableAdapter) {
+            if (! $adapter instanceof PushableAdapter) {
                 continue;
             }
-            if (!$adapter->isEnabled() || !$adapter->canPush()) {
-                $this->line(sprintf('Skipping %s (not active, not configured, or push not supported).', $instance->slug));
+            if (! $adapter->isEnabled() || ! $adapter->canPush()) {
+                $rows[] = [$instance->slug, 'Skipped', '-', '-', '-'];
 
                 continue;
             }
 
             $ranCount++;
-            if ($this->runInstance($instance) === self::FAILURE) {
+            if ($this->runInstance($instance, $rows) === self::FAILURE) {
                 $anyFailed = true;
             }
         }
 
-        $this->info(sprintf('Ran push on %d push-enabled instance(s).', $ranCount));
+        $this->table(self::TABLE_HEADERS, $rows);
+
+        $totalElapsed = self::formatElapsed($totalStartedAt);
+        $this->info("Ran push on {$ranCount} push-enabled instance(s) in {$totalElapsed}.");
 
         return $anyFailed ? self::FAILURE : self::SUCCESS;
     }
@@ -68,24 +78,30 @@ class PushInventory extends Command
      * so a large fleet doesn't load everything into memory, invoke
      * $adapter->push() per asset, accumulate counts. Per-asset errors
      * get logged and counted. A single bad asset doesn't abort the run.
+     * Appends one row to $rows describing the outcome for the final
+     * table render.
      */
-    private function runInstance(SyncAdapterInstance $instance): int
+    private function runInstance(SyncAdapterInstance $instance, array &$rows): int
     {
         $slug = $instance->slug;
+        $startedAt = microtime(true);
 
         $adapter = $instance->adapter();
-        if (!$adapter instanceof PushableAdapter) {
-            $this->error(sprintf('Adapter "%s" does not support push.', $slug));
+        if (! $adapter instanceof PushableAdapter) {
+            $this->error("Adapter \"{$slug}\" does not support push.");
+            $rows[] = [$slug, 'Not pushable', '-', '-', self::formatElapsed($startedAt)];
 
             return self::FAILURE;
         }
-        if (!$adapter->isEnabled()) {
-            $this->error(sprintf('Adapter "%s" is not active or is missing configuration.', $slug));
+        if (! $adapter->isEnabled()) {
+            $this->error("Adapter \"{$slug}\" is not active or is missing configuration.");
+            $rows[] = [$slug, 'Not active', '-', '-', self::formatElapsed($startedAt)];
 
             return self::FAILURE;
         }
-        if (!$adapter->canPush()) {
-            $this->error(sprintf('Adapter "%s" does not currently support push (vendor gate).', $slug));
+        if (! $adapter->canPush()) {
+            $this->error("Adapter \"{$slug}\" does not currently support push (vendor gate).");
+            $rows[] = [$slug, 'Push gated', '-', '-', self::formatElapsed($startedAt)];
 
             return self::FAILURE;
         }
@@ -99,8 +115,8 @@ class PushInventory extends Command
             AssetExternalSource::query()
                 ->where('source', $slug)
                 ->with('asset')
-                ->chunkById(200, function ($rows) use ($adapter, &$pushed, &$errors) {
-                    foreach ($rows as $row) {
+                ->chunkById(200, function ($queryRows) use ($adapter, &$pushed, &$errors) {
+                    foreach ($queryRows as $row) {
                         $asset = $row->asset;
                         if ($asset === null) {
                             continue;
@@ -111,22 +127,43 @@ class PushInventory extends Command
                             $pushed++;
                         } catch (Throwable $e) {
                             $errors++;
-                            $this->warn(sprintf(
-                                'push: asset %d failed: %s',
-                                $asset->id,
-                                $e->getMessage(),
-                            ));
+                            $message = $e->getMessage();
+                            $this->warn("push: asset {$asset->id} failed: {$message}");
                         }
                     }
                 });
         } catch (Throwable $e) {
-            $this->error(sprintf('%s push aborted: %s', $slug, $e->getMessage()));
+            $elapsed = self::formatElapsed($startedAt);
+            $message = $e->getMessage();
+            $this->error("{$slug} push aborted: {$message} ({$elapsed})");
+            $rows[] = [$slug, 'Aborted', $pushed, $errors, $elapsed];
 
             return self::FAILURE;
         }
 
-        $this->info(sprintf('%s: pushed %d asset(s), %d error(s).', $slug, $pushed, $errors));
+        $status = $errors > 0 ? 'Errors' : 'OK';
+        $rows[] = [$slug, $status, $pushed, $errors, self::formatElapsed($startedAt)];
 
         return $errors > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+    /**
+     * Format an elapsed duration for console output. Seconds with one
+     * decimal below a minute, minutes-and-seconds above. Sized for
+     * scan-at-a-glance output on multi-instance runs where one slow
+     * adapter is easier to spot when the units don't drift into the
+     * hundreds of seconds.
+     */
+    private static function formatElapsed(float $startedAt): string
+    {
+        $elapsed = microtime(true) - $startedAt;
+        if ($elapsed < 60) {
+            return number_format($elapsed, 1).'s';
+        }
+
+        $minutes = (int) floor($elapsed / 60);
+        $seconds = number_format($elapsed - ($minutes * 60), 1);
+
+        return $minutes.'m '.$seconds.'s';
     }
 }

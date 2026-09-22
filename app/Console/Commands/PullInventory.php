@@ -13,6 +13,8 @@ class PullInventory extends Command
 
     protected $description = 'Pull host inventory from configured sync-adapter instances and upsert as Snipe-IT assets.';
 
+    private const TABLE_HEADERS = ['Adapter', 'Status', 'Synced', 'Errors', 'Elapsed'];
+
     public function handle(): int
     {
         $slug = $this->argument('adapter');
@@ -22,16 +24,17 @@ class PullInventory extends Command
 
             if ($instance === null) {
                 $available = SyncAdapterInstance::query()->pluck('slug')->implode(', ');
-                $this->error(sprintf(
-                    'Unknown adapter instance "%s". Available: %s.',
-                    $slug,
-                    $available !== '' ? $available : '(none configured)',
-                ));
+                $availableLabel = $available !== '' ? $available : '(none configured)';
+                $this->error("Unknown adapter instance \"{$slug}\". Available: {$availableLabel}.");
 
                 return self::FAILURE;
             }
 
-            return $this->runInstance($instance);
+            $rows = [];
+            $exit = $this->runInstance($instance, $rows);
+            $this->table(self::TABLE_HEADERS, $rows);
+
+            return $exit;
         }
 
         // No slug argument means "run every enabled instance". Used by
@@ -48,52 +51,55 @@ class PullInventory extends Command
 
         $anyFailed = false;
         $ranCount = 0;
+        $totalStartedAt = microtime(true);
+        $rows = [];
 
         foreach ($instances as $instance) {
             $adapter = $instance->adapter();
             if ($adapter === null || ! $adapter->isEnabled()) {
-                $this->line(sprintf('Skipping %s (not active or not configured).', $instance->slug));
+                $rows[] = [$instance->slug, 'Skipped', '-', '-', '-'];
 
                 continue;
             }
 
             $ranCount++;
-            if ($this->runInstance($instance) === self::FAILURE) {
+            if ($this->runInstance($instance, $rows) === self::FAILURE) {
                 $anyFailed = true;
             }
         }
 
-        $this->info(sprintf('Ran %d enabled instance(s).', $ranCount));
+        $this->table(self::TABLE_HEADERS, $rows);
+
+        $totalElapsed = self::formatElapsed($totalStartedAt);
+        $this->info("Ran {$ranCount} enabled instance(s) in {$totalElapsed}.");
 
         return $anyFailed ? self::FAILURE : self::SUCCESS;
     }
 
     /**
-     * Run a single instance. Extracted so the two entry paths (slug
-     * arg and iterate-all) share the same body. Returns the shell
-     * exit code (SUCCESS or FAILURE) rather than throwing so the
-     * iterate-all path can aggregate across many instances.
+     * Run a single instance. Appends one row to $rows describing the
+     * outcome for the final table render, and returns the shell exit
+     * code (SUCCESS or FAILURE) so the iterate-all path can aggregate
+     * across many instances. Config-error paths still emit inline
+     * $this->error output because those message shapes carry
+     * remediation hints that don't fit a table row.
      */
-    private function runInstance(SyncAdapterInstance $instance): int
+    private function runInstance(SyncAdapterInstance $instance, array &$rows): int
     {
         $slug = $instance->slug;
+        $startedAt = microtime(true);
 
         $adapter = $instance->adapter();
         if ($adapter === null) {
-            $this->error(sprintf(
-                'Instance "%s" references adapter_type "%s" which is not registered.',
-                $slug,
-                $instance->adapter_type,
-            ));
+            $this->error("Instance \"{$slug}\" references adapter_type \"{$instance->adapter_type}\" which is not registered.");
+            $rows[] = [$slug, 'Config error', '-', '-', self::formatElapsed($startedAt)];
 
             return self::FAILURE;
         }
 
         if (! $adapter->isEnabled()) {
-            $this->error(sprintf(
-                'Adapter "%s" is not active or is missing configuration. Set it up under Settings -> Sync Adapters.',
-                $slug,
-            ));
+            $this->error("Adapter \"{$slug}\" is not active or is missing configuration. Set it up under Settings -> Sync Adapters.");
+            $rows[] = [$slug, 'Not active', '-', '-', self::formatElapsed($startedAt)];
 
             return self::FAILURE;
         }
@@ -114,20 +120,21 @@ class PullInventory extends Command
                     // A single bad record shouldn't take down the run.
                     // Log the offending host and keep going.
                     $errors++;
-                    $this->warn(sprintf(
-                        'Failed to sync host %s: %s',
-                        $record->sourceId,
-                        $e->getMessage(),
-                    ));
+                    $sourceId = $record->sourceId;
+                    $message = $e->getMessage();
+                    $this->warn("Failed to sync host {$sourceId}: {$message}");
                 }
             }
         } catch (Throwable $e) {
-            $abortSummary = sprintf('Sync aborted: %s', $e->getMessage());
+            $message = $e->getMessage();
+            $abortSummary = "Sync aborted: {$message}";
             $instance->last_synced_at = now();
             $instance->last_sync_result = $abortSummary;
             $instance->save();
 
-            $this->error(sprintf('%s %s', $slug, $abortSummary));
+            $elapsed = self::formatElapsed($startedAt);
+            $this->error("{$slug} {$abortSummary} ({$elapsed})");
+            $rows[] = [$slug, 'Aborted', $seen, $errors, $elapsed];
 
             return self::FAILURE;
         }
@@ -142,8 +149,29 @@ class PullInventory extends Command
         $instance->last_sync_result = $result;
         $instance->save();
 
-        $this->info(sprintf('%s: %s', $slug, $result));
+        $status = $errors > 0 ? 'Errors' : 'OK';
+        $rows[] = [$slug, $status, $seen, $errors, self::formatElapsed($startedAt)];
 
         return $errors > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+    /**
+     * Format an elapsed duration for console output. Seconds with one
+     * decimal below a minute, minutes-and-seconds above. Sized for
+     * scan-at-a-glance output on multi-instance runs where one slow
+     * adapter is easier to spot when the units don't drift into the
+     * hundreds of seconds.
+     */
+    private static function formatElapsed(float $startedAt): string
+    {
+        $elapsed = microtime(true) - $startedAt;
+        if ($elapsed < 60) {
+            return number_format($elapsed, 1).'s';
+        }
+
+        $minutes = (int) floor($elapsed / 60);
+        $seconds = number_format($elapsed - ($minutes * 60), 1);
+
+        return $minutes.'m '.$seconds.'s';
     }
 }
