@@ -477,10 +477,11 @@ class AssetsController extends Controller
                     if ($numeric_sort) {
                         $assets->orderByRaw(DB::getTablePrefix().'assets.'.$sort_override.' * 1 '.$order);
                     } else {
-                        $assets->orderBy($sort_override, $order);
+                        $assets->orderBy('assets.' . $sort_override, $order);
                     }
                 } else {
-                    $assets->orderBy($column_sort, $order);
+                    $qualifiedSort = str_contains($column_sort, '.') ? $column_sort : 'assets.' . $column_sort;
+                    $assets->orderBy($qualifiedSort, $order);
                 }
                 break;
         }
@@ -490,7 +491,26 @@ class AssetsController extends Controller
         $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
         $limit = app('api_limit_value');
 
-        $assets = $assets->skip($offset)->take($limit)->get();
+        // Deferred-join pagination. Instead of running the full query
+        // with all its joins and eager loads through OFFSET / LIMIT
+        // (which forces MySQL to pull entire row bodies for the
+        // (offset + limit) rows it walks before returning the last
+        // `limit` of them), pluck only the primary-key ids on the
+        // fully-joined + sorted + filtered query, then re-hydrate the
+        // limited set of ids with their eager loads on a separate query.
+        $ids = (clone $assets)->select('assets.id')->skip($offset)->take($limit)->pluck('id')->all();
+
+        if (empty($ids)) {
+            $assets = Asset::query()->whereRaw('1 = 0')->get();
+        } else {
+            $order = array_flip($ids);
+            $assets = Asset::query()
+                ->whereIn('assets.id', $ids)
+                ->setEagerLoads($assets->getEagerLoads())
+                ->get()
+                ->sortBy(fn($model) => $order[$model->getKey()] ?? PHP_INT_MAX)
+                ->values();
+        }
 
         /**
          * Include additional associated relationships

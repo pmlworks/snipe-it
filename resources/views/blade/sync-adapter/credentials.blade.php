@@ -13,6 +13,15 @@
     $locked = config('app.lock_passwords') === true;
 @endphp
 
+<x-alert
+    type="warning"
+    icon="dungeon"
+    :title="trans('admin/settings/sync_adapters.experimental_banner_title')"
+    style="margin-bottom: 15px;"
+>
+    {{ trans('admin/settings/sync_adapters.experimental_banner_body') }}
+</x-alert>
+
 @if ($adapter->supportsGroupScoping() && $adapter->isEnabled())
     {{-- Refresh-groups action lives outside the config form because
          it POSTs to a different route (settings.adapters.refresh_groups)

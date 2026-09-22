@@ -152,6 +152,14 @@
                             >
                                 <div class="sync-adapters-empty-state">
 
+                                    <x-alert
+                                        type="warning"
+                                        icon="dungeon"
+                                        :title="trans('admin/settings/sync_adapters.experimental_banner_title')"
+                                        style="margin-bottom: 20px;"
+                                    >
+                                        {{ trans('admin/settings/sync_adapters.experimental_banner_body') }}
+                                    </x-alert>
 
                                     <h3>
                                         <x-icon type="tip" class="text-info"/> {{ trans('admin/settings/sync_adapters.empty_state_title') }}
