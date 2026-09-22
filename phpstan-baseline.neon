@@ -973,12 +973,6 @@ parameters:
 			path: app/Http/Controllers/Api/AccessoriesController.php
 
 		-
-			message: '#^Call to an undefined method App\\Models\\SnipeModel\:\:companies\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/AccessoriesController.php
-
-		-
 			message: '#^Call to an undefined method App\\Models\\SnipeModel\:\:getErrors\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -1897,12 +1891,6 @@ parameters:
 			path: app/Http/Controllers/Api/UsersController.php
 
 		-
-			message: '#^Method App\\Http\\Transformers\\ConsumablesTransformer\:\:transformConsumables\(\) invoked with 3 parameters, 2 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Http/Controllers/Api/UsersController.php
-
-		-
 			message: '#^PHPDoc tag @param for parameter \$request with type Illuminate\\Http\\Request is not subtype of native type App\\Http\\Requests\\SaveUserRequest\.$#'
 			identifier: parameter.phpDocType
 			count: 2
@@ -2455,9 +2443,15 @@ parameters:
 			path: app/Http/Controllers/CompaniesController.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\ComponentAssignment\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\ComponentAssignment\>\:\:\$created_by\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Components/ComponentCheckinController.php
+
+		-
 			message: '#^Cannot access property \$asset_id on array\<mixed\>\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Components/ComponentCheckinController.php
 
 		-
@@ -2469,7 +2463,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$component_id on array\<mixed\>\|object\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Http/Controllers/Components/ComponentCheckinController.php
 
 		-
@@ -4015,6 +4009,24 @@ parameters:
 			path: app/Http/Transformers/UploadedFilesTransformer.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\Accessory\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Transformers/UsersTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Consumable\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Transformers/UsersTransformer.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\License\:\:\$pivot\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Transformers/UsersTransformer.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$manages_locations_count\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4036,6 +4048,18 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$tag_color\.$#'
 			identifier: property.notFound
 			count: 3
+			path: app/Http/Transformers/UsersTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Transformers/UsersTransformer.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$note\.$#'
+			identifier: property.notFound
+			count: 2
 			path: app/Http/Transformers/UsersTransformer.php
 
 		-
@@ -6859,12 +6883,6 @@ parameters:
 			path: app/Models/Consumable.php
 
 		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$acceptedBy$#'
-			identifier: parameter.notFound
-			count: 1
-			path: app/Models/Consumable.php
-
-		-
 			message: '#^PHPDoc type array of property App\\Models\\Consumable\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -7579,12 +7597,6 @@ parameters:
 			path: app/Models/LicenseSeat.php
 
 		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$acceptedBy$#'
-			identifier: parameter.notFound
-			count: 1
-			path: app/Models/LicenseSeat.php
-
-		-
 			message: '#^PHPDoc type array of property App\\Models\\LicenseSeat\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -8236,12 +8248,6 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$company_id\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Models/User.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$cost\.$#'
-			identifier: property.notFound
-			count: 1
 			path: app/Models/User.php
 
 		-
@@ -10379,33 +10385,3 @@ parameters:
 			identifier: arguments.count
 			count: 1
 			path: routes/web.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Consumable\:\:\$pivot\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Transformers/UsersTransformer.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\Accessory\:\:\$pivot\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Transformers/UsersTransformer.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\License\:\:\$pivot\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Transformers/UsersTransformer.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Transformers/UsersTransformer.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$note\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Http/Transformers/UsersTransformer.php

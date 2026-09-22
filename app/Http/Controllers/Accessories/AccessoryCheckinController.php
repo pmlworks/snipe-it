@@ -39,7 +39,8 @@ class AccessoryCheckinController extends Controller
 
         return view('accessories/checkin', compact('accessory', 'target_option'))
             ->with('target', $accessory_checkout->assignedTo)
-            ->with('backto', $backto);
+            ->with('backto', $backto)
+            ->with('checkoutLog', $accessory_checkout);
 
     }
 
