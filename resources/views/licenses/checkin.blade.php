@@ -25,11 +25,16 @@
 
             @if ($licenseSeat->license->category)
                 <x-form.static :label="trans('general.category')">
-                    {!! $licenseSeat->license->category->present()->formattedNameLink !!}
+                    <x-icon type="category" class="fa-fw" style="{{ $licenseSeat->license->category->tag_color ? 'color: '.e($licenseSeat->license->category->tag_color).';' : '' }}" />
+                    {{ $licenseSeat->license->category->name }}
                 </x-form.static>
             @endif
 
-            <x-checkin.checked-out-from :target="$licenseSeat->user ?? $licenseSeat->asset" />
+            <x-checkin.checked-out-from
+                :target="$licenseSeat->user ?? $licenseSeat->asset"
+                :checkout-date="$checkoutLog?->created_at"
+                :checkout-by="$checkoutLog?->adminuser"
+            />
 
             @if ($licenseSeat->license->serial)
                 @can('viewKeys', $licenseSeat->license)
