@@ -345,11 +345,12 @@
             >
                 {{-- Panel-top alert is for INFRASTRUCTURE feedback
                      (connect failures, TLS handshake, bind rejection).
-                     Step 3's lookup-success alert renders inside the
-                     well next to the search box instead, since it's
-                     scoped to what the user just searched. The check
-                     below suppresses it here for that case. --}}
-                @if ($testStatus && ! ($currentStep === 3 && $testStatus === 'success'))
+                     Step 3's test-lookup alerts (success AND error)
+                     render inside the well next to the search box
+                     instead, so the response appears where the user
+                     clicked. The check below suppresses this location
+                     for that case. --}}
+                @if ($testStatus && $currentStep !== 3)
                     <x-alert
                         :type="$testStatus === 'success' ? 'success' : 'danger'"
                         :role="$testStatus === 'success' ? 'status' : 'alert'"
@@ -676,14 +677,21 @@
                              search box where results would appear. --}}
                         <x-form.error name="test_sample_username" />
 
-                        {{-- Lookup-success alert lives inside the well
-                             so it sits with the search box and the
-                             preview table it introduces. Infrastructure
-                             errors (connect/bind failures) still surface
-                             at the top of the panel because they suggest
-                             going back to earlier steps. --}}
-                        @if ($testStatus === 'success')
-                            <x-alert type="success" role="status" icon="checkmark" style="margin-top: 15px;">
+                        {{-- Test-lookup alerts live inside the well so
+                             they sit with the search box and the preview
+                             table. Success renders green with the checkmark
+                             icon, everything else renders red with the
+                             warning icon. Bind and connect failures include
+                             their own "Go back to <step> step" language in
+                             the trans string, so the user still gets that
+                             cue without needing a top-of-panel banner. --}}
+                        @if ($testStatus)
+                            <x-alert
+                                :type="$testStatus === 'success' ? 'success' : 'danger'"
+                                :role="$testStatus === 'success' ? 'status' : 'alert'"
+                                :icon="$testStatus === 'success' ? 'checkmark' : 'warning'"
+                                style="margin-top: 15px;"
+                            >
                                 {!! $testMessage !!}
                             </x-alert>
                         @endif
