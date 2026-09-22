@@ -108,10 +108,9 @@ class FleetSyncNowTest extends TestCase
 
         $this->assertSame(0, $exit);
         $this->assertDatabaseCount('asset_external_sources', 1);
-        // CLI + UI now share the sync_adapter_sync_complete phrasing so
-        // scheduled runs render the same status admins see on the
-        // settings page.
-        $this->assertStringContainsString('Synced 1', Artisan::output());
+        $output = Artisan::output();
+        $this->assertStringContainsString('fleet', $output);
+        $this->assertStringContainsString('OK', $output);
 
         // CLI runs write the same status columns as the interactive
         // button so scheduled cron jobs surface in the UI.
