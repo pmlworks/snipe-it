@@ -623,11 +623,21 @@ class LdapSettings extends Component
         }
 
         $setting = Setting::getSettings();
-        $setting->ldap_uname = $this->ldap_uname;
-        // Only overwrite the persisted encrypted password when the user
-        // provided a new value. Blank pword = keep-what's-in-DB.
-        if ($this->ldap_pword !== '') {
-            $setting->ldap_pword = Crypt::encrypt($this->ldap_pword);
+
+        // SASL EXTERNAL uses the client cert as the identity, so both
+        // uname and pword must be empty in the persisted state for
+        // Ldap::shouldUseSaslExternal() to route bind attempts through
+        // ldap_sasl_bind().
+        if ($this->isSaslExternalCandidate()) {
+            $setting->ldap_uname = '';
+            $setting->ldap_pword = '';
+        } else {
+            $setting->ldap_uname = $this->ldap_uname;
+            // Only overwrite the persisted encrypted password when the user
+            // provided a new value. Blank pword = keep-what's-in-DB.
+            if ($this->ldap_pword !== '') {
+                $setting->ldap_pword = Crypt::encrypt($this->ldap_pword);
+            }
         }
         $setting->ldap_basedn = $this->ldap_basedn;
         $setting->ldap_filter = $this->ldap_filter;
@@ -1310,10 +1320,34 @@ class LdapSettings extends Component
      * verified those credentials. Returns true on success, false
      * after recording the appropriate error and unbinding. Handles
      * password decrypt failure and bind rejection.
+     *
+     * SASL EXTERNAL configs never have a uname / pword to persist. The
+     * client cert IS the identity, so route those to ldap_sasl_bind()
+     * to match step 2's bind test at line 776. Without this branch, the
+     * SASL flow would fall through to anonymous bind and get rejected
+     * by the directory with "Invalid username", contradicting the
+     * successfully-tested bind step the wizard already advanced past.
      */
     protected function bindWithPersistedCredentials(\LDAP\Connection $conn, string $actionType): bool
     {
         $settings = Setting::getSettings();
+
+        if (Ldap::shouldUseSaslExternal($settings)) {
+            if (!@ldap_sasl_bind($conn, null, null, 'EXTERNAL')) {
+                $ldapError = Ldap::bindError($conn);
+                @ldap_unbind($conn);
+                $this->recordTestResult(
+                    'error',
+                    trans('admin/settings/general.ldap_wizard.search.bind_failed', ['error' => $ldapError]),
+                    $actionType,
+                );
+
+                return false;
+            }
+
+            return true;
+        }
+
         $uname = (string) $settings->ldap_uname;
         try {
             $pword = $settings->ldap_pword ? Crypt::decrypt($settings->ldap_pword) : '';
