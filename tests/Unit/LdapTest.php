@@ -111,9 +111,39 @@ class LdapTest extends TestCase
         Ldap::setSaslExternalOverride(true);
     }
 
+    private ?string $originalStoragePath = null;
+
+    private ?string $tempStoragePath = null;
+
+    /**
+     * Redirect storage_path() to a per-test scratch directory.
+     */
+    private function useTempStoragePath(): void
+    {
+        $this->originalStoragePath = storage_path();
+        $this->tempStoragePath = sys_get_temp_dir() . '/snipeit-ldap-' . uniqid('', true);
+        mkdir($this->tempStoragePath, 0755, true);
+        $this->app->useStoragePath($this->tempStoragePath);
+    }
+
     protected function tearDown(): void
     {
         Ldap::setSaslExternalOverride(null);
+
+        if ($this->originalStoragePath !== null) {
+            $this->app->useStoragePath($this->originalStoragePath);
+
+            if ($this->tempStoragePath !== null && is_dir($this->tempStoragePath)) {
+                foreach (glob($this->tempStoragePath . '/*') as $file) {
+                    @unlink($file);
+                }
+                @rmdir($this->tempStoragePath);
+            }
+
+            $this->originalStoragePath = null;
+            $this->tempStoragePath = null;
+        }
+
         parent::tearDown();
     }
 
@@ -361,6 +391,7 @@ class LdapTest extends TestCase
 
     public function test_nonexistent_tls_file()
     {
+        $this->useTempStoragePath();
         $this->settings->enableLdap()->set(['ldap_client_tls_cert' => 'SAMPLE CERT TEXT']);
         $certfile = Setting::get_client_side_cert_path();
         $this->assertStringEqualsFile($certfile, 'SAMPLE CERT TEXT');
@@ -368,6 +399,7 @@ class LdapTest extends TestCase
 
     public function test_stale_tls_file()
     {
+        $this->useTempStoragePath();
         file_put_contents(Setting::get_client_side_cert_path(), 'STALE CERT FILE');
         sleep(1); // FIXME - this is going to slow down tests
         $this->settings->enableLdap()->set(['ldap_client_tls_cert' => 'SAMPLE CERT TEXT']);
@@ -377,6 +409,7 @@ class LdapTest extends TestCase
 
     public function test_fresh_tls_file()
     {
+        $this->useTempStoragePath();
         $this->settings->enableLdap()->set(['ldap_client_tls_cert' => 'SAMPLE CERT TEXT']);
         $client_side_cert_path = Setting::get_client_side_cert_path();
         file_put_contents($client_side_cert_path, 'WEIRDLY UPDATED CERT FILE');
