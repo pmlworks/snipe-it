@@ -181,6 +181,9 @@ return [
     'abm_category_family_label' => 'Category for :family',
     'abm_category_family_help' => 'Route the :family product family to a specific category, overriding the default category above. Leave blank to inherit the default.',
     'abm_section_categories_title' => 'Category mapping by product family',
+    'jamf_platform_client_id_help' => 'Create an integration in Jamf Account under API integrations, then grant it the capabilities for Devices (read) and Blueprints (read) on your Platform environment. Copy the Client ID from the integration detail page.',
+    'jamf_platform_client_secret_help' => 'Paired with the Client ID above. Jamf shows the secret once at integration creation time.',
+    'jamf_platform_environment_id_help' => 'UUID of the Platform environment the integration is scoped to. Copy from Jamf Account under Environments, or from the URL of your environment console. Sent as the X-Environment-Id header on every request.',
 
     // Custom HTTP adapter
     'custom_auth_method_help' => 'How the adapter authenticates against your API. <code>Bearer</code> sends a Bearer token in the <code>Authorization</code> header. <code>Basic</code> sends username + password. <code>API Key</code> sends the value in a custom header. <code>None</code> sends no auth headers.',
@@ -253,6 +256,7 @@ return [
     'extra_team' => ':vendor Team',
     'extra_uuid' => ':vendor UUID',
     'extra_udid' => ':vendor UDID',
+    'extra_device_type' => ':vendor Device Type',
     'extra_status' => ':vendor Status',
     'extra_byod' => ':vendor Personal (BYOD)',
     'extra_active' => ':vendor Active',
@@ -317,6 +321,7 @@ return [
     'label_site_id' => 'Site ID',
     'label_organization_id' => 'Organization ID',
     'label_environment' => 'Environment',
+    'label_environment_id' => 'Environment ID',
     'label_token_id' => 'Token ID',
     'label_token_secret' => 'Token Secret',
     'label_asset_tag_custom_field_name' => 'Asset Tag Custom Field Name',
@@ -331,6 +336,7 @@ return [
     'vendor_group_jamf_site' => 'Jamf Site',
     'vendor_group_jamf_school_location' => 'Jamf School Location',
     'vendor_group_kandji_blueprint' => 'Kandji Blueprint',
+    'vendor_group_jamf_platform_blueprint' => 'Jamf Platform Blueprint',
     'vendor_group_mosyle_location' => 'Mosyle Location',
     'vendor_group_kaseya_organization' => 'Kaseya Organization',
 

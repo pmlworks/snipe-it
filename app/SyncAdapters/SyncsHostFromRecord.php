@@ -46,7 +46,18 @@ trait SyncsHostFromRecord
 
             $previousExternal = $isNew ? [] : self::loadExternalSourceInventory($asset->id);
             $wasDirty = $asset->isDirty();
-            $asset->saveOrFail();
+
+            // Heartbeat-only asset-side write: Skip logging when heartbeat-logging is turned off,
+            // when the mapping directs last_seen to a custom field (target custom:X).
+            // Otherwise the vendor's heartbeat lands on the asset and fires AssetObserver::updating
+            // on save, which writes an `update` Actionlog.
+            if (!$isNew && self::isHeartbeatOnlyAssetDirty($asset, $mapping, $instance)) {
+                if (!$asset->saveQuietly()) {
+                    throw new RuntimeException('Failed to save asset during heartbeat-only sync.');
+                }
+            } else {
+                $asset->saveOrFail();
+            }
 
             // External-source column writes gather during the mapping
             // loop and go out together so we make one row-write per
@@ -730,6 +741,40 @@ trait SyncsHostFromRecord
         }
 
         $asset->{$field->db_column} = $value;
+    }
+
+    /**
+     * Detect the "sync only changed the last_seen custom field" case
+     *
+     * @param  array<string, string>  $mapping
+     */
+    private static function isHeartbeatOnlyAssetDirty(
+        Asset $asset,
+        array $mapping,
+        ?SyncAdapterInstance $instance,
+    ): bool {
+        if (!$asset->isDirty()) {
+            return false;
+        }
+        if ($instance === null) {
+            return false;
+        }
+        $adapter = $instance->adapter();
+        if (!$adapter instanceof SyncAdapter || $adapter->logsHeartbeats()) {
+            return false;
+        }
+
+        $lastSeenTarget = $mapping['last_seen'] ?? MappingTargets::defaultTarget('last_seen');
+        if (!str_starts_with($lastSeenTarget, 'custom:')) {
+            return false;
+        }
+
+        $field = CustomField::find((int) substr($lastSeenTarget, 7));
+        if ($field === null || $field->db_column === null) {
+            return false;
+        }
+
+        return array_keys($asset->getDirty()) === [$field->db_column];
     }
 
     /**
