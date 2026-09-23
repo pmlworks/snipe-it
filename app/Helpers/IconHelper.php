@@ -67,6 +67,8 @@ class IconHelper
                 return 'fas fa-download';
             case 'checkmark':
                 return 'fas fa-check';
+            case 'merge':
+                return 'fa-solid fa-code-merge';
             case 'x':
                 return 'fas fa-times';
             case 'logout':
