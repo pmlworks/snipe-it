@@ -432,7 +432,7 @@ class AssetModelsController extends Controller
         $limit = app('api_limit_value');
 
         $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
-        $sort = in_array($request->input('sort'), ['name', 'created_at'], true) ? $request->input('sort') : 'name';
+        $sort = in_array($request->input('sort'), ['name', 'created_at', 'remaining'], true) ? $request->input('sort') : 'name';
 
         $rows = $query->orderBy($sort, $order)->skip($offset)->take($limit)->get();
 
