@@ -120,7 +120,7 @@ return [
     'checkin_on_null_user_label' => 'Check assets in when the vendor reports no assigned user',
     'checkin_on_null_user_help' => 'When the vendor stops reporting an assigned user for a device, check the asset in from whoever had it. Off by default because a single missed sync cycle (device offline, empty field on a fresh enrollment) would unassign the asset. Turn this on only if you trust your vendor\'s user reporting to be consistent every sync.',
     'adopt_by_serial_label' => 'Match vendor hosts to existing assets by serial number',
-    'adopt_by_serial_help' => 'Migration aid for customers moving from a homegrown sync script that already populated the assets table. When enabled, this adapter will first check for an existing Snipe-IT asset with the same serial number and link them. Turn this off after your initial migration if you want new vendor assets to always create fresh asset rows.',
+    'adopt_by_serial_help' => 'Migration aid for customers moving from a homegrown sync script that already populated the assets table or manually entered devices. When enabled, this adapter will first check for an existing Snipe-IT asset with the same serial number and link them. Turn this off after your initial migration if you want new vendor assets to always create fresh asset rows.',
 
     // Push dry-run + composite notes push
     'push_dry_run_label' => 'Dry-run push (log payloads, do not send)',
