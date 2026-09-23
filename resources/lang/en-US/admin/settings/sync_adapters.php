@@ -176,6 +176,8 @@ return [
     'abm_client_id_help' => 'Create an API key under Settings -> API in your Apple Business Manager or Apple School Manager console. Copy the Client ID from the key detail page.',
     'abm_key_id_help' => 'Paired with the Client ID. Shown on the same key detail page in the ABM/ASM console.',
     'abm_private_key_help' => 'Paste the contents of the .pem private-key file you downloaded when you created the API key. Apple only lets you download the key once.',
+    'abm_private_key_invalid' => 'This does not look like a valid private key file. Check that the first and last lines start with five dashes and that nothing was cut off when pasting.',
+    'abm_private_key_unsupported' => 'This is a valid key, but it is not the format Apple Business Manager uses. Download a fresh key from your Apple Business Manager console (Settings -> API) and paste that instead. Apple only lets you download each key once, so create a new API key entry rather than trying to re-download an existing one.',
     'abm_product_family_filter_help' => 'Only sync devices in the selected product families.',
     'abm_pull_model_images_help' => 'Fetch product images from appledb.dev when auto-populating asset models from ABM devices. Existing model images are never overwritten. The category image serves only as a display fallback for models that have none.',
     'abm_category_family_label' => 'Category for :family',

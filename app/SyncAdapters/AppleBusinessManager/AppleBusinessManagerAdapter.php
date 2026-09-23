@@ -183,6 +183,44 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         ];
     }
 
+    /**
+     * Parse the private key at save time so a malformed paste
+     * (stripped dash, wrong key type, etc) fails now instead
+     * of at the next pull with an OpenSSL error.
+     */
+    public function validationRules(): array
+    {
+        $rules = parent::validationRules();
+        $slug = $this->instance->slug;
+        $key = $slug.'_private_key';
+
+        $rules[$key] = array_merge($rules[$key] ?? ['required', 'string'], [
+            function (string $attribute, mixed $value, \Closure $fail): void {
+                if (! is_string($value) || $value === '') {
+                    return;
+                }
+
+                $parsed = @openssl_pkey_get_private($value);
+                if ($parsed === false) {
+                    $fail(trans('admin/settings/sync_adapters.abm_private_key_invalid'));
+
+                    return;
+                }
+
+                $details = openssl_pkey_get_details($parsed);
+                $type = $details['type'] ?? null;
+                // OpenSSL and NIST spell the P-256 curve differently.
+                $curve = $details['ec']['curve_name'] ?? null;
+                $isP256Ec = $type === OPENSSL_KEYTYPE_EC && in_array($curve, ['prime256v1', 'secp256r1'], true);
+                if (! is_array($details) || ! $isP256Ec) {
+                    $fail(trans('admin/settings/sync_adapters.abm_private_key_unsupported'));
+                }
+            },
+        ]);
+
+        return $rules;
+    }
+
     public function extraFields(): array
     {
         return [
