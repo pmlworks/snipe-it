@@ -243,6 +243,7 @@
                             <i class="fa-solid fa-network-wired fa-4x" aria-hidden="true"></i>
                             <br><br>
                             <span class="name">{{ trans('admin/settings/sync_adapters.title') }} <span class="label label-warning">beta</span></span>
+                            <span class="keywords" aria-hidden="true" style="display:none"> {{ $adapterKeywords }}</span>
                         </a>
                     </h5>
                     <p class="index-block">{{ trans('admin/settings/sync_adapters.help') }}</p>
