@@ -368,6 +368,7 @@ abstract class SyncAdapter
             $slug.'_default_category_id' => ['nullable', 'integer', 'exists:categories,id'],
             $slug.'_default_status_id' => ['required', 'integer', 'exists:status_labels,id'],
             $slug.'_user_match_strategy' => ['nullable', 'string', 'in:none,email,username,username_then_email'],
+            $slug.'_adopt_by_serial' => ['nullable', 'boolean'],
         ];
 
         if ($this->usesConfigurableUrl()) {
@@ -611,6 +612,19 @@ abstract class SyncAdapter
             $this->instance->id,
             'checkin_on_null_user',
             $request->boolean($slug.'_checkin_on_null_user') ? '1' : '0',
+        );
+
+        // Migration aid for customers moving from a homegrown sync
+        // script that already populated the assets table. When on,
+        // provisionAsset() looks up an existing asset by serial
+        // before creating a new shell asset, and inserts an
+        // asset_external_sources row so subsequent syncs match by
+        // external_id. Default off, keeps the safe "vendor host with
+        // no known link creates a fresh asset" behavior.
+        SyncAdapterConfig::put(
+            $this->instance->id,
+            'adopt_by_serial',
+            $request->boolean($slug.'_adopt_by_serial') ? '1' : '0',
         );
 
         // Push dry-run flag. When on, adapters log the push payload
@@ -1289,6 +1303,18 @@ abstract class SyncAdapter
     public function checksInOnNullUser(): bool
     {
         return SyncAdapterConfig::get($this->instance->id, 'checkin_on_null_user') === '1';
+    }
+
+    /**
+     * Migration aid: when on, the sync loop looks for an existing
+     * Snipe-IT asset with a matching serial before creating a new
+     * shell asset for a first-seen vendor host. Default off, since
+     * silently adopting existing assets is destructive when a
+     * customer has multiple adapters or the serial isn't unique.
+     */
+    public function adoptsBySerial(): bool
+    {
+        return SyncAdapterConfig::get($this->instance->id, 'adopt_by_serial') === '1';
     }
 
     /**

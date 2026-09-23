@@ -117,6 +117,18 @@ trait SyncsHostFromRecord
             return [$asset, false];
         }
 
+        // Migration path for customers moving from a homegrown
+        // sync script. Their existing assets have a serial populated
+        // but no asset_external_sources row for this adapter. When
+        // the admin has turned on "adopt existing assets by serial",
+        // look up a matching Snipe-IT asset before creating a fresh
+        // shell. Establishes the identity link so subsequent syncs
+        // treat this as an update, not a duplicate create.
+        $adopted = self::adoptExistingAssetBySerial($record, $instance);
+        if ($adopted !== null) {
+            return [$adopted, false];
+        }
+
         $asset = self::createShellAsset($record, $instance);
 
         // Identity row created empty of inventory columns. the
@@ -135,6 +147,54 @@ trait SyncsHostFromRecord
         ]);
 
         return [$asset, true];
+    }
+
+    /**
+     * Look up an existing Snipe-IT asset with a matching serial to
+     * adopt into this adapter's external-sources link, when the
+     * admin has turned on adopt_by_serial for this adapter instance.
+     * Skips assets that already have an external_sources row for
+     * this source so re-runs are idempotent and multi-adapter
+     * installs don't accidentally re-link.
+     */
+    private static function adoptExistingAssetBySerial(HostInventoryRecord $record, ?SyncAdapterInstance $instance): ?Asset
+    {
+        if ($record->hardwareSerial === null || $record->hardwareSerial === '') {
+            return null;
+        }
+        if ($instance === null) {
+            return null;
+        }
+
+        $adapter = $instance->adapter();
+        if (! ($adapter instanceof SyncAdapter) || ! $adapter->adoptsBySerial()) {
+            return null;
+        }
+
+        $candidate = Asset::query()
+            ->where('serial', $record->hardwareSerial)
+            ->whereNotIn('id', function ($q) use ($record) {
+                $q->select('asset_id')
+                    ->from('asset_external_sources')
+                    ->where('source', $record->sourceKey);
+            })
+            ->first();
+
+        if ($candidate === null) {
+            return null;
+        }
+
+        DB::table('asset_external_sources')->insert([
+            'asset_id' => $candidate->id,
+            'company_id' => $instance->company_id,
+            'source' => $record->sourceKey,
+            'external_id' => $record->sourceId,
+            'created_by' => auth()->id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return $candidate;
     }
 
     /**
@@ -739,7 +799,7 @@ trait SyncsHostFromRecord
                     try {
                         $asset->purchase_date = \Carbon\Carbon::parse((string) $value)->format('Y-m-d');
                     } catch (\Exception $e) {
-                        Log::channel('sync-adapters')->warning("Skipping unparseable purchase_date \"{$value}\" for asset {$asset->id}: " . $e->getMessage());
+                        Log::channel('sync-adapters')->warning("Skipping unparseable purchase_date \"{$value}\" for asset {$asset->id}: ".$e->getMessage());
                     }
                 }
                 break;
