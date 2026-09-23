@@ -1352,6 +1352,18 @@ abstract class SyncAdapter
     }
 
     /**
+     * Adapter-specific help copy rendered under the base-URL input.
+     * Overridden by adapters whose vendor requires the admin to look
+     * up the API URL in a non-obvious place (e.g. Kandji hides the
+     * API URL behind the Access page's API Token section). Returning
+     * null falls back to the generic base_url_help lang key.
+     */
+    public function baseUrlHelp(): ?string
+    {
+        return null;
+    }
+
+    /**
      * Live-fetch the current list of groups from the vendor.
      * Returns an array of ['id' => '...', 'label' => '...']. Called
      * when the admin clicks the "refresh groups" button on the

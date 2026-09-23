@@ -1311,7 +1311,7 @@ class SettingsController extends Controller
             return trans('admin/settings/sync_adapters.sync_failed_network');
         }
 
-        // Vendor-shaped adapter errors (wrong base URL, unexpected
+        // Vendor adapter errors (wrong base URL, unexpected
         // content type, etc.) carry their own actionable message. Pass
         // it through so the admin sees "check your Base URL" instead
         // of "SyncAdapterVendorException".

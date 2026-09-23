@@ -148,7 +148,8 @@ return [
 
     // Per-adapter credential help
     'fleet_token_help' => 'Generate under My Account -> Get API token in your Fleet instance. Needs an admin or observer role with read access to hosts (and to teams if you use group-to-company mapping).',
-    'kandji_token_help' => 'Generate under Settings -> Access -> API Token in your Kandji tenant. Needs the Device list read permission (and Blueprint list if you use group-to-company mapping).',
+    'kandji_token_help' => 'Generate under Settings -> Access -> API Token in your Iru (Kandji) tenant. Needs the Device list read permission (and Blueprint list if you use group-to-company mapping).',
+    'kandji_base_url_help' => 'Your Iru (Kandji) API URL is listed on the Access page of your Iru (Kandji) admin console under the API Token section. It is not the same as the URL you use to sign into the admin console. Save the URL that ends with <code>.api.kandji.io</code>, not the dashboard URL.',
     'jamf_token_help' => 'Generate a Personal Access Token under Settings -> System -> API Roles and Clients in Jamf Pro. The role needs Read on Computers (and Sites if you use group-to-company mapping).',
     'jamf_school_network_id_help' => 'Find your Network ID under Organization -> Settings -> API in the Jamf School admin console.',
     'jamf_school_api_key_help' => 'Generate under Organization -> Settings -> API in Jamf School. Needs read access to Devices (and Locations if you use group-to-company mapping).',
@@ -343,7 +344,7 @@ return [
     'vendor_group_fleet_team' => 'Fleet Team',
     'vendor_group_jamf_site' => 'Jamf Site',
     'vendor_group_jamf_school_location' => 'Jamf School Location',
-    'vendor_group_kandji_blueprint' => 'Kandji Blueprint',
+    'vendor_group_kandji_blueprint' => 'Iru (Kandji) Blueprint',
     'vendor_group_jamf_platform_blueprint' => 'Jamf Platform Blueprint',
     'vendor_group_mosyle_location' => 'Mosyle Location',
     'vendor_group_kaseya_organization' => 'Kaseya Organization',
