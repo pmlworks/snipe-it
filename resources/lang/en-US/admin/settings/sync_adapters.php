@@ -26,7 +26,7 @@ return [
 
     'help_tab_label' => 'Adapter Help',
     'experimental_banner_title' => 'Here be dragons',
-    'experimental_banner_body' => 'Sync adapters are experimental. Adapter runs can create, update, and delete Snipe-IT assets in bulk based on data pulled from the vendor. Take a fresh backup before enabling any adapter and before every material configuration change.',
+    'experimental_banner_body' => 'Sync adapters are experimental. Adapter runs can create and update Snipe-IT assets in bulk based on data pulled from the vendor. Take a fresh backup before enabling any adapter and before every material configuration change.',
     'empty_state_title' => 'Getting started with sync adapters',
     'empty_state_intro' => 'Sync adapters connect Snipe-IT to the MDM, RMM, and endpoint tools you already use, so devices and their assigned users flow into Snipe-IT automatically instead of being typed in by hand.',
     'empty_state_supported_intro' => 'Snipe-IT currently supports :count adapter types out of the box:',
