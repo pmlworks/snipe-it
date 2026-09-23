@@ -72,7 +72,7 @@ class AppleBusinessManagerClient
                 yield $device;
             }
 
-            $cursor = $response['links']['next'] ?? null;
+            $cursor = $response['meta']['paging']['nextCursor'] ?? null;
         } while (is_string($cursor) && $cursor !== '');
     }
 
@@ -140,7 +140,7 @@ class AppleBusinessManagerClient
                     }
                 }
 
-                $cursor = $response['links']['next'] ?? null;
+                $cursor = $response['meta']['paging']['nextCursor'] ?? null;
             } while (is_string($cursor) && $cursor !== '');
         }
 
