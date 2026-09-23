@@ -54,6 +54,10 @@ abstract class TestCase extends BaseTestCase
         // increment may hand the same id to a different test's user with a
         // different pivot set.
         Company::flushCompanyIdsCache();
+
+        // Sync-adapter instance cache is another static that would hold
+        // rolled-back model references between tests otherwise.
+        \App\Models\SyncAdapterConfig::flushInstanceCache();
     }
 
     // ...existing code...

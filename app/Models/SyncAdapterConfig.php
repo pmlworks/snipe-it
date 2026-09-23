@@ -26,9 +26,12 @@ namespace App\Models;
  */
 class SyncAdapterConfig
 {
+    // Cache the sync adapters to prevent N+1
+    private static array $instanceCache = [];
+
     public static function get(int $instanceId, string $configKey, mixed $default = null): mixed
     {
-        $instance = SyncAdapterInstance::find($instanceId);
+        $instance = self::instance($instanceId);
         if ($instance === null) {
             return $default;
         }
@@ -40,7 +43,7 @@ class SyncAdapterConfig
 
     public static function put(int $instanceId, string $configKey, ?string $value): void
     {
-        $instance = SyncAdapterInstance::find($instanceId);
+        $instance = self::instance($instanceId);
         if ($instance === null) {
             return;
         }
@@ -53,7 +56,7 @@ class SyncAdapterConfig
 
     public static function has(int $instanceId, string $configKey): bool
     {
-        $instance = SyncAdapterInstance::find($instanceId);
+        $instance = self::instance($instanceId);
         if ($instance === null) {
             return false;
         }
@@ -65,7 +68,7 @@ class SyncAdapterConfig
 
     public static function forget(int $instanceId, string $configKey): void
     {
-        $instance = SyncAdapterInstance::find($instanceId);
+        $instance = self::instance($instanceId);
         if ($instance === null) {
             return;
         }
@@ -89,6 +92,20 @@ class SyncAdapterConfig
      */
     public static function listForInstance(int $instanceId): array
     {
-        return SyncAdapterInstance::find($instanceId)?->config ?? [];
+        return self::instance($instanceId)?->config ?? [];
+    }
+
+    public static function flushInstanceCache(): void
+    {
+        self::$instanceCache = [];
+    }
+
+    private static function instance(int $instanceId): ?SyncAdapterInstance
+    {
+        if (array_key_exists($instanceId, self::$instanceCache)) {
+            return self::$instanceCache[$instanceId];
+        }
+
+        return self::$instanceCache[$instanceId] = SyncAdapterInstance::find($instanceId);
     }
 }
