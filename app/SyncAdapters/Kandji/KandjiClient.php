@@ -38,6 +38,7 @@ class KandjiClient
                     'offset' => $offset,
                 ])
                 ->throw()
+                ->throwIfNotJson()
                 ->json();
 
             // Kandji returns a bare array of device objects on this
@@ -74,6 +75,7 @@ class KandjiClient
             $response = $this->request()
                 ->get('/api/v1/blueprints', ['limit' => $limit, 'offset' => $offset])
                 ->throw()
+                ->throwIfNotJson()
                 ->json();
 
             $batch = $response['results'] ?? (is_array($response) ? $response : []);

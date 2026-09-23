@@ -20,7 +20,7 @@ class KandjiAdapter extends SyncAdapter implements PushableAdapter
 {
     public static function typeLabel(): string
     {
-        return 'Kandji';
+        return 'Iru (Kandji)';
     }
 
     public static function typeSlug(): string
@@ -36,6 +36,11 @@ class KandjiAdapter extends SyncAdapter implements PushableAdapter
     public function baseUrlPlaceholder(): ?string
     {
         return 'https://your-subdomain.api.kandji.io';
+    }
+
+    public function baseUrlHelp(): ?string
+    {
+        return trans('admin/settings/sync_adapters.kandji_base_url_help');
     }
 
     public function settingsSchema(): array

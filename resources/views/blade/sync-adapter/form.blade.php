@@ -111,7 +111,7 @@
                 :label="trans('admin/settings/sync_adapters.base_url')"
                 :name="$urlField"
                 input_div_class="col-md-8"
-                :help_text="trans('admin/settings/sync_adapters.base_url_help', ['type' => $adapter::typeLabel()])"
+                :help_text="$adapter->baseUrlHelp() ?? trans('admin/settings/sync_adapters.base_url_help', ['type' => $adapter::typeLabel()])"
                 required
             >
                 <x-slot:input>
@@ -276,6 +276,14 @@
         :help_text="trans('admin/settings/sync_adapters.checkin_on_null_user_help')"
         :disabled="$locked"
     />
+
+        <x-form.checkbox-row
+            :name="$slug . '_adopt_by_serial'"
+            :checked="$adapter->adoptsBySerial()"
+            :label="trans('admin/settings/sync_adapters.adopt_by_serial_label')"
+            :help_text="trans('admin/settings/sync_adapters.adopt_by_serial_help')"
+            :disabled="$locked"
+        />
     </fieldset>
 
     {{-- Any type: field_map entries from the adapter's credential

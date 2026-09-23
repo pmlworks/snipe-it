@@ -293,6 +293,42 @@ class AppleBusinessManagerAdapterTest extends TestCase
         $this->assertNull($records[0]->extra['abm_mdm_server']);
     }
 
+    public function test_no_phantom_model_when_marketing_name_is_mapped_to_native_model()
+    {
+
+        $adapter = $this->configuredAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'abm')->firstOrFail();
+        SyncAdapterConfig::put($instance->id, 'mapping.abm_model_marketing_name', 'native:model');
+
+        Http::fake([
+            'account.apple.com/*' => Http::response(['access_token' => 'stub-bearer']),
+            'api-business.apple.com/v1/mdmServers' => Http::response(['data' => []]),
+            'api-business.apple.com/v1/orgDevices*' => Http::response([
+                'data' => [
+                    [
+                        'id' => 'abm-guid-19691',
+                        'attributes' => [
+                            'serialNumber' => 'C02XL9999999',
+                            'partNumber' => 'MDVN4LL/A',
+                            'deviceModel' => 'MacBook Air (15-inch, M3, 2024)',
+                            'productFamily' => 'Mac',
+                        ],
+                    ],
+                ],
+            ]),
+        ]);
+
+        foreach ($adapter->pull() as $record) {
+            \App\SyncAdapters\SyncAdapter::syncFromRecord($record);
+        }
+
+        // Only the marketing-name model should exist, not the
+        // partNumber one.
+        $this->assertDatabaseHas('models', ['name' => 'MacBook Air (15-inch, M3, 2024)']);
+        $this->assertDatabaseMissing('models', ['name' => 'MDVN4LL/A']);
+        $this->assertSame(1, \App\Models\Asset::query()->count());
+    }
+
     /**
      * @param  array<int, string>|null  $productFamilies  null = leave the stored filter alone; [] = force to empty
      */

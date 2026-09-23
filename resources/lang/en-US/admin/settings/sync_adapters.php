@@ -119,6 +119,8 @@ return [
     'suppress_notifications_label' => 'Suppress notifications (email, webhooks) on sync-driven assignments',
     'checkin_on_null_user_label' => 'Check assets in when the vendor reports no assigned user',
     'checkin_on_null_user_help' => 'When the vendor stops reporting an assigned user for a device, check the asset in from whoever had it. Off by default because a single missed sync cycle (device offline, empty field on a fresh enrollment) would unassign the asset. Turn this on only if you trust your vendor\'s user reporting to be consistent every sync.',
+    'adopt_by_serial_label' => 'Match vendor hosts to existing assets by serial number',
+    'adopt_by_serial_help' => 'Migration aid for customers moving from a homegrown sync script that already populated the assets table. When enabled, this adapter will first check for an existing Snipe-IT asset with the same serial number and link them. Turn this off after your initial migration if you want new vendor assets to always create fresh asset rows.',
 
     // Push dry-run + composite notes push
     'push_dry_run_label' => 'Dry-run push (log payloads, do not send)',
@@ -146,7 +148,8 @@ return [
 
     // Per-adapter credential help
     'fleet_token_help' => 'Generate under My Account -> Get API token in your Fleet instance. Needs an admin or observer role with read access to hosts (and to teams if you use group-to-company mapping).',
-    'kandji_token_help' => 'Generate under Settings -> Access -> API Token in your Kandji tenant. Needs the Device list read permission (and Blueprint list if you use group-to-company mapping).',
+    'kandji_token_help' => 'Generate under Settings -> Access -> API Token in your Iru (Kandji) tenant. Needs the Device list read permission (and Blueprint list if you use group-to-company mapping).',
+    'kandji_base_url_help' => 'Your Iru (Kandji) API URL is listed on the Access page of your Iru (Kandji) admin console under the API Token section. It is not the same as the URL you use to sign into the admin console. Save the URL that ends with <code>.api.kandji.io</code>, not the dashboard URL.',
     'jamf_token_help' => 'Generate a Personal Access Token under Settings -> System -> API Roles and Clients in Jamf Pro. The role needs Read on Computers (and Sites if you use group-to-company mapping).',
     'jamf_school_network_id_help' => 'Find your Network ID under Organization -> Settings -> API in the Jamf School admin console.',
     'jamf_school_api_key_help' => 'Generate under Organization -> Settings -> API in Jamf School. Needs read access to Devices (and Locations if you use group-to-company mapping).',
@@ -186,6 +189,7 @@ return [
     'jamf_platform_client_id_help' => 'Create an integration in Jamf Account under API integrations, then grant it the capabilities for Devices (read) and Blueprints (read) on your Platform environment. Copy the Client ID from the integration detail page.',
     'jamf_platform_client_secret_help' => 'Paired with the Client ID above. Jamf shows the secret once at integration creation time.',
     'jamf_platform_environment_id_help' => 'UUID of the Platform environment the integration is scoped to. Copy from Jamf Account under Environments, or from the URL of your environment console. Sent as the X-Environment-Id header on every request.',
+    'landscape_token_help' => 'Landscape does not have a UI for API tokens. Obtain one by POSTing your credentials to <code>/api/v2/login</code> on your Landscape instance and copying the <code>token</code> field from the JSON response. Pass an <code>expiry_minutes</code> value on that call to control how long the token stays valid (defaults to 24h). The account behind the token needs read access to computers.',
 
     // Custom HTTP adapter
     'custom_auth_method_help' => 'How the adapter authenticates against your API. <code>Bearer</code> sends a Bearer token in the <code>Authorization</code> header. <code>Basic</code> sends username + password. <code>API Key</code> sends the value in a custom header. <code>None</code> sends no auth headers.',
@@ -287,6 +291,9 @@ return [
     'extra_applecare_description' => 'AppleCare Description',
     'extra_applecare_is_canceled' => 'AppleCare Is Canceled',
     'extra_applecare_is_renewable' => 'AppleCare Is Renewable',
+    'extra_distribution' => ':vendor Distribution',
+    'extra_reboot_required' => ':vendor Reboot Required',
+    'extra_ubuntu_pro' => 'Ubuntu Pro',
     'extra_osquery_version' => 'osquery Version',
 
     // Shared label strings for adapter settings schemas. Adapters
@@ -337,7 +344,7 @@ return [
     'vendor_group_fleet_team' => 'Fleet Team',
     'vendor_group_jamf_site' => 'Jamf Site',
     'vendor_group_jamf_school_location' => 'Jamf School Location',
-    'vendor_group_kandji_blueprint' => 'Kandji Blueprint',
+    'vendor_group_kandji_blueprint' => 'Iru (Kandji) Blueprint',
     'vendor_group_jamf_platform_blueprint' => 'Jamf Platform Blueprint',
     'vendor_group_mosyle_location' => 'Mosyle Location',
     'vendor_group_kaseya_organization' => 'Kaseya Organization',
