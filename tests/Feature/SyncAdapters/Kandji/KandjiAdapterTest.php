@@ -84,6 +84,31 @@ class KandjiAdapterTest extends TestCase
         $this->assertNotNull($record->lastSeen);
     }
 
+    public function test_pull_raises_when_base_url_returns_html_instead_of_json()
+    {
+        // Regression: when the admin pastes the Iru (Kandji) web
+        // console URL as the Base URL instead of the API host, Kandji
+        // returns 200 OK with an SPA shell (text/html). ->throw() sees
+        // 200 and doesn't fire, ->json() decodes to null, and the
+        // sync used to complete silently with "0 hosts synced". The
+        // throwIfNotJson macro registered in AppServiceProvider now
+        // surfaces this as a real error so the admin gets an
+        // actionable flash instead of a zero-hosts warning.
+        $adapter = $this->configuredKandjiAdapter();
+
+        Http::fake([
+            '*/api/v1/devices*' => Http::response(
+                '<!DOCTYPE html><html><body><div id="app"></div></body></html>',
+                200,
+                ['Content-Type' => 'text/html'],
+            ),
+        ]);
+
+        $this->expectException(\App\Exceptions\SyncAdapterVendorException::class);
+        $this->expectExceptionMessage('Verify the adapter Base URL points at the vendor API');
+        iterator_to_array($adapter->pull());
+    }
+
     private function configuredKandjiAdapter(): KandjiAdapter
     {
         $instance = SyncAdapterInstance::where('slug', 'kandji')->firstOrFail();
