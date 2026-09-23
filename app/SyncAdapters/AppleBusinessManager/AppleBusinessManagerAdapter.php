@@ -242,6 +242,30 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             'abm_applecare_description' => ['label_key' => 'admin/settings/sync_adapters.extra_applecare_description'],
             'abm_applecare_is_canceled' => ['label_key' => 'admin/settings/sync_adapters.extra_applecare_is_canceled', 'type' => 'boolean'],
             'abm_applecare_is_renewable' => ['label_key' => 'admin/settings/sync_adapters.extra_applecare_is_renewable', 'type' => 'boolean'],
+            'abm_device_capacity' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_device_capacity'],
+            'abm_wifi_mac' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_wifi_mac'],
+            'abm_bluetooth_mac' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_bluetooth_mac'],
+            'abm_ethernet_mac' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_ethernet_mac'],
+            'abm_imei' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_imei'],
+            'abm_meid' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_meid'],
+            'abm_eid' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_eid'],
+            'abm_added_to_org' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_added_to_org'],
+            'abm_released_from_org' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_released_from_org'],
+            'abm_org_status' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_org_status'],
+            'abm_activation_lock_enabled' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_activation_lock_enabled', 'type' => 'boolean'],
+            // Apple Business Manager's built-in MDM (formerly Apple
+            // Business Essentials). Native slots (hostname, os,
+            // osVersion, lastSeen, primaryMac, imei, meid) are
+            // overridden from the MDM detail endpoint when we have it
+            // since MDM is runtime truth. The extras below are the
+            // MDM-only fields that don't correspond to native slots.
+            'abm_mdm_file_vault_enabled' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_file_vault_enabled', 'type' => 'boolean'],
+            'abm_mdm_firewall_enabled' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_firewall_enabled', 'type' => 'boolean'],
+            'abm_mdm_device_lock_status' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_device_lock_status'],
+            'abm_mdm_lost_mode_status' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_lost_mode_status'],
+            'abm_mdm_device_erase_status' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_device_erase_status'],
+            'abm_mdm_storage_total' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_storage_total'],
+            'abm_mdm_storage_free' => ['label_key' => 'admin/settings/sync_adapters.abm_extra_mdm_storage_free'],
         ];
     }
 
@@ -347,6 +371,37 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         // warranty tracking skip the cost entirely.
         $enrichWithAppleCare = $this->hasMappedAppleCareFields();
 
+        // Same opt-in gate for Activation Lock. Same N+1 shape as
+        // AppleCare (one extra API call per device), so we skip it
+        // unless the admin has mapped the extra.
+        $enrichWithActivationLock = $this->hasMappedActivationLockField();
+
+        // Apple Business Manager's built-in MDM (formerly Apple
+        // Business Essentials). The list endpoint is one call per sync
+        // run and gives us hostname + os, so we always fetch it.
+        // Build a serial -> mdmDevice basic-info map for the join.
+        // Best-effort: failures leave the map empty and records stay
+        // un-enriched.
+        $serialToMdmDevice = [];
+        try {
+            foreach ($client->mdmDevices() as $mdmDevice) {
+                $serial = (string) ($mdmDevice['id'] ?? '');
+                if ($serial !== '') {
+                    $serialToMdmDevice[$serial] = $mdmDevice;
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::channel('sync-adapters')->warning(sprintf(
+                '%s mdmDevices list fetch failed: %s',
+                $this->name(),
+                $e->getMessage(),
+            ));
+        }
+
+        // Detail endpoint is one call per MDM-enrolled device, so it's
+        // gated behind at least one MDM-detail extra being mapped.
+        $enrichWithMdmDetail = $this->hasMappedMdmDeviceDetailFields();
+
         // Allowed product families (lower-cased for comparison).
         // Empty means "all families".
         $allowedFamilies = $this->allowedProductFamilies();
@@ -366,6 +421,16 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             $record = $this->normalize($device, $deviceToServer);
             if ($enrichWithAppleCare) {
                 $record = $this->enrichRecordWithAppleCare($record, $client);
+            }
+            if ($enrichWithActivationLock) {
+                $record = $this->enrichRecordWithActivationLock($record, $client);
+            }
+            $mdmDevice = $serialToMdmDevice[$record->hardwareSerial] ?? null;
+            if ($mdmDevice !== null) {
+                $record = $this->enrichRecordWithMdmDeviceBasics($record, $mdmDevice);
+                if ($enrichWithMdmDetail) {
+                    $record = $this->enrichRecordWithMdmDeviceDetail($record, $client);
+                }
             }
             if ($pullImages) {
                 $imagesHandled = $this->ensureModelImage($record, $imagesHandled);
@@ -557,6 +622,41 @@ class AppleBusinessManagerAdapter extends SyncAdapter
     }
 
     /**
+     * Gate for the Activation Lock enrichment. True when the admin has
+     * routed the single abm_activation_lock_enabled extra to a real
+     * target. Same shape as hasMappedAppleCareFields but scoped to one
+     * key.
+     */
+    private function hasMappedActivationLockField(): bool
+    {
+        $target = $this->mappingFor('abm_activation_lock_enabled');
+
+        return $target !== '' && $target !== 'skip';
+    }
+
+    /**
+     * Gate for the MDM device-detail enrichment. True when the admin
+     * has mapped any of the detail-endpoint-only extras (FileVault,
+     * firewall, lock/lost/erase status, storage). The list-endpoint
+     * enrichment (hostname + os) always runs regardless since the list
+     * fetch is one call total.
+     */
+    private function hasMappedMdmDeviceDetailFields(): bool
+    {
+        foreach (array_keys($this->extraFields()) as $key) {
+            if (! str_starts_with($key, 'abm_mdm_')) {
+                continue;
+            }
+            $target = $this->mappingFor($key);
+            if ($target !== '' && $target !== 'skip') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Fetch AppleCare coverage for one asset, pick the most relevant
      * plan, and merge its fields into the record's extras. On empty
      * or failed responses we just return the un-enriched record so
@@ -610,6 +710,195 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             vendorGroupId: $record->vendorGroupId,
             extra: $extra,
         );
+    }
+
+    /**
+     * Fetch Activation Lock status for one asset and merge into the
+     * record's extras. Handy for asset checkin flows because AL has
+     * to be cleared before a device can be redeployed to a new user.
+     * On empty or failed responses just return the un-enriched record
+     * so the sync doesn't stall on a transient AL endpoint issue.
+     */
+    private function enrichRecordWithActivationLock(HostInventoryRecord $record, AppleBusinessManagerClient $client): HostInventoryRecord
+    {
+        try {
+            $status = $client->deviceActivationLockStatus($record->sourceId);
+        } catch (\Throwable $e) {
+            \Log::channel('sync-adapters')->warning(sprintf(
+                '%s activation lock fetch failed for device %s: %s',
+                $this->name(),
+                $record->sourceId,
+                $e->getMessage(),
+            ));
+
+            return $record;
+        }
+
+        $enabled = Arr::get($status, 'attributes.activationLockEnabled');
+        if (! is_bool($enabled)) {
+            return $record;
+        }
+
+        $extra = $record->extra;
+        $extra['abm_activation_lock_enabled'] = $enabled;
+
+        return new HostInventoryRecord(
+            sourceKey: $record->sourceKey,
+            sourceId: $record->sourceId,
+            hostname: $record->hostname,
+            hardwareSerial: $record->hardwareSerial,
+            hardwareModel: $record->hardwareModel,
+            manufacturer: $record->manufacturer,
+            primaryMac: $record->primaryMac,
+            primaryIp: $record->primaryIp,
+            os: $record->os,
+            osVersion: $record->osVersion,
+            lastSeen: $record->lastSeen,
+            assetTag: $record->assetTag,
+            assignedUserEmail: $record->assignedUserEmail,
+            assignedUserName: $record->assignedUserName,
+            vendorGroupId: $record->vendorGroupId,
+            extra: $extra,
+        );
+    }
+
+    /**
+     * Merge the cheap MDM-list-endpoint fields onto the record.
+     * Populates hostname (deviceName) and os (derived from
+     * productFamily). Called only when we have a matching mdmDevice
+     * for this record's serial.
+     *
+     * @param  array<string, mixed>  $mdmDevice
+     */
+    private function enrichRecordWithMdmDeviceBasics(HostInventoryRecord $record, array $mdmDevice): HostInventoryRecord
+    {
+        $attrs = $mdmDevice['attributes'] ?? [];
+        $deviceName = Arr::get($attrs, 'deviceName');
+        $family = (string) Arr::get($attrs, 'productFamily', '');
+
+        return new HostInventoryRecord(
+            sourceKey: $record->sourceKey,
+            sourceId: $record->sourceId,
+            hostname: is_string($deviceName) && $deviceName !== '' ? $deviceName : $record->hostname,
+            hardwareSerial: $record->hardwareSerial,
+            hardwareModel: $record->hardwareModel,
+            manufacturer: $record->manufacturer,
+            primaryMac: $record->primaryMac,
+            primaryIp: $record->primaryIp,
+            os: self::osFromProductFamily($family) ?? $record->os,
+            osVersion: $record->osVersion,
+            lastSeen: $record->lastSeen,
+            assetTag: $record->assetTag,
+            assignedUserEmail: $record->assignedUserEmail,
+            assignedUserName: $record->assignedUserName,
+            vendorGroupId: $record->vendorGroupId,
+            extra: $record->extra,
+        );
+    }
+
+    /**
+     * Fetch and merge the per-device MDM detail endpoint fields.
+     * Runtime data wins: MDM's osVersion, lastCheckInDateTime, MAC
+     * addresses, imei, meid override whatever the orgDevices path
+     * populated. FileVault, firewall, lock/lost/erase statuses, and
+     * storage go into extras. On empty or failed responses return
+     * the un-enriched record so a transient MDM detail-endpoint issue
+     * doesn't stall the sync.
+     */
+    private function enrichRecordWithMdmDeviceDetail(HostInventoryRecord $record, AppleBusinessManagerClient $client): HostInventoryRecord
+    {
+        try {
+            $detail = $client->mdmDeviceDetails($record->hardwareSerial);
+        } catch (\Throwable $e) {
+            \Log::channel('sync-adapters')->warning(sprintf(
+                '%s mdmDevice detail fetch failed for device %s: %s',
+                $this->name(),
+                $record->sourceId,
+                $e->getMessage(),
+            ));
+
+            return $record;
+        }
+
+        $attrs = $detail['attributes'] ?? [];
+        if (! is_array($attrs) || $attrs === []) {
+            return $record;
+        }
+
+        $extra = $record->extra;
+        $extra['abm_mdm_file_vault_enabled'] = Arr::get($attrs, 'isFileVaultEnabled');
+        $extra['abm_mdm_firewall_enabled'] = Arr::get($attrs, 'isFirewallEnabled');
+        $extra['abm_mdm_device_lock_status'] = Arr::get($attrs, 'deviceLockStatus');
+        $extra['abm_mdm_lost_mode_status'] = Arr::get($attrs, 'lostModeStatus');
+        $extra['abm_mdm_device_erase_status'] = Arr::get($attrs, 'deviceEraseStatus');
+        $extra['abm_mdm_storage_total'] = Arr::get($attrs, 'storageTotalCapacity');
+        $extra['abm_mdm_storage_free'] = Arr::get($attrs, 'storageFreeCapacity');
+
+        // Prefer MDM values for the shared extras (Wi-Fi/Ethernet MACs
+        // etc.) when the detail endpoint has them. orgDevices values
+        // stay as fallbacks.
+        foreach (['wifiMacAddress' => 'abm_wifi_mac',
+            'bluetoothMacAddress' => 'abm_bluetooth_mac',
+            'ethernetMacAddress' => 'abm_ethernet_mac',
+            'imei' => 'abm_imei',
+            'meid' => 'abm_meid',
+        ] as $mdmKey => $extraKey) {
+            $val = Arr::get($attrs, $mdmKey);
+            if ($val !== null && $val !== '') {
+                $extra[$extraKey] = $val;
+            }
+        }
+
+        // MDM's runtime data overrides the orgDevices values for
+        // native slots when populated.
+        $wifiMac = Arr::get($attrs, 'wifiMacAddress');
+        $ethernetMac = Arr::get($attrs, 'ethernetMacAddress');
+        $osVersion = Arr::get($attrs, 'osVersion');
+        $lastCheckIn = Arr::get($attrs, 'lastCheckInDateTime');
+
+        return new HostInventoryRecord(
+            sourceKey: $record->sourceKey,
+            sourceId: $record->sourceId,
+            hostname: $record->hostname,
+            hardwareSerial: $record->hardwareSerial,
+            hardwareModel: $record->hardwareModel,
+            manufacturer: $record->manufacturer,
+            // Prefer Wi-Fi, fall back to Ethernet (desktops without
+            // Wi-Fi), then whatever the orgDevices path set.
+            primaryMac: (is_string($wifiMac) && $wifiMac !== '')
+                ? $wifiMac
+                : ((is_string($ethernetMac) && $ethernetMac !== '') ? $ethernetMac : $record->primaryMac),
+            primaryIp: $record->primaryIp,
+            os: $record->os,
+            osVersion: (is_string($osVersion) && $osVersion !== '') ? $osVersion : $record->osVersion,
+            lastSeen: (is_string($lastCheckIn) && $lastCheckIn !== '')
+                ? \Carbon\Carbon::parse($lastCheckIn)
+                : $record->lastSeen,
+            assetTag: $record->assetTag,
+            assignedUserEmail: $record->assignedUserEmail,
+            assignedUserName: $record->assignedUserName,
+            vendorGroupId: $record->vendorGroupId,
+            extra: $extra,
+        );
+    }
+
+    /**
+     * Apple's productFamily enum to the runtime OS name customers
+     * expect to see in the assets table. Returns null for families
+     * without a well-known OS name so callers can leave the field
+     * alone rather than blanking it.
+     */
+    private static function osFromProductFamily(string $family): ?string
+    {
+        return match ($family) {
+            'Mac' => 'macOS',
+            'iPhone' => 'iOS',
+            'iPad' => 'iPadOS',
+            'AppleTV' => 'tvOS',
+            'Watch' => 'watchOS',
+            'Vision' => 'visionOS',
+            default => null,
+        };
     }
 
     /**
@@ -718,7 +1007,12 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             // Fleet-compatible shape instead.
             hardwareModel: Arr::get($attrs, 'partNumber'),
             manufacturer: 'Apple',
-            primaryMac: null,
+            // ABM returns three MAC-shaped strings per device. Wi-Fi
+            // is the one every enrolled device has, so it fills the
+            // normalized primaryMac field. Ethernet and Bluetooth
+            // stay in extras for admins who want to route them to
+            // custom fields.
+            primaryMac: Arr::get($attrs, 'wifiMacAddress'),
             primaryIp: null,
             os: null,
             osVersion: null,
@@ -737,6 +1031,23 @@ class AppleBusinessManagerAdapter extends SyncAdapter
                 'abm_purchase_source_type' => Arr::get($attrs, 'purchaseSourceType'),
                 'abm_purchase_source_id' => Arr::get($attrs, 'purchaseSourceId'),
                 'abm_mdm_server' => $deviceToServer[$id] ?? null,
+                'abm_device_capacity' => Arr::get($attrs, 'deviceCapacity'),
+                'abm_wifi_mac' => Arr::get($attrs, 'wifiMacAddress'),
+                'abm_bluetooth_mac' => Arr::get($attrs, 'bluetoothMacAddress'),
+                'abm_ethernet_mac' => Arr::get($attrs, 'ethernetMacAddress'),
+                // Cellular-only identifiers. Populated for iPhones and
+                // cellular iPads, null on Macs / non-cellular devices.
+                'abm_imei' => Arr::get($attrs, 'imei'),
+                'abm_meid' => Arr::get($attrs, 'meid'),
+                'abm_eid' => Arr::get($attrs, 'eid'),
+                'abm_added_to_org' => self::parseOrderDate(Arr::get($attrs, 'addedToOrgDateTime')),
+                'abm_released_from_org' => self::parseOrderDate(Arr::get($attrs, 'releasedFromOrgDateTime')),
+                'abm_org_status' => Arr::get($attrs, 'status'),
+                // Populated by enrichRecordWithActivationLock() when
+                // the admin has mapped the extra. Kept as a nullable
+                // slot so the mapping-target list surfaces the key
+                // even before the first sync run fills it in.
+                'abm_activation_lock_enabled' => null,
             ],
         );
     }

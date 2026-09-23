@@ -25,13 +25,16 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:clean')->daily();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();
         $schedule->command('saml:clear_expired_nonces')->weekly();
+        
         $schedule->command('snipeit:pull-inventory')
-            ->hourly()
+            ->daily()
             ->withoutOverlapping();
 
-        // Push runs on the half-hour so it doesn't collide with the pull run
+        // Push runs a few hours offset from the pull so the two
+        // don't stack on a single Laravel scheduler tick if a slow
+        // adapter's pull runs long.
         $schedule->command('snipeit:push-inventory')
-            ->hourlyAt(30)
+            ->dailyAt('03:00')
             ->withoutOverlapping();
     }
 

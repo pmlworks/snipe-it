@@ -48,6 +48,18 @@ class CustomFieldSeeder extends Seeder
         CustomField::factory()->count(1)->operatingSystem()->create();
         CustomField::factory()->count(1)->osVersion()->create();
         CustomField::factory()->count(1)->lastCheckIn()->create();
+        // Extra fields the ABM adapter's device-level extras map to.
+        // Same rationale as ipAddress / lastCheckIn above: pre-created
+        // so a demo tenant can wire the mapping table for the ABM
+        // Wi-Fi/Bluetooth/Ethernet MACs, storage capacity, cellular
+        // identifiers, and Activation Lock status without hand-
+        // rolling the target fields first.
+        CustomField::factory()->count(1)->storageCapacity()->create();
+        CustomField::factory()->count(1)->bluetoothMac()->create();
+        CustomField::factory()->count(1)->ethernetMac()->create();
+        CustomField::factory()->count(1)->meid()->create();
+        CustomField::factory()->count(1)->eid()->create();
+        CustomField::factory()->count(1)->activationLock()->create();
 
         DB::table('custom_field_custom_fieldset')->insert([
             [
@@ -212,6 +224,65 @@ class CustomFieldSeeder extends Seeder
             ],
             [
                 'custom_field_id' => '16',
+                'custom_fieldset_id' => '2',
+                'order' => 0,
+                'required' => 0,
+            ],
+
+            // ABM device-level extras. Storage capacity, Bluetooth MAC,
+            // and Activation Lock get attached to both fieldsets since
+            // every device (phone or laptop) reports them. Ethernet MAC
+            // is computer-only. MEID and EID are cellular-only
+            [
+                'custom_field_id' => '17',
+                'custom_fieldset_id' => '1',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '17',
+                'custom_fieldset_id' => '2',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '18',
+                'custom_fieldset_id' => '1',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '18',
+                'custom_fieldset_id' => '2',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '19',
+                'custom_fieldset_id' => '2',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '20',
+                'custom_fieldset_id' => '1',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '21',
+                'custom_fieldset_id' => '1',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '22',
+                'custom_fieldset_id' => '1',
+                'order' => 0,
+                'required' => 0,
+            ],
+            [
+                'custom_field_id' => '22',
                 'custom_fieldset_id' => '2',
                 'order' => 0,
                 'required' => 0,
