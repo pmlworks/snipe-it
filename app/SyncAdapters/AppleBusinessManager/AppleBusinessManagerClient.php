@@ -115,6 +115,58 @@ class AppleBusinessManagerClient
     }
 
     /**
+     * List every device enrolled in Apple Business Manager's built-in
+     * MDM (formerly Apple Business Essentials, now folded into AxM).
+     * Cheap: one call per sync run. The id on each entry IS the
+     * device's serial number, so the adapter joins straight to
+     * orgDevices by serial. Records that don't appear here just
+     * aren't enrolled in the built-in MDM and stay un-enriched.
+     *
+     * @return iterable<int, array<string, mixed>>
+     */
+    public function mdmDevices(int $pageSize = 100): iterable
+    {
+        $cursor = null;
+
+        do {
+            $params = ['limit' => $pageSize];
+            if (is_string($cursor)) {
+                $params['cursor'] = $cursor;
+            }
+
+            $response = $this->request()
+                ->get('/v1/mdmDevices', $params)
+                ->throw()
+                ->json();
+
+            foreach ($response['data'] ?? [] as $device) {
+                yield $device;
+            }
+
+            $cursor = $response['meta']['paging']['nextCursor'] ?? null;
+        } while (is_string($cursor) && $cursor !== '');
+    }
+
+    /**
+     * Fetch runtime detail for one MDM-enrolled device: osVersion,
+     * lastCheckInDateTime, MAC addresses, storage, security posture
+     * (FileVault, firewall, lock/lost/erase statuses). One call per
+     * device, so gated behind hasMappedMdmDeviceDetailFields() at
+     * the adapter side.
+     *
+     * @return array<string, mixed>
+     */
+    public function mdmDeviceDetails(string $serial): array
+    {
+        $response = $this->request()
+            ->get('/v1/mdmDevices/'.$serial.'/details')
+            ->throw()
+            ->json();
+
+        return $response['data'] ?? [];
+    }
+
+    /**
      * Build a device-id -> MDM server name map by walking every MDM
      * server's device linkages. Devices unassigned to any MDM server
      * simply aren't in the returned map, so a `?? ''` fallback at the

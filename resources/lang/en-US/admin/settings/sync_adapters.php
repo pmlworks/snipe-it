@@ -398,4 +398,11 @@ return [
     'abm_extra_released_from_org' => 'AxM Released from Org',
     'abm_extra_org_status' => 'AxM Org Status',
     'abm_extra_activation_lock_enabled' => 'AxM Activation Lock Enabled',
+    'abm_extra_mdm_file_vault_enabled' => 'AxM MDM FileVault Enabled',
+    'abm_extra_mdm_firewall_enabled' => 'AxM MDM Firewall Enabled',
+    'abm_extra_mdm_device_lock_status' => 'AxM MDM Device Lock Status',
+    'abm_extra_mdm_lost_mode_status' => 'AxM MDM Lost Mode Status',
+    'abm_extra_mdm_device_erase_status' => 'AxM MDM Device Erase Status',
+    'abm_extra_mdm_storage_total' => 'AxM MDM Storage Total',
+    'abm_extra_mdm_storage_free' => 'AxM MDM Storage Free',
 ];
