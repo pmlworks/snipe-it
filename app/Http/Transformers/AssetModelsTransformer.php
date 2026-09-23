@@ -120,6 +120,7 @@ class AssetModelsTransformer
             'bulk_selectable' => [
                 'edit' => (Gate::allows('update', $assetmodel) && ($assetmodel->deleted_at == '')),
                 'delete' => (Gate::allows('delete', $assetmodel) && $assetmodel->isDeletable()),
+                'merge' => (Gate::allows('delete', AssetModel::class) && ($assetmodel->deleted_at == '')),
             ],
         ];
 

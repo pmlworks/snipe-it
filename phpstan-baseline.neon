@@ -4647,7 +4647,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property App\\Models\\Actionlog\:\:\$created_by\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 6
 			path: app/Listeners/LogListener.php
 
 		-
