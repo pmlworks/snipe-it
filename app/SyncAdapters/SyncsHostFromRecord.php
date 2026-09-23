@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\AssetModel;
 use App\Models\Category;
 use App\Models\CustomField;
+use App\Models\Manufacturer;
 use App\Models\Statuslabel;
 use App\Models\SyncAdapterConfig;
 use App\Models\SyncAdapterInstance;
@@ -51,8 +52,8 @@ trait SyncsHostFromRecord
             // when the mapping directs last_seen to a custom field (target custom:X).
             // Otherwise the vendor's heartbeat lands on the asset and fires AssetObserver::updating
             // on save, which writes an `update` Actionlog.
-            if (!$isNew && self::isHeartbeatOnlyAssetDirty($asset, $mapping, $instance)) {
-                if (!$asset->saveQuietly()) {
+            if (! $isNew && self::isHeartbeatOnlyAssetDirty($asset, $mapping, $instance)) {
+                if (! $asset->saveQuietly()) {
                     throw new RuntimeException('Failed to save asset during heartbeat-only sync.');
                 }
             } else {
@@ -753,19 +754,19 @@ trait SyncsHostFromRecord
         array $mapping,
         ?SyncAdapterInstance $instance,
     ): bool {
-        if (!$asset->isDirty()) {
+        if (! $asset->isDirty()) {
             return false;
         }
         if ($instance === null) {
             return false;
         }
         $adapter = $instance->adapter();
-        if (!$adapter instanceof SyncAdapter || $adapter->logsHeartbeats()) {
+        if (! $adapter instanceof SyncAdapter || $adapter->logsHeartbeats()) {
             return false;
         }
 
         $lastSeenTarget = $mapping['last_seen'] ?? MappingTargets::defaultTarget('last_seen');
-        if (!str_starts_with($lastSeenTarget, 'custom:')) {
+        if (! str_starts_with($lastSeenTarget, 'custom:')) {
             return false;
         }
 
@@ -836,9 +837,36 @@ trait SyncsHostFromRecord
         $model = new AssetModel;
         $model->name = $modelName;
         $model->category_id = self::categoryIdFor($instance, $record);
+        $model->manufacturer_id = self::manufacturerIdFor($record);
         $model->save();
 
         return $model->id;
+    }
+
+    /**
+     * Resolve the manufacturer for a new model. MySQL's default
+     * collation is case-insensitive, so firstOrCreate matches 'apple'
+     * or 'APPLE' to an existing 'Apple' row without a duplicate. When
+     * we do create a new one, log a warning so admins can spot near-
+     * duplicates like 'Apple' vs 'Apple, Inc.' that the collation
+     * won't catch. Returns null when the record carries no
+     * manufacturer so we don't stamp a default.
+     */
+    private static function manufacturerIdFor(?HostInventoryRecord $record): ?int
+    {
+        $name = $record?->manufacturer;
+        if (! is_string($name) || trim($name) === '') {
+            return null;
+        }
+
+        $manufacturer = Manufacturer::firstOrCreate(['name' => trim($name)]);
+        if ($manufacturer->wasRecentlyCreated) {
+            Log::channel('sync-adapters')->warning(
+                "Sync adapter created new manufacturer \"{$manufacturer->name}\". If this duplicates an existing manufacturer under a different spelling, reassign the affected asset models to the manufacturer you want to keep and delete the extra one.",
+            );
+        }
+
+        return (int) $manufacturer->id;
     }
 
     /**
