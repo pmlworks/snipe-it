@@ -679,6 +679,17 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     }
 
     /**
+     * SCIM library shim. This could maybe be moved into the user model itself,
+     * but since it hooks into arietimmerman's library, this was the easier path
+     * without pulling it into traits. Returns the primary key so a scim-client
+     * fetch of /Me matches the shape of a fetch of /Users/{id}
+     */
+    public function getUserId(): int
+    {
+        return (int) $this->id;
+    }
+
+    /**
      * The association-blocker half of isDeletable(): true only when the
      * user has no assigned assets / accessories / licenses / consumables
      * and isn't managing any users or locations. Split out from
