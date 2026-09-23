@@ -614,7 +614,7 @@ class Asset extends Depreciable
      * @param  Carbon  $checkout_at
      * @param  Carbon  $expected_checkin
      * @param  string  $note
-     * @param  null  $name
+     * @param  string|null  $name
      * @return bool
      *
      * @since  [v3.0]

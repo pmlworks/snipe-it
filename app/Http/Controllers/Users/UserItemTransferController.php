@@ -113,7 +113,7 @@ class UserItemTransferController extends Controller
             }
 
             $this->checkInAsset($asset, $source, $note);
-            $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), null, $note);
+            $asset->checkOut($target, auth()->user(), date('Y-m-d H:i:s'), null, $note, $asset->name);
             $count++;
         }
 
