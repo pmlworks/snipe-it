@@ -57,7 +57,17 @@ class ImportController extends Controller
             $import = new Import;
             $detector = new EncodingDetector;
 
+            // No file uploaded
+            if (empty($files)) {
+                return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.nofiles')), 422);
+            }
+
             foreach ($files as $file) {
+                // Reject phantoms and fail early if the file is invalid (e.g. exceeds the server upload limit).
+                // The CSV reader below will reject anything that isn't actually parseable with a more precise error.
+                if (! $file instanceof UploadedFile || ! $file->isValid()) {
+                    return response()->json(Helper::formatStandardApiResponse('error', null, trans('admin/hardware/message.nofiles')), 422);
+                }
                 $allowedMimes = [
                     'application/vnd.ms-excel',
                     'text/csv',
