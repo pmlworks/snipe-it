@@ -216,12 +216,39 @@ class AssetModelsController extends Controller
      *
      * @param  int  $id
      */
-    public function assets($id): array
+    public function assets(Request $request, $id): JsonResponse|array
     {
         $this->authorize('view', AssetModel::class);
-        $assets = Asset::where('model_id', '=', $id)->get();
+        $model = AssetModel::findOrFail($id);
 
-        return (new AssetsTransformer)->transformAssets($assets, $assets->count());
+        // Eager-load the same relations AssetsTransformer walks per row.
+        // Without this, a page of 500 assets triggers 500-plus follow-up
+        // queries for status, company, assignedTo, adminuser, and the
+        // model / manufacturer / category chain the transformer expands
+        // on each row.
+        $assets = Asset::where('model_id', $model->id)
+            ->with(
+                'model',
+                'model.category',
+                'model.manufacturer',
+                'model.depreciation',
+                'model.fieldset',
+                'location',
+                'defaultLoc',
+                'status',
+                'company',
+                'assignedTo',
+                'adminuser',
+                'supplier',
+            );
+
+        $total = $assets->count();
+        $offset = ($request->input('offset') > $total) ? $total : app('api_offset_value');
+        $limit = app('api_limit_value');
+
+        $assets = $assets->skip($offset)->take($limit)->get();
+
+        return (new AssetsTransformer)->transformAssets($assets, $total);
     }
 
     /**

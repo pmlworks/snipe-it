@@ -991,7 +991,7 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
             ]
         )->name('api.models.selectlist');
 
-        Route::get('assets',
+        Route::get('{id}/assets',
             [
                 Api\AssetModelsController::class,
                 'assets',
