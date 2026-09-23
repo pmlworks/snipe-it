@@ -1483,6 +1483,12 @@ parameters:
 			path: app/Http/Controllers/Api/ImportController.php
 
 		-
+			message: '#^Instanceof between Illuminate\\Http\\UploadedFile and Illuminate\\Http\\UploadedFile will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Http/Controllers/Api/ImportController.php
+
+		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$request$#'
 			identifier: parameter.notFound
 			count: 1
@@ -7375,21 +7381,9 @@ parameters:
 			path: app/Models/Ldap.php
 
 		-
-			message: '#^Method App\\Models\\Ldap\:\:bindAdminToLdap\(\) should return bool but return statement is missing\.$#'
-			identifier: return.missing
-			count: 3
-			path: app/Models/Ldap.php
-
-		-
 			message: '#^Method App\\Models\\Ldap\:\:findLdapUsers\(\) should return array\|bool but returns Illuminate\\Http\\RedirectResponse\.$#'
 			identifier: return.type
 			count: 2
-			path: app/Models/Ldap.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$user$#'
-			identifier: parameter.notFound
-			count: 1
 			path: app/Models/Ldap.php
 
 		-
