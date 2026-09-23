@@ -3942,5 +3942,23 @@ dl.table-display {
 .sync-adapters-tabs .adapter-tab-content {
   flex: 1;
   padding: 15px 20px;
+  min-width: 0; // let long labels + tables shrink inside a flex row instead of stretching the whole panel past its box.
+}
+
+/* Small shim for side-tab min-width on mobile or smaller screens. */
+@media (max-width: 991px) {
+  .sync-adapters-tabs {
+    flex-direction: column;
+  }
+
+  .sync-adapters-tabs .adapter-tab-list {
+    flex: 0 0 auto;
+    border-right: 0;
+    border-bottom: var(--table-border-row);
+  }
+
+  .sync-adapters-tabs .adapter-tab-content {
+    padding: 15px 10px;
+  }
 }
 
