@@ -97,6 +97,24 @@ class AppleBusinessManagerClient
     }
 
     /**
+     * Fetch Activation Lock status for one device. Apple returns a
+     * single Device-shaped object with an attributes.activationLockEnabled
+     * boolean. Handy at asset-checkin time since Activation Lock has
+     * to be cleared before a device can be redeployed to a new user.
+     *
+     * @return array<string, mixed>
+     */
+    public function deviceActivationLockStatus(string $deviceId): array
+    {
+        $response = $this->request()
+            ->get('/v1/orgDevices/'.$deviceId.'/activationLockStatus')
+            ->throw()
+            ->json();
+
+        return $response['data'] ?? [];
+    }
+
+    /**
      * Build a device-id -> MDM server name map by walking every MDM
      * server's device linkages. Devices unassigned to any MDM server
      * simply aren't in the returned map, so a `?? ''` fallback at the
