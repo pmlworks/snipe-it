@@ -39,7 +39,7 @@ trait SyncsHostFromRecord
             $instance = SyncAdapterInstance::query()->where('slug', $record->sourceKey)->first();
             $mapping = self::loadMapping($instance);
 
-            [$asset, $isNew] = self::provisionAsset($record, $instance);
+            [$asset, $isNew] = self::provisionAsset($record, $instance, $mapping);
 
             $externalUpdates = [];
             self::applyStandardFieldMappings($asset, $externalUpdates, $record, $instance, $mapping);
@@ -92,7 +92,10 @@ trait SyncsHostFromRecord
      *
      * @return array{0: Asset, 1: bool} Tuple of the resolved asset and an "isNew" flag.
      */
-    private static function provisionAsset(HostInventoryRecord $record, ?SyncAdapterInstance $instance): array
+    /**
+     * @param  array<string, string>  $mapping
+     */
+    private static function provisionAsset(HostInventoryRecord $record, ?SyncAdapterInstance $instance, array $mapping = []): array
     {
         $existingSource = DB::table('asset_external_sources')
             ->where('source', $record->sourceKey)
@@ -129,7 +132,7 @@ trait SyncsHostFromRecord
             return [$adopted, false];
         }
 
-        $asset = self::createShellAsset($record, $instance);
+        $asset = self::createShellAsset($record, $instance, $mapping);
 
         // Identity row created empty of inventory columns. the
         // mapping loop below fills them and the write goes out
@@ -227,6 +230,15 @@ trait SyncsHostFromRecord
             }
             if ($adapterForDirection instanceof SyncAdapter
                 && ! in_array($adapterForDirection->directionFor($field), ['pull', 'both'], true)) {
+                continue;
+            }
+            // Skip the standard `model` slot when an extra is also
+            // mapped to native:model. The extras loop is the last
+            // writer for model_id, so a standard-slot write here
+            // would spend a resolveModelIdByName() creating an
+            // AssetModel keyed on hardwareModel that gets orphaned
+            // when extras overwrites the asset's model_id. #19691.
+            if ($field === 'model' && $target === 'native:model' && self::hasExtraMappedTo('native:model', $mapping)) {
                 continue;
             }
 
@@ -529,11 +541,14 @@ trait SyncsHostFromRecord
      * company_id so FMCS-scoped views only see their own company's
      * synced hosts.
      */
-    private static function createShellAsset(HostInventoryRecord $record, ?SyncAdapterInstance $instance): Asset
+    /**
+     * @param  array<string, string>  $mapping
+     */
+    private static function createShellAsset(HostInventoryRecord $record, ?SyncAdapterInstance $instance, array $mapping = []): Asset
     {
         $asset = new Asset;
         $asset->name = $record->sourceKey.'-'.$record->sourceId;
-        $asset->model_id = self::resolveModelId($record, $instance);
+        $asset->model_id = self::resolveModelId($record, $instance, $mapping);
         $asset->status_id = self::resolveStatusId($instance);
         $asset->asset_tag = self::resolveAssetTag($record, $instance);
         $asset->company_id = self::resolveCompanyId($record, $instance);
@@ -882,13 +897,75 @@ trait SyncsHostFromRecord
      * Auto-created models get hung off a "Discovered Hardware"
      * category which is itself get-or-created.
      */
-    private static function resolveModelId(HostInventoryRecord $record, ?SyncAdapterInstance $instance = null): ?int
+    /**
+     * @param  array<string, string>  $mapping
+     */
+    private static function resolveModelId(HostInventoryRecord $record, ?SyncAdapterInstance $instance = null, array $mapping = []): ?int
     {
-        if ($record->hardwareModel === null || $record->hardwareModel === '') {
+        $modelSource = self::resolveModelSourceValue($record, $mapping);
+        if ($modelSource === null || $modelSource === '') {
             return null;
         }
 
-        return self::resolveModelIdByName($record->hardwareModel, $instance, $record);
+        return self::resolveModelIdByName($modelSource, $instance, $record);
+    }
+
+    /**
+     * True when at least one extra-field mapping targets the given
+     * mapping target string (typically 'native:model'). Used to
+     * suppress the standard-field write when an extra is going to
+     * overwrite the same target further down the mapping loop.
+     *
+     * @param  array<string, string>  $mapping
+     */
+    private static function hasExtraMappedTo(string $target, array $mapping): bool
+    {
+        foreach ($mapping as $key => $mappedTarget) {
+            if ($mappedTarget !== $target) {
+                continue;
+            }
+            if (in_array($key, MappingTargets::FIELDS, true)) {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Pick the value that will end up as this asset's AssetModel name
+     * once the mapping loop finishes. When an admin has routed an extra
+     * to native:model (Apple Business Manager's marketing name is the
+     * common case), the extras loop is the last writer for model_id.
+     * createShellAsset must use the same source so the auto-created
+     * AssetModel matches what the mapping loop would settle on. Falls
+     * back to the record's hardwareModel when nothing is remapped to
+     * native:model. Fixes #19691: a phantom AssetModel named after the
+     * vendor's part number was left dangling on every new asset when
+     * the marketing name was mapped in.
+     *
+     * @param  array<string, string>  $mapping
+     */
+    private static function resolveModelSourceValue(HostInventoryRecord $record, array $mapping): ?string
+    {
+        foreach ($mapping as $key => $target) {
+            if ($target !== 'native:model') {
+                continue;
+            }
+            if (in_array($key, MappingTargets::FIELDS, true)) {
+                // Standard field slot. Its source is hardwareModel,
+                // which is the same value the fallback below returns.
+                continue;
+            }
+            $value = $record->extra[$key] ?? null;
+            if ($value !== null && $value !== '') {
+                return (string) $value;
+            }
+        }
+
+        return $record->hardwareModel;
     }
 
     private static function resolveModelIdByName(string $modelName, ?SyncAdapterInstance $instance = null, ?HostInventoryRecord $record = null): int
