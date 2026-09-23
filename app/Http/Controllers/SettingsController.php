@@ -72,7 +72,10 @@ class SettingsController extends Controller
             ));
         }
 
-        return view('settings/index', compact('settings', 'impersonators', 'missingImpersonationUsernames'));
+        // Grab the adapters list so we can populate the hidden keywords for the settings search box
+        $adapterKeywords = implode(' ', \App\SyncAdapters\SyncAdapter::typeLabels());
+
+        return view('settings/index', compact('settings', 'impersonators', 'missingImpersonationUsernames', 'adapterKeywords'));
     }
 
     /**
@@ -680,7 +683,7 @@ class SettingsController extends Controller
         if (!$wasLabel2Enabled && $request->boolean('label2_enable')) {
             $setting->label2_title = $setting->qr_text;
         }
-        
+
         if ($setting->save()) {
 
             return redirect()->route('settings.labels.index')
@@ -1306,6 +1309,14 @@ class SettingsController extends Controller
 
         if ($e instanceof \Illuminate\Http\Client\ConnectionException) {
             return trans('admin/settings/sync_adapters.sync_failed_network');
+        }
+
+        // Vendor-shaped adapter errors (wrong base URL, unexpected
+        // content type, etc.) carry their own actionable message. Pass
+        // it through so the admin sees "check your Base URL" instead
+        // of "SyncAdapterVendorException".
+        if ($e instanceof \App\Exceptions\SyncAdapterVendorException) {
+            return $e->getMessage();
         }
 
         return class_basename($e);
