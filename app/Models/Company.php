@@ -506,17 +506,16 @@ final class Company extends SnipeModel
      */
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(self::class, 'parent_id')->withoutGlobalScopes();
+        return $this->belongsTo(self::class, 'parent_id')->withoutGlobalScopes([CompanyableScope::class]);
     }
 
     /**
      * Child companies. The one-level-deep validator on parent_id guarantees
      * children of a child cannot be created, so this is the full descendant set.
-     * See parent() above for why the global scope is dropped.
      */
     public function children()
     {
-        return $this->hasMany(self::class, 'parent_id')->withoutGlobalScopes();
+        return $this->hasMany(self::class, 'parent_id')->withoutGlobalScopes([CompanyableScope::class]);
     }
 
     /**
