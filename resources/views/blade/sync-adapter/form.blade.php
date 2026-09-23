@@ -111,7 +111,7 @@
                 :label="trans('admin/settings/sync_adapters.base_url')"
                 :name="$urlField"
                 input_div_class="col-md-8"
-                :help_text="$adapter->baseUrlHelp() ?? trans('admin/settings/sync_adapters.base_url_help', ['type' => $adapter::typeLabel()])"
+                :help_html="$adapter->baseUrlHelp() ?? trans('admin/settings/sync_adapters.base_url_help', ['type' => $adapter::typeLabel()])"
                 required
             >
                 <x-slot:input>
