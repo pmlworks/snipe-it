@@ -100,7 +100,10 @@ class MappingTargets
         [$type, $id] = array_pad(explode(':', $target, 2), 2, '');
 
         return match ($type) {
-            'native' => trans('admin/settings/sync_adapters.target_native_'.$id),
+            'native' => match ($id) {
+                'purchase_date', 'order_number' => trans('general.' . $id),
+                default => trans('admin/settings/sync_adapters.target_native_' . $id),
+            },
             'external' => trans('admin/settings/sync_adapters.target_external_'.$id),
             'custom' => trans('admin/settings/sync_adapters.target_custom_prefix').': '
                 .(CustomField::find((int) $id)?->name ?? '?'),
@@ -149,8 +152,8 @@ class MappingTargets
         // (arbitrary tenant-labeled data doesn't belong in native
         // slots).
         if ($type !== 'boolean' && ! $adminDefined) {
-            foreach (['asset_tag', 'model', 'notes'] as $nativeColumn) {
-                $options['native:'.$nativeColumn] = trans('admin/settings/sync_adapters.target_native_'.$nativeColumn);
+            foreach (['asset_tag', 'model', 'notes', 'purchase_date', 'order_number'] as $nativeColumn) {
+                $options['native:' . $nativeColumn] = self::labelFor('native:' . $nativeColumn);
             }
         }
 

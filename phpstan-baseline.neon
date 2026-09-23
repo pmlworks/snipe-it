@@ -9769,6 +9769,12 @@ parameters:
 			path: app/SyncAdapters/SyncAdapter.php
 
 		-
+			message: '#^Property App\\Models\\Asset\:\:\$purchase_date \(Carbon\\Carbon\|null\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/SyncAdapters/SyncAdapter.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1

@@ -731,6 +731,23 @@ trait SyncsHostFromRecord
                     $asset->byod = ($value === '1');
                 }
                 break;
+            case 'purchase_date':
+                // Watson validating rule wants date_format:Y-m-d.
+                // Log + skip if the string isn't parseable so a bad record
+                // doesn't donk the sync run.
+                if ($value !== null && $value !== '') {
+                    try {
+                        $asset->purchase_date = \Carbon\Carbon::parse((string) $value)->format('Y-m-d');
+                    } catch (\Exception $e) {
+                        Log::channel('sync-adapters')->warning("Skipping unparseable purchase_date \"{$value}\" for asset {$asset->id}: " . $e->getMessage());
+                    }
+                }
+                break;
+            case 'order_number':
+                if ($value !== null && $value !== '') {
+                    $asset->order_number = (string) $value;
+                }
+                break;
         }
     }
 

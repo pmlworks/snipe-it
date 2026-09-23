@@ -134,8 +134,11 @@ class ExtraFieldMappingTest extends TestCase
         $this->assertArrayHasKey('native:asset_tag', $options);
         $this->assertArrayHasKey('native:model', $options);
         $this->assertArrayHasKey('native:notes', $options);
+        $this->assertArrayHasKey('native:purchase_date', $options);
+        $this->assertArrayHasKey('native:order_number', $options);
+        $nativeTargets = ['skip', 'native:asset_tag', 'native:model', 'native:notes', 'native:purchase_date', 'native:order_number'];
         foreach (array_keys($options) as $target) {
-            if (in_array($target, ['skip', 'native:asset_tag', 'native:model', 'native:notes'], true)) {
+            if (in_array($target, $nativeTargets, true)) {
                 continue;
             }
             $this->assertStringStartsWith('custom:', $target);
@@ -154,6 +157,98 @@ class ExtraFieldMappingTest extends TestCase
         $this->assertArrayNotHasKey('native:asset_tag', $options);
         $this->assertArrayNotHasKey('native:model', $options);
         $this->assertArrayNotHasKey('native:notes', $options);
+    }
+
+    public function test_extra_can_route_to_native_purchase_date()
+    {
+        $fleet = $this->configuredFleetInstance();
+        SyncAdapterConfig::put($fleet->id, 'mapping.fleet_team', 'native:purchase_date');
+
+        $record = new \App\SyncAdapters\HostInventoryRecord(
+            sourceKey: 'fleet',
+            sourceId: 'purchase-1',
+            hostname: 'host-1',
+            hardwareSerial: 'SN-1',
+            hardwareModel: 'MacBook Pro',
+            extra: ['fleet_team' => '2024-03-15'],
+        );
+
+        SyncAdapter::syncFromRecord($record);
+
+        $this->assertDatabaseHas('assets', [
+            'name' => 'host-1',
+            'purchase_date' => '2024-03-15',
+        ]);
+    }
+
+    public function test_purchase_date_accepts_iso_8601_datetime()
+    {
+        // ABM emits orderDateTime as ISO 8601 with a time component.
+        // The write path normalizes to YYYY-MM-DD so it fits Snipe-IT's
+        // date column.
+        $fleet = $this->configuredFleetInstance();
+        SyncAdapterConfig::put($fleet->id, 'mapping.fleet_team', 'native:purchase_date');
+
+        $record = new \App\SyncAdapters\HostInventoryRecord(
+            sourceKey: 'fleet',
+            sourceId: 'purchase-2',
+            hostname: 'host-2',
+            hardwareSerial: 'SN-2',
+            hardwareModel: 'MacBook Pro',
+            extra: ['fleet_team' => '2024-03-15T00:00:00Z'],
+        );
+
+        SyncAdapter::syncFromRecord($record);
+
+        $this->assertDatabaseHas('assets', [
+            'name' => 'host-2',
+            'purchase_date' => '2024-03-15',
+        ]);
+    }
+
+    public function test_unparseable_purchase_date_is_skipped_not_crashed()
+    {
+        // Fail-safe: bad vendor data on one field should not abort the
+        // whole sync. Asset still gets created, purchase_date stays
+        // null, the sync run continues.
+        $fleet = $this->configuredFleetInstance();
+        SyncAdapterConfig::put($fleet->id, 'mapping.fleet_team', 'native:purchase_date');
+
+        $record = new \App\SyncAdapters\HostInventoryRecord(
+            sourceKey: 'fleet',
+            sourceId: 'bad-date',
+            hostname: 'host-3',
+            hardwareSerial: 'SN-3',
+            hardwareModel: 'MacBook Pro',
+            extra: ['fleet_team' => 'not-a-date'],
+        );
+
+        SyncAdapter::syncFromRecord($record);
+
+        $this->assertDatabaseHas('assets', ['name' => 'host-3']);
+        $this->assertDatabaseMissing('assets', ['name' => 'host-3', 'purchase_date' => 'not-a-date']);
+    }
+
+    public function test_extra_can_route_to_native_order_number()
+    {
+        $fleet = $this->configuredFleetInstance();
+        SyncAdapterConfig::put($fleet->id, 'mapping.fleet_team', 'native:order_number');
+
+        $record = new \App\SyncAdapters\HostInventoryRecord(
+            sourceKey: 'fleet',
+            sourceId: 'order-1',
+            hostname: 'host-4',
+            hardwareSerial: 'SN-4',
+            hardwareModel: 'MacBook Pro',
+            extra: ['fleet_team' => 'PO-12345'],
+        );
+
+        SyncAdapter::syncFromRecord($record);
+
+        $this->assertDatabaseHas('assets', [
+            'name' => 'host-4',
+            'order_number' => 'PO-12345',
+        ]);
     }
 
     public function test_asset_tag_native_target_overwrites_the_asset_tag_column()
