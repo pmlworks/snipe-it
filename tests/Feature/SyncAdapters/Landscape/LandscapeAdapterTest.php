@@ -207,6 +207,126 @@ class LandscapeAdapterTest extends TestCase
         $this->assertSame('page2-host', $records[1]->hostname);
     }
 
+    public function test_adopts_existing_asset_by_serial_when_toggle_is_on()
+    {
+        // Migration scenario: customer already has assets in Snipe-IT
+        // (from a homegrown script that populated `serial`) but no
+        // asset_external_sources rows for this adapter. With
+        // adopt_by_serial turned on, the first sync should adopt the
+        // existing asset instead of creating a duplicate.
+        $adapter = $this->configuredLandscapeAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'landscape')->firstOrFail();
+        SyncAdapterConfig::put($instance->id, 'adopt_by_serial', '1');
+
+        $existing = Asset::factory()->create(['serial' => 'ADOPT-ME-001', 'name' => 'pre-existing']);
+
+        Http::fake([
+            '*/api/v2/computers*' => Http::sequence()
+                ->push($this->landscapeComputersResponse([
+                    $this->landscapeComputer(id: 42, hostname: 'landscape-sees-it', product: 'PowerEdge', serial: 'ADOPT-ME-001'),
+                ])),
+        ]);
+
+        foreach ($adapter->pull() as $record) {
+            SyncAdapter::syncFromRecord($record);
+        }
+
+        $this->assertDatabaseCount('assets', 1);
+        $this->assertDatabaseHas('asset_external_sources', [
+            'asset_id' => $existing->id,
+            'source' => 'landscape',
+            'external_id' => '42',
+        ]);
+
+        // Adopted asset's non-mapped columns should not be reset.
+        // Name comes from the vendor via the standard mapping loop,
+        // so it updates. Serial is the match key and stays put.
+        $existing->refresh();
+        $this->assertSame('ADOPT-ME-001', $existing->serial);
+    }
+
+    public function test_does_not_adopt_when_toggle_is_off()
+    {
+        // Default behavior: matching serial without an
+        // asset_external_sources row does NOT auto-adopt. The
+        // sync creates a fresh shell asset alongside the existing
+        // one. Verifies we don't regress the safe default.
+        $adapter = $this->configuredLandscapeAdapter();
+        Asset::factory()->create(['serial' => 'NO-ADOPT-001', 'name' => 'pre-existing']);
+
+        Http::fake([
+            '*/api/v2/computers*' => Http::sequence()
+                ->push($this->landscapeComputersResponse([
+                    $this->landscapeComputer(id: 42, hostname: 'landscape-sees-it', product: 'PowerEdge', serial: 'NO-ADOPT-001'),
+                ])),
+        ]);
+
+        foreach ($adapter->pull() as $record) {
+            SyncAdapter::syncFromRecord($record);
+        }
+
+        $this->assertDatabaseCount('assets', 2);
+    }
+
+    public function test_adopt_does_not_re_link_an_already_linked_asset()
+    {
+        // Idempotency guard: if the asset is already linked (its
+        // asset_external_sources row exists for this source), the
+        // primary matching path handles it. adoptExistingAssetBySerial
+        // should not double-insert.
+        $adapter = $this->configuredLandscapeAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'landscape')->firstOrFail();
+        SyncAdapterConfig::put($instance->id, 'adopt_by_serial', '1');
+
+        Http::fake([
+            '*/api/v2/computers*' => Http::sequence()
+                ->push($this->landscapeComputersResponse([
+                    $this->landscapeComputer(id: 42, hostname: 'first-sync', product: 'PowerEdge', serial: 'DUP-001'),
+                ]))
+                ->push($this->landscapeComputersResponse([
+                    $this->landscapeComputer(id: 42, hostname: 'second-sync', product: 'PowerEdge', serial: 'DUP-001'),
+                ])),
+        ]);
+
+        foreach ($adapter->pull() as $record) {
+            SyncAdapter::syncFromRecord($record);
+        }
+        foreach ($adapter->pull() as $record) {
+            SyncAdapter::syncFromRecord($record);
+        }
+
+        $this->assertDatabaseCount('asset_external_sources', 1);
+        $this->assertDatabaseCount('assets', 1);
+    }
+
+    public function test_adopt_skips_when_vendor_record_has_no_serial()
+    {
+        // Some Landscape installs return computer records without a
+        // serial (grouped_hardware disabled, or dmidecode unavailable
+        // on that host). Adoption should be a no-op in that case, not
+        // adopt a random unrelated asset by matching NULL to NULL.
+        $adapter = $this->configuredLandscapeAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'landscape')->firstOrFail();
+        SyncAdapterConfig::put($instance->id, 'adopt_by_serial', '1');
+        Asset::factory()->create(['serial' => null, 'name' => 'unrelated-existing']);
+
+        Http::fake([
+            '*/api/v2/computers*' => Http::sequence()
+                ->push($this->landscapeComputersResponse([
+                    // Product info populated so createShellAsset can
+                    // still derive a model. serial stays null so the
+                    // adopt path is the thing under test.
+                    $this->landscapeComputer(id: 42, hostname: 'no-serial-host', product: 'PowerEdge', vendor: 'Dell', serial: null),
+                ])),
+        ]);
+
+        foreach ($adapter->pull() as $record) {
+            SyncAdapter::syncFromRecord($record);
+        }
+
+        $this->assertDatabaseCount('assets', 2);
+    }
+
     public function test_bearer_token_is_sent_on_every_request()
     {
         $adapter = $this->configuredLandscapeAdapter();
