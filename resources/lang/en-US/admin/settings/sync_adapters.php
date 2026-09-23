@@ -186,6 +186,7 @@ return [
     'jamf_platform_client_id_help' => 'Create an integration in Jamf Account under API integrations, then grant it the capabilities for Devices (read) and Blueprints (read) on your Platform environment. Copy the Client ID from the integration detail page.',
     'jamf_platform_client_secret_help' => 'Paired with the Client ID above. Jamf shows the secret once at integration creation time.',
     'jamf_platform_environment_id_help' => 'UUID of the Platform environment the integration is scoped to. Copy from Jamf Account under Environments, or from the URL of your environment console. Sent as the X-Environment-Id header on every request.',
+    'landscape_token_help' => 'Landscape does not have a UI for API tokens. Obtain one by POSTing your credentials to <code>/api/v2/login</code> on your Landscape instance and copying the <code>token</code> field from the JSON response. Pass an <code>expiry_minutes</code> value on that call to control how long the token stays valid (defaults to 24h). The account behind the token needs read access to computers.',
 
     // Custom HTTP adapter
     'custom_auth_method_help' => 'How the adapter authenticates against your API. <code>Bearer</code> sends a Bearer token in the <code>Authorization</code> header. <code>Basic</code> sends username + password. <code>API Key</code> sends the value in a custom header. <code>None</code> sends no auth headers.',
@@ -287,6 +288,9 @@ return [
     'extra_applecare_description' => 'AppleCare Description',
     'extra_applecare_is_canceled' => 'AppleCare Is Canceled',
     'extra_applecare_is_renewable' => 'AppleCare Is Renewable',
+    'extra_distribution' => ':vendor Distribution',
+    'extra_reboot_required' => ':vendor Reboot Required',
+    'extra_ubuntu_pro' => 'Ubuntu Pro',
     'extra_osquery_version' => 'osquery Version',
 
     // Shared label strings for adapter settings schemas. Adapters

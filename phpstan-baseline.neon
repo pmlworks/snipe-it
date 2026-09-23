@@ -3673,6 +3673,12 @@ parameters:
 			path: app/Http/Transformers/AssetModelsTransformer.php
 
 		-
+			message: '#^Access to an undefined property App\\Models\\AssetModel\:\:\$remaining\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Transformers/AssetModelsTransformer.php
+
+		-
 			message: '#^Access to an undefined property App\\Models\\AccessoryCheckout\:\:\$deleted_at\.$#'
 			identifier: property.notFound
 			count: 1
