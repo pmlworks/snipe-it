@@ -10,6 +10,7 @@
     'label' => null,
     'label_class' => 'col-md-3',
     'input_div_class' => 'col-md-7',
+    'help_class' => 'col-md-9 col-md-offset-3',
     'input_icon' => null,
     'input_group_addon' => null,
     'maxlength' => null,
