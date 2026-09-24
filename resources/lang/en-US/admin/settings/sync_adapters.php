@@ -26,7 +26,7 @@ return [
 
     'help_tab_label' => 'Adapter Help',
     'experimental_banner_title' => 'Here be dragons',
-    'experimental_banner_body' => 'Sync adapters are experimental. Adapter runs can create, update, and delete Snipe-IT assets in bulk based on data pulled from the vendor. Take a fresh backup before enabling any adapter and before every material configuration change.',
+    'experimental_banner_body' => 'Sync adapters are experimental. Adapter runs can create and update Snipe-IT assets in bulk based on data pulled from the vendor. Take a fresh backup before enabling any adapter and before every material configuration change.',
     'empty_state_title' => 'Getting started with sync adapters',
     'empty_state_intro' => 'Sync adapters connect Snipe-IT to the MDM, RMM, and endpoint tools you already use, so devices and their assigned users flow into Snipe-IT automatically instead of being typed in by hand.',
     'empty_state_supported_intro' => 'Snipe-IT currently supports :count adapter types out of the box:',
@@ -120,7 +120,7 @@ return [
     'checkin_on_null_user_label' => 'Check assets in when the vendor reports no assigned user',
     'checkin_on_null_user_help' => 'When the vendor stops reporting an assigned user for a device, check the asset in from whoever had it. Off by default because a single missed sync cycle (device offline, empty field on a fresh enrollment) would unassign the asset. Turn this on only if you trust your vendor\'s user reporting to be consistent every sync.',
     'adopt_by_serial_label' => 'Match vendor hosts to existing assets by serial number',
-    'adopt_by_serial_help' => 'Migration aid for customers moving from a homegrown sync script that already populated the assets table. When enabled, this adapter will first check for an existing Snipe-IT asset with the same serial number and link them. Turn this off after your initial migration if you want new vendor assets to always create fresh asset rows.',
+    'adopt_by_serial_help' => 'Migration aid for customers moving from a homegrown sync script that already populated the assets table or manually entered devices. When enabled, this adapter will first check for an existing Snipe-IT asset with the same serial number and link them. Turn this off after your initial migration if you want new vendor assets to always create fresh asset rows.',
 
     // Push dry-run + composite notes push
     'push_dry_run_label' => 'Dry-run push (log payloads, do not send)',

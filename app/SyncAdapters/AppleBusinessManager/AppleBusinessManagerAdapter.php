@@ -825,7 +825,93 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             return $record;
         }
 
-        $extra = $record->extra;
+        return new HostInventoryRecord(
+            sourceKey: $record->sourceKey,
+            sourceId: $record->sourceId,
+            hostname: $record->hostname,
+            hardwareSerial: $record->hardwareSerial,
+            hardwareModel: $record->hardwareModel,
+            manufacturer: $record->manufacturer,
+            primaryMac: self::pickMdmPrimaryMac($attrs, $record->primaryMac),
+            primaryIp: $record->primaryIp,
+            os: $record->os,
+            osVersion: self::firstNonEmptyString(Arr::get($attrs, 'osVersion'), $record->osVersion),
+            lastSeen: self::parseMdmTimestamp(Arr::get($attrs, 'lastCheckInDateTime'), $record->lastSeen),
+            assetTag: $record->assetTag,
+            assignedUserEmail: $record->assignedUserEmail,
+            assignedUserName: $record->assignedUserName,
+            vendorGroupId: $record->vendorGroupId,
+            extra: self::mergeMdmDetailExtras($record->extra, $attrs),
+        );
+    }
+
+    /**
+     * Return $preferred if it is a non-empty string, else $fallback.
+     * Extracted so enrichRecordWithMdmDeviceDetail doesn't blow its
+     * NPath budget on inline ternaries.
+     */
+    private static function firstNonEmptyString(mixed $preferred, mixed $fallback): mixed
+    {
+        if (is_string($preferred) && $preferred !== '') {
+            return $preferred;
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Pick the primary MAC from the MDM detail attributes. Prefers
+     * Wi-Fi, falls back to Ethernet (desktops without Wi-Fi), then
+     * whatever the orgDevices path already set.
+     *
+     * @param  array<string, mixed>  $attrs
+     */
+    private static function pickMdmPrimaryMac(array $attrs, ?string $fallback): ?string
+    {
+        $wifi = Arr::get($attrs, 'wifiMacAddress');
+        if (is_string($wifi) && $wifi !== '') {
+            return $wifi;
+        }
+
+        $ethernet = Arr::get($attrs, 'ethernetMacAddress');
+        if (is_string($ethernet) && $ethernet !== '') {
+            return $ethernet;
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Parse an MDM timestamp string to Carbon, falling back to the
+     * caller-supplied $fallback when the value is missing or Carbon
+     * can't parse it.
+     */
+    private static function parseMdmTimestamp(mixed $value, ?Carbon $fallback): ?Carbon
+    {
+        if (! is_string($value) || $value === '') {
+            return $fallback;
+        }
+
+        try {
+            return Carbon::parse($value);
+        } catch (\Throwable) {
+            return $fallback;
+        }
+    }
+
+    /**
+     * Merge MDM detail attributes into the record's existing extras.
+     * The seven detail-only fields (FileVault, firewall, statuses,
+     * storage) always overwrite. The shared extras (MACs, imei, meid)
+     * only overwrite when MDM has a non-empty value, so the orgDevices
+     * value stays as the fallback.
+     *
+     * @param  array<string, mixed>  $extra
+     * @param  array<string, mixed>  $attrs
+     * @return array<string, mixed>
+     */
+    private static function mergeMdmDetailExtras(array $extra, array $attrs): array
+    {
         $extra['abm_mdm_file_vault_enabled'] = Arr::get($attrs, 'isFileVaultEnabled');
         $extra['abm_mdm_firewall_enabled'] = Arr::get($attrs, 'isFirewallEnabled');
         $extra['abm_mdm_device_lock_status'] = Arr::get($attrs, 'deviceLockStatus');
@@ -834,52 +920,21 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         $extra['abm_mdm_storage_total'] = Arr::get($attrs, 'storageTotalCapacity');
         $extra['abm_mdm_storage_free'] = Arr::get($attrs, 'storageFreeCapacity');
 
-        // Prefer MDM values for the shared extras (Wi-Fi/Ethernet MACs
-        // etc.) when the detail endpoint has them. orgDevices values
-        // stay as fallbacks.
-        foreach (['wifiMacAddress' => 'abm_wifi_mac',
+        $sharedMap = [
+            'wifiMacAddress' => 'abm_wifi_mac',
             'bluetoothMacAddress' => 'abm_bluetooth_mac',
             'ethernetMacAddress' => 'abm_ethernet_mac',
             'imei' => 'abm_imei',
             'meid' => 'abm_meid',
-        ] as $mdmKey => $extraKey) {
+        ];
+        foreach ($sharedMap as $mdmKey => $extraKey) {
             $val = Arr::get($attrs, $mdmKey);
             if ($val !== null && $val !== '') {
                 $extra[$extraKey] = $val;
             }
         }
 
-        // MDM's runtime data overrides the orgDevices values for
-        // native slots when populated.
-        $wifiMac = Arr::get($attrs, 'wifiMacAddress');
-        $ethernetMac = Arr::get($attrs, 'ethernetMacAddress');
-        $osVersion = Arr::get($attrs, 'osVersion');
-        $lastCheckIn = Arr::get($attrs, 'lastCheckInDateTime');
-
-        return new HostInventoryRecord(
-            sourceKey: $record->sourceKey,
-            sourceId: $record->sourceId,
-            hostname: $record->hostname,
-            hardwareSerial: $record->hardwareSerial,
-            hardwareModel: $record->hardwareModel,
-            manufacturer: $record->manufacturer,
-            // Prefer Wi-Fi, fall back to Ethernet (desktops without
-            // Wi-Fi), then whatever the orgDevices path set.
-            primaryMac: (is_string($wifiMac) && $wifiMac !== '')
-                ? $wifiMac
-                : ((is_string($ethernetMac) && $ethernetMac !== '') ? $ethernetMac : $record->primaryMac),
-            primaryIp: $record->primaryIp,
-            os: $record->os,
-            osVersion: (is_string($osVersion) && $osVersion !== '') ? $osVersion : $record->osVersion,
-            lastSeen: (is_string($lastCheckIn) && $lastCheckIn !== '')
-                ? \Carbon\Carbon::parse($lastCheckIn)
-                : $record->lastSeen,
-            assetTag: $record->assetTag,
-            assignedUserEmail: $record->assignedUserEmail,
-            assignedUserName: $record->assignedUserName,
-            vendorGroupId: $record->vendorGroupId,
-            extra: $extra,
-        );
+        return $extra;
     }
 
     /**
