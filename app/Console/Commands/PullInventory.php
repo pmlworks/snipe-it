@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\SyncAdapterInstance;
 use App\SyncAdapters\SyncAdapter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class PullInventory extends Command
@@ -111,18 +112,21 @@ class PullInventory extends Command
         $seen = 0;
         $errors = 0;
 
+        Log::channel('sync-adapters')->info("{$slug} sync starting (CLI)");
+
         try {
             foreach ($adapter->pull() as $record) {
                 try {
                     SyncAdapter::syncFromRecord($record);
                     $seen++;
                 } catch (Throwable $e) {
-                    // A single bad record shouldn't take down the run.
-                    // Log the offending host and keep going.
                     $errors++;
                     $sourceId = $record->sourceId;
                     $message = $e->getMessage();
+                    // A single bad record shouldn't take down the run.
+                    // Log the offending host and keep going.
                     $this->warn("Failed to sync host {$sourceId}: {$message}");
+                    Log::channel('sync-adapters')->warning("{$slug} sync: failed to upsert host {$sourceId}: {$message}");
                 }
             }
         } catch (Throwable $e) {
@@ -134,6 +138,9 @@ class PullInventory extends Command
 
             $elapsed = self::formatElapsed($startedAt);
             $this->error("{$slug} {$abortSummary} ({$elapsed})");
+            Log::channel('sync-adapters')->warning("{$slug} sync aborted after {$seen} record(s), {$errors} error(s), elapsed {$elapsed}: {$message}", [
+                'exception' => $e,
+            ]);
             $rows[] = [$slug, 'Aborted', $seen, $errors, $elapsed];
 
             return self::FAILURE;
@@ -149,8 +156,11 @@ class PullInventory extends Command
         $instance->last_sync_result = $result;
         $instance->save();
 
+        $elapsed = self::formatElapsed($startedAt);
+        Log::channel('sync-adapters')->info("{$slug} sync complete: {$seen} record(s) processed, {$errors} error(s), elapsed {$elapsed}");
+
         $status = $errors > 0 ? 'Errors' : 'OK';
-        $rows[] = [$slug, $status, $seen, $errors, self::formatElapsed($startedAt)];
+        $rows[] = [$slug, $status, $seen, $errors, $elapsed];
 
         return $errors > 0 ? self::FAILURE : self::SUCCESS;
     }

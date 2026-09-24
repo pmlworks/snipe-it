@@ -272,6 +272,45 @@ class AppleBusinessManagerAdapterTest extends TestCase
         $this->assertSame('[]', $stored);
     }
 
+    public function test_saveconfig_persists_widget_picker_row_without_click_add()
+    {
+        // The mapping-picker widget's picker row submits its
+        // unfinished pair under <slug>_mapping_pending[key|value]
+        // and its direction under <slug>_direction_pending[value] so
+        // admins can save the form without clicking + first.
+        $this->configuredAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'abm')->firstOrFail();
+
+        $adapter = new AppleBusinessManagerAdapter($instance->fresh());
+        $adapter->saveConfig(\Illuminate\Http\Request::create('/', 'POST', [
+            'abm_url' => '',
+            'abm_mapping_pending' => ['key' => 'abm_product_family', 'value' => 'custom:7'],
+            'abm_direction_pending' => ['value' => 'pull'],
+        ]));
+
+        $this->assertSame('custom:7', SyncAdapterConfig::get($instance->id, 'mapping.abm_product_family'));
+        $this->assertSame('pull', SyncAdapterConfig::get($instance->id, 'direction.abm_product_family'));
+    }
+
+    public function test_saveconfig_skips_incomplete_mapping_picker_row()
+    {
+        // If the admin picks a source but hasn't chosen a target, the
+        // pair is unfinished. Save shouldn't persist a half-mapping
+        // and shouldn't strand a direction.
+        $this->configuredAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'abm')->firstOrFail();
+
+        $adapter = new AppleBusinessManagerAdapter($instance->fresh());
+        $adapter->saveConfig(\Illuminate\Http\Request::create('/', 'POST', [
+            'abm_url' => '',
+            'abm_mapping_pending' => ['key' => 'abm_product_family', 'value' => ''],
+            'abm_direction_pending' => ['value' => 'pull'],
+        ]));
+
+        $this->assertNull(SyncAdapterConfig::get($instance->id, 'mapping.abm_product_family'));
+        $this->assertNull(SyncAdapterConfig::get($instance->id, 'direction.abm_product_family'));
+    }
+
     public function test_survives_mdm_server_map_failure_and_still_yields_records()
     {
         $adapter = $this->configuredAdapter();
