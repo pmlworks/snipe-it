@@ -199,4 +199,53 @@ class ImageUploadRequestFailurePathsTest extends TestCase
             'On a successful new write, the new file lands at the expected path.',
         );
     }
+
+    /**
+     * Regression coverage for #19670: handleImages must not call
+     * makeDirectory() on the public disk.
+     */
+    public function test_handle_images_does_not_call_make_directory_on_image_less_save(): void
+    {
+        Storage::fake('public');
+        $publicDisk = Storage::disk('public');
+
+        $manufacturer = Manufacturer::factory()->create(['image' => null]);
+
+        $proxy = Mockery::mock($publicDisk);
+        $proxy->shouldReceive('makeDirectory')->never();
+        $proxy->shouldReceive('exists')->andReturnUsing(fn (...$a) => $publicDisk->exists(...$a));
+        $proxy->shouldReceive('put')->andReturnUsing(fn (...$a) => $publicDisk->put(...$a));
+        $proxy->shouldReceive('delete')->andReturnUsing(fn (...$a) => $publicDisk->delete(...$a));
+        Storage::shouldReceive('disk')->with('public')->andReturn($proxy);
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->put(route('manufacturers.update', $manufacturer), [
+                'name' => $manufacturer->name.' updated',
+            ])
+            ->assertStatus(302)
+            ->assertSessionHasNoErrors();
+    }
+
+    public function test_handle_images_does_not_call_make_directory_when_image_is_uploaded(): void
+    {
+        Storage::fake('public');
+        $publicDisk = Storage::disk('public');
+
+        $manufacturer = Manufacturer::factory()->create(['image' => null]);
+
+        $proxy = Mockery::mock($publicDisk);
+        $proxy->shouldReceive('makeDirectory')->never();
+        $proxy->shouldReceive('exists')->andReturnUsing(fn (...$a) => $publicDisk->exists(...$a));
+        $proxy->shouldReceive('put')->andReturnUsing(fn (...$a) => $publicDisk->put(...$a));
+        $proxy->shouldReceive('delete')->andReturnUsing(fn (...$a) => $publicDisk->delete(...$a));
+        Storage::shouldReceive('disk')->with('public')->andReturn($proxy);
+
+        $this->actingAs(User::factory()->superuser()->create())
+            ->put(route('manufacturers.update', $manufacturer), [
+                'name' => $manufacturer->name,
+                'image' => UploadedFile::fake()->image('new.png'),
+            ])
+            ->assertStatus(302)
+            ->assertSessionHasNoErrors();
+    }
 }
