@@ -1913,6 +1913,54 @@ $(function () {
             });
         }, 0);
     }
+    document.addEventListener('keydown', function (e) {
+        if (
+            e.key !== 'Enter' ||
+            !e.target.classList.contains('select2-search__field')
+        ) {
+            return;
+        }
+
+        var $select = $('#assigned_assets_select');
+        var select2 = $select.data('select2');
+
+        if (!select2) {
+            return;
+        }
+
+        // Select2 already has a result ready.
+        // Let its normal Enter handler handle it.
+        if (select2.results.getHighlightedResults().length) {
+            return;
+        }
+
+        // Scanner's Enter arrived before the AJAX result.
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        var attempts = 0;
+
+        var waitForResult = setInterval(function () {
+            attempts++;
+
+            var $highlighted = select2.results.getHighlightedResults();
+
+            if ($highlighted.length) {
+                clearInterval(waitForResult);
+
+                console.log('RESULT READY:', $highlighted.data('data'));
+
+                select2.trigger('results:select');
+
+                return;
+            }
+
+            // Give up after ~2 seconds.
+            if (attempts >= 20) {
+                clearInterval(waitForResult);
+            }
+        }, 100);
+    }, true);
 
     // Hardware bulk edit: clear-radio buttons blank every input of a
     // named radio group so the caller can back out of a picked value.
