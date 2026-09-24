@@ -108,13 +108,16 @@ class ExtraFieldMappingTest extends TestCase
         ]);
     }
 
-    public function test_extra_field_options_include_skip_native_and_custom_targets_for_text_type()
+    public function test_extra_field_options_include_native_and_custom_targets_for_text_type()
     {
         CustomField::factory()->create(['element' => 'text', 'name' => 'Team Assignment']);
 
         $options = MappingTargets::optionsForExtra('text');
 
-        $this->assertArrayHasKey('skip', $options);
+        // No 'skip' target: the mapping-picker widget models
+        // "unmapped" as the extra sitting in the picker's
+        // available list, not as a committed row with target='skip'.
+        $this->assertArrayNotHasKey('skip', $options);
 
         // Text-type extras can route to native asset_tag / model /
         // notes so admins whose vendor stores per-device metadata in
@@ -126,7 +129,7 @@ class ExtraFieldMappingTest extends TestCase
         $this->assertArrayHasKey('native:notes', $options);
         $this->assertArrayHasKey('native:purchase_date', $options);
         $this->assertArrayHasKey('native:order_number', $options);
-        $nativeTargets = ['skip', 'native:asset_tag', 'native:model', 'native:notes', 'native:purchase_date', 'native:order_number'];
+        $nativeTargets = ['native:asset_tag', 'native:model', 'native:notes', 'native:purchase_date', 'native:order_number'];
         foreach (array_keys($options) as $target) {
             if (in_array($target, $nativeTargets, true)) {
                 continue;
@@ -142,8 +145,9 @@ class ExtraFieldMappingTest extends TestCase
         $options = MappingTargets::optionsForExtra('boolean');
 
         // Boolean-typed extras stay custom-fields-only because no
-        // native asset column carries a boolean semantic.
-        $this->assertArrayHasKey('skip', $options);
+        // native asset column carries a boolean semantic. Also no
+        // 'skip' entry: unmap via ×, not via a stored 'skip' target.
+        $this->assertArrayNotHasKey('skip', $options);
         $this->assertArrayNotHasKey('native:asset_tag', $options);
         $this->assertArrayNotHasKey('native:model', $options);
         $this->assertArrayNotHasKey('native:notes', $options);

@@ -84,15 +84,10 @@ class KaseyaVsa10CustomFieldsTest extends TestCase
         $this->assertArrayHasKey('native:model', $adapterExtras);
         $this->assertArrayHasKey('native:notes', $adapterExtras);
 
-        // Admin-defined extras drop them. Skip + custom fields only.
         $this->assertArrayNotHasKey('native:asset_tag', $adminExtras);
         $this->assertArrayNotHasKey('native:model', $adminExtras);
         $this->assertArrayNotHasKey('native:notes', $adminExtras);
-        $this->assertArrayHasKey('skip', $adminExtras);
         foreach (array_keys($adminExtras) as $target) {
-            if ($target === 'skip') {
-                continue;
-            }
             $this->assertStringStartsWith('custom:', $target);
         }
     }
