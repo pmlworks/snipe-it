@@ -11,6 +11,8 @@ use App\SyncAdapters\CustomHttp\CustomHttpAdapter;
 use App\SyncAdapters\PushableAdapter;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Mockery;
 use Tests\TestCase;
 
 class CustomHttpAdapterTest extends TestCase
@@ -161,14 +163,22 @@ class CustomHttpAdapterTest extends TestCase
         Http::assertSent(fn ($request) => ! $request->hasHeader('Authorization'));
     }
 
-    public function test_extras_definition_emits_extra_fields_and_populates_them()
+    public function test_custom_field_destinations_in_field_paths_route_values_through_extras()
     {
+        // Under the unified Vendor Response Paths widget, admins pick
+        // a custom-field destination directly in the field-map picker
+        // and give it a dot-path. field_paths JSON stores the pair,
+        // extraFields() derives from those custom: entries, and the
+        // adapter's saveConfig hook writes mapping.<custom:X> = <same>
+        // so the framework routes each extracted value.
         $adapter = $this->configuredAdapter([
             'field_source_id' => 'id',
-            'extras_definition' => json_encode([
-                ['key' => 'vendor_tag', 'label' => 'Vendor Asset Tag', 'path' => 'tags.asset_tag'],
-                ['key' => 'vendor_room', 'label' => 'Vendor Room', 'path' => 'location.room'],
+            'field_paths' => json_encode([
+                'custom:5' => 'tags.asset_tag',
+                'custom:6' => 'location.room',
             ]),
+            'mapping.custom:5' => 'custom:5',
+            'mapping.custom:6' => 'custom:6',
         ]);
 
         Http::fake([
@@ -181,16 +191,171 @@ class CustomHttpAdapterTest extends TestCase
             ]),
         ]);
 
-        // Both metadata AND value must round-trip through extraFields()
-        // and normalize().
         $this->assertSame(
-            ['vendor_tag' => ['label' => 'Vendor Asset Tag'], 'vendor_room' => ['label' => 'Vendor Room']],
+            [
+                'custom:5' => ['label' => 'custom:5', 'admin_defined' => true],
+                'custom:6' => ['label' => 'custom:6', 'admin_defined' => true],
+            ],
             $adapter->extraFields(),
         );
 
         $records = iterator_to_array($adapter->pull());
-        $this->assertSame('ACME-123', $records[0]->extra['vendor_tag']);
-        $this->assertSame('Server Room A', $records[0]->extra['vendor_room']);
+        $this->assertSame('ACME-123', $records[0]->extra['custom:5']);
+        $this->assertSame('Server Room A', $records[0]->extra['custom:6']);
+    }
+
+    public function test_saveconfig_persists_widget_picker_row_without_click_add()
+    {
+        $adapter = $this->configuredAdapter([]);
+        $slug = $adapter->name();
+        $instance = SyncAdapterInstance::where('slug', $slug)->firstOrFail();
+
+        $adapter->saveConfig(\Illuminate\Http\Request::create('/', 'POST', [
+            $slug . '_url' => 'https://vendor.example/api',
+            $slug . '_source_id_path' => 'id',
+            $slug . '_field_paths' => [],
+            $slug . '_field_paths_pending' => ['key' => 'hostname', 'value' => 'device.name'],
+            $slug . '_direction_pending' => ['value' => 'push'],
+        ]));
+
+        $stored = json_decode(SyncAdapterConfig::get($instance->id, 'field_paths'), true);
+        $this->assertSame(['hostname' => 'device.name'], $stored);
+        $this->assertSame('push', SyncAdapterConfig::get($instance->id, 'direction.hostname'));
+    }
+
+    public function test_saveconfig_persists_picker_row_for_custom_field_destination()
+    {
+        // Same save-without-click path, but the picker row targets a
+        // custom-field destination. The unified widget lets admins
+        // choose custom:X directly, and CustomHttp's saveConfig
+        // override writes the self-routing mapping so the framework
+        // routes the extracted value at sync time.
+        $adapter = $this->configuredAdapter([]);
+        $slug = $adapter->name();
+        $instance = SyncAdapterInstance::where('slug', $slug)->firstOrFail();
+
+        $adapter->saveConfig(\Illuminate\Http\Request::create('/', 'POST', [
+            $slug . '_url' => 'https://vendor.example/api',
+            $slug . '_source_id_path' => 'id',
+            $slug . '_field_paths' => [],
+            $slug . '_field_paths_pending' => ['key' => 'custom:9', 'value' => 'location.room'],
+            $slug . '_direction_pending' => ['value' => 'pull'],
+        ]));
+
+        $stored = json_decode(SyncAdapterConfig::get($instance->id, 'field_paths'), true);
+        $this->assertSame(['custom:9' => 'location.room'], $stored);
+        $this->assertSame('custom:9', SyncAdapterConfig::get($instance->id, 'mapping.custom:9'));
+        $this->assertSame('pull', SyncAdapterConfig::get($instance->id, 'direction.custom:9'));
+    }
+
+    public function test_saveconfig_skips_incomplete_picker_row()
+    {
+        // Half-filled picker rows (destination picked but path empty,
+        // or vice versa) submit without both values. Base save drops
+        // them so the admin doesn't get a mystery blank entry after
+        // hitting Save on an unfinished form.
+        $adapter = $this->configuredAdapter([]);
+        $slug = $adapter->name();
+        $instance = SyncAdapterInstance::where('slug', $slug)->firstOrFail();
+
+        $adapter->saveConfig(\Illuminate\Http\Request::create('/', 'POST', [
+            $slug . '_url' => 'https://vendor.example/api',
+            $slug . '_source_id_path' => 'id',
+            $slug . '_field_paths' => [],
+            $slug . '_field_paths_pending' => ['key' => 'hostname', 'value' => ''],
+            $slug . '_direction_pending' => ['value' => 'push'],
+        ]));
+
+        $stored = json_decode(SyncAdapterConfig::get($instance->id, 'field_paths'), true);
+        $this->assertSame([], $stored);
+        $this->assertNull(SyncAdapterConfig::get($instance->id, 'direction.hostname'));
+    }
+
+    public function test_pull_warns_when_configured_path_returns_null_on_every_record()
+    {
+        // A dot-path that returns null on every record is almost
+        // always a typo or a stale/renamed vendor
+        // field.
+        $adapter = $this->configuredAdapter([
+            'field_source_id' => 'id',
+            'field_hostname' => 'name',
+            'field_serial' => 'blargh.not_a_real_field',
+        ]);
+
+        Http::fake([
+            'vendor.example/*' => Http::response([
+                ['id' => 'dev-1', 'name' => 'host-a'],
+                ['id' => 'dev-2', 'name' => 'host-b'],
+            ]),
+        ]);
+
+        $captured = [];
+        $channel = Mockery::mock();
+        $channel->shouldReceive('warning')->andReturnUsing(function ($msg) use (&$captured) {
+            $captured[] = $msg;
+        });
+        $channel->shouldReceive('info');
+        Log::shouldReceive('channel')->with('sync-adapters')->andReturn($channel);
+
+        iterator_to_array($adapter->pull());
+
+        $matches = array_filter($captured, fn($m) => str_contains($m, 'blargh.not_a_real_field') && str_contains($m, 'serial'));
+        $this->assertNotEmpty($matches, 'Expected an always-null summary warning naming the offending path. Captured: ' . json_encode($captured));
+    }
+
+    public function test_pull_does_not_warn_when_path_resolves_on_at_least_one_record()
+    {
+        // A path that misses on some records but hits on others is
+        // a normal partial-field scenario (optional vendor data), not
+        // a config error. No warning should fire.
+        $adapter = $this->configuredAdapter([
+            'field_source_id' => 'id',
+            'field_hostname' => 'name',
+        ]);
+
+        Http::fake([
+            'vendor.example/*' => Http::response([
+                ['id' => 'dev-1', 'name' => 'host-a'],
+                ['id' => 'dev-2'],
+            ]),
+        ]);
+
+        $captured = [];
+        $channel = Mockery::mock();
+        $channel->shouldReceive('warning')->andReturnUsing(function ($msg) use (&$captured) {
+            $captured[] = $msg;
+        });
+        $channel->shouldReceive('info');
+        Log::shouldReceive('channel')->with('sync-adapters')->andReturn($channel);
+
+        iterator_to_array($adapter->pull());
+
+        $this->assertEmpty($captured, 'No warning expected when the path resolves on at least one record. Captured: ' . json_encode($captured));
+    }
+
+    public function test_pull_does_not_warn_on_empty_vendor_response()
+    {
+        // With zero records processed we can't tell whether a path
+        // is a typo or the vendor just returned nothing, so the
+        // warning shouldn't fire.
+        $adapter = $this->configuredAdapter([
+            'field_source_id' => 'id',
+            'field_hostname' => 'blargh.not_a_valid_field',
+        ]);
+
+        Http::fake(['vendor.example/*' => Http::response([])]);
+
+        $captured = [];
+        $channel = Mockery::mock();
+        $channel->shouldReceive('warning')->andReturnUsing(function ($msg) use (&$captured) {
+            $captured[] = $msg;
+        });
+        $channel->shouldReceive('info');
+        Log::shouldReceive('channel')->with('sync-adapters')->andReturn($channel);
+
+        iterator_to_array($adapter->pull());
+
+        $this->assertEmpty($captured);
     }
 
     public function test_missing_dot_path_leaves_field_null_without_throwing()
@@ -419,16 +584,6 @@ class CustomHttpAdapterTest extends TestCase
         iterator_to_array($adapter->pull());
     }
 
-    public function test_malformed_extras_json_is_ignored()
-    {
-        $adapter = $this->configuredAdapter([
-            'field_source_id' => 'id',
-            'extras_definition' => 'not valid json {{{',
-        ]);
-
-        $this->assertSame([], $adapter->extraFields());
-    }
-
     public function test_html_escaped_string_values_are_decoded_on_ingest()
     {
         // Some APIs (Snipe-IT's own /api/v1/hardware is one) run
@@ -438,11 +593,12 @@ class CustomHttpAdapterTest extends TestCase
         // round-tripping the entity into the asset table.
         $adapter = $this->configuredAdapter([
             'field_source_id' => 'id',
-            'field_hostname' => 'name',
-            'field_model' => 'model',
-            'extras_definition' => json_encode([
-                ['key' => 'vendor_notes', 'label' => 'Vendor Notes', 'path' => 'notes'],
+            'field_paths' => json_encode([
+                'hostname' => 'name',
+                'model' => 'model',
+                'custom:5' => 'notes',
             ]),
+            'mapping.custom:5' => 'custom:5',
         ]);
 
         Http::fake([
@@ -460,7 +616,7 @@ class CustomHttpAdapterTest extends TestCase
 
         $this->assertSame('wksn & friends', $records[0]->hostname);
         $this->assertSame("MacBook Pro 13\" '16", $records[0]->hardwareModel);
-        $this->assertSame('Ampersand: A & B', $records[0]->extra['vendor_notes']);
+        $this->assertSame('Ampersand: A & B', $records[0]->extra['custom:5']);
     }
 
     public function test_last_seen_string_parses_to_carbon()
@@ -709,13 +865,7 @@ class CustomHttpAdapterTest extends TestCase
         // Anything not in this set is stored plaintext.
         $secretKeys = ['bearer_token', 'basic_password', 'api_key_value'];
 
-        // Shim: field-map storage collapsed 12 individual field_*
-        // credential keys into a single field_paths JSON blob, and
-        // source_id was hoisted to its own standalone credential
-        // (source_id_path) to keep the required identifier visible
-        // rather than buried in the picker. Tests pre-date those
-        // refactors and still write the old shape for readability,
-        // so translate here.
+
         if (array_key_exists('field_source_id', $config)) {
             SyncAdapterConfig::put($instance->id, 'source_id_path', (string) $config['field_source_id']);
             unset($config['field_source_id']);
@@ -742,10 +892,7 @@ class CustomHttpAdapterTest extends TestCase
             }
         }
         // Shim: canPush() now gates on push_method rather than
-        // push_path. Existing tests set push_path without specifying
-        // a method (default was PATCH before, disabled after). If a
-        // test provided push_path without a push_method, default to
-        // PATCH so those assertions keep passing without rewrites.
+        // push_path.
         if (array_key_exists('push_path', $config) && ! array_key_exists('push_method', $config)) {
             $config['push_method'] = 'PATCH';
         }

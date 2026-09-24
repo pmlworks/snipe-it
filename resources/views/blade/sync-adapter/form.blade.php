@@ -286,40 +286,6 @@
         />
     </fieldset>
 
-    {{-- Any type: field_map entries from the adapter's credential
-         schema render here in their own fieldset. Keeps them
-         grouped alongside the standard mapping controls below and
-         out of the credential-input section above, since they
-         define WHERE fields live in the vendor payload rather than
-         auth credentials. --}}
-    @foreach ($adapter->settingsSchema() as $fmField)
-        @if (($fmField['type'] ?? '') === 'field_map')
-            @php
-                $fmName = $slug.'_'.$fmField['key'];
-                $fmStored = $adapter->credentialForDisplay($fmField['key']);
-                $fmMap = is_string($fmStored) && $fmStored !== ''
-                    ? (json_decode($fmStored, true) ?: [])
-                    : [];
-                $fmMap = old($fmName, is_array($fmMap) ? $fmMap : []);
-                $fmMap = is_array($fmMap) ? $fmMap : [];
-            @endphp
-            <fieldset>
-                <x-form.legend icon="tip" help_text="{!! $fmField['help'] ?? '' !!}">
-                    {{ $fmField['label'] }}
-                </x-form.legend>
-                <div class="form-group">
-                    <div class="col-md-8 col-md-offset-3">
-                        <x-input.field-map
-                            :name="$fmName"
-                            :options="$fmField['options'] ?? []"
-                            :stored="$fmMap"
-                        />
-                    </div>
-                </div>
-            </fieldset>
-        @endif
-    @endforeach
-
     {{-- Push dry-run only shows for adapters that actually support
          push. Turning it on makes push() log the payload instead of
          sending, so admins can verify their config end-to-end against
@@ -432,84 +398,90 @@
             </x-form.row>
         @endforeach
 
-        @php
-            $extraFields = $adapter->extraFields();
-        @endphp
+    </fieldset>
 
-        @if (! empty($extraFields))
+    @php
+        $extraFields = $adapter->extraFields();
+        // Precompute entries for the mapping-picker widget (extras
+        // section on adapters that declare adapter-owned extras).
+        // Entry shapes supported:
+        //   'literal label string'
+        //   ['label' => 'literal string', 'type' => 'text|boolean', 'admin_defined' => bool]
+        //   ['label_key' => 'admin/settings/sync_adapters.extra_foo', 'type' => ..., 'admin_defined' => ...]
+        // label_key entries auto-resolve through trans() with
+        // ':vendor' bound to the adapter's typeLabel so per-vendor
+        // labels share one translation string.
+        $extraEntries = [];
+        foreach ($extraFields as $extraKey => $extraEntry) {
+            if (is_array($extraEntry) && isset($extraEntry['label_key'])) {
+                $extraLabel = trans($extraEntry['label_key'], ['vendor' => $adapter::typeLabel()]);
+            } elseif (is_array($extraEntry)) {
+                $extraLabel = $extraEntry['label'] ?? $extraKey;
+            } else {
+                $extraLabel = $extraEntry;
+            }
+            $extraType = (is_array($extraEntry) && isset($extraEntry['type'])) ? $extraEntry['type'] : 'text';
+            $extraAdminDefined = is_array($extraEntry) && ! empty($extraEntry['admin_defined']);
+            $extraEntries[$extraKey] = [
+                'label' => $extraLabel,
+                'target_options' => \App\SyncAdapters\MappingTargets::optionsForExtra($extraType, $extraAdminDefined),
+                'stored_target' => $adapter->mappingFor($extraKey),
+                'stored_direction' => $adapter->directionFor($extraKey),
+            ];
+        }
+    @endphp
+
+    @foreach ($adapter->settingsSchema() as $fmField)
+        @if (($fmField['type'] ?? '') === 'field_map')
+            @php
+                $fmName = $slug.'_'.$fmField['key'];
+                $fmStored = $adapter->credentialForDisplay($fmField['key']);
+                $fmMap = is_string($fmStored) && $fmStored !== ''
+                    ? (json_decode($fmStored, true) ?: [])
+                    : [];
+                $fmMap = old($fmName, is_array($fmMap) ? $fmMap : []);
+                $fmMap = is_array($fmMap) ? $fmMap : [];
+                // Load stored per-row direction values so the widget's
+                // dropdowns pre-select the correct value. Framework's
+                // direction.<key> storage is the single source of
+                // truth, shared with the standard mapping loop above.
+                $fmDirections = [];
+                foreach (array_keys($fmMap) as $fmKey) {
+                    $fmDirections[$fmKey] = $adapter->directionFor($fmKey);
+                }
+            @endphp
+            <fieldset>
+                <x-form.legend icon="tip" help_text="{!! $fmField['help'] ?? '' !!}">
+                    {{ $fmField['label'] }}
+                </x-form.legend>
+                <x-input.field-map
+                    :name="$fmName"
+                    :options="$fmField['options'] ?? []"
+                    :stored="$fmMap"
+                    :direction_name="$supportsPush ? $slug . '_direction' : null"
+                    :direction_options="$supportsPush ? $directionOptions : []"
+                    :stored_directions="$fmDirections"
+                />
+            </fieldset>
+        @endif
+    @endforeach
+
+    @if (! empty($extraFields))
+        <fieldset>
             <x-form.legend icon="tip" help_text="{{ trans('admin/settings/sync_adapters.extra_fields_section_intro') }}">
                 {{ trans('admin/settings/sync_adapters.extra_fields_section_title', ['type' => $adapter::typeLabel()]) }}
             </x-form.legend>
 
-            @foreach ($extraFields as $extraKey => $extraEntry)
-                @php
-                    // Entry shapes accepted:
-                    //   'literal label string'
-                    //   ['label' => 'literal string', 'type' => 'text|boolean', 'admin_defined' => true|false]
-                    //   ['label_key' => 'admin/settings/sync_adapters.extra_foo', 'type' => ..., 'admin_defined' => ...]
-                    // label_key entries auto-resolve through trans()
-                    // with ':vendor' bound to the adapter's typeLabel
-                    // so per-vendor labels ("Fleet Team", "Jamf UDID")
-                    // share one translation string.
-                    if (is_array($extraEntry) && isset($extraEntry['label_key'])) {
-                        $extraLabel = trans($extraEntry['label_key'], ['vendor' => $adapter::typeLabel()]);
-                    } elseif (is_array($extraEntry)) {
-                        $extraLabel = $extraEntry['label'] ?? $extraKey;
-                    } else {
-                        $extraLabel = $extraEntry;
-                    }
-                    $extraType = (is_array($extraEntry) && isset($extraEntry['type'])) ? $extraEntry['type'] : 'text';
-                    $extraAdminDefined = is_array($extraEntry) && ! empty($extraEntry['admin_defined']);
-                @endphp
-                <x-form.row
-                    :label="$extraLabel"
-                    :name="$slug . '_mapping_' . $extraKey"
-                    input_div_class="col-md-8"
-                >
-                    <x-slot:input>
-                        @if ($supportsPush)
-                            {{-- Same two-column shape as the standard
-                                 fields above so admins can pick a
-                                 target column AND a direction per
-                                 extra. Framework already respects
-                                 directionFor() on extras via
-                                 pushDirectedFields(), but the UI was
-                                 only exposing the target dropdown. --}}
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <x-input.select
-                                        :name="$slug . '_mapping[' . $extraKey . ']'"
-                                        :options="\App\SyncAdapters\MappingTargets::optionsForExtra($extraType, $extraAdminDefined)"
-                                        :selected="$adapter->mappingFor($extraKey)"
-                                        style="width: 100%"
-                                        :disabled="$locked"
-                                    />
-                                </div>
-                                <div class="col-md-4">
-                                    <x-input.select
-                                        :name="$slug . '_direction[' . $extraKey . ']'"
-                                        :options="$directionOptions"
-                                        :selected="$adapter->directionFor($extraKey)"
-                                        style="width: 100%"
-                                        data-minimum-results-for-search="Infinity"
-                                        :disabled="$locked"
-                                    />
-                                </div>
-                            </div>
-                        @else
-                            <x-input.select
-                                :name="$slug . '_mapping[' . $extraKey . ']'"
-                                :options="\App\SyncAdapters\MappingTargets::optionsForExtra($extraType, $extraAdminDefined)"
-                                :selected="$adapter->mappingFor($extraKey)"
-                                style="width: 100%"
-                                :disabled="$locked"
-                            />
-                        @endif
-                    </x-slot:input>
-                </x-form.row>
-            @endforeach
-        @endif
-    </fieldset>
+            <x-input.mapping-picker
+                :name="$slug . '_mapping'"
+                :direction_name="$supportsPush ? $slug . '_direction' : null"
+                :entries="$extraEntries"
+                :direction_options="$directionOptions"
+                :supports_push="$supportsPush"
+                :locked="$locked"
+            />
+        </fieldset>
+    @endif
 
     {{-- Composed notes fieldset. Renders a multi-field notes blob
          from Snipe-IT (asset_tag + status + assigned user + custom

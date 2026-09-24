@@ -680,7 +680,7 @@ class SettingsController extends Controller
             }
         }
 
-        if (!$wasLabel2Enabled && $request->boolean('label2_enable')) {
+        if (! $wasLabel2Enabled && $request->boolean('label2_enable')) {
             $setting->label2_title = $setting->qr_text;
         }
 
@@ -1099,6 +1099,9 @@ class SettingsController extends Controller
 
         $seen = 0;
         $errors = 0;
+        $startedAt = microtime(true);
+
+        Log::channel('sync-adapters')->info("{$instance->slug} sync starting (UI)");
 
         try {
             foreach ($adapter->pull() as $record) {
@@ -1107,7 +1110,7 @@ class SettingsController extends Controller
                     $seen++;
                 } catch (\Throwable $e) {
                     $errors++;
-                    \Log::channel('sync-adapters')->warning(sprintf(
+                    Log::channel('sync-adapters')->warning(sprintf(
                         '%s sync: failed to upsert host %s: %s',
                         $instance->slug,
                         $record->sourceId,
@@ -1124,7 +1127,7 @@ class SettingsController extends Controller
             // message on 4xx/5xx, and internal error pages regularly
             // contain sensitive info we don't want to bounce into the
             // admin's browser.
-            \Log::channel('sync-adapters')->warning(sprintf('%s sync aborted: %s', $instance->slug, $e->getMessage()), [
+            Log::channel('sync-adapters')->warning(sprintf('%s sync aborted: %s', $instance->slug, $e->getMessage()), [
                 'exception' => $e,
             ]);
 
@@ -1146,6 +1149,9 @@ class SettingsController extends Controller
         $instance->last_synced_at = now();
         $instance->last_sync_result = $result;
         $instance->save();
+
+        $elapsed = number_format(microtime(true) - $startedAt, 1);
+        Log::channel('sync-adapters')->info("{$instance->slug} sync complete: {$seen} record(s) processed, {$errors} error(s), elapsed {$elapsed}s");
 
         //   at least one seen, no errors -> success (green)
         //   at least one seen, some errors -> warning (orange, admin should check log)
@@ -1243,7 +1249,7 @@ class SettingsController extends Controller
                                     ? mb_substr($body, 0, 2048).'…'
                                     : $body;
                             }
-                            \Log::channel('sync-adapters')->warning(sprintf(
+                            Log::channel('sync-adapters')->warning(sprintf(
                                 '%s push: asset %d failed: %s',
                                 $row->source,
                                 $asset->id,
@@ -1253,7 +1259,7 @@ class SettingsController extends Controller
                     }
                 });
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(
+            Log::channel('sync-adapters')->warning(
                 sprintf('%s push aborted: %s', $instance->slug, $e->getMessage()),
                 ['exception' => $e],
             );
@@ -1464,7 +1470,7 @@ class SettingsController extends Controller
         try {
             $groups = $adapter->fetchGroups();
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(
+            Log::channel('sync-adapters')->warning(
                 sprintf('%s refresh-groups aborted: %s', $instance->slug, $e->getMessage()),
                 ['exception' => $e],
             );
@@ -1515,7 +1521,7 @@ class SettingsController extends Controller
         try {
             $fields = $adapter->fetchVendorCustomFields();
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(
+            Log::channel('sync-adapters')->warning(
                 sprintf('%s refresh-custom-fields aborted: %s', $instance->slug, $e->getMessage()),
                 ['exception' => $e],
             );

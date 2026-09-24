@@ -7,6 +7,7 @@ use App\SyncAdapters\HostInventoryRecord;
 use App\SyncAdapters\SyncAdapter;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Apple Business Manager (ABM) / Apple School Manager (ASM) adapter.
@@ -358,7 +359,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         try {
             $deviceToServer = $client->deviceToMdmServerMap();
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s mdm-server map fetch failed: %s',
                 $this->name(),
                 $e->getMessage(),
@@ -391,7 +392,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
                 }
             }
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s mdmDevices list fetch failed: %s',
                 $this->name(),
                 $e->getMessage(),
@@ -472,7 +473,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             : $record->hardwareModel;
 
         if ($modelName === null || $modelName === '') {
-            \Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s image skip for device %s: no model name resolvable (hardwareModel and abm_model_marketing_name both blank)',
                 $this->name(),
                 $record->sourceId,
@@ -488,7 +489,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
 
         $productType = $record->extra['abm_product_type'] ?? null;
         if (! is_string($productType) || $productType === '') {
-            \Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s image skip for model "%s": ABM did not return a productType, nothing to look up on appledb.dev',
                 $this->name(),
                 $modelName,
@@ -502,7 +503,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             ->first();
 
         if ($existing !== null && ! empty($existing->image)) {
-            \Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s image skip for model "%s": model already has an image (%s)',
                 $this->name(),
                 $modelName,
@@ -515,7 +516,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         $color = $record->extra['abm_color'] ?? null;
         $filename = AppleDBImageFetcher::fetch($productType, is_string($color) ? $color : null);
         if ($filename === null) {
-            \Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s image skip for model "%s" (productType=%s): appledb.dev returned no usable image',
                 $this->name(),
                 $modelName,
@@ -533,7 +534,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
             // models/ by the fetcher, so the next sync will find the
             // model row and only need to set model.image (no
             // re-download).
-            \Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s image staged for model "%s" (productType=%s, file=%s): AssetModel row not yet created, image will be assigned on the next sync',
                 $this->name(),
                 $modelName,
@@ -547,7 +548,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         $existing->image = $filename;
         $existing->save();
 
-        \Log::channel('sync-adapters')->info(sprintf(
+        Log::channel('sync-adapters')->info(sprintf(
             '%s image assigned to model "%s" (productType=%s, file=%s)',
             $this->name(),
             $modelName,
@@ -667,7 +668,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         try {
             $coverages = $client->deviceAppleCareCoverage($record->sourceId);
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s applecare fetch failed for device %s: %s',
                 $this->name(),
                 $record->sourceId,
@@ -724,7 +725,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         try {
             $status = $client->deviceActivationLockStatus($record->sourceId);
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s activation lock fetch failed for device %s: %s',
                 $this->name(),
                 $record->sourceId,
@@ -810,7 +811,7 @@ class AppleBusinessManagerAdapter extends SyncAdapter
         try {
             $detail = $client->mdmDeviceDetails($record->hardwareSerial);
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s mdmDevice detail fetch failed for device %s: %s',
                 $this->name(),
                 $record->sourceId,

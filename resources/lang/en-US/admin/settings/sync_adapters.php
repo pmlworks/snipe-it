@@ -209,13 +209,13 @@ return [
     'custom_pagination_page_start_help' => 'The number to use for the first page. Defaults to <code>1</code>. Set to <code>0</code> for APIs that number pages from zero.',
     'custom_pagination_next_path_help' => 'Dot-path into the response body pointing at the absolute URL of the next page, e.g. <code>links.next</code> or <code>meta.next_page_url</code>. When the path resolves to blank or missing, pagination stops.',
     'custom_field_paths_label' => 'Vendor Response Paths',
-    'custom_field_paths_help' => 'This section tells the adapter WHERE to find each field in your vendor\'s JSON response. Pick a Snipe-IT field, type the dot-path where your API returns that value in one record (e.g. <code>hardware.serial</code>), then click Add. Which Snipe-IT column each value is synces to, and whether it flows pull / push / both, is configured in the field-mapping section further down.',
+    'custom_field_paths_help' => 'Map each Snipe-IT destination (standard field, custom field, or native column) to the dot-path where its value lives inside one record of your vendor\'s JSON response. Pick a destination, enter its dot-path (e.g. <code>hardware.serial</code>), pick a direction (pull / push / both), then Add.',
     'field_map_column_field' => 'Snipe-IT Field',
     'field_map_column_path' => 'Vendor Dot-Path',
+    'field_map_column_direction' => 'Direction',
     'field_map_empty' => 'No fields mapped yet.',
     'field_map_pick_field' => 'Pick a field',
     'field_map_new_path' => 'Dot-path (e.g. hardware.serial)',
-    'custom_extras_definition_help' => 'Optional. JSON array declaring additional vendor fields you want available in the mapping table below. Format: <code>[{"key": "vendor_field", "label": "Human Label", "path": "dot.path.to.value"}]</code>. Each entry appears in the extras list where you can route it to a custom field or a native column.',
     'custom_push_method_help' => 'HTTP method the adapter uses when pushing updates back to your API. Defaults to <code>PATCH</code>.',
     'custom_push_path_help' => 'Path appended to the Base URL when pushing. Supports the <code>{external_id}</code> placeholder, which is replaced with the vendor-side device id recorded during the last pull for each asset. Leave blank to hit the Base URL directly (useful when your API accepts the id in the request body instead of the URL). To disable push entirely, set Push HTTP Method to <code>Disabled</code>.',
     'custom_push_notes_target_help' => 'Optional. Dot-path in the outgoing payload where the composed Push Notes template value should be synced to, e.g. <code>metadata.notes</code>. Leave blank if you are not using composed notes.',
@@ -227,15 +227,23 @@ return [
     'custom_section_pull_help' => 'Where the adapter fetches records from and how it locates them inside the JSON response.',
     'custom_section_pagination_title' => 'Pagination',
     'custom_section_pagination_help' => 'How the adapter walks past the first page of results. Choose <code>None</code> for single-page endpoints.',
-    'custom_section_extras_title' => 'Custom Extras',
-    'custom_section_extras_help' => 'Additional vendor fields not covered by the standard Snipe-IT mapping. Configuration for each extra field is done in the mapping section further down.',
     'custom_section_push_title' => 'Push Endpoint',
     'custom_section_push_help' => 'How the adapter writes updates back to your API. Set Push HTTP Method to <code>Disabled</code> to keep this instance pull-only.',
     'custom_url_prefix_base_url_placeholder' => 'Base URL:',
 
     // Extras / mapping section wrappers
     'extra_fields_section_title' => ':type-specific fields',
-    'extra_fields_section_intro' => 'Additional vendor fields that don\'t have a corresponding Snipe-IT field. These can be mapped to custom fields or native Snipe-IT columns in the field-mapping section below. Boolean values can be mapped to checkbox-type custom fields, text fields can be mapped to text-type custom fields.',
+    'extra_fields_section_intro' => 'Additional vendor fields that don\'t have a corresponding Snipe-IT field. Add a row per vendor field you want to sync and pick wheich field it maps to. Boolean values can be mapped to checkbox-type custom fields, text fields can be mapped to text-type custom fields.',
+
+    // Mapping-picker widget (extras section repeater)
+    'mapping_picker_col_field' => 'Vendor Field',
+    'mapping_picker_col_target' => 'Snipe-IT Target',
+    'mapping_picker_col_direction' => 'Direction',
+    'mapping_picker_empty' => 'No vendor fields mapped yet. Pick a field below to add one.',
+    'mapping_picker_pick_extra' => 'Pick a vendor field',
+    'mapping_picker_pick_target' => 'Pick a target',
+
+    // Admin-defined extras picker (Custom HTTP)
 
     /*
     |--------------------------------------------------------------------------
@@ -322,7 +330,6 @@ return [
     'label_page_query_parameter' => 'Page Query Parameter',
     'label_first_page_number' => 'First Page Number',
     'label_next_page_url_path' => 'Next Page URL Path',
-    'label_custom_extras_json' => 'Custom Extras (JSON)',
     'label_access_token' => 'Access Token',
     'label_tenant_id' => 'Tenant ID',
     'label_tenant_code' => 'Tenant Code',
