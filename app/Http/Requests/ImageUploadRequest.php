@@ -97,10 +97,10 @@ class ImageUploadRequest extends Request
         $path = trim((string) $path, '/');
         $prefix = $path === '' ? '' : $path.'/';
 
-        if ($path !== '' && ! Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->makeDirectory($path);
-        }
-
+        // No pre-emptive makeDirectory. S3 has no directories to
+        // create (flat namespace), and LocalFilesystemAdapter::write()
+        // calls ensureDirectoryExists() before writing, so the parent
+        // is auto-created on the local disk anyway.
         if ($this->offsetGet($form_fieldname) instanceof UploadedFile) {
             $image = $this->offsetGet($form_fieldname);
         } elseif ($this->hasFile($form_fieldname)) {

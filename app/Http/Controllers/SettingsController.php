@@ -35,6 +35,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use League\Csv\EscapeFormula;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
 
 /**
@@ -1569,33 +1570,28 @@ class SettingsController extends Controller
     public function getBackups(): View
     {
         $settings = Setting::getSettings();
-        $path = 'app/backups';
-        $backup_files = Storage::files($path);
+        $backupName = config('backup.backup.name', 'backups');
+        $disk = Storage::disk('backup');
         $files_raw = [];
 
-        if (count($backup_files) > 0) {
-            for ($f = 0; $f < count($backup_files); $f++) {
-
-                // Skip dotfiles like .gitignore and .DS_STORE
-                if ((substr(basename($backup_files[$f]), 0, 1) != '.')) {
-                    // $lastmodified = Carbon::parse(Storage::lastModified($backup_files[$f]))->toDatetimeString();
-                    $file_timestamp = Storage::lastModified($backup_files[$f]);
-
-                    $files_raw[] = [
-                        'filename' => basename($backup_files[$f]),
-                        'filesize' => Setting::fileSizeConvert(Storage::size($backup_files[$f])),
-                        'modified_value' => $file_timestamp,
-                        'modified_display' => date($settings->date_display_format.' '.$settings->time_display_format, $file_timestamp),
-
-                    ];
-                }
+        foreach ($disk->files($backupName) as $file) {
+            // Skip dotfiles like .gitignore and .DS_STORE
+            if (substr(basename($file), 0, 1) === '.') {
+                continue;
             }
+            $file_timestamp = $disk->lastModified($file);
+            $files_raw[] = [
+                'filename' => basename($file),
+                'filesize' => Setting::fileSizeConvert($disk->size($file)),
+                'modified_value' => $file_timestamp,
+                'modified_display' => date($settings->date_display_format . ' ' . $settings->time_display_format, $file_timestamp),
+            ];
         }
 
         // Reverse the array so it lists oldest first
         $files = array_reverse($files_raw);
 
-        return view('settings/backups', compact('path', 'files'));
+        return view('settings/backups', compact('files'));
     }
 
     /**
@@ -1637,9 +1633,15 @@ class SettingsController extends Controller
      *
      * @since [v1.8]
      */
-    public function downloadFile($filename = null): RedirectResponse|BinaryFileResponse
+    public function downloadFile($filename = null): RedirectResponse|BinaryFileResponse|StreamedResponse
     {
-        $path = 'app/backups';
+        // Path inside the backup disk mirrors getBackups(): spatie writes
+        // to <disk root>/<backup.backup.name>/*.zip, and BinFile.name
+        // defaults to 'backups'. StorageHelper::downloader('backup')
+        // dispatches to response()->download on the local driver and to
+        // Storage::disk('backup')->download on the s3 driver, so this
+        // works for both destinations without a driver switch here.
+        $backupName = config('backup.backup.name', 'backups');
         $filename = basename((string) $filename);
 
         if ($this->hasInvalidBackupFilename($filename)) {
@@ -1647,10 +1649,11 @@ class SettingsController extends Controller
         }
 
         if (! config('app.lock_passwords')) {
-            if (Storage::exists($path.'/'.$filename)) {
+            $path = $backupName . '/' . $filename;
+            if (Storage::disk('backup')->exists($path)) {
                 Log::warning('User '.auth()->user()->username.' is attempting to download backup file: '.$filename);
 
-                return StorageHelper::downloader($path.'/'.$filename);
+                return StorageHelper::downloader($path, 'backup');
             } else {
                 // Redirect to the backup page
                 return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.backup.file_not_found'));
@@ -1679,13 +1682,15 @@ class SettingsController extends Controller
         if (config('app.allow_backup_delete') == 'true') {
 
             if (! config('app.lock_passwords')) {
-                $path = 'app/backups';
+                // Same disk + path so S3-destination backup is deletable from the UI.
+                $disk = Storage::disk('backup');
+                $path = config('backup.backup.name', 'backups') . '/' . $filename;
 
-                if (Storage::exists($path.'/'.$filename)) {
+                if ($disk->exists($path)) {
 
                     try {
                         Log::warning('User '.auth()->user()->username.' is attempting to delete backup file: '.$filename);
-                        Storage::delete($path.'/'.$filename);
+                        $disk->delete($path);
 
                         return redirect()->route('settings.backups.index')->with('success', trans('admin/settings/message.backup.file_deleted'));
                     } catch (\Exception $e) {
@@ -1760,135 +1765,189 @@ class SettingsController extends Controller
             return redirect()->route('settings.backups.index')->with('error', trans('general.feature_disabled'));
         }
 
-        $path = 'app/backups';
+        // Path inside the backup disk mirrors getBackups / downloadFile /
+        // deleteFile. spatie writes to <disk root>/<backup.backup.name>/
+        // and the name defaults to 'backups'.
+        $backupDisk = Storage::disk('backup');
+        $backupName = config('backup.backup.name', 'backups');
+        $diskPath = $backupName . '/' . $filename;
 
-        if (! Storage::exists($path.'/'.$filename)) {
+        if (!$backupDisk->exists($diskPath)) {
             return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.backup.file_not_found'));
         }
 
-        $absolutePath = storage_path($path).'/'.$filename;
+        // ZipArchive and snipeit:restore both need a local filesystem path.
+        // On the local driver, resolve directly to the disk's on-disk path
+        // and let the restore CLI read it in place. On any remote driver
+        // (s3), stream the archive down to a temp file so downstream code
+        // that expects a real path still works. The finally block below
+        // unlinks the temp file on every exit path so a bail-out doesn't
+        // leave hundreds of megabytes stranded in storage/app/restore-temp.
+        $localTempPath = null;
+        try {
+            if (config('filesystems.disks.backup.driver') === 'local') {
+                $absolutePath = $backupDisk->path($diskPath);
+            } else {
+                $tempDir = storage_path('app/restore-temp');
+                if (!is_dir($tempDir) && !mkdir($tempDir, 0755, true) && !is_dir($tempDir)) {
+                    Log::error('Restore aborted: could not create temp directory ' . $tempDir);
 
-        // Verify the archive is actually a zip and can be opened, BEFORE we
-        // do anything destructive. Prior behavior wiped the database first
-        // and only then tried to open the archive. An invalid or corrupted
-        // upload therefore destroyed the existing database and left the
-        // install with an empty migrated schema, while the flow still
-        // reported success because snipeit:restore returns exit 0 on
-        // internal errors (see RestoreFromBackup::handle).
-        //
-        // Refuse to proceed if the PHP zip extension is not loaded. The
-        // downstream snipeit:restore command needs ZipArchive too, so
-        // running it without ext-zip would fail after the wipe.
-        if (! class_exists(ZipArchive::class)) {
-            Log::error('Restore aborted: PHP zip extension is not loaded, cannot validate archive before wiping database.');
+                    return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.archive_invalid', ['filename' => $filename]));
+                }
+                $localTempPath = $tempDir . '/' . $filename;
+                // readStream returns null on failure, fopen returns false.
+                $srcStream = $backupDisk->readStream($diskPath);
+                $dstStream = fopen($localTempPath, 'w');
+                if ($srcStream === null || $dstStream === false) {
+                    if (is_resource($srcStream)) {
+                        fclose($srcStream);
+                    }
+                    if (is_resource($dstStream)) {
+                        fclose($dstStream);
+                    }
+                    Log::error('Restore aborted: failed to open streams for temp copy of ' . $diskPath);
 
-            return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.zip_extension_missing'));
-        }
+                    return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.archive_invalid', ['filename' => $filename]));
+                }
+                stream_copy_to_stream($srcStream, $dstStream);
+                fclose($srcStream);
+                fclose($dstStream);
+                $absolutePath = $localTempPath;
+            }
 
-        $zip = new ZipArchive;
-        $openResult = $zip->open($absolutePath);
-        if ($openResult !== true) {
-            Log::warning('Restore aborted: archive at '.$absolutePath.' failed zip open with code '.$openResult);
+            // Verify the archive is actually a zip and can be opened, BEFORE we
+            // do anything destructive. Prior behavior wiped the database first
+            // and only then tried to open the archive. An invalid or corrupted
+            // upload therefore destroyed the existing database and left the
+            // install with an empty migrated schema, while the flow still
+            // reported success because snipeit:restore returns exit 0 on
+            // internal errors (see RestoreFromBackup::handle).
+            //
+            // Refuse to proceed if the PHP zip extension is not loaded. The
+            // downstream snipeit:restore command needs ZipArchive too, so
+            // running it without ext-zip would fail after the wipe.
+            if (!class_exists(ZipArchive::class)) {
+                Log::error('Restore aborted: PHP zip extension is not loaded, cannot validate archive before wiping database.');
 
-            return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.archive_invalid', ['filename' => $filename]));
-        }
-        $zip->close();
+                return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.zip_extension_missing'));
+            }
 
-        // grab the user's info so we can make sure they exist in the system
-        $user = User::find(auth()->id());
+            $zip = new ZipArchive;
+            $openResult = $zip->open($absolutePath);
+            if ($openResult !== true) {
+                Log::warning('Restore aborted: archive at ' . $absolutePath . ' failed zip open with code ' . $openResult);
 
-        // Take a fresh pre-restore backup so we can point the operator at
-        // it if the restore fails after we wipe. This is the mitigation
-        // the pre-existing
-        $requestedBackupFilename = 'pre-restore-'.date('Y-m-d-H-i-s').'.zip';
-        // spatie prepends filename_prefix to the filename provided so this is the actual name on disk:
-        $preRestoreBackupFilename = config('backup.backup.destination.filename_prefix').$requestedBackupFilename;
-        $preBackupPath = storage_path($path).'/'.$preRestoreBackupFilename;
+                return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.archive_invalid', ['filename' => $filename]));
+            }
+            $zip->close();
 
-        Log::debug('Running pre-restore backup: '.$preRestoreBackupFilename);
-        $preBackupExit = Artisan::call('snipeit:backup', [
-            '--filename' => $requestedBackupFilename,
-            '--force' => true,
-        ]);
+            // grab the user's info so we can make sure they exist in the system
+            $user = User::find(auth()->id());
 
-        if ($preBackupExit !== 0 || ! (Storage::exists($path.'/'.$preRestoreBackupFilename))) {
-            Log::warning('Pre-restore backup failed (exit '.$preBackupExit.'); aborting restore to protect existing data.');
+            // Take a fresh pre-restore backup so we can point the operator at
+            // it if the restore fails after we wipe. This is the mitigation
+            // the pre-existing
+            $requestedBackupFilename = 'pre-restore-' . date('Y-m-d-H-i-s') . '.zip';
+            // spatie prepends filename_prefix to the filename provided so this is the actual name on disk:
+            $preRestoreBackupFilename = config('backup.backup.destination.filename_prefix') . $requestedBackupFilename;
+            $preRestoreDiskPath = $backupName . '/' . $preRestoreBackupFilename;
+            $preBackupHint = config('filesystems.disks.backup.driver') === 'local'
+                ? $backupDisk->path($preRestoreDiskPath)
+                : 'backup disk (' . $preRestoreDiskPath . ')';
 
-            return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.pre_backup_failed'));
-        }
-
-        Log::warning('User '.auth()->user()->username.' is attempting to restore from: '.$absolutePath.' (pre-restore backup at '.$preBackupPath.')');
-
-        $restore_params = [
-            '--force' => true,
-            '--no-progress' => true,
-            'filename' => $absolutePath,
-        ];
-
-        if ($request->input('clean')) {
-            Log::debug("Attempting 'clean' - first, guessing prefix...");
-            Artisan::call('snipeit:restore', [
-                '--sanitize-guess-prefix' => true,
-                'filename' => $absolutePath,
+            Log::debug('Running pre-restore backup: ' . $preRestoreBackupFilename);
+            $preBackupExit = Artisan::call('snipeit:backup', [
+                '--filename' => $requestedBackupFilename,
+                '--force' => true,
             ]);
-            $guess_prefix_output = Artisan::output();
-            Log::debug("Sanitize output is: $guess_prefix_output");
-            [$prefix, $_output] = explode("\n", $guess_prefix_output);
-            Log::debug("prefix is: '$prefix'");
-            $restore_params['--sanitize-with-prefix'] = $prefix;
+
+            if ($preBackupExit !== 0 || !$backupDisk->exists($preRestoreDiskPath)) {
+                Log::warning('Pre-restore backup failed (exit ' . $preBackupExit . '); aborting restore to protect existing data.');
+
+                return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.pre_backup_failed'));
+            }
+
+            Log::warning('User ' . auth()->user()->username . ' is attempting to restore from: ' . $absolutePath . ' (pre-restore backup at ' . $preBackupHint . ')');
+
+            $restore_params = [
+                '--force' => true,
+                '--no-progress' => true,
+                'filename' => $absolutePath,
+            ];
+
+            if ($request->input('clean')) {
+                Log::debug("Attempting 'clean' - first, guessing prefix...");
+                Artisan::call('snipeit:restore', [
+                    '--sanitize-guess-prefix' => true,
+                    'filename' => $absolutePath,
+                ]);
+                $guess_prefix_output = Artisan::output();
+                Log::debug("Sanitize output is: $guess_prefix_output");
+                [$prefix, $_output] = explode("\n", $guess_prefix_output);
+                Log::debug("prefix is: '$prefix'");
+                $restore_params['--sanitize-with-prefix'] = $prefix;
+            }
+
+            Artisan::call('db:wipe', ['--force' => true]);
+
+            // run the restore command
+            $restoreExit = Artisan::call('snipeit:restore', $restore_params);
+            $restoreOutput = Artisan::output();
+            Log::debug('snipeit:restore output: ' . $restoreOutput);
+
+            // snipeit:restore returns 0 even on some internal errors, so we also
+            // scan its output for its own "Could not access file" / "DB_CONNECTION
+            // must be MySQL" style error strings.
+            $restoreLooksFailed = $restoreExit !== 0 || str_contains(strtolower($restoreOutput), 'could not access file') || str_contains(strtolower($restoreOutput), 'db_connection must be mysql');
+
+            if ($restoreLooksFailed) {
+                Log::error('Restore failed after db:wipe. Pre-restore backup available at ' . $preBackupHint);
+
+                return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.failed_with_backup', [
+                    'backup' => $preRestoreBackupFilename,
+                ]));
+            }
+
+            /* Run migrations */
+            Log::debug('Migrating database...');
+            $migrateExit = Artisan::call('migrate', ['--force' => true]);
+            $migrate_output = Artisan::output();
+            Log::debug($migrate_output);
+
+            if ($migrateExit !== 0) {
+                Log::error('Migrate failed after restore. Pre-restore backup available at ' . $preBackupHint);
+
+                return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.failed_with_backup', [
+                    'backup' => $preRestoreBackupFilename,
+                ]));
+            }
+
+            $find_user = DB::table('users')->where('username', $user->username)->exists();
+
+            if (!$find_user) {
+                Log::warning('Attempting to restore user: ' . $user->username);
+                $new_user = $user->replicate();
+                $new_user->push();
+            } else {
+                Log::debug('User: ' . $user->username . ' already exists.');
+            }
+
+            Log::debug('Logging all users out..');
+            Artisan::call('snipeit:global-logout', ['--force' => true]);
+
+            DB::table('users')->update(['remember_token' => null]);
+            Auth::logout();
+
+            return redirect()->route('login')->with('success', trans('admin/settings/message.restore.success'));
+        } finally {
+            // Temp copy only exists when we downloaded from a remote
+            // driver. On the local driver $localTempPath stays null and
+            // we skip the unlink entirely, so we don't accidentally
+            // reach into the backup disk's own storage.
+            if ($localTempPath !== null && file_exists($localTempPath)) {
+                @unlink($localTempPath);
+            }
         }
-
-        Artisan::call('db:wipe', ['--force' => true]);
-
-        // run the restore command
-        $restoreExit = Artisan::call('snipeit:restore', $restore_params);
-        $restoreOutput = Artisan::output();
-        Log::debug('snipeit:restore output: '.$restoreOutput);
-
-        // snipeit:restore returns 0 even on some internal errors, so we also
-        // scan its output for its own "Could not access file" / "DB_CONNECTION
-        // must be MySQL" style error strings.
-        $restoreLooksFailed = $restoreExit !== 0 || str_contains(strtolower($restoreOutput), 'could not access file') || str_contains(strtolower($restoreOutput), 'db_connection must be mysql');
-
-        if ($restoreLooksFailed) {
-            Log::error('Restore failed after db:wipe. Pre-restore backup available at '.$preBackupPath);
-
-            return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.failed_with_backup', [
-                'backup' => $preRestoreBackupFilename,
-            ]));
-        }
-
-        /* Run migrations */
-        Log::debug('Migrating database...');
-        $migrateExit = Artisan::call('migrate', ['--force' => true]);
-        $migrate_output = Artisan::output();
-        Log::debug($migrate_output);
-
-        if ($migrateExit !== 0) {
-            Log::error('Migrate failed after restore. Pre-restore backup available at '.$preBackupPath);
-
-            return redirect()->route('settings.backups.index')->with('error', trans('admin/settings/message.restore.failed_with_backup', [
-                'backup' => $preRestoreBackupFilename,
-            ]));
-        }
-
-        $find_user = DB::table('users')->where('username', $user->username)->exists();
-
-        if (! $find_user) {
-            Log::warning('Attempting to restore user: '.$user->username);
-            $new_user = $user->replicate();
-            $new_user->push();
-        } else {
-            Log::debug('User: '.$user->username.' already exists.');
-        }
-
-        Log::debug('Logging all users out..');
-        Artisan::call('snipeit:global-logout', ['--force' => true]);
-
-        DB::table('users')->update(['remember_token' => null]);
-        Auth::logout();
-
-        return redirect()->route('login')->with('success', trans('admin/settings/message.restore.success'));
     }
 
     /**
