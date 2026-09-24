@@ -3418,13 +3418,7 @@ dl.table-display {
   padding: 15px 20px;
   min-width: 0;
 }
-/* Under 992px the fixed 300px tab list + form column runs the form
-   column below what x-form rows can breathe in (label + input +
-   Company "New" button all collide). Stack vertically instead so the
-   tab list gets its natural width across the row without truncating
-   adapter names, and the form column below can use the full box
-   interior. 992px matches Bootstrap 3's `md` breakpoint AdminLTE
-   already uses for the sidebar collapse point. */
+/* Small shim for side-tab min-width on mobile or smaller screens. */
 @media (max-width: 991px) {
   .sync-adapters-tabs {
     flex-direction: column;
