@@ -13,16 +13,6 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-/**
- * Coverage for the extra-field mapping flow: adapters declare
- * vendor-specific extra keys via extraFields(), admin maps each to a
- * custom field, and SyncAdapter writes the (stringified) value
- * onto the asset's dynamic column.
- *
- * Fleet is the workhorse here because its normalize() emits a mix of
- * scalar (fleet_team, fleet_uuid, fleet_status) and array
- * (fleet_labels) values, exercising the stringifier for both shapes.
- */
 class ExtraFieldMappingTest extends TestCase
 {
     protected function setUp(): void
@@ -118,13 +108,16 @@ class ExtraFieldMappingTest extends TestCase
         ]);
     }
 
-    public function test_extra_field_options_include_skip_native_and_custom_targets_for_text_type()
+    public function test_extra_field_options_include_native_and_custom_targets_for_text_type()
     {
         CustomField::factory()->create(['element' => 'text', 'name' => 'Team Assignment']);
 
         $options = MappingTargets::optionsForExtra('text');
 
-        $this->assertArrayHasKey('skip', $options);
+        // No 'skip' target: the mapping-picker widget models
+        // "unmapped" as the extra sitting in the picker's
+        // available list, not as a committed row with target='skip'.
+        $this->assertArrayNotHasKey('skip', $options);
 
         // Text-type extras can route to native asset_tag / model /
         // notes so admins whose vendor stores per-device metadata in
@@ -136,7 +129,7 @@ class ExtraFieldMappingTest extends TestCase
         $this->assertArrayHasKey('native:notes', $options);
         $this->assertArrayHasKey('native:purchase_date', $options);
         $this->assertArrayHasKey('native:order_number', $options);
-        $nativeTargets = ['skip', 'native:asset_tag', 'native:model', 'native:notes', 'native:purchase_date', 'native:order_number'];
+        $nativeTargets = ['native:asset_tag', 'native:model', 'native:notes', 'native:purchase_date', 'native:order_number'];
         foreach (array_keys($options) as $target) {
             if (in_array($target, $nativeTargets, true)) {
                 continue;
@@ -152,8 +145,9 @@ class ExtraFieldMappingTest extends TestCase
         $options = MappingTargets::optionsForExtra('boolean');
 
         // Boolean-typed extras stay custom-fields-only because no
-        // native asset column carries a boolean semantic.
-        $this->assertArrayHasKey('skip', $options);
+        // native asset column carries a boolean semantic. Also no
+        // 'skip' entry: unmap via ×, not via a stored 'skip' target.
+        $this->assertArrayNotHasKey('skip', $options);
         $this->assertArrayNotHasKey('native:asset_tag', $options);
         $this->assertArrayNotHasKey('native:model', $options);
         $this->assertArrayNotHasKey('native:notes', $options);
@@ -345,13 +339,13 @@ class ExtraFieldMappingTest extends TestCase
         $this->assertArrayHasKey('fleet_status', $extras);
     }
 
-    public function test_settings_page_renders_extra_field_dropdowns_for_adapter_that_declares_them()
+    public function test_settings_page_renders_extra_field_picker_for_adapter_that_declares_them()
     {
         // Side-effect factory create. The custom field is a fixture that
-        // has to exist on the DB for the settings page to render it as an
-        // extras-mapping target. The returned instance isn't referenced
-        // by name; the assertion just checks the field's name string
-        // shows up in the rendered HTML.
+        // has to exist on the DB for the settings page to render it as
+        // an extras-mapping target. The returned instance isn't
+        // referenced by name. The assertion just checks the field's
+        // name string shows up in the rendered HTML.
         CustomField::factory()->create(['element' => 'text', 'name' => 'Team Assignment']);
 
         $html = $this->actingAs(\App\Models\User::factory()->superuser()->create())
@@ -359,10 +353,14 @@ class ExtraFieldMappingTest extends TestCase
             ->assertOk()
             ->getContent();
 
-        // Rows for each Fleet extra field appear on the page.
-        $this->assertStringContainsString('fleet_mapping[fleet_team]', $html);
-        $this->assertStringContainsString('fleet_mapping[fleet_labels]', $html);
-        // Custom field is offered as a target for extras.
+        // Each unmapped Fleet extra shows up as a picker option carrying
+        // its key as the value and its resolved label as the option text
+        // (mapping-picker widget replaced the one-row-per-extra @foreach).
+        $this->assertStringContainsString('value="fleet_team"', $html);
+        $this->assertStringContainsString('value="fleet_labels"', $html);
+        // Custom field is offered as a target inside each option's
+        // data-target-options JSON. The custom field's name shows up
+        // literally in that JSON.
         $this->assertStringContainsString('Team Assignment', $html);
     }
 

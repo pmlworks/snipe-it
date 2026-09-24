@@ -124,7 +124,6 @@ $config = [
             'driver' => 'single',
             'path' => storage_path('logs/sync-adapters.log'),
             'level' => env('LOG_LEVEL', 'info'),
-            'days' => 30,
         ],
 
         'rollbar' => [

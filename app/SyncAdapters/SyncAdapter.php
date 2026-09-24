@@ -9,6 +9,7 @@ use App\Models\SyncAdapterInstance;
 use App\Rules\ExternalUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 /**
  * The single base class every host-inventory adapter extends. Owns
@@ -515,11 +516,15 @@ abstract class SyncAdapter
 
             // Field-map repeater: assoc array of {field_key: path}.
             // Empty submissions overwrite as {} so a deliberate
-            // "clear everything" from the UI sticks. Blank path
-            // values within the array are dropped so a mistakenly
-            // added empty row doesn't roundtrip.
+            // "clear everything".
             if ($type === 'field_map') {
                 $values = (array) $request->input($fieldName, []);
+                $pending = (array) $request->input($fieldName.'_pending', []);
+                $pendingKey = is_string($pending['key'] ?? null) ? trim($pending['key']) : '';
+                $pendingValue = is_string($pending['value'] ?? null) ? trim($pending['value']) : '';
+                if ($pendingKey !== '' && $pendingValue !== '') {
+                    $values[$pendingKey] = $pendingValue;
+                }
                 $values = array_filter(
                     $values,
                     fn ($v, $k) => is_string($k) && $k !== '' && is_string($v) && trim($v) !== '',
@@ -702,11 +707,33 @@ abstract class SyncAdapter
      */
     private function persistFieldMappings(Request $request, string $slug, array $validFields): void
     {
-        foreach ((array) $request->input($slug.'_mapping', []) as $field => $target) {
+        $posted = (array) $request->input($slug.'_mapping', []);
+
+        // The mapping-picker widget's picker row submits its unfinished
+        // pair under <slug>_mapping_pending[key|value] so admins can
+        // save without clicking the + button first. Fold it into the
+        // posted array before save.
+        $pending = (array) $request->input($slug.'_mapping_pending', []);
+        $pendingKey = is_string($pending['key'] ?? null) ? trim($pending['key']) : '';
+        $pendingValue = is_string($pending['value'] ?? null) ? trim($pending['value']) : '';
+        if ($pendingKey !== '' && $pendingValue !== '' && ! array_key_exists($pendingKey, $posted)) {
+            $posted[$pendingKey] = $pendingValue;
+        }
+
+        foreach ($posted as $field => $target) {
             if (! in_array($field, $validFields, true)) {
                 continue;
             }
             SyncAdapterConfig::put($this->instance->id, 'mapping.'.$field, (string) $target);
+        }
+
+        // Extras use the mapping-picker widget, which submits only for
+        // rows the admin left mapped. Removing a row = the row's key
+        // is absent from POST.
+        foreach (array_keys($this->extraFields()) as $extraKey) {
+            if (! array_key_exists($extraKey, $posted)) {
+                SyncAdapterConfig::forget($this->instance->id, 'mapping.'.$extraKey);
+            }
         }
     }
 
@@ -715,16 +742,35 @@ abstract class SyncAdapter
      * target column stored above so admins can flip direction without
      * re-picking the target. Only meaningful for adapters that
      * implement PushableAdapter. For pull-only adapters the form
-     * doesn't render the direction column and this loop is a no-op.
-     * Value 'pull' is the default and doesn't need storing, but writing
-     * it explicitly keeps the round-trip behavior predictable for
-     * admins reading raw config.
+     * doesn't render the direction column, and the default is always pull.
      *
      * @param  array<int, string>  $validFields
      */
     private function persistFieldDirections(Request $request, string $slug, array $validFields): void
     {
-        foreach ((array) $request->input($slug.'_direction', []) as $field => $direction) {
+        $posted = (array) $request->input($slug.'_direction', []);
+
+        // Widgets' picker rows submit their unfinished pair under
+        // <slug>_<map_key>_pending[key|value] so admins can save
+        // without clicking + to commit the row first.
+        $pairedMapKeys = [$slug.'_mapping_pending'];
+        foreach ($this->settingsSchema() as $field) {
+            if (($field['type'] ?? '') === 'field_map') {
+                $pairedMapKeys[] = $slug.'_'.$field['key'].'_pending';
+            }
+        }
+        $directionPending = (array) $request->input($slug.'_direction_pending', []);
+        $pendingDir = is_string($directionPending['value'] ?? null) ? trim($directionPending['value']) : '';
+        foreach ($pairedMapKeys as $pendingField) {
+            $pairedPending = (array) $request->input($pendingField, []);
+            $pendingKey = is_string($pairedPending['key'] ?? null) ? trim($pairedPending['key']) : '';
+            $pendingValue = is_string($pairedPending['value'] ?? null) ? trim($pairedPending['value']) : '';
+            if ($pendingKey !== '' && $pendingValue !== '' && $pendingDir !== '' && ! array_key_exists($pendingKey, $posted)) {
+                $posted[$pendingKey] = $pendingDir;
+            }
+        }
+
+        foreach ($posted as $field => $direction) {
             if (! in_array($field, $validFields, true)) {
                 continue;
             }
@@ -732,6 +778,16 @@ abstract class SyncAdapter
                 continue;
             }
             SyncAdapterConfig::put($this->instance->id, 'direction.'.$field, (string) $direction);
+        }
+
+        // Same forget-on-omit rule as persistFieldMappings for extras:
+        // rows removed via the mapping-picker widget are absent from
+        // POST, and their direction needs clearing so it doesn't
+        // linger on the next sync if the extra gets re-added.
+        foreach (array_keys($this->extraFields()) as $extraKey) {
+            if (! array_key_exists($extraKey, $posted)) {
+                SyncAdapterConfig::forget($this->instance->id, 'direction.'.$extraKey);
+            }
         }
     }
 
@@ -892,7 +948,7 @@ abstract class SyncAdapter
         $written = $touched !== [] ? $touched : array_keys($payload);
 
         if ($this->isPushDryRun()) {
-            \Illuminate\Support\Facades\Log::channel('sync-adapters')->info(sprintf(
+            Log::channel('sync-adapters')->info(sprintf(
                 '%s push [dry-run]: would send %s to %s device %s',
                 $this->name(),
                 json_encode($payload, JSON_UNESCAPED_SLASHES),
@@ -905,7 +961,7 @@ abstract class SyncAdapter
 
         $this->dispatchPush($externalSource, $payload);
 
-        \Illuminate\Support\Facades\Log::channel('sync-adapters')->info(sprintf(
+        Log::channel('sync-adapters')->info(sprintf(
             '%s push: updated %s device %s [%s]',
             $this->name(),
             static::typeLabel(),
@@ -1308,13 +1364,17 @@ abstract class SyncAdapter
     /**
      * Migration aid: when on, the sync loop looks for an existing
      * Snipe-IT asset with a matching serial before creating a new
-     * shell asset for a first-seen vendor host. Default off, since
-     * silently adopting existing assets is destructive when a
-     * customer has multiple adapters or the serial isn't unique.
+     * shell asset for a first-time sync vendor host.
+     *
      */
     public function adoptsBySerial(): bool
     {
-        return SyncAdapterConfig::get($this->instance->id, 'adopt_by_serial') === '1';
+        $stored = SyncAdapterConfig::get($this->instance->id, 'adopt_by_serial');
+        if ($stored !== null) {
+            return $stored === '1';
+        }
+
+        return $this->instance->last_synced_at === null;
     }
 
     /**

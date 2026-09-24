@@ -6,6 +6,7 @@ use App\SyncAdapters\HostInventoryRecord;
 use App\SyncAdapters\SyncAdapter;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Kaseya VSA 10 (formerly Kaseya X, product code "vsax") adapter.
@@ -256,7 +257,7 @@ class KaseyaVsa10Adapter extends SyncAdapter
         try {
             $values = $client->deviceCustomFieldValues($record->sourceId);
         } catch (\Throwable $e) {
-            \Log::channel('sync-adapters')->warning(sprintf(
+            Log::channel('sync-adapters')->warning(sprintf(
                 '%s customfields fetch failed for device %s: %s',
                 $this->name(),
                 $record->sourceId,

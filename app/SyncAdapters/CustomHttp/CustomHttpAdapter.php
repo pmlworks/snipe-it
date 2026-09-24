@@ -3,6 +3,7 @@
 namespace App\SyncAdapters\CustomHttp;
 
 use App\Models\Asset;
+use App\Models\SyncAdapterConfig;
 use App\SyncAdapters\HostInventoryRecord;
 use App\SyncAdapters\PushableAdapter;
 use App\SyncAdapters\SyncAdapter;
@@ -54,9 +55,9 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
      *
      * @return array<string, string>
      */
-    private static function fieldPathOptions(): array
+    private function fieldPathOptions(): array
     {
-        return [
+        $options = [
             'hostname' => trans('admin/settings/sync_adapters.field_hostname'),
             'serial' => trans('admin/settings/sync_adapters.field_serial'),
             'asset_tag' => trans('admin/settings/sync_adapters.field_asset_tag'),
@@ -70,6 +71,22 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
             'assigned_user_email' => trans('admin/settings/sync_adapters.field_assigned_user_email'),
             'assigned_user_name' => trans('admin/settings/sync_adapters.field_assigned_user_name'),
         ];
+
+        // Extra destination slots for admins whose vendor exposes
+        // per-device metadata that lands in native Asset columns
+        // rather than a HostInventoryRecord field.
+        $options['native:notes'] = trans('admin/settings/sync_adapters.target_native_notes');
+        $options['native:purchase_date'] = \App\SyncAdapters\MappingTargets::labelFor('native:purchase_date');
+        $options['native:order_number'] = \App\SyncAdapters\MappingTargets::labelFor('native:order_number');
+
+        // Custom field destinations. Text and textarea-shaped fields
+        // land here so admins can route vendor blobs to whatever
+        // custom field they've defined on the fieldset.
+        foreach (\App\Models\CustomField::whereIn('element', ['text', 'textarea', 'markdown-textarea'])->orderBy('name')->get() as $cf) {
+            $options['custom:'.$cf->id] = trans('admin/settings/sync_adapters.target_custom_prefix').': '.$cf->name;
+        }
+
+        return $options;
     }
 
     public static function typeLabel(): string
@@ -269,17 +286,8 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
                 'label' => trans('admin/settings/sync_adapters.custom_field_paths_label'),
                 'type' => 'field_map',
                 'required' => false,
-                'options' => self::fieldPathOptions(),
+                'options' => $this->fieldPathOptions(),
                 'help' => trans('admin/settings/sync_adapters.custom_field_paths_help'),
-            ],
-            [
-                'key' => 'extras_definition',
-                'label' => trans('admin/settings/sync_adapters.label_custom_extras_json'),
-                'type' => 'textarea',
-                'required' => false,
-                'section' => 'extras',
-                'placeholder' => '[{"key": "vendor_tag", "label": "Vendor Tag", "path": "tags.asset_tag"}]',
-                'help' => trans('admin/settings/sync_adapters.custom_extras_definition_help'),
             ],
         ];
     }
@@ -344,10 +352,6 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
                 'title' => trans('admin/settings/sync_adapters.custom_section_pagination_title'),
                 'help' => trans('admin/settings/sync_adapters.custom_section_pagination_help'),
             ],
-            'extras' => [
-                'title' => trans('admin/settings/sync_adapters.custom_section_extras_title'),
-                'help' => trans('admin/settings/sync_adapters.custom_section_extras_help'),
-            ],
             'push' => [
                 'title' => trans('admin/settings/sync_adapters.custom_section_push_title'),
                 'help' => trans('admin/settings/sync_adapters.custom_section_push_help'),
@@ -356,37 +360,63 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
     }
 
     /**
-     * Extend the base validation rules with the Custom-Extras JSON
-     * shape check. Blank passes through, malformed JSON or missing
-     * key/path per entry surfaces the reason instead of silently
-     * dropping every entry the way the runtime parser does.
-     */
-    public function validationRules(): array
-    {
-        $rules = parent::validationRules();
-        $rules[$this->instance->slug.'_extras_definition'] = [
-            'nullable',
-            'string',
-            new \App\Rules\CustomHttpExtrasJsonRule,
-        ];
-
-        return $rules;
-    }
-
-    /**
-     * Admin-defined extras. Reads the extras_definition JSON blob
-     * on this instance and exposes each entry as an extra field the
-     * framework's mapping UI can route to a Snipe-IT custom field or
-     * a native column.
+     * The unified Vendor Response Paths widget lets admins target
+     * custom fields and native columns directly. Each such entry
+     * needs a mapping.<key> = <key> self-routing config so the
+     * framework's applyExtraFieldMappings loop routes the extracted
+     * value to its target. Discovery reads the stored field_paths
+     * JSON blob and returns each custom:/native: destination as an
+     * extra key. Standard HostInventoryRecord field destinations
+     * (hostname, serial, etc.) are handled by the base framework, so
+     * they don't appear here.
      */
     public function extraFields(): array
     {
         $out = [];
-        foreach ($this->extrasDefinition() as $extra) {
-            $out[$extra['key']] = ['label' => $extra['label']];
+        foreach ($this->fieldPathMap() as $destination => $path) {
+            if ($path === '') {
+                continue;
+            }
+            if (! str_starts_with($destination, 'custom:') && ! str_starts_with($destination, 'native:')) {
+                continue;
+            }
+            $out[$destination] = ['label' => $destination, 'admin_defined' => true];
         }
 
         return $out;
+    }
+
+    /**
+     * After the base saveConfig persists field_paths + directions,
+     * make sure every custom:/native: destination has a self-routing
+     * mapping.<key> = <key> config so the framework's extras loop
+     * writes each extracted value to its target at sync time. Cheap
+     * to re-persist on every save because the values are stable.
+     */
+    public function saveConfig(\Illuminate\Http\Request $request): void
+    {
+        parent::saveConfig($request);
+
+        $slug = $this->instance->slug;
+        $postedDirections = (array) $request->input($slug.'_direction', []);
+        foreach (array_keys($this->fieldPathMap()) as $destination) {
+            if (! str_starts_with($destination, 'custom:') && ! str_starts_with($destination, 'native:')) {
+                continue;
+            }
+            SyncAdapterConfig::put($this->instance->id, 'mapping.'.$destination, $destination);
+
+            // Parent's persistFieldDirections dropped these because
+            // validMappingFields didn't yet include the destination
+            // key on a first save (extraFields() only picks them up
+            // once mapping.<key> is stored). Persist here so per-row
+            // direction from the widget survives the first save.
+            if (isset($postedDirections[$destination])) {
+                $direction = (string) $postedDirections[$destination];
+                if (in_array($direction, ['pull', 'push', 'both', 'skip'], true)) {
+                    SyncAdapterConfig::put($this->instance->id, 'direction.'.$destination, $direction);
+                }
+            }
+        }
     }
 
     /**
@@ -593,6 +623,24 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
             return;
         }
 
+        // Track null rates per configured dot-path across every
+        // record processed. Paths that return null on 100% of
+        // records are almost always typos or renamed vendor fields.
+        // dotPathGet returns null silently on miss, so without an
+        // end-of-run summary these mistakes hide until an admin
+        // notices the destination column is empty on every asset.
+        $configuredPaths = [];
+        foreach ($fieldPaths as $destination => $path) {
+            if ($path !== '' && $destination !== 'source_id') {
+                $configuredPaths[$destination] = $path;
+            }
+        }
+        foreach ($extras as $extra) {
+            $configuredPaths[$extra['key']] = $extra['path'];
+        }
+        $pathStats = array_fill_keys(array_keys($configuredPaths), 0);
+        $recordCount = 0;
+
         $globalIndex = 0;
         foreach ($this->paginate() as $records) {
             foreach ($records as $record) {
@@ -613,10 +661,50 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
 
                     continue;
                 }
+                $recordCount++;
+                foreach ($configuredPaths as $destination => $path) {
+                    if (self::dotPathGet($record, $path) === null) {
+                        $pathStats[$destination]++;
+                    }
+                }
                 yield $normalized;
                 $globalIndex++;
             }
         }
+
+        $this->logAlwaysNullPaths($configuredPaths, $pathStats, $recordCount);
+    }
+
+    /**
+     * Emit a sync-adapters-log warning listing every configured
+     * dot-path that returned null on every record we saw. Fires only
+     * when we actually processed records so an empty vendor response
+     * doesn't get mis-flagged as a typo.
+     *
+     * @param  array<string, string>  $configuredPaths  destination => dot-path
+     * @param  array<string, int>  $pathStats  destination => null-count
+     */
+    private function logAlwaysNullPaths(array $configuredPaths, array $pathStats, int $recordCount): void
+    {
+        if ($recordCount === 0) {
+            return;
+        }
+
+        $missing = [];
+        foreach ($pathStats as $destination => $nullCount) {
+            if ($nullCount === $recordCount) {
+                $missing[] = $destination.' → '.$configuredPaths[$destination];
+            }
+        }
+        if ($missing === []) {
+            return;
+        }
+
+        $adapter = $this->name();
+        $list = implode(', ', $missing);
+        Log::channel('sync-adapters')->warning(
+            "{$adapter} pull: processed {$recordCount} record(s), but these Vendor Response Paths returned no data on any record (typo or wrong path?): {$list}"
+        );
     }
 
     /**
@@ -942,7 +1030,7 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
      */
     private function fieldPathMap(): array
     {
-        $baseline = array_fill_keys(array_keys(self::fieldPathOptions()), '');
+        $baseline = array_fill_keys(array_keys($this->fieldPathOptions()), '');
         // source_id lives outside the repeater as its own required
         // input, so merge it in here to give a uniform
         // $map['source_id'] lookup.
@@ -959,7 +1047,17 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
         }
 
         foreach ($decoded as $key => $value) {
-            if (is_string($key) && array_key_exists($key, $baseline) && is_string($value)) {
+            if (! is_string($key) || ! is_string($value)) {
+                continue;
+            }
+            // Standard fields and current custom/native destinations
+            // pass the baseline check. Admin-added custom:/native:
+            // entries whose target has since been deleted from
+            // Snipe-IT still deserialize so extraFields() can surface
+            // the orphan and the admin can clean up.
+            if (array_key_exists($key, $baseline)
+                || str_starts_with($key, 'custom:')
+                || str_starts_with($key, 'native:')) {
                 $baseline[$key] = $value;
             }
         }
@@ -968,33 +1066,29 @@ class CustomHttpAdapter extends SyncAdapter implements PushableAdapter
     }
 
     /**
-     * Parse the extras JSON blob into a validated list. Non-array
-     * entries and entries missing key/path are dropped silently so a
-     * partially-malformed blob still yields the rest.
+     * List of admin-defined extras for the pull-time normalize() to
+     * iterate. Since path is the mapping key on Custom HTTP (the
+     * admin-extras-picker rebuild removed the separate key/label
+     * fields), each entry's key IS its path. Discovery mirrors
+     * extraFields(): walk stored field_paths, keep only custom: /
+     * native: destinations that actually have a non-empty dot-path.
      *
      * @return array<int, array{key: string, label: string, path: string}>
      */
     private function extrasDefinition(): array
     {
-        $raw = $this->safeCredential('extras_definition');
-        if (trim($raw) === '') {
-            return [];
-        }
-
-        $decoded = json_decode($raw, true);
-        if (! is_array($decoded)) {
-            return [];
-        }
-
         $out = [];
-        foreach ($decoded as $entry) {
-            if (! is_array($entry) || ! isset($entry['key'], $entry['path'])) {
+        foreach ($this->fieldPathMap() as $destination => $path) {
+            if ($path === '') {
+                continue;
+            }
+            if (! str_starts_with($destination, 'custom:') && ! str_starts_with($destination, 'native:')) {
                 continue;
             }
             $out[] = [
-                'key' => (string) $entry['key'],
-                'label' => (string) ($entry['label'] ?? $entry['key']),
-                'path' => (string) $entry['path'],
+                'key' => $destination,
+                'label' => $destination,
+                'path' => $path,
             ];
         }
 

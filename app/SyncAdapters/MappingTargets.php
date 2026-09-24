@@ -131,7 +131,7 @@ class MappingTargets
      */
     public static function optionsForExtra(string $type = 'text', bool $adminDefined = false): array
     {
-        $options = ['skip' => trans('admin/settings/sync_adapters.target_skip')];
+        $options = [];
 
         // Adapter-declared text-type extras can also route into native
         // asset columns that hold arbitrary strings. Admins whose
