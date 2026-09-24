@@ -1817,6 +1817,12 @@ class Helper
             return null;
         }
 
+        // Reject scheme-only URLs with no authority (e.g. "https:evil.com",
+        // "https:/evil.com", "http:@evil.com").
+        if (isset($parts['scheme']) && !isset($parts['host'])) {
+            return null;
+        }
+
         $host = $parts['host'] ?? null;
         $appHost = parse_url(config('app.url'), PHP_URL_HOST);
 

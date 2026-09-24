@@ -10,7 +10,6 @@ use Tests\TestCase;
 
 class HelperTest extends TestCase
 {
-
     public function test_check_if_required_returns_false_when_class_is_null()
     {
         $this->assertFalse(Helper::checkIfRequired(null, 'name'));
@@ -332,6 +331,26 @@ class HelperTest extends TestCase
         // //evil.com/... is a scheme-relative URL that inherits the
         // current scheme and points at evil.com. Must be rejected.
         $this->assertNull(Helper::sameOriginUrl('//evil.example.com/steal-session'));
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('schemeOnlyBypassProvider')]
+    public function test_same_origin_url_rejects_scheme_without_authority(string $input): void
+    {
+        $this->assertNull(Helper::sameOriginUrl($input));
+    }
+
+    public static function schemeOnlyBypassProvider(): array
+    {
+        return [
+            'https scheme only' => ['https:evil.example.com'],
+            'http scheme only' => ['http:evil.example.com'],
+            'https with path suffix' => ['https:evil.example.com/path?q=1'],
+            'https with port and path' => ['https:evil.example.com:8080/admin'],
+            'http userinfo without authority' => ['http:@evil.example.com'],
+            'https single slash prefix' => ['https:/evil.example.com'],
+            'bare scheme with colon' => ['http:'],
+            'ipv4 loopback via scheme-only' => ['http:127.0.0.1:9931/bg'],
+        ];
     }
 
     public function test_same_origin_url_rejects_backslash_userinfo_parser_differential(): void
