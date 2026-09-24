@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-/**
- * End-to-end coverage for the Landscape adapter through SyncAdapter.
- * Mocks Landscape's /api/v2/computers endpoint, asserts assets +
- * asset_external_sources rows land correctly, exercises the
- * grouped_hardware normalization for both flat and list shapes, and
- * verifies the `next` URL pagination loop terminates.
- */
 class LandscapeAdapterTest extends TestCase
 {
     protected function setUp(): void
@@ -247,11 +240,10 @@ class LandscapeAdapterTest extends TestCase
 
     public function test_does_not_adopt_when_toggle_is_off()
     {
-        // Default behavior: matching serial without an
-        // asset_external_sources row does NOT auto-adopt. The
-        // sync creates a fresh shell asset alongside the existing
-        // one. Verifies we don't regress the safe default.
+        
         $adapter = $this->configuredLandscapeAdapter();
+        $instance = SyncAdapterInstance::where('slug', 'landscape')->firstOrFail();
+        SyncAdapterConfig::put($instance->id, 'adopt_by_serial', '0');
         Asset::factory()->create(['serial' => 'NO-ADOPT-001', 'name' => 'pre-existing']);
 
         Http::fake([

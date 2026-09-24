@@ -1364,13 +1364,17 @@ abstract class SyncAdapter
     /**
      * Migration aid: when on, the sync loop looks for an existing
      * Snipe-IT asset with a matching serial before creating a new
-     * shell asset for a first-seen vendor host. Default off, since
-     * silently adopting existing assets is destructive when a
-     * customer has multiple adapters or the serial isn't unique.
+     * shell asset for a first-time sync vendor host.
+     *
      */
     public function adoptsBySerial(): bool
     {
-        return SyncAdapterConfig::get($this->instance->id, 'adopt_by_serial') === '1';
+        $stored = SyncAdapterConfig::get($this->instance->id, 'adopt_by_serial');
+        if ($stored !== null) {
+            return $stored === '1';
+        }
+
+        return $this->instance->last_synced_at === null;
     }
 
     /**
