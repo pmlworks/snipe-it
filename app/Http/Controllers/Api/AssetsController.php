@@ -223,6 +223,10 @@ class AssetsController extends Controller
                 break;
         }
 
+        if ($request->boolean('past_eol')) {
+            $assets->PastEol();
+        }
+
         /**
          * End handling due and overdue audits and checkin dates
          */
