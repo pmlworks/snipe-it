@@ -131,7 +131,12 @@ class BulkUsersController extends Controller
 
                 return view('users.print')
                     ->with('users', $users)
-                    ->with('settings', Setting::getSettings());
+                    ->with('settings', Setting::getSettings())
+                    ->with('canViewAssets', $canViewAssets)
+                    ->with('canViewLicenses', $canViewLicenses)
+                    ->with('canViewAccessories', $canViewAccessories)
+                    ->with('canViewConsumables', $canViewConsumables)
+                    ->with('canViewComponents', $canViewComponents);
             }
         }
 
