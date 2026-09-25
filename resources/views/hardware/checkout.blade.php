@@ -121,7 +121,7 @@
                         'show_custom_fields_type' => 'checkout',
                     ])
 
-                    @if ($asset->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $asset->getEula() || ($snipeSettings->webhook_endpoint != ''))
+                    @if ($asset->requireAcceptance() || $asset->getEula() || ($snipeSettings->webhook_endpoint != ''))
                         <div class="form-group notification-callout" style="display:none;">
                             <div class="col-md-8 col-md-offset-3">
                                 <x-callout type="info" role="status">
@@ -132,8 +132,8 @@
                                         <br>
                                     @endif
 
-                                    @if ((string) $snipeSettings->require_accept_signature === '1')
-                                            <x-icon type="signature" class="fa-fw"/>
+                                    @if ($asset->requireAcceptance() && (string) $snipeSettings->require_accept_signature === '1')
+                                        <x-icon type="signature" class="fa-fw"/>
                                         {{ trans('admin/categories/general.required_signature') }}
                                         <br>
                                     @endif
@@ -158,7 +158,7 @@
                             </div>
 
                             <!-- Sign in place checkbox -->
-                            @if ($asset->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')
+                            @if ($asset->requireAcceptance())
                                 <div id="sign_in_place_div" class="col-md-7 col-md-offset-3">
                                     <label class="form-control">
                                         <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place', session('sign_in_place', false))) aria-label="sign_in_place">

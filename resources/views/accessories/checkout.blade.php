@@ -58,7 +58,7 @@
                 <div class="col-md-8 col-md-offset-3"><x-form.error name="checkout_qty" /></div>
             </div>
 
-            @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $accessory->getEula() || ($snipeSettings->webhook_endpoint != ''))
+            @if ($accessory->requireAcceptance() || $accessory->getEula() || ($snipeSettings->webhook_endpoint != ''))
                 <div class="form-group notification-callout">
                     <div class="col-md-8 col-md-offset-3">
                         <x-callout type="info" role="status">
@@ -66,7 +66,7 @@
                                 <i class="far fa-envelope fa-fw" aria-hidden="true"></i>
                                 {{ trans('admin/categories/general.required_acceptance') }}<br>
                             @endif
-                            @if ((string) $snipeSettings->require_accept_signature === '1')
+                            @if ($accessory->requireAcceptance() && (string) $snipeSettings->require_accept_signature === '1')
                                 <x-icon type="signature" class="fa-fw"/>
                                 {{ trans('admin/categories/general.required_signature') }}<br>
                             @endif
@@ -81,7 +81,7 @@
                         </x-callout>
                     </div>
 
-                    @if ($accessory->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')
+                    @if ($accessory->requireAcceptance())
                         <div id="sign_in_place_div" class="col-md-7 col-md-offset-3">
                             <label class="form-control">
                                 <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place', session('sign_in_place', false))) aria-label="{{ trans('general.sign_in_place') }}">
