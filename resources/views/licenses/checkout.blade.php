@@ -61,7 +61,7 @@
                         </x-slot:input>
                     </x-form.row>
 
-                    @if ($license->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1' || $license->getEula() || ($snipeSettings->webhook_endpoint != ''))
+                    @if ($license->requireAcceptance() || $license->getEula() || ($snipeSettings->webhook_endpoint != ''))
                         <div class="form-group notification-callout">
                             <div class="col-md-8 col-md-offset-3">
                                 <x-callout type="info" role="status">
@@ -72,7 +72,7 @@
                                         <br>
                                     @endif
 
-                                    @if ((string) $snipeSettings->require_accept_signature === '1')
+                                    @if ($license->requireAcceptance() && (string) $snipeSettings->require_accept_signature === '1')
                                         <x-icon type="signature" class="fa-fw"/>
                                         {{ trans('admin/categories/general.required_signature') }}
                                         <br>
@@ -98,7 +98,7 @@
                             </div>
 
                             <!-- Sign in place checkbox -->
-                            @if ($license->requireAcceptance() || (string) $snipeSettings->require_accept_signature === '1')
+                            @if ($license->requireAcceptance())
                                 <div id="sign_in_place_div" class="col-md-7 col-md-offset-3">
                                     <label class="form-control">
                                         <input type="checkbox" value="1" name="sign_in_place" @checked(old('sign_in_place', session('sign_in_place', false))) aria-label="sign_in_place">
